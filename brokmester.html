@@ -1,0 +1,1057 @@
+<title>Brøkmester</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Layout: mørk «tavle» med rutenett, én sentrert spillflate (maks 760px). Brøkbiter i rav, aksenter i cyan og rosa. Bevisst ett mørkt spilluttrykk. */
+:root{
+  --tavle:#121633;      /* bakgrunn */
+  --rute:#1b2147;       /* rutenett */
+  --flate:#1a1f45;      /* kort */
+  --flate2:#232a5a;     /* hevet flate */
+  --kant:#323b78;
+  --kritt:#eef0ff;      /* tekst */
+  --dempet:#a3a9d6;
+  --rav:#ffb627;        /* brøkbiter, stjerner */
+  --cyan:#3ad6e8;       /* aksent / knapper */
+  --cyan-ink:#06222a;
+  --rosa:#ff5d9e;       /* andre brøk, combo */
+  --ok:#4fe39a; --ok-bg:#123a32;
+  --feil:#ff7a7a; --feil-bg:#3e1830;
+  --hint:#ffd66b; --hint-bg:#3a3218;
+  --info-bg:#1d2a5c;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --r:16px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--tavle)}
+body{color:var(--kritt);font-family:var(--f-body);font-size:1.0625rem;line-height:1.5;min-height:100%;
+  background-image:linear-gradient(var(--rute) 1px,transparent 1px),linear-gradient(90deg,var(--rute) 1px,transparent 1px);
+  background-size:26px 26px;background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--tavle)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.1;margin:0}
+p{margin:0}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 48px;display:flex;flex-direction:column;gap:18px}
+
+/* toppfelt */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--tavle) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--kant)}
+.topin{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{background:none;border:0;padding:0;display:inline-flex;flex-direction:column;align-items:center;font-family:var(--f-display);font-weight:800;line-height:1;letter-spacing:.01em}
+.logo .ln{font-size:1.15rem;color:var(--rav);padding:0 .3em 2px;border-bottom:3px solid var(--kritt)}
+.logo .ld{font-size:.95rem;padding-top:2px}
+.stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.stat{display:inline-flex;align-items:center;gap:5px;background:var(--flate);border:1px solid var(--kant);border-radius:999px;padding:3px 10px;font-weight:700;font-variant-numeric:tabular-nums;font-size:.95rem}
+.stat svg{width:16px;height:16px}
+.stat.combo{color:var(--rosa)}
+.iconbtn{background:var(--flate);border:1px solid var(--kant);border-radius:999px;width:34px;height:34px;display:inline-grid;place-items:center;padding:0}
+.iconbtn svg{width:18px;height:18px}
+
+/* knapper */
+.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:700;background:var(--flate2);border:1px solid var(--kant);transition:transform .08s}
+.btn:active{transform:translateY(1px)}
+.btn.pri{background:var(--cyan);color:var(--cyan-ink);border-color:transparent}
+.btn.ghost{background:transparent}
+.btn[disabled]{opacity:.45;cursor:default}
+.btn.danger{background:var(--feil-bg);border-color:var(--feil);color:var(--feil)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* hjem */
+.hero{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+.hero h1{font-size:clamp(1.8rem,5vw,2.6rem)}
+.hero .rank{color:var(--rav);font-weight:700;margin-top:4px}
+.hero .lead{color:var(--dempet);margin-top:8px;max-width:52ch}
+.ring{width:96px;height:96px;position:relative}
+.ring svg{width:96px;height:96px;transform:rotate(-90deg)}
+.ring .rt{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-size:.75rem;color:var(--dempet);line-height:1.15}
+.ring .rt b{display:block;font-size:1.3rem;color:var(--kritt);font-family:var(--f-display)}
+.ring circle{fill:none;stroke-width:9}
+.ring .bg{stroke:var(--flate2)} .ring .fg{stroke:var(--rav);stroke-linecap:round;transition:stroke-dashoffset .6s}
+.xpbar{height:10px;border-radius:999px;background:var(--flate2);overflow:hidden;border:1px solid var(--kant)}
+.xpbar i{display:block;height:100%;background:linear-gradient(90deg,var(--rav),var(--rosa))}
+.xpnote{display:flex;justify-content:space-between;font-size:.85rem;color:var(--dempet);margin-top:4px}
+.modes{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px}
+.mode{text-align:left;border-radius:var(--r);padding:16px;border:1px solid var(--kant);background:var(--flate);display:flex;flex-direction:column;gap:6px;min-width:0}
+.mode .mt{font-family:var(--f-display);font-weight:800;font-size:1.25rem}
+.mode .ms{color:var(--dempet);font-size:.92rem}
+.mode.main{background:linear-gradient(135deg,#1f6f86,#2b3a8f);border-color:transparent}
+.mode.main .ms{color:#d6ecff}
+.mode.locked{opacity:.55}
+.secthead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.secthead h2{font-size:1.3rem}
+.secthead span{color:var(--dempet);font-size:.9rem}
+.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.tcard{text-align:left;border-radius:14px;padding:12px 14px;border:1px solid var(--kant);background:var(--flate);display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:center;min-width:0}
+.tcard:hover{border-color:var(--cyan)}
+.tnum{grid-row:span 2;width:30px;height:30px;border-radius:8px;background:var(--flate2);display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums;color:var(--dempet)}
+.tname{font-weight:700;line-height:1.25}
+.tsub{grid-column:2;color:var(--dempet);font-size:.85rem}
+.medal{grid-row:span 2;width:30px;height:30px}
+.tfoot{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin-top:8px}
+.mbar{flex:1;height:6px;border-radius:999px;background:var(--flate2);overflow:hidden}
+.mbar i{display:block;height:100%;background:var(--cyan)}
+.chip{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--flate2);color:var(--dempet);white-space:nowrap}
+.chip.ok{background:var(--ok-bg);color:var(--ok)} .chip.go{background:var(--info-bg);color:var(--cyan)} .chip.bad{background:var(--feil-bg);color:var(--feil)}
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px dashed var(--kant);color:var(--dempet);font-size:.85rem}
+.badge.got{border-style:solid;border-color:var(--rav);color:var(--kritt);background:var(--flate)}
+.badge svg{width:16px;height:16px}
+.foot{display:flex;gap:10px;flex-wrap:wrap}
+
+/* oppgave */
+.taskhead{display:flex;align-items:center;gap:12px}
+.dots{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.dot{width:14px;height:14px;border-radius:4px;background:var(--flate2);border:1px solid var(--kant)}
+.dot.g{background:var(--ok);border-color:var(--ok)} .dot.y{background:var(--rav);border-color:var(--rav)} .dot.r{background:var(--feil);border-color:var(--feil)}
+.dot.cur{border:2px solid var(--cyan)}
+.card{background:var(--flate);border:1px solid var(--kant);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:16px}
+.tmeta{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.pips{display:inline-flex;gap:3px;vertical-align:middle}
+.pips i{width:10px;height:10px;border-radius:3px;background:var(--flate2);border:1px solid var(--kant)}
+.pips i.on{background:var(--rav);border-color:var(--rav)}
+.lvl{font-size:.85rem;color:var(--dempet);display:inline-flex;gap:6px;align-items:center}
+.prompt{font-size:1.2rem;line-height:1.55}
+.visual{display:flex;justify-content:center}
+.visual.sm{justify-content:flex-start;margin-top:8px}
+.figrow{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.fig{max-width:100%;height:auto}
+.fig.bar{width:100%;max-width:440px}
+.pc{fill:var(--flate2);stroke:var(--kritt);stroke-width:2}
+.pc.on{fill:var(--rav)} .pc.on2{fill:var(--rosa)}
+.lbl{fill:var(--cyan-ink);font:700 13px var(--f-body)}
+.ex{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.35em;font-size:1.75rem;font-weight:700;font-variant-numeric:tabular-nums}
+.sol .ex,.lesson .ex,.hint .ex{font-size:1.2rem;justify-content:flex-start}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.15;margin:0 .1em;font-variant-numeric:tabular-nums}
+.fr>span{padding:0 .22em;white-space:nowrap}
+.fr>span:first-child{border-bottom:.09em solid currentColor}
+.prompt .fr,.hint .fr,.fb .fr,.lesson p .fr,.lesson li .fr,.choice .fr{font-size:.95em}
+.mx{display:inline-flex;align-items:center;gap:.08em}
+.wn{font-variant-numeric:tabular-nums}
+.op{color:var(--dempet);font-weight:400;padding:0 .1em}
+.qm{display:inline-grid;place-items:center;min-width:1.4em;height:1.4em;border-radius:8px;border:2px dashed var(--cyan);color:var(--cyan)}
+.ans{display:flex;align-items:center;justify-content:center;gap:12px}
+.fin{display:inline-flex;flex-direction:column;align-items:center;gap:6px}
+.fbar{display:block;height:4px;width:100%;border-radius:2px;background:var(--kritt)}
+.box{width:3.6em;font:700 1.6rem var(--f-body);text-align:center;padding:6px 4px;border-radius:10px;border:2px solid var(--kant);background:var(--tavle);color:var(--kritt);font-variant-numeric:tabular-nums}
+.box:focus{border-color:var(--cyan);outline:none}
+.box.w{width:2.6em}
+.box.wide{width:6em}
+.box.sm{width:2.8em;font-size:1.4rem;padding:3px}
+.unit{font-size:1.3rem;font-weight:700;color:var(--dempet)}
+.note{text-align:center;color:var(--dempet);font-size:.85rem}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.choice{min-height:84px;border-radius:14px;border:2px solid var(--kant);background:var(--flate2);font-size:1.5rem;font-weight:700;display:grid;place-items:center;padding:8px}
+.choice:hover:not([disabled]){border-color:var(--cyan)}
+.choice.txt{font-size:1.05rem}
+.choice.bad{border-color:var(--feil);opacity:.55}
+.choice.good{border-color:var(--ok);background:var(--ok-bg)}
+.hintbox{display:flex;flex-direction:column;gap:8px}
+.hint{background:var(--hint-bg);border-radius:12px;padding:10px 14px;color:var(--kritt)}
+.hint b.h{color:var(--hint);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;display:block}
+.fb{border-radius:12px;padding:12px 14px}
+.fb.ok{background:var(--ok-bg)} .fb.ok .big{color:var(--ok)}
+.fb.bad{background:var(--feil-bg)} .fb.bad .big{color:var(--feil)}
+.fb.warn{background:var(--hint-bg)} .fb.warn .big{color:var(--hint)}
+.fb.info{background:var(--info-bg)}
+.fb.sol{background:var(--info-bg)} .fb.sol .big{color:var(--cyan)}
+.fb .big{font-family:var(--f-display);font-weight:800;font-size:1.3rem;display:block;margin-bottom:2px}
+.sol{margin-top:8px;color:var(--kritt)}
+.sol b{color:var(--dempet);font-weight:700}
+.tries{display:inline-flex;gap:5px;align-items:center;color:var(--dempet);font-size:.85rem}
+.tries i{width:10px;height:10px;border-radius:50%;background:var(--cyan)}
+.tries i.used{background:var(--flate2);border:1px solid var(--kant)}
+.btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btns .spacer{flex:1}
+details.lesson{border:1px solid var(--kant);border-radius:12px;padding:8px 14px}
+details.lesson summary{cursor:pointer;font-weight:700;color:var(--cyan)}
+.lesson{display:flex;flex-direction:column;gap:10px}
+.lesson>.chip{align-self:flex-start}
+.lesson ul,.lesson ol{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:4px}
+.lesson .warn{color:var(--hint);font-weight:700}
+.lesson table{border-collapse:collapse;font-variant-numeric:tabular-nums}
+.lesson td,.lesson th{padding:3px 12px;border-bottom:1px solid var(--kant);text-align:left}
+.timer{height:10px;border-radius:999px;background:var(--flate2);overflow:hidden}
+.timer i{display:block;height:100%;background:linear-gradient(90deg,var(--rosa),var(--rav));transition:width .25s linear}
+.flash{font-family:var(--f-display);font-weight:800;font-size:1.4rem;text-align:center;min-height:1.6em}
+.flash.ok{color:var(--ok)} .flash.bad{color:var(--feil)}
+
+/* oppsummering / fremgang */
+.bigstat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bs{background:var(--flate2);border-radius:12px;padding:12px;text-align:center}
+.bs b{display:block;font-family:var(--f-display);font-size:1.8rem;color:var(--rav);font-variant-numeric:tabular-nums}
+.bs span{color:var(--dempet);font-size:.85rem}
+.list{display:flex;flex-direction:column;gap:8px}
+.li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--flate2);flex-wrap:wrap}
+.li .up{color:var(--ok);font-weight:700}
+.tbl{overflow-x:auto}
+.tbl table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.95rem}
+.tbl th{text-align:left;color:var(--dempet);font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;padding:6px 8px;border-bottom:1px solid var(--kant)}
+.tbl td{padding:8px;border-bottom:1px solid var(--kant);vertical-align:middle}
+.tbl td.n{text-align:right}
+details.rev{background:var(--flate2);border-radius:10px;padding:10px 12px}
+details.rev summary{cursor:pointer;display:flex;gap:10px;align-items:center;justify-content:space-between}
+details.rev .inner{margin-top:10px;display:flex;flex-direction:column;gap:10px}
+.mark{font-weight:800}
+.mark.ok{color:var(--ok)} .mark.bad{color:var(--feil)}
+textarea{width:100%;min-height:80px;background:var(--tavle);color:var(--kritt);border:1px solid var(--kant);border-radius:10px;padding:8px;font:.85rem ui-monospace,monospace}
+input.txt{background:var(--tavle);color:var(--kritt);border:1px solid var(--kant);border-radius:10px;padding:8px 10px;font:inherit}
+.muted{color:var(--dempet)}
+.small{font-size:.88rem}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--rav);color:#2a1a00;font-weight:800;font-family:var(--f-display);padding:12px 20px;border-radius:14px;z-index:30;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:calc(100% - 32px);text-align:center;animation:pop .35s ease-out}
+@keyframes pop{from{transform:translate(-50%,20px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.shake{animation:shake .35s}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:25}
+@media (max-width:600px){
+  .modes{grid-template-columns:1fr}
+  .hero{grid-template-columns:1fr auto}
+  .card{padding:16px}
+  .ex{font-size:1.5rem}
+  .bigstat{grid-template-columns:repeat(3,1fr)}
+  .bs b{font-size:1.4rem}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div id="app"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<script id="logic">
+// ================= tall og brøker =================
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a};
+const lcm=(a,b)=>a/gcd(a,b)*b;
+const F=(n,d=1)=>d<0?{n:-n,d:-d}:{n,d};
+const simp=f=>{const g=gcd(f.n,f.d)||1;return F(f.n/g,f.d/g)};
+const add=(a,b)=>simp(F(a.n*b.d+b.n*a.d,a.d*b.d));
+const sub=(a,b)=>simp(F(a.n*b.d-b.n*a.d,a.d*b.d));
+const mul=(a,b)=>simp(F(a.n*b.n,a.d*b.d));
+const dv=(a,b)=>simp(F(a.n*b.d,a.d*b.n));
+const eqv=(a,b)=>a.n*b.d===b.n*a.d;
+const val=f=>f.n/f.d;
+const near=(a,b)=>Math.abs(a-b)<1e-9;
+function properSimple(minD,maxD){let a,b;do{b=R(minD,maxD);a=R(1,b-1)}while(gcd(a,b)!==1);return F(a,b)}
+function smallestPrime(n){for(let p=2;p<=n;p++)if(n%p===0)return p;return n}
+const fmt=x=>String(Math.round(x*1e6)/1e6).replace('.',',');
+
+// ================= HTML-hjelpere =================
+const fr=(n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+const ff=f=>f.d===1?`<span class="wn">${f.n}</span>`:fr(f.n,f.d);
+const mx=(w,n,d)=>`<span class="mx"><span class="wn">${w}</span>${fr(n,d)}</span>`;
+const op=s=>`<span class="op">${s}</span>`;
+const ex=(...p)=>`<div class="ex">${p.join('')}</div>`;
+const Q='<span class="qm">?</span>';
+const num=n=>`<span class="wn">${n}</span>`;
+const M='−';
+function mixedParts(f){f=simp(f);const w=Math.floor(f.n/f.d);return{w,r:f.n-w*f.d,d:f.d}}
+function mixedHtml(f){const m=mixedParts(f);if(m.r===0)return num(m.w);return m.w?mx(m.w,m.r,m.d):fr(m.r,m.d)}
+function nice(f){f=simp(f);if(f.d===1)return num(f.n);if(f.n>f.d)return fr(f.n,f.d)+op('=')+mixedHtml(f);return fr(f.n,f.d)}
+function tail(raw){const s=simp(raw);let p='';if(s.n!==raw.n)p+=op('=')+ff(s);if(s.d!==1&&s.n>s.d)p+=op('=')+mixedHtml(s);return p}
+function plain(f){f=simp(f);if(f.d===1)return `${f.n}`;if(f.n>f.d){const m=mixedParts(f);return `${f.n}/${f.d} (= ${m.w} ${m.r}/${m.d})`}return `${f.n}/${f.d}`}
+const inl=lbl=>`<input id="a-i" class="box sm" inputmode="numeric" autocomplete="off" aria-label="${lbl}">`;
+
+// ================= figurer =================
+function pie(n,d,s=132){const c=s/2,r=c-4;let p='';
+  if(d===1)p=`<circle cx="${c}" cy="${c}" r="${r}" class="pc${n>=1?' on':''}"/>`;
+  else for(let i=0;i<d;i++){const a0=-Math.PI/2+i*2*Math.PI/d,a1=a0+2*Math.PI/d;
+    const x0=(c+r*Math.cos(a0)).toFixed(2),y0=(c+r*Math.sin(a0)).toFixed(2),x1=(c+r*Math.cos(a1)).toFixed(2),y1=(c+r*Math.sin(a1)).toFixed(2);
+    p+=`<path d="M${c} ${c}L${x0} ${y0}A${r} ${r} 0 0 1 ${x1} ${y1}Z" class="pc${i<n?' on':''}"/>`}
+  return `<svg class="fig" viewBox="0 0 ${s} ${s}" width="${s}" height="${s}" aria-hidden="true">${p}</svg>`}
+function pies(filled,d,cnt){let h='';for(let i=0;i<cnt;i++)h+=pie(Math.max(0,Math.min(d,filled-i*d)),d,112);return `<div class="figrow">${h}</div>`}
+function bar(n,d,o={}){const W=o.w||300,H=o.h||44,sw=W/d;let p='',t='';
+  for(let i=0;i<d;i++)p+=`<rect x="${(2+i*sw).toFixed(2)}" y="2" width="${sw.toFixed(2)}" height="${H}" class="pc${i<n?' '+(o.cls||'on'):''}"/>`;
+  if(o.labels)for(let i=0;i<d;i++)t+=`<text x="${(2+i*sw+sw/2).toFixed(2)}" y="${2+H/2+5}" class="lbl" text-anchor="middle"${i<n?'':' style="fill:var(--kritt)"'}>${o.labels}</text>`;
+  return `<svg class="fig bar" viewBox="0 0 ${W+4} ${H+4}" aria-hidden="true">${p}${t}</svg>`}
+function grid(r,c,filled){const s=34,on=new Set(shuffle([...Array(r*c).keys()]).slice(0,filled));let p='';
+  for(let i=0;i<r;i++)for(let j=0;j<c;j++)p+=`<rect x="${2+j*s}" y="${2+i*s}" width="${s}" height="${s}" class="pc${on.has(i*c+j)?' on':''}"/>`;
+  return `<svg class="fig" viewBox="0 0 ${c*s+4} ${r*s+4}" width="${c*s+4}" height="${r*s+4}" aria-hidden="true">${p}</svg>`}
+function compareBars(list){return `<div class="list">${list.map((f,i)=>`<div class="row" style="flex-wrap:nowrap"><span style="min-width:2.4em;font-weight:700">${fr(f.n,f.d)}</span>${bar(f.n,f.d,{cls:i%2?'on2':'on',h:28})}</div>`).join('')}</div>`}
+
+// ================= typiske feil =================
+const MISTAKES={
+ 'byttet':{label:'Bytter om teller og nevner',msg:'Du har byttet om teller og nevner. Nevneren (nederst) er hvor mange like deler det er til sammen. Telleren (øverst) er hvor mange du har.'},
+ 'hvite':{label:'Teller delene som ikke er fargelagt',msg:'Du har telt delene som <b>ikke</b> er fargelagt. Tell de fargelagte.'},
+ 'alle-biter':{label:'Bruker alle bitene i flere figurer som nevner',msg:'Nevneren er hvor mange biter <b>én</b> hel figur er delt i.'},
+ 'bare-en':{label:'Endrer bare teller eller bare nevner',msg:'Husk: du MÅ gjøre det samme med både teller og nevner.'},
+ 'pluss-utvid':{label:'Legger til i stedet for å gange ved utviding',msg:'Å utvide betyr å <b>gange</b> teller og nevner med samme tall, ikke å legge til.'},
+ 'ulike-tall':{label:'Deler teller og nevner på ulike tall',msg:'Du har delt teller og nevner på ulike tall. Da endrer brøken verdi. Del begge på det samme tallet.'},
+ 'forkort':{label:'Glemmer å forkorte svaret',msg:''},
+ 'stor-nevner':{label:'Tror større nevner gir større brøk',msg:'Større nevner betyr at helheten er delt i flere biter. Da blir hver bit <b>mindre</b>.'},
+ 'sammenlign':{label:'Sammenligner uten fellesnevner',msg:'Ikke helt. Gjør om brøkene til samme nevner og sammenlign tellerne.'},
+ 'la-sammen-nevner':{label:'Legger sammen nevnerne',msg:'Du la sammen nevnerne også. Nevneren forteller hvor store bitene er, og bitene blir ikke mindre av at du legger dem sammen. Legg bare sammen tellerne.'},
+ 'glemte-utvide':{label:'Glemmer å utvide telleren ved fellesnevner',msg:'Du fant fellesnevner, men glemte å gange tellerne med det samme som nevnerne.'},
+ 'feil-tegn':{label:'Regner pluss i stedet for minus (eller motsatt)',msg:'Se på regnetegnet en gang til.'},
+ 'rest-feil':{label:'Feil rest ved uekte brøk → blandet tall',msg:''},
+ 'glemte-rest':{label:'Glemmer telleren ved blandet tall → uekte brøk',msg:''},
+ 'w+r':{label:'Legger heltallet rett til telleren',msg:''},
+ 'gange-nevner':{label:'Ganger både teller og nevner med heltallet',msg:'Når du ganger et helt tall med en brøk, ganger du bare <b>telleren</b>. Nevneren blir den samme.'},
+ 'kryss':{label:'Ganger på kryss ved multiplikasjon',msg:'Ved ganging går det rett fram: teller · teller og nevner · nevner. Å snu en brøk gjør du bare når du deler.'},
+ 'pluss-ved-gange':{label:'Legger sammen i stedet for å gange',msg:'Du la sammen brøkene. Her skal du gange: teller · teller og nevner · nevner.'},
+ 'en-del':{label:'Finner bare én del ved brøkdel av et tall',msg:'Det er én av delene. Se på telleren: hvor mange av delene skal du ha?'},
+ 'delte-teller':{label:'Deler på telleren i stedet for nevneren',msg:'Du delte på telleren. Del på <b>nevneren</b> først (antall like deler), og gang så med telleren.'},
+ 'gange-uten-dele':{label:'Ganger med telleren uten å dele på nevneren',msg:'Du ganget med telleren, men glemte å dele på nevneren.'},
+ 'resten':{label:'Svarer med resten i stedet for delen',msg:'Det er resten. Spørsmålet er hvor stor delen er.'},
+ 'tatt-vekk':{label:'Svarer med det som er brukt i stedet for det som er igjen',msg:'Det er det som er brukt eller tatt vekk. Spørsmålet er hvor mye som er <b>igjen</b>.'},
+ 'glemte-snu':{label:'Glemmer å snu brøken ved deling',msg:'Du ganget rett fram. Når du deler med en brøk, må du først <b>snu</b> den (bytte teller og nevner) og så gange.'},
+ 'snudde-feil':{label:'Snur feil brøk ved deling',msg:'Det er brøken du deler <b>med</b> (den andre) som skal snus, ikke den første.'},
+ 'skrev-prosent':{label:'Blander desimaltall og prosent',msg:'Det ser ut som prosent. Desimaltallet får du ved å dele prosenttallet på 100.'},
+ 'skrev-desimal':{label:'Blander desimaltall og prosent',msg:'Det er desimaltallet. Gang med 100 for å få prosent.'},
+ 'teller-komma':{label:'Skriver for eksempel 1/4 som 1,4',msg:'En brøk er ikke «teller komma nevner». Brøkstreken betyr «delt på».'}
+};
+function D(code,msg){return{code,msg:msg||(MISTAKES[code]&&MISTAKES[code].msg)||''}}
+const NAMES=['Jonas','Lise','Mina','Elin','Sara','Emil','Ida','Malin','Ole','Herman','Josephine','Ingvar','Monica','Siri','Sean','Inge'];
+
+// ================= oppgavegeneratorer (nivå 1–5) =================
+function genLes(L){
+  if(L===1&&Math.random()<0.3){const d=R(2,9),n=R(1,d-1);
+    return{key:`ls${n}/${d}`,prompt:`Skriv brøken som har teller <b>${n}</b> og nevner <b>${d}</b>.`,
+      input:{type:'frac',target:F(n,d),require:'exact',exact:F(n,d)},exactMsg:'Bruk akkurat de tallene oppgaven gir.',
+      hints:['Telleren står <b>over</b> brøkstreken. Nevneren står <b>under</b>.'],
+      solution:`Teller ${n} øverst og nevner ${d} nederst:`+ex(fr(n,d)),
+      diagnose:(v,r)=>(r.n===d&&r.d===n)?D('byttet'):null}}
+  if(L===5){const d=pick([2,3,4,6,8]),cnt=d<=3?3:2,filled=R(d+1,cnt*d-1),t=F(filled,d);
+    return{key:`lp${filled}/${d}`,prompt:'Hver pizza er delt i like store biter. Hvor mange pizzaer er fargelagt til sammen? Skriv som brøk eller blandet tall.',
+      visual:pies(filled,d,cnt),input:{type:'frac',mixed:true,target:t,require:null},
+      hints:[`Hver pizza er delt i ${d} biter. Da er nevneren ${d}.`,'Tell alle fargelagte biter i alle pizzaene. Det er telleren.',`Det er ${filled} biter, altså ${fr(filled,d)}. Hvor mange hele pizzaer er det?`],
+      solution:`${filled} fargelagte biter, og ${d} biter i hver pizza:`+ex(fr(filled,d),tail(F(filled,d))===''&&filled>d?op('=')+mixedHtml(t):tail(F(filled,d))),
+      diagnose:v=>eqv(v,F(filled,d*cnt))?D('alle-biter'):null}}
+  let visual,total,filled,require=null,prompt='Hvor stor del av figuren er fargelagt?';
+  if(L<=2){total=L===1?R(2,4):R(5,8);filled=R(1,total-1);visual=Math.random()<0.5?pie(filled,total):bar(filled,total)}
+  else if(L===3){const[r,c]=pick([[2,3],[2,4],[3,3],[2,5],[3,4],[2,6]]);total=r*c;filled=R(1,total-1);visual=grid(r,c,filled)}
+  else{const[r,c]=pick([[2,3],[2,4],[3,4],[2,5],[4,4],[3,6],[4,5]]);total=r*c;const o=[];for(let k=1;k<total;k++)if(gcd(k,total)>1)o.push(k);filled=pick(o);visual=grid(r,c,filled);require='simplest';prompt+=' Skriv brøken så enkel som mulig.'}
+  const t=F(filled,total),hints=['Tell hvor mange like store deler figuren er delt i. Det blir <b>nevneren</b>.','Tell de fargelagte delene. Det blir <b>telleren</b>.'];
+  if(require)hints.push(`Du har ${fr(filled,total)}. Finn et tall som går opp i både ${filled} og ${total}, og del begge på det.`);
+  return{key:`lf${L}-${filled}/${total}`,prompt,visual,input:{type:'frac',target:t,require},hints,
+    solution:`Figuren har ${total} like deler, og ${filled} er fargelagt:`+ex(fr(filled,total),require?op('=')+ff(simp(t)):''),
+    diagnose:(v,r)=>{if(r.n===total&&r.d===filled)return D('byttet');if(eqv(v,F(total-filled,total)))return D('hvite');return null}}
+}
+
+function genUtvid(L){
+  if(L<=2){const f=properSimple(2,L===1?6:9),k=L===1?2:R(3,5);
+    return{key:`u${f.n}/${f.d}k${k}`,prompt:`Utvid brøken med <b>${k}</b>.`,expr:ex(fr(f.n,f.d),op('='),Q),
+      input:{type:'frac',target:f,require:'exact',exact:F(f.n*k,f.d*k)},
+      exactMsg:`Brøken har riktig verdi, men du skulle utvide med akkurat ${k}. Gang både teller og nevner med ${k}.`,
+      hints:[`Å utvide betyr å <b>gange</b>. Gang både telleren og nevneren med ${k}.`,`Regn ut ${f.n} · ${k} og ${f.d} · ${k}.`],
+      solution:ex(fr(`${f.n} · ${k}`,`${f.d} · ${k}`),op('='),fr(f.n*k,f.d*k)),
+      diagnose:(v,r)=>{if(r.n===f.n*k&&r.d===f.d)return D('bare-en',`Du ganget bare telleren. Nevneren må også ganges med ${k}.`);if(r.n===f.n&&r.d===f.d*k)return D('bare-en',`Du ganget bare nevneren. Telleren må også ganges med ${k}.`);if(r.n===f.n+k&&r.d===f.d+k)return D('pluss-utvid');return null}}}
+  if(L===3||(L===4&&Math.random()<0.5)){const f=properSimple(2,L===3?8:9),k=L===3?R(2,6):R(6,12),N=f.d*k;
+    return{key:`u3${f.n}/${f.d}k${k}`,prompt:'Hvilket tall mangler? Brøkene skal være like store.',expr:ex(fr(f.n,f.d),op('='),fr(inl('Teller som mangler'),N)),
+      input:{type:'int',inline:true,target:f.n*k},
+      hints:[`Hva må du gange ${f.d} med for å få ${N}?`,`${f.d} · ${k} = ${N}. Da må telleren også ganges med ${k}.`],
+      solution:`${f.d} · ${k} = ${N}, så telleren blir ${f.n} · ${k} = ${f.n*k}.`+ex(fr(f.n,f.d),op('='),fr(f.n*k,N)),
+      diagnose:v=>v===f.n+(N-f.d)?D('pluss-utvid',`Du la til ${N-f.d}, like mye som nevneren økte. Men nevneren ble <b>ganget</b> med ${k}, så telleren må også ganges med ${k}.`):null}}
+  if(L===4){const f=properSimple(2,9),k=R(3,10),N=f.n*k;
+    return{key:`u4${f.n}/${f.d}k${k}`,prompt:'Hvilket tall mangler? Brøkene skal være like store.',expr:ex(fr(f.n,f.d),op('='),fr(N,inl('Nevner som mangler'))),
+      input:{type:'int',inline:true,target:f.d*k},
+      hints:[`Hva må du gange ${f.n} med for å få ${N}?`,`${f.n} · ${k} = ${N}. Da må nevneren også ganges med ${k}.`],
+      solution:`${f.n} · ${k} = ${N}, så nevneren blir ${f.d} · ${k} = ${f.d*k}.`+ex(fr(f.n,f.d),op('='),fr(N,f.d*k)),
+      diagnose:v=>v===f.d+(N-f.n)?D('pluss-utvid'):null}}
+  const f=properSimple(2,7);
+  if(Math.random()<0.5){const k=R(2,5),c=F(f.n*k,f.d*k),same='Teller og nevner er ikke ganget med det samme tallet.';
+    const cands=[[F(f.n+k,f.d+k),D('pluss-utvid',`Her er det lagt til ${k} oppe og nede. Når du utvider, må du <b>gange</b>.`)],[F(f.n*k,f.d+k),D('bare-en',same)],[F(f.n+1,f.d*k),D('bare-en',same)],[F(f.n*k,f.d*(k+1)),D('bare-en',same)]];
+    const seen=new Set([`${c.n}/${c.d}`]),opts=[{html:fr(c.n,c.d),correct:true}];
+    for(const[w,dg]of cands){const s=`${w.n}/${w.d}`;if(seen.has(s)||eqv(w,f))continue;seen.add(s);opts.push({html:fr(w.n,w.d),correct:false,code:dg.code,why:dg.msg});if(opts.length===4)break}
+    return{key:`u5a${f.n}/${f.d}k${k}`,prompt:`Hvilken brøk er like stor som ${fr(f.n,f.d)}?`,input:{type:'choice',options:shuffle(opts)},maxAttempts:2,
+      hints:['Se etter brøken der teller og nevner er ganget med det <b>samme</b> tallet.',`Prøv å dele teller og nevner i hvert svar på samme tall. Kommer du tilbake til ${fr(f.n,f.d)}?`],
+      solution:ex(fr(`${f.n} · ${k}`,`${f.d} · ${k}`),op('='),fr(c.n,c.d))+`Både teller og nevner er ganget med ${k}.`}}
+  const ks=shuffle([2,3,4,5,6]).slice(0,3),k2=R(1,4),w=F(f.n+k2,f.d+k2);
+  const opts=ks.map(k=>({html:fr(f.n*k,f.d*k),correct:false,why:`${fr(f.n*k,f.d*k)} er like stor som ${fr(f.n,f.d)}. Både teller og nevner er ganget med ${k}.`}));
+  opts.push({html:fr(w.n,w.d),correct:true});
+  return{key:`u5b${f.n}/${f.d}`,prompt:`Hvilken brøk er <b>ikke</b> like stor som ${fr(f.n,f.d)}?`,input:{type:'choice',options:shuffle(opts)},maxAttempts:2,
+    hints:['Tre av brøkene er utvidet riktig (ganget oppe og nede med samme tall). Finn den som ikke er det.','Del teller og nevner i hver brøk på samme tall og se om du kommer tilbake til '+fr(f.n,f.d)+'.'],
+    solution:`${fr(w.n,w.d)} er laget ved å legge til ${k2} oppe og nede. Det endrer verdien. De andre er utvidet ved å gange.`}
+}
+
+function genForkort(L){
+  let N,Dd,k=null;
+  if(L===4&&Math.random()<0.4){[N,Dd]=pick([[20,100],[16,20],[8,20],[15,27],[12,15],[24,32],[18,24],[4,12],[6,16],[14,35],[9,15],[22,20],[16,14]])}
+  else{let base;
+    if(L===1){base=properSimple(2,6);k=pick([2,3])}
+    else if(L===2){base=properSimple(2,6);k=pick([2,3,4])}
+    else if(L===3){base=properSimple(2,10);k=R(2,6)}
+    else if(L===4){base=properSimple(2,12);k=R(4,10)}
+    else{base=Math.random()<0.2?(()=>{let a,b;do{b=R(2,9);a=R(b+1,2*b-1)}while(gcd(a,b)!==1);return F(a,b)})():properSimple(3,15);k=pick([6,8,9,12,15,16,18])}
+    N=base.n*k;Dd=base.d*k}
+  const t=simp(F(N,Dd)),g=gcd(N,Dd),sp=smallestPrime(g),byK=L===1;
+  const hints=byK?[`Del både telleren og nevneren på ${k}.`,`Regn ut ${N} : ${k} og ${Dd} : ${k}.`]
+    :[`Finn et tall som går opp i både ${N} og ${Dd}. Prøv 2, 3, 5 …`,`Både ${N} og ${Dd} kan deles på ${sp}.`,`Det største tallet som går opp i begge er ${g}. Regn ut ${N} : ${g} og ${Dd} : ${g}.`];
+  return{key:`f${N}/${Dd}`,prompt:byK?`Forkort brøken med <b>${k}</b>.`:'Forkort brøken så mye som mulig.',expr:ex(fr(N,Dd),op('='),Q),
+    input:{type:'frac',mixed:false,target:t,require:'simplest'},hints,
+    solution:ex(fr(`${N} : ${g}`,`${Dd} : ${g}`),op('='),fr(t.n,t.d))+(g!==sp?`<p class="small muted">Du kan også forkorte i flere steg, for eksempel med ${sp} først.</p>`:''),
+    diagnose:(v,r)=>{if(r.hasW)return null;if(r.d===Dd&&r.n!==N)return D('bare-en','Du endret bare telleren. Del både teller <b>og</b> nevner på det samme tallet.');if(r.n===N&&r.d!==Dd)return D('bare-en','Du endret bare nevneren. Del både teller <b>og</b> nevner på det samme tallet.');if(r.n>0&&r.d>0&&N%r.n===0&&Dd%r.d===0&&N/r.n!==Dd/r.d)return D('ulike-tall');return null}}
+}
+
+function genSammenlign(L){
+  if(L===5){let fs;do{fs=[properSimple(2,12),properSimple(2,12),properSimple(2,12)]}while(eqv(fs[0],fs[1])||eqv(fs[0],fs[2])||eqv(fs[1],fs[2]));
+    const shown=fs.map(f=>{const k=pick([1,1,2,3,4]);return F(f.n*k,f.d*k)}),mxv=Math.max(...fs.map(val));
+    let Lc=shown.reduce((a,f)=>lcm(a,simp(f).d),1);
+    const conv=fs.map(f=>fr(f.n*Lc/f.d,Lc));
+    return{key:`s5${shown.map(f=>f.n+'/'+f.d).join(',')}`,prompt:'Hvilken av brøkene er størst?',
+      input:{type:'choice',options:shown.map((f,i)=>({html:fr(f.n,f.d),correct:near(val(fs[i]),mxv),code:'sammenlign',why:'Ikke den. Forkort brøkene først, eller gjør om alle til samme nevner.'}))},maxAttempts:2,
+      hints:['Forkort brøkene så mye som mulig først. Da blir de lettere å sammenligne.',`Gjør om alle til samme nevner (${Lc}): ${shown.map((f,i)=>fr(f.n,f.d)+' = '+conv[i]).join(', ')}.`],
+      solution:shown.map((f,i)=>`${fr(f.n,f.d)} = ${conv[i]}`).join('<br>')+'<p>Størst teller med samme nevner er størst.</p>'+compareBars(fs)}}
+  let A,B;
+  if(L===1){const d=R(4,12);let a=R(1,d-1),b;do{b=R(1,d-1)}while(b===a);A=F(a,d);B=F(b,d)}
+  else if(L===2){const a=R(1,3);let b=R(a+1,10),c;do{c=R(a+1,10)}while(c===b);A=F(a,b);B=F(a,c)}
+  else if(L===3){const b=R(2,6),k=R(2,3),c=b*k;A=properSimple(b,b);if(Math.random()<0.25)B=F(A.n*k,c);else{do{B=F(R(1,c-1),c)}while(eqv(A,B))}if(Math.random()<0.5)[A,B]=[B,A]}
+  else{do{const b=pick([3,4,5,6,7,8,9]);let c;do{c=pick([3,4,5,6,7,8,9])}while(c===b);A=properSimple(b,b);B=properSimple(c,c)}while(eqv(A,B)||Math.abs(val(A)-val(B))>0.2)}
+  const Lc=lcm(A.d,B.d),xa=A.n*Lc/A.d,xb=B.n*Lc/B.d,same=eqv(A,B);
+  let hints,solution;
+  if(L===1){hints=['Nevnerne er like, så bitene er like store. Den som har flest biter (størst teller) er størst.'];solution=`Samme nevner: ${Math.max(A.n,B.n)} biter er mer enn ${Math.min(A.n,B.n)} biter.`+compareBars([A,B])}
+  else if(L===2){hints=[`Tellerne er like. Tenk pizza: får du størst biter når pizzaen deles i ${A.d} eller i ${B.d} biter?`,'Jo større nevner, jo mindre er hver bit.'];solution=`Begge har ${A.n} biter. Bitene er størst når helheten er delt i færrest deler, altså ${Math.min(A.d,B.d)}.`+compareBars([A,B])}
+  else{hints=[`Gjør nevnerne like. Finn et tall som både ${A.d} og ${B.d} går opp i, for eksempel ${Lc}.`,`${fr(A.n,A.d)} = ${fr(xa,Lc)} og ${fr(B.n,B.d)} = ${fr(xb,Lc)}. Hvilken teller er størst?`];
+    solution=`${fr(A.n,A.d)} = ${fr(xa,Lc)} og ${fr(B.n,B.d)} = ${fr(xb,Lc)}. `+(same?'Brøkene er like store.':`${xa>xb?fr(A.n,A.d):fr(B.n,B.d)} er størst.`)+compareBars([A,B])}
+  const why=(mine,other)=>L===2&&mine.d>other.d?D('stor-nevner'):D('sammenlign',L===1?'Se på tellerne: hvilken har flest biter?':'Ikke den. Gjør om til samme nevner og sammenlign tellerne.');
+  const opts=[{html:fr(A.n,A.d),correct:val(A)>val(B)&&!same,...(()=>{const w=why(A,B);return{code:w.code,why:w.msg}})()},
+    {html:fr(B.n,B.d),correct:val(B)>val(A)&&!same,...(()=>{const w=why(B,A);return{code:w.code,why:w.msg}})()},
+    {html:'Like store',txt:true,correct:same,code:'sammenlign',why:'De er ikke like store. Gjør om til samme nevner og sammenlign tellerne.'}];
+  return{key:`s${L}${A.n}/${A.d}-${B.n}/${B.d}`,prompt:'Hvilken brøk er størst?',input:{type:'choice',options:opts},maxAttempts:2,hints,solution}
+}
+
+function genUekte(L){
+  const toMixed=(w,r,d)=>{const n=w*d+r;return{key:`m${n}/${d}`,prompt:'Skriv som blandet tall.',expr:ex(fr(n,d),op('='),Q),input:{type:'frac',mixed:true,target:F(n,d),require:'mixed'},
+    hints:[`Hvor mange ganger går ${d} opp i ${n}? Det er antall hele.`,`${w} · ${d} = ${w*d}. Da er det ${r} igjen. Det blir telleren i brøkdelen.`],
+    solution:`${n} : ${d} = ${w} med ${r} i rest.`+ex(fr(n,d),op('='),mx(w,r,d)),
+    diagnose:(v,x)=>{if(x.hasW&&x.w===w&&x.n!==r&&x.d===d)return D('rest-feil',`Antall hele (${w}) er riktig. Hvor mange biter er igjen? ${n} ${M} ${w*d} = ?`);if(x.hasW&&x.w===w&&x.n===r&&x.d!==d)return D('rest-feil',`Nevneren skal være den samme som før: ${d}.`);return null}}};
+  const toImproper=(w,r,d)=>{const n=w*d+r;return{key:`i${w}_${r}/${d}`,prompt:'Skriv som uekte brøk.',expr:ex(mx(w,r,d),op('='),Q),input:{type:'frac',mixed:false,target:F(n,d),require:'improper'},
+    hints:[`Én hel er ${fr(d,d)}. Hvor mange ${d}-deler er ${w} hele?`,`${w} · ${d} = ${w*d}. Legg til de ${r} bitene: ${w*d} + ${r} = ?`],
+    solution:ex(mx(w,r,d),op('='),fr(`${w} · ${d} + ${r}`,d),op('='),fr(n,d)),
+    diagnose:(v,x)=>{if(x.n===w*d&&x.d===d)return D('glemte-rest',`Du gjorde om de hele riktig (${w*d} biter), men glemte å legge til de ${r} bitene.`);if(x.n===w+r&&x.d===d)return D('w+r',`Du la sammen ${w} og ${r}. Men hver hel er ${fr(d,d)}, så ${w} hele er ${w*d} biter.`);return null}}};
+  const coprimeR=d=>{let r;do{r=R(1,d-1)}while(gcd(r,d)!==1);return r};
+  if(L===1){const d=pick([2,3,4]),n=R(d+1,2*d-1);
+    return{key:`ue1${n}/${d}`,prompt:`Figuren viser ${fr(n,d)} pizza. Skriv det som blandet tall.`,visual:pies(n,d,2),input:{type:'frac',mixed:true,target:F(n,d),require:'mixed'},
+      hints:[`Én hel pizza er ${fr(d,d)}. Hvor mange hele pizzaer er fargelagt?`,`Det er 1 hel pizza og ${n-d} ${n-d===1?'bit':'biter'} til. Bitene skrives som ${fr(n-d,d)}.`],
+      solution:ex(fr(n,d),op('='),fr(d,d),op('+'),fr(n-d,d),op('='),mx(1,n-d,d))}}
+  if(L===2){const d=R(2,6);return toMixed(R(1,3),coprimeR(d),d)}
+  if(L===3){const d=R(2,8);return toImproper(R(1,4),coprimeR(d),d)}
+  if(L===4){const d=R(3,10),w=R(2,9),r=coprimeR(d);return Math.random()<0.5?toMixed(w,r,d):toImproper(w,r,d)}
+  const d=pick([4,6,8,9,10,12]);let n;do{n=R(d+1,6*d)}while(n%d!==0&&gcd(n%d,d)===1);
+  const w=Math.floor(n/d),r=n%d,g=gcd(r,d)||d;
+  return{key:`ue5${n}/${d}`,prompt:'Skriv som blandet tall, så enkelt som mulig.',expr:ex(fr(n,d),op('='),Q),input:{type:'frac',mixed:true,target:F(n,d),require:'mixedSimplest'},
+    hints:[`Hvor mange ganger går ${d} opp i ${n}?`,r===0?`${d} går opp i ${n} uten rest. Svaret er et helt tall.`:`${n} = ${w} · ${d} + ${r}. Altså ${mx(w,r,d)}.`,...(r?[`Forkort brøkdelen ${fr(r,d)}: del teller og nevner på ${g}.`]:[])],
+    solution:r===0?ex(fr(n,d),op('='),num(w)):ex(fr(n,d),op('='),mx(w,r,d),op('='),mixedHtml(F(n,d)))}
+}
+
+function genPlussLik(L){
+  let d,t=[],o=[];
+  if(L===1){d=R(3,12);let a,b;do{a=R(1,d-2);b=R(1,d-1-a)}while(gcd(a+b,d)!==1);t=[a,b];o=['+']}
+  else if(L===2){d=R(3,12);let a,b;do{a=R(2,d-1);b=R(1,a-1)}while(gcd(a-b,d)!==1);t=[a,b];o=[M]}
+  else if(L===3){d=pick([4,6,8,9,10,12]);const plus=Math.random()<0.5;let a,b;
+    if(plus){do{a=R(1,d-2);b=R(1,d-1-a)}while(gcd(a+b,d)===1);o=['+']}else{do{a=R(2,d-1);b=R(1,a-1)}while(gcd(a-b,d)===1);o=[M]}t=[a,b]}
+  else if(L===4){d=R(3,10);const a=R(2,d-1),b=R(d-a+1,d-1);t=[a,b];o=['+']}
+  else{d=R(4,12);if(Math.random()<0.5){const a=R(1,d-1),b=R(1,d-1),c=R(1,Math.min(d-1,a+b-1));t=[a,b,c];o=['+',M]}else{const a=R(2,d-1),b=R(1,a-1),c=R(1,d-1);t=[a,b,c];o=[M,'+']}}
+  let Rn=t[0];o.forEach((s,i)=>{Rn=s==='+'?Rn+t[i+1]:Rn-t[i+1]});
+  const target=F(Rn,d),parts=[fr(t[0],d)],nparts=[t[0]];o.forEach((s,i)=>{parts.push(op(s),fr(t[i+1],d));nparts.push(s,t[i+1])});
+  const g=gcd(Rn,d),hints=[`Nevnerne er like (${d}). Da beholder du nevneren og regner bare med tellerne.`,`Regn ut tellerne: ${nparts.join(' ')} = ?. Nevneren er fortsatt ${d}.`];
+  if(g>1)hints.push(`Kan svaret forkortes? Prøv å dele teller og nevner på ${smallestPrime(g)}.`);
+  if(Rn>d)hints.push('Svaret blir større enn 1 hel. Du kan skrive det som uekte brøk eller blandet tall.');
+  const allPlus=o.every(s=>s==='+'),sumN=t.reduce((a,b)=>a+b,0);
+  return{key:`pl${L}${nparts.join('')}/${d}`,prompt:'Regn ut. Skriv svaret så enkelt som mulig.',expr:ex(...parts,op('='),Q),
+    input:{type:'frac',mixed:L>=4,target,require:'simplest'},hints,
+    solution:ex(...parts,op('='),fr(Rn,d),tail(target)),
+    diagnose:v=>{if(allPlus&&eqv(v,F(sumN,d*t.length)))return D('la-sammen-nevner');if(t.length===2){if(o[0]===M&&eqv(v,F(t[0]+t[1],d)))return D('feil-tegn','Se på tegnet: det er <b>minus</b>. Trekk fra i stedet for å legge til.');if(o[0]==='+'&&t[0]>t[1]&&eqv(v,F(t[0]-t[1],d)))return D('feil-tegn','Se på tegnet: det er <b>pluss</b>.')}return null}}
+}
+
+function genPlussUlik(L){
+  const P3=[[2,3],[2,5],[3,4],[3,5],[4,5],[2,7],[3,7]],P4=[[4,6],[6,8],[6,9],[4,10],[8,12],[6,10],[9,12],[10,15],[4,14]];
+  if(L===5){
+    if(Math.random()<0.5){let A,B,b,c;do{[b,c]=pick(Math.random()<0.5?P3:P4);A=properSimple(b,b);B=properSimple(c,c)}while(val(A)+val(B)>=1);
+      const Lc=lcm(b,c),x=A.n*Lc/b,y=B.n*Lc/c,rest=Lc-x-y,target=F(rest,Lc);
+      return{key:`r1-${A.n}/${b}-${B.n}/${c}`,prompt:'Regn ut. Skriv svaret så enkelt som mulig.',expr:ex(num(1),op(M),fr(A.n,b),op(M),fr(B.n,c),op('='),Q),
+        input:{type:'frac',target,require:'simplest'},
+        hints:[`1 hel kan skrives som en brøk med fellesnevneren: ${fr(Lc,Lc)}.`,`Utvid: ${fr(A.n,b)} = ${fr(x,Lc)} og ${fr(B.n,c)} = ${fr(y,Lc)}.`,`Regn ut ${Lc} ${M} ${x} ${M} ${y} i telleren.`],
+        solution:ex(fr(Lc,Lc),op(M),fr(x,Lc),op(M),fr(y,Lc),op('='),fr(rest,Lc),tail(target)),
+        diagnose:v=>eqv(v,F(x+y,Lc))?D('tatt-vekk','Det er summen av de to brøkene. Hvor mye er igjen av 1 hel?'):null}}
+    const ds=pick([[2,3,4],[2,3,6],[2,4,8],[3,4,6],[2,5,10],[3,4,12],[4,6,12]]);const fs=ds.map(d=>properSimple(d,d));
+    const Lc=ds.reduce((a,b)=>lcm(a,b),1),xs=fs.map(f=>f.n*Lc/f.d),S=xs.reduce((a,b)=>a+b,0),target=F(S,Lc);
+    return{key:`r3-${fs.map(f=>f.n+'/'+f.d).join('+')}`,prompt:'Regn ut. Skriv svaret så enkelt som mulig.',expr:ex(fr(fs[0].n,fs[0].d),op('+'),fr(fs[1].n,fs[1].d),op('+'),fr(fs[2].n,fs[2].d),op('='),Q),
+      input:{type:'frac',mixed:true,target,require:'simplest'},
+      hints:[`Finn en fellesnevner som ${ds.join(', ')} alle går opp i. Prøv ${Lc}.`,`Utvid: ${fs.map((f,i)=>fr(f.n,f.d)+' = '+fr(xs[i],Lc)).join(', ')}.`,`Legg sammen tellerne: ${xs.join(' + ')} = ?`],
+      solution:ex(fr(xs[0],Lc),op('+'),fr(xs[1],Lc),op('+'),fr(xs[2],Lc),op('='),fr(S,Lc),tail(target)),
+      diagnose:v=>{const nn=fs.reduce((a,f)=>a+f.n,0);if(eqv(v,F(nn,fs.reduce((a,f)=>a+f.d,0))))return D('la-sammen-nevner','Du la sammen tellerne for seg og nevnerne for seg. Finn fellesnevner først.');if(eqv(v,F(nn,Lc)))return D('glemte-utvide');return null}}}
+  let A,B,o;
+  if(L<=2){const b=R(2,5),k=R(2,3),c=b*k;o=L===1?'+':M;
+    do{A=properSimple(b,b);B=F(R(1,c-1),c)}while(gcd(B.n,B.d)!==1||(o==='+'?val(A)+val(B)>=1:eqv(A,B)));
+    if(o===M&&val(A)<val(B))[A,B]=[B,A];else if(o==='+'&&Math.random()<0.5)[A,B]=[B,A]}
+  else{const[b,c]=shuffle(pick(L===3?P3:P4));o=pick(['+',M]);do{A=properSimple(b,b);B=properSimple(c,c)}while(eqv(A,B));if(o===M&&val(A)<val(B))[A,B]=[B,A]}
+  const Lc=lcm(A.d,B.d),x=A.n*Lc/A.d,y=B.n*Lc/B.d,Rn=o==='+'?x+y:x-y,target=F(Rn,Lc);
+  return{key:`pu${A.n}/${A.d}${o}${B.n}/${B.d}`,prompt:'Regn ut. Skriv svaret så enkelt som mulig.',expr:ex(fr(A.n,A.d),op(o),fr(B.n,B.d),op('='),Q),
+    input:{type:'frac',mixed:L>=3,target,require:'simplest'},
+    hints:[`Nevnerne er ulike. Finn <b>fellesnevner</b>: et tall som både ${A.d} og ${B.d} går opp i. Prøv ${Lc}.`,`Utvid: ${fr(A.n,A.d)} = ${fr(x,Lc)} og ${fr(B.n,B.d)} = ${fr(y,Lc)}.`,`Regn ut ${x} ${o} ${y} i telleren. Forkort til slutt hvis du kan.`],
+    solution:ex(fr(A.n,A.d),op(o),fr(B.n,B.d),op('='),fr(x,Lc),op(o),fr(y,Lc),op('='),fr(Rn,Lc),tail(target)),
+    diagnose:v=>{const sn=o==='+'?A.n+B.n:A.n-B.n,sd=o==='+'?A.d+B.d:A.d-B.d;
+      if(sd!==0&&sn>0&&eqv(v,F(sn,sd)))return D('la-sammen-nevner','Du regnet med tellerne for seg og nevnerne for seg. Det går ikke når nevnerne er ulike. Finn fellesnevner først.');
+      if(sn>0&&eqv(v,F(sn,Lc)))return D('glemte-utvide');return null}}
+}
+
+function genGange(L){
+  const WORDS=[[1,2,'halvparten'],[1,3,'en tredel'],[1,4,'en firedel'],[2,3,'to tredeler'],[3,4,'tre firedeler'],[1,5,'en femdel']],OF=[[1,4,'en firedel'],[1,3,'en tredel'],[1,8,'en åttedel'],[1,5,'en femdel'],[3,4,'tre firedeler'],[2,5,'to femdeler']];
+  if(L===1){const k=R(2,6);let f;do{f=properSimple(3,9)}while(gcd(k*f.n,f.d)!==1&&Math.random()<0.8);const target=F(k*f.n,f.d);
+    return{key:`g1${k}*${f.n}/${f.d}`,prompt:'Regn ut. Skriv svaret så enkelt som mulig.',expr:ex(num(k),op('·'),fr(f.n,f.d),op('='),Q),input:{type:'frac',mixed:true,target,require:'simplest'},
+      hints:['Når du ganger et helt tall med en brøk, ganger du bare <b>telleren</b>. Nevneren blir den samme.',`Regn ut ${k} · ${f.n}. Nevneren er fortsatt ${f.d}.`,'Er svaret større enn 1? Da kan du også skrive det som blandet tall.'],
+      solution:ex(num(k),op('·'),fr(f.n,f.d),op('='),fr(`${k} · ${f.n}`,f.d),op('='),fr(k*f.n,f.d),tail(target)),
+      diagnose:v=>eqv(v,f)?D('gange-nevner'):(eqv(v,F(k+f.n,f.d))?D('pluss-ved-gange','Du la til '+k+'. Her skal du gange telleren med '+k+'.'):null)}}
+  if(L===4){const[a,b,w1]=pick(WORDS);let c,d,w2;do{[c,d,w2]=pick(OF)}while(w2===w1);const target=F(a*c,b*d);
+    return{key:`g4${w1}${w2}`,prompt:`Hvor mye er <b>${w1}</b> av <b>${w2}</b>? Skriv svaret som brøk.`,input:{type:'frac',target,require:'simplest'},
+      hints:['Ordet «av» betyr gange. Skriv ordene som brøker.',`${w1} = ${fr(a,b)} og ${w2} = ${fr(c,d)}. Regn ut ${fr(a,b)} · ${fr(c,d)}.`,'Gang teller med teller og nevner med nevner.'],
+      solution:ex(fr(a,b),op('·'),fr(c,d),op('='),fr(a*c,b*d),tail(target)),
+      diagnose:v=>eqv(v,add(F(a,b),F(c,d)))?D('pluss-ved-gange'):null}}
+  if(L===5){let fs,k=null;if(Math.random()<0.5){k=R(2,8);fs=[properSimple(2,6),properSimple(2,9)]}else fs=[properSimple(2,7),F(R(1,15),R(2,16)),properSimple(2,7)];
+    const nums=(k?[k]:[]).concat(fs.map(f=>f.n)),dens=fs.map(f=>f.d),Nn=nums.reduce((a,b)=>a*b,1),Dd=dens.reduce((a,b)=>a*b,1),target=F(Nn,Dd);
+    const parts=[];if(k)parts.push(num(k),op('·'));fs.forEach((f,i)=>{if(i)parts.push(op('·'));parts.push(fr(f.n,f.d))});
+    return{key:`g5${nums.join('*')}/${dens.join('*')}`,prompt:'Regn ut. Skriv svaret så enkelt som mulig.',expr:ex(...parts,op('='),Q),input:{type:'frac',mixed:true,target,require:'simplest'},
+      hints:['Gang alle tellerne for seg og alle nevnerne for seg.'+(k?` Et helt tall er det samme som ${fr(k,1)}.`:''),`Telleren: ${nums.join(' · ')} = ${Nn}. Nevneren: ${dens.join(' · ')} = ${Dd}.`,'Forkort svaret så mye du kan.'],
+      solution:ex(...parts,op('='),fr(nums.join(' · '),dens.join(' · ')),op('='),fr(Nn,Dd),tail(target))}}
+  let A,B;do{A=properSimple(2,7);B=properSimple(2,7)}while(L===2?gcd(A.n*B.n,A.d*B.d)!==1:gcd(A.n*B.n,A.d*B.d)===1);
+  const target=F(A.n*B.n,A.d*B.d);
+  return{key:`g${L}${A.n}/${A.d}*${B.n}/${B.d}`,prompt:'Regn ut. Skriv svaret så enkelt som mulig.',expr:ex(fr(A.n,A.d),op('·'),fr(B.n,B.d),op('='),Q),input:{type:'frac',target,require:'simplest'},
+    hints:['Gang teller med teller og nevner med nevner.',`Regn ut ${fr(`${A.n} · ${B.n}`,`${A.d} · ${B.d}`)}.`,...(L>=3?['Forkort svaret. Tips: du kan også forkorte på kryss før du ganger.']:[])],
+    solution:ex(fr(A.n,A.d),op('·'),fr(B.n,B.d),op('='),fr(`${A.n} · ${B.n}`,`${A.d} · ${B.d}`),op('='),fr(A.n*B.n,A.d*B.d),tail(target)),
+    diagnose:v=>{if(eqv(v,F(A.n*B.d,A.d*B.n))&&!eqv(v,target))return D('kryss');if(eqv(v,add(A,B)))return D('pluss-ved-gange');return null}}
+}
+
+function genAvTall(L){
+  const dg=(T,n,a,target,extra)=>v=>{if(extra){const e=extra(v);if(e)return e}if(a>1&&v===T/n)return D('en-del');if(a>1&&T%a===0&&v===T/a)return D('delte-teller');if(v===T*a)return D('gange-uten-dele');if(v===T-target&&v!==target)return D('resten');return null};
+  const hints=(T,n,a)=>[`Del først ${T} i ${n} like store deler: ${T} : ${n} = ?`,{t:`Én del er ${T/n}. Du skal ha ${a} ${a===1?'slik del':'slike deler'}${a>1?`: ${a} · ${T/n} = ?`:'.'}`,v:n<=12?bar(a,n,{labels:String(T/n),h:34}):''}];
+  if(L<=3){let n,a,T;
+    if(L===1){n=R(2,5);a=1;T=n*R(2,25)}else if(L===2){n=R(3,6);a=R(2,n-1);T=n*R(2,20)}else{n=pick([4,5,6,8,10,12]);do{a=R(1,n-1)}while(gcd(a,n)!==1);T=n*pick([3,4,5,6,8,10,12,15,20,25,50])}
+    const target=a*T/n;
+    return{key:`a${a}/${n}of${T}`,prompt:`Regn ut ${fr(a,n)} av ${T}.`,expr:ex(fr(a,n),op('av'),num(T),op('='),Q),input:{type:'int',target},hints:hints(T,n,a),
+      solution:`${T} : ${n} = ${T/n}, og ${a} · ${T/n} = <b>${target}</b>.`+(n<=12?bar(a,n,{labels:String(T/n),h:34}):''),diagnose:dg(T,n,a,target)}}
+  if(L===4){if(Math.random()<0.5){const T=pick([60,100,120]),n=pick([3,4,5,10,20].filter(x=>T%x===0)),a=R(1,n-1),gone=a*T/n,target=T-gone;
+      return{key:`a4t${a}/${n}of${T}`,prompt:`Et tau er ${T} m langt. Du kutter vekk ${fr(a,n)} av lengden. Hvor mange meter tau har du igjen?`,input:{type:'int',target,unit:'m'},
+        hints:[`Finn først hvor mye ${fr(a,n)} av ${T} m er: ${T} : ${n} = ${T/n}.`,`Du kutter vekk ${a} · ${T/n} = ${gone} m. Hvor mye er igjen av ${T} m?`],
+        solution:`${fr(a,n)} av ${T} m = ${gone} m. Igjen: ${T} ${M} ${gone} = <b>${target} m</b>. (Eller: du har ${fr(n-a,n)} igjen, og ${fr(n-a,n)} av ${T} = ${target}.)`,
+        diagnose:dg(T,n,a,target,v=>v===gone?D('tatt-vekk'):null)}}
+    const T=pick([20,24,25,28,30]),ns=[2,3,4,5,6,7,10].filter(x=>T%x===0),n=pick(ns),a=R(1,n-1),part=a*T/n,target=T-part;
+    return{key:`a4k${a}/${n}of${T}`,prompt:`I en klasse er det ${T} elever. ${fr(a,n)} av elevene går på fotball. Hvor mange elever går <b>ikke</b> på fotball?`,input:{type:'int',target,unit:'elever'},
+      hints:[`Finn først hvor mange som går på fotball: ${fr(a,n)} av ${T}. Start med ${T} : ${n}.`,`${part} elever går på fotball. Hvor mange er igjen av ${T}?`],
+      solution:`${fr(a,n)} av ${T} = ${part}. Ikke fotball: ${T} ${M} ${part} = <b>${target}</b>.`,diagnose:dg(T,n,a,target,v=>v===part?D('tatt-vekk','Det er de som går på fotball. Spørsmålet er hvor mange som ikke gjør det.'):null)}}
+  const opts=[['50 %',F(1,2)],['25 %',F(1,4)],[fr(1,3),F(1,3)],[fr(1,4),F(1,4)],[fr(1,5),F(1,5)],['20 %',F(1,5)],[fr(1,6),F(1,6)],['10 %',F(1,10)]];
+  let p1,p2,T;do{p1=pick(opts);p2=pick(opts);T=pick([20,24,30,40,60,120])}while(p1===p2||val(p1[1])+val(p2[1])>=1||T%p1[1].d||T%p2[1].d);
+  const x=T*p1[1].n/p1[1].d,y=T*p2[1].n/p2[1].d,target=T-x-y;
+  return{key:`a5${p1[0]}${p2[0]}${T}`,prompt:`I en klasse med ${T} elever spiller ${p1[0]} fotball og ${p2[0]} håndball. Ingen spiller begge deler. Hvor mange elever spiller <b>verken</b> fotball eller håndball?`,input:{type:'int',target,unit:'elever'},
+    hints:['Finn først hvor mange som spiller fotball, og så hvor mange som spiller håndball.',`Fotball: ${p1[0]} av ${T} = ${x}. Håndball: ${p2[0]} av ${T} = ?`,'Trekk begge fra hele klassen.'],
+    solution:`Fotball: ${x}. Håndball: ${y}. Verken: ${T} ${M} ${x} ${M} ${y} = <b>${target}</b>.`,
+    diagnose:v=>v===x+y?D('tatt-vekk','Det er de som spiller. Spørsmålet er hvor mange som ikke spiller noen av dem.'):null}
+}
+
+function genDele(L){
+  if(L===1){const a=pick([2,3,4]),k=pick([2,3,4]),b=a*k,x=R(1,a-1),target=x*k;
+    return{key:`d1${x}/${a}:1/${b}`,prompt:`Hvor mange ganger går ${fr(1,b)} opp i ${fr(x,a)}?`,expr:ex(fr(x,a),op(':'),fr(1,b),op('='),Q),input:{type:'int',target},
+      hints:[{t:`Tenk deg en snor som er ${fr(x,a)} meter lang. Hvor mange biter på ${fr(1,b)} meter kan du klippe? Figuren viser 1 meter delt i ${b} biter.`,v:bar(x*k,b,{h:30})},`Snu den andre brøken og gang: ${fr(x,a)} · ${fr(b,1)} = ?`],
+      solution:ex(fr(x,a),op(':'),fr(1,b),op('='),fr(x,a),op('·'),fr(b,1),op('='),fr(x*b,a),op('='),num(target))+bar(x*k,b,{h:30}),
+      diagnose:v=>near(v,val(mul(F(x,a),F(1,b))))?D('glemte-snu'):null}}
+  if(L===4){const A=properSimple(2,8),k=R(2,5),target=F(A.n,A.d*k);const[n1,n2]=shuffle(NAMES);
+    const word=k===2&&Math.random()<0.6;
+    return{key:`d4${A.n}/${A.d}:${k}`,prompt:word?`${n1} og ${n2} skal dele en mugge med ${fr(A.n,A.d)} liter saft likt. Hvor mange liter får hver?`:'Regn ut. Skriv svaret så enkelt som mulig.',
+      expr:word?'':ex(fr(A.n,A.d),op(':'),num(k),op('='),Q),input:{type:'frac',target,require:'simplest'},
+      hints:[`Et helt tall kan skrives som brøk: ${k} = ${fr(k,1)}. Snu den til ${fr(1,k)} og gang.`,`${fr(A.n,A.d)} · ${fr(1,k)} = ?`],
+      solution:ex(fr(A.n,A.d),op(':'),num(k),op('='),fr(A.n,A.d),op('·'),fr(1,k),op('='),fr(A.n,A.d*k),tail(F(A.n,A.d*k))),
+      diagnose:v=>eqv(v,F(A.n*k,A.d))?D('glemte-snu',`Du ganget med ${k}. Når noe deles, blir hver del mindre. Del på ${k} ved å gange med ${fr(1,k)}.`):null}}
+  if(L===5){const tmpl=pick(['pose','sang','mel']);const nm=pick(NAMES);let q,m;
+    if(tmpl==='pose'){q=pick([F(1,8),F(1,4),F(1,3)]);m=R(6,24)}else if(tmpl==='sang'){q=pick([F(7,2),F(5,2),F(9,2),F(3,1)]);m=R(5,12)}else{q=pick([F(3,4),F(2,3),F(1,2)]);m=R(3,9)}
+    const A=simp(F(m*q.n,q.d));const Ah=mixedHtml(A),qh=q.n>q.d?mixedHtml(q):fr(q.n,q.d);
+    const prompt=tmpl==='pose'?`${nm} har kjøpt ${Ah} godteposer til et bursdagsselskap. Hvert barn skal få ${qh} pose. Hvor mange barn har ${nm} godteri til?`
+      :tmpl==='sang'?`${nm} skal gi ut et album som skal være ${Ah} minutter langt. Hver sang er ${qh} minutter lang. Hvor mange sanger blir det på albumet?`
+      :`${nm} skal bake boller. Hvert brett trenger ${qh} kg mel. ${nm} har ${Ah} kg mel. Hvor mange brett kan ${nm} lage?`;
+    return{key:`d5${tmpl}${m}`,prompt,input:{type:'int',target:m},
+      hints:['Dette er en deleoppgave: hvor mange ganger går den lille mengden opp i den store?',`Gjør om til uekte brøk: ${Ah} = ${fr(A.n,A.d)}${q.n>q.d?` og ${qh} = ${fr(q.n,q.d)}`:''}.`,`Snu og gang: ${fr(A.n,A.d)} · ${fr(q.d,q.n)} = ?`],
+      solution:ex(fr(A.n,A.d),op(':'),fr(q.n,q.d),op('='),fr(A.n,A.d),op('·'),fr(q.d,q.n),op('='),fr(A.n*q.d,A.d*q.n),op('='),num(m)),
+      diagnose:v=>near(v,val(mul(A,q)))?D('glemte-snu'):null}}
+  let A,B;
+  if(L===2){do{A=properSimple(2,6);B=properSimple(2,6)}while(eqv(A,B)||gcd(A.n*B.d,A.d*B.n)!==1)}
+  else{do{A=F(R(1,9),R(2,12));B=F(R(1,9),R(2,12))}while(eqv(A,B)||gcd(A.n*B.d,A.d*B.n)===1)}
+  const target=dv(A,B),Nn=A.n*B.d,Dd=A.d*B.n;
+  return{key:`d${L}${A.n}/${A.d}:${B.n}/${B.d}`,prompt:'Regn ut. Skriv svaret så enkelt som mulig.',expr:ex(fr(A.n,A.d),op(':'),fr(B.n,B.d),op('='),Q),input:{type:'frac',mixed:true,target,require:'simplest'},
+    hints:[`Å dele med en brøk er det samme som å gange med den <b>omvendte</b> brøken. Snu ${fr(B.n,B.d)} til ${fr(B.d,B.n)}.`,`Regn ut ${fr(A.n,A.d)} · ${fr(B.d,B.n)} = ${fr(`${A.n} · ${B.d}`,`${A.d} · ${B.n}`)}.`,'Forkort svaret hvis du kan.'],
+    solution:ex(fr(A.n,A.d),op(':'),fr(B.n,B.d),op('='),fr(A.n,A.d),op('·'),fr(B.d,B.n),op('='),fr(Nn,Dd),tail(F(Nn,Dd))),
+    diagnose:v=>{if(eqv(v,mul(A,B))&&!eqv(v,target))return D('glemte-snu');if(eqv(v,mul(F(A.d,A.n),B))&&!eqv(v,target))return D('snudde-feil');return null}}
+}
+
+function genDesimal(L){
+  const S1=[[1,2],[1,4],[3,4],[1,10],[3,10],[7,10],[1,5],[2,5]],S2=S1.concat([[1,20],[1,100],[4,5],[3,5],[9,10]]);
+  const S3=[];[5,20,25,50,4].forEach(d=>{for(let n=1;n<d;n++)if(gcd(n,d)===1&&(d<=5||n<=d/2+3))S3.push([n,d])});
+  const S5=[[1,8],[3,8],[5,8],[7,8],[7,20],[9,25],[3,40],[11,20]];
+  const b2=(n,d,mode)=>{const x=n/d,p=Math.round(x*1e6)/1e4,toP=mode==='p';
+    const h=[`Brøkstreken betyr «delt på»: ${fr(n,d)} = ${n} : ${d}.`];
+    if(100%d===0)h.push(`Lurt triks: utvid så nevneren blir 100: ${fr(n,d)} = ${fr(n*100/d,100)}.`,toP?`Prosent betyr hundredeler: ${fr(n*100/d,100)} = ${n*100/d} %.`:`${n*100/d} hundredeler = ${fmt(x)}.`);
+    else if(d===8)h.push(`${fr(1,8)} er halvparten av ${fr(1,4)}. Siden ${fr(1,4)} = 0,25, er ${fr(1,8)} = 0,125.`,`${fr(n,8)} = ${n} · 0,125.${toP?' Gang så med 100 for prosent.':''}`);
+    else h.push(`Utvid så nevneren blir 1000: ${fr(n,d)} = ${fr(n*1000/d,1000)}.`);
+    return{key:`dz${mode}${n}/${d}`,prompt:`Skriv ${fr(n,d)} som ${toP?'prosent':'desimaltall'}.`,expr:ex(fr(n,d),op('='),Q),input:{type:toP?'pct':'dec',target:toP?p:x},hints:h,
+      solution:ex(fr(n,d),op('='),num(`${n} : ${d}`),op('='),num(fmt(x)),op('='),num(fmt(p)+' %')),
+      diagnose:v=>{if(!toP&&near(v,x*100))return D('skrev-prosent');if(toP&&near(v,x))return D('skrev-desimal');if(near(v,parseFloat(`${n}.${d}`))||near(v,parseFloat(`${n}${d}`)))return D('teller-komma',`${fr(n,d)} er ikke ${fmt(parseFloat(`${n}.${d}`))}. Brøkstreken betyr «delt på»: ${n} : ${d}.`);return null}}};
+  if(L===1){const[n,d]=pick(S1);return b2(n,d,'d')}
+  if(L===2){if(Math.random()<0.7){const[n,d]=pick(S2);return b2(n,d,'p')}const x=R(1,99)/100;
+    return{key:`dp${x}`,prompt:`Skriv ${fmt(x)} som prosent.`,expr:ex(num(fmt(x)),op('='),Q),input:{type:'pct',target:Math.round(x*100)},
+      hints:['Prosent betyr hundredeler. Gang desimaltallet med 100.'],solution:`${fmt(x)} · 100 = <b>${Math.round(x*100)} %</b>`,diagnose:v=>near(v,x)?D('skrev-desimal'):null}}
+  if(L===3){const r=Math.random();if(r<0.65){const[n,d]=pick(S3);return b2(n,d,r<0.35?'d':'p')}const p=pick([5,10,15,20,25,30,40,45,60,75,80,90,12,35]);
+    return{key:`pd${p}`,prompt:`Skriv ${p} % som desimaltall.`,expr:ex(num(p+' %'),op('='),Q),input:{type:'dec',target:p/100},
+      hints:['Prosent betyr hundredeler. Del prosenttallet på 100.',`${p} % = ${fr(p,100)} = ?`],solution:`${p} : 100 = <b>${fmt(p/100)}</b>`,diagnose:v=>near(v,p)?D('skrev-prosent'):null}}
+  if(L===4){const pc=pick([25,75,20,40,60,80,50,5,35,12,45,65,15,30,70,90]),asDec=Math.random()<0.5,target=simp(F(pc,100)),txt=asDec?fmt(pc/100):pc+' %';
+    return{key:`db${pc}${asDec}`,prompt:`Skriv ${txt} som brøk, så enkel som mulig.`,expr:ex(num(txt),op('='),Q),input:{type:'frac',target,require:'simplest'},
+      hints:[asDec?`Les desimaltallet: ${txt} er ${pc} hundredeler.`:`Prosent betyr hundredeler: ${pc} % = ${fr(pc,100)}.`,`Skriv det som ${fr(pc,100)} og forkort. Hva går opp i både ${pc} og 100?`],
+      solution:ex(num(txt),op('='),fr(pc,100),op('='),fr(target.n,target.d)),diagnose:v=>null}}
+  if(Math.random()<0.35){const[r,c]=pick([[4,5],[2,5],[5,5],[2,10]]),t=r*c,k=R(1,t-1),p=Math.round(k/t*1e4)/100;
+    return{key:`fig${k}/${t}`,prompt:'Hvor mange prosent av figuren er fargelagt?',visual:grid(r,c,k),input:{type:'pct',target:p},
+      hints:[`Skriv det først som brøk: ${k} av ${t} ruter.`,`${fr(k,t)}: utvid så nevneren blir 100. Gang med ${100/t}.`],
+      solution:ex(fr(k,t),op('='),fr(k*100/t,100),op('='),num(fmt(p)+' %')),diagnose:v=>near(v,k/t)?D('skrev-desimal'):(v===k?D('byttet','Det er antall fargelagte ruter. Gjør det om til hundredeler.'):null)}}
+  const[n,d]=pick(S5);return b2(n,d,Math.random()<0.5?'d':'p')
+}
+
+function genTekst(L){
+  const[A,B,C]=shuffle(NAMES);
+  if(L===1){const d=R(5,12);let a,b;do{a=R(1,d-2);b=R(1,d-1-a)}while(gcd(a+b,d)!==1);
+    const prompt=Math.random()<0.5?`I en fotballkamp for Nærbø skåret ${A} ${fr(a,d)} av målene, og ${B} skåret ${fr(b,d)}. Hvor stor del av målene skåret de to til sammen?`:`${A} spiste ${fr(a,d)} av en pizza, og ${B} spiste ${fr(b,d)}. Hvor stor del av pizzaen spiste de til sammen?`;
+    return{key:`t1${a}+${b}/${d}`,prompt,input:{type:'frac',target:F(a+b,d),require:'simplest'},
+      hints:['«Til sammen» betyr at du skal legge sammen.',`Nevnerne er like. Legg sammen tellerne: ${a} + ${b} = ?`],
+      solution:ex(fr(a,d),op('+'),fr(b,d),op('='),fr(a+b,d)),diagnose:v=>eqv(v,F(a+b,2*d))?D('la-sammen-nevner'):null}}
+  if(L===2){const d=R(4,12);
+    if(Math.random()<0.5){const a=R(1,d-1),target=F(d-a,d);
+      return{key:`t2b${a}/${d}`,prompt:`${A} har lest ${fr(a,d)} av en bok. Hvor stor del av boka er igjen å lese?`,input:{type:'frac',target,require:'simplest'},
+        hints:[`Hele boka er 1 hel. Skriv 1 hel som ${fr(d,d)}.`,`${fr(d,d)} ${M} ${fr(a,d)} = ?`,'Forkort hvis du kan.'],
+        solution:ex(fr(d,d),op(M),fr(a,d),op('='),fr(d-a,d),tail(F(d-a,d))),diagnose:v=>eqv(v,F(a,d))?D('tatt-vekk','Det er hvor mye som er lest. Hvor mye er igjen?'):null}}
+    const a=R(2,d-1),b=R(1,a-1),target=F(a-b,d);
+    return{key:`t2k${a}-${b}/${d}`,prompt:`I selskapet til ${A} var det ${fr(a,d)} igjen av kaka. Så spiste ${B} ${fr(b,d)} av kaka. Hvor mye av kaka er igjen nå?`,input:{type:'frac',target,require:'simplest'},
+      hints:['Det blir mindre kake når noen spiser. Her skal du trekke fra.',`${fr(a,d)} ${M} ${fr(b,d)} = ?`],
+      solution:ex(fr(a,d),op(M),fr(b,d),op('='),fr(a-b,d),tail(target)),diagnose:v=>eqv(v,F(a+b,d))?D('feil-tegn','Det ble spist kake, så det blir mindre igjen. Trekk fra.'):null}}
+  const LCDhint=fs=>{const Lc=fs.reduce((a,f)=>lcm(a,f.d),1);return[Lc,fs.map(f=>f.n*Lc/f.d)]};
+  if(L===3){let P,Q2,isAdd=Math.random()<0.5;do{const[b,c]=shuffle(pick([[2,3],[2,5],[3,4],[4,5],[3,5],[4,6],[6,8]]));P=properSimple(b,b);Q2=properSimple(c,c)}while(eqv(P,Q2)||(!isAdd&&val(P)<=val(Q2)));
+    const target=isAdd?add(P,Q2):sub(P,Q2),[Lc,xs]=LCDhint([P,Q2]),o=isAdd?'+':M;
+    const prompt=isAdd?`${A} har ${fr(P.n,P.d)} km til skolen. ${B} bor ${fr(Q2.n,Q2.d)} km lenger unna skolen enn ${A}. Hvor langt har ${B} til skolen?`:`Det var ${fr(P.n,P.d)} igjen av en kake. ${B} spiste ${fr(Q2.n,Q2.d)} av hele kaka. Hvor mye av kaka er igjen?`;
+    return{key:`t3${P.n}/${P.d}${o}${Q2.n}/${Q2.d}`,prompt,input:{type:'frac',mixed:isAdd,target,require:'simplest'},
+      hints:[`Skal du legge sammen eller trekke fra? Her er det ${isAdd?'pluss':'minus'}. Nevnerne er ulike, så finn fellesnevner: ${Lc}.`,`${fr(P.n,P.d)} = ${fr(xs[0],Lc)} og ${fr(Q2.n,Q2.d)} = ${fr(xs[1],Lc)}.`,`Regn ut ${xs[0]} ${o} ${xs[1]} i telleren, og forkort hvis du kan.`],
+      solution:ex(fr(P.n,P.d),op(o),fr(Q2.n,Q2.d),op('='),fr(xs[0],Lc),op(o),fr(xs[1],Lc),op('='),nice(target)),
+      diagnose:v=>{if(isAdd&&eqv(v,F(P.n+Q2.n,P.d+Q2.d)))return D('la-sammen-nevner','Du la sammen tellerne for seg og nevnerne for seg. Finn fellesnevner først.');if(!isAdd&&eqv(v,add(P,Q2)))return D('feil-tegn','Det ble spist kake, så det blir mindre igjen. Trekk fra.');return null}}}
+  let fs;do{const ds=pick([[8,4,3],[12,5,10],[2,5,10],[3,4,6],[4,5,10],[6,4,3],[2,6,12],[8,3,6],[2,8,4],[3,5,15]]);fs=ds.map(d=>properSimple(d,d))}while(fs.reduce((a,f)=>a+val(f),0)>=0.95);
+  const[Lc,xs]=LCDhint(fs),used=xs.reduce((a,b)=>a+b,0),rest=F(Lc-used,Lc),restS=simp(rest),fh=fs.map(f=>fr(f.n,f.d));
+  const stafett=Math.random()<0.5;
+  let prompt=stafett?`Du er med på et stafettlag. ${A} løper ${fh[0]}, ${B} løper ${fh[1]} og ${C} løper ${fh[2]} av løypa. Du skal løpe resten.`:`Mønsteret på et skotsk skjørt er ${fh[0]} rødt, ${fh[1]} blått, ${fh[2]} hvitt og resten grønt.`;
+  const hints=['Legg først sammen delene du vet. Det som mangler opp til 1 hel, er resten.',`Fellesnevner er ${Lc}: ${fs.map((f,i)=>fh[i]+' = '+fr(xs[i],Lc)).join(', ')}.`,`Til sammen er det ${fr(used,Lc)}. 1 hel er ${fr(Lc,Lc)}. Hvor mye mangler?`];
+  const sol=ex(fr(Lc,Lc),op(M),fr(xs[0],Lc),op(M),fr(xs[1],Lc),op(M),fr(xs[2],Lc),op('='),fr(Lc-used,Lc),tail(rest));
+  if(L===4){prompt+=stafett?' Hvor stor del av løypa skal du løpe?':' Hvor stor del av skjørtet er grønt?';
+    return{key:`t4${fs.map(f=>f.n+'/'+f.d).join(',')}`,prompt,input:{type:'frac',target:rest,require:'simplest'},hints,solution:sol,
+      diagnose:v=>eqv(v,F(used,Lc))?D('tatt-vekk','Det er summen av de andre delene. Hvor mye er igjen opp til 1 hel?'):null}}
+  if(Math.random()<0.6){const K=restS.d*R(1,Math.max(1,Math.floor(60/restS.d)))*(restS.d<6?2:1),target=K*restS.n/restS.d;
+    const p=`Du er med på et stafettlag. ${A} løper ${fh[0]}, ${B} løper ${fh[1]} og ${C} løper ${fh[2]} av løypa. Du skal løpe resten. Løypa er ${K} km. Hvor mange km skal du løpe?`;
+    return{key:`t5s${K}${fs.map(f=>f.n+'/'+f.d).join(',')}`,prompt:p,input:{type:'int',target,unit:'km'},
+      hints:hints.concat([`Du skal løpe ${fr(restS.n,restS.d)} av ${K} km. Del ${K} på ${restS.d} og gang med ${restS.n}.`]),
+      solution:sol+`<p>${fr(restS.n,restS.d)} av ${K} km = ${K} : ${restS.d} · ${restS.n} = <b>${target} km</b>.</p>`,
+      diagnose:v=>near(v,K*used/Lc)?D('tatt-vekk','Det er hvor langt de andre løper til sammen. Hvor langt skal du løpe?'):null}}
+  return genAvTall(5)
+}
+
+// ================= tema =================
+const TOPICS=[
+ {id:'les',name:'Hva er en brøk?',sub:'Teller og nevner',gen:genLes,lesson:()=>`<p>En brøk viser en <b>del av en helhet</b>.</p><div class="row">${pie(3,4,90)}${ex(fr(3,4))}</div><ul><li><b>Telleren</b> (øverst) er hvor mange deler vi har: 3.</li><li><b>Nevneren</b> (nederst) er hvor mange like store deler helheten er delt i: 4.</li></ul>`},
+ {id:'utvid',name:'Utvide brøker',sub:'Like store brøker',gen:genUtvid,lesson:()=>`<p>Når du <b>utvider</b>, ganger du teller og nevner med det samme tallet. Brøken blir like stor, bare delt i flere biter.</p>${ex(fr(1,2),op('='),fr('1 · 2','2 · 2'),op('='),fr(2,4))}${compareBars([F(1,2),F(2,4)])}`},
+ {id:'forkort',name:'Forkorte brøker',sub:'Så enkel som mulig',gen:genForkort,lesson:()=>`<p>Når du <b>forkorter</b>, deler du teller og nevner på det samme tallet.</p>${ex(fr(9,12),op('='),fr('9 : 3','12 : 3'),op('='),fr(3,4))}<p><b>Så enkel som mulig</b> betyr at du forkorter helt til ingen tall (unntatt 1) går opp i både teller og nevner.</p><p class="warn">Viktig: Du MÅ gjøre det samme med både teller og nevner.</p>`},
+ {id:'sammenlign',name:'Hvilken er størst?',sub:'Fellesnevner',gen:genSammenlign,lesson:()=>`<ul><li><b>Lik nevner:</b> Bitene er like store. Størst teller er størst.</li><li><b>Lik teller:</b> Minst nevner er størst, fordi bitene er større.</li><li><b>Ulik nevner:</b> Finn fellesnevner og sammenlign tellerne.</li></ul>${ex(fr(1,2),op('og'),fr(3,4),op('→'),fr(2,4),op('og'),fr(3,4))}<p>${fr(3,4)} er størst.</p>`},
+ {id:'uekte',name:'Uekte brøk og blandet tall',sub:'Mer enn 1 hel',gen:genUekte,lesson:()=>`<p>En <b>uekte brøk</b> har teller større enn nevner, for eksempel ${fr(5,4)}. Det er mer enn 1 hel.</p>${ex(fr(5,4),op('='),fr(4,4),op('+'),fr(1,4),op('='),mx(1,1,4))}<p>Fra blandet tall til uekte brøk: gang de hele med nevneren og legg til telleren.</p>${ex(mx(2,3,4),op('='),fr('2 · 4 + 3',4),op('='),fr(11,4))}`},
+ {id:'pluss_lik',name:'Pluss og minus, lik nevner',sub:'Regn med tellerne',gen:genPlussLik,lesson:()=>`<p>Når nevnerne er like, legger du sammen (eller trekker fra) <b>bare tellerne</b>. Nevneren blir den samme.</p>${ex(fr(1,4),op('+'),fr(2,4),op('='),fr(3,4))}${ex(fr(3,4),op(M),fr(2,4),op('='),fr(1,4))}<p>Nevneren sier hvor store bitene er. Bitene blir ikke mindre av at du legger dem sammen.</p>`},
+ {id:'pluss_ulik',name:'Pluss og minus, ulik nevner',sub:'Finn fellesnevner',gen:genPlussUlik,lesson:()=>`<ol><li>Finn fellesnevner.</li><li>Utvid brøkene.</li><li>Regn ut tellerne.</li><li>Forkort svaret hvis du kan.</li></ol>${ex(fr(3,4),op('+'),fr(1,2),op('='),fr(3,4),op('+'),fr(2,4),op('='),fr(5,4),op('='),mx(1,1,4))}`},
+ {id:'gange',name:'Gange med brøk',sub:'Teller · teller',gen:genGange,lesson:()=>`<p><b>Brøk · brøk:</b> teller · teller og nevner · nevner.</p>${ex(fr(2,5),op('·'),fr(3,6),op('='),fr('2 · 3','5 · 6'),op('='),fr(6,30),op('='),fr(1,5))}<p><b>Helt tall · brøk:</b> gang bare telleren.</p>${ex(num(3),op('·'),fr(2,7),op('='),fr(6,7))}<p>Ordet «av» betyr gange: halvparten av ${fr(1,4)} = ${fr(1,2)} · ${fr(1,4)} = ${fr(1,8)}.</p>`},
+ {id:'avtall',name:'Brøkdel av et tall',sub:'3/4 av 800',gen:genAvTall,lesson:()=>`<p>Slik finner du ${fr(3,4)} av 800:</p><ol><li>Del 800 i 4 like deler: 800 : 4 = 200.</li><li>Ta 3 av delene: 3 · 200 = 600.</li></ol>${bar(3,4,{labels:'200',h:34})}<p>Kort sagt: del på nevneren, gang med telleren.</p>`},
+ {id:'dele',name:'Dele med brøk',sub:'Snu og gang',gen:genDele,lesson:()=>`<p>Å dele med en brøk er det samme som å gange med den <b>omvendte</b> brøken. Den omvendte brøken får du ved å bytte plass på teller og nevner.</p>${ex(fr(1,2),op(':'),fr(1,4),op('='),fr(1,2),op('·'),fr(4,1),op('='),fr(4,2),op('='),num(2))}<p>Det betyr at ${fr(1,4)} får plass 2 ganger i ${fr(1,2)}. En snor på ${fr(1,2)} meter gir to biter på ${fr(1,4)} meter.</p>${bar(2,4,{h:30})}`},
+ {id:'desimal',name:'Desimaltall og prosent',sub:'0,25 = 25 %',gen:genDesimal,lesson:()=>`<p>Brøkstreken betyr «delt på»: ${fr(1,4)} = 1 : 4 = 0,25. Prosent betyr hundredeler: 0,25 = ${fr(25,100)} = 25 %.</p><table><tr><th>Brøk</th><th>Desimal</th><th>Prosent</th></tr>${[[1,2],[1,4],[3,4],[1,5],[2,5],[1,8],[1,10],[3,10],[1,20],[1,100]].map(([n,d])=>`<tr><td>${n}/${d}</td><td>${fmt(n/d)}</td><td>${fmt(100*n/d)} %</td></tr>`).join('')}</table>`},
+ {id:'tekst',name:'Tekstoppgaver',sub:'Kake, stafett og klasse',gen:genTekst,lesson:()=>`<ol><li>Hva er helheten (hele kaka, hele løypa, hele klassen)?</li><li>Skal du legge sammen, trekke fra, eller finne <b>resten</b>?</li><li>Resten = 1 hel minus det som er brukt.</li><li>Skriv opp brøkene, finn fellesnevner og regn.</li><li>Les spørsmålet en gang til: svarer du på det som blir spurt om?</li></ol>`}
+];
+const TOPIC=Object.fromEntries(TOPICS.map(t=>[t.id,t]));
+
+// ================= retting =================
+function checkFrac(task,raw){
+  const inp=task.input,isInt=s=>/^\d+$/.test(s);
+  const W=(raw.w||'').trim(),N=(raw.n||'').trim(),Dn=(raw.d||'').trim();
+  if(!W&&!N&&!Dn)return{st:'invalid',msg:'Skriv inn et svar først.'};
+  if([W,N,Dn].some(s=>s&&!isInt(s)))return{st:'invalid',msg:'Bruk bare hele tall i rutene.'};
+  let w=W?+W:0,n,d;
+  if(!N&&!Dn){n=0;d=1}
+  else if(!Dn)return{st:'invalid',msg:'Du mangler nevneren, tallet under brøkstreken.'};
+  else if(!N)return{st:'invalid',msg:'Du mangler telleren, tallet over brøkstreken.'};
+  else{n=+N;d=+Dn}
+  if(d===0)return{st:'invalid',msg:'Nevneren kan ikke være 0. Ingenting kan deles i 0 biter.'};
+  const v=F(w*d+n,d),t=inp.target,r={w,n,d,hasW:!!W};
+  const wrong=()=>{const x=task.diagnose?task.diagnose(v,r):null;return{st:'wrong',code:x&&x.code,msg:(x&&x.msg)||''}};
+  if(inp.require==='exact'){
+    if(!W&&n===inp.exact.n&&d===inp.exact.d)return{st:'ok'};
+    if(eqv(v,t))return{st:'wrong',code:'exact',msg:task.exactMsg||'Riktig verdi, men ikke med de tallene oppgaven ber om.'};
+    return wrong()}
+  if(!eqv(v,t))return wrong();
+  const simple=n===0||gcd(n,d)===1;
+  switch(inp.require){
+    case 'improper':if(w>0)return{st:'nudge',msg:'Riktig verdi! Men oppgaven ber om <b>uekte brøk</b>, altså bare teller og nevner. Gjør de hele om til biter.'};return{st:'ok'};
+    case 'mixed':case 'mixedSimplest':
+      if(n>=d&&d>1)return{st:'nudge',msg:w>0?'Riktig verdi! Men brøkdelen er større enn 1 hel. Kan du ta ut flere hele?':'Riktig verdi! Men skriv det som <b>blandet tall</b>: hvor mange hele er det, og hva blir til overs?'};
+      if(inp.require==='mixedSimplest'&&!simple)return{st:'nudge',code:'forkort',msg:`Riktig verdi! Men brøkdelen ${fr(n,d)} kan forkortes.`};
+      return{st:'ok'};
+    case 'simplest':
+      if(!simple)return{st:'nudge',code:'forkort',msg:`Riktig verdi! Men ${fr(n,d)} kan forkortes. Hvilket tall går opp i både ${n} og ${d}?`};
+      if(w>0&&n>=d)return{st:'nudge',msg:'Riktig verdi! Men brøkdelen er større enn 1 hel. Ta ut en hel til.'};
+      return{st:'ok'}}
+  return{st:'ok'}
+}
+function check(task,raw){
+  const inp=task.input;
+  if(inp.type==='frac')return checkFrac(task,raw);
+  if(inp.type==='choice'){const o=inp.options[raw.i];if(!o)return{st:'invalid',msg:'Velg et svar.'};return o.correct?{st:'ok'}:{st:'wrong',code:o.code,msg:o.why||''}}
+  const s=(raw.v||'').replace(/\s/g,'').replace(/%$/,'').replace(',','.');
+  if(s==='')return{st:'invalid',msg:'Skriv inn et svar først.'};
+  let v;const m=s.match(/^(\d+)\/(\d+)$/);
+  if(m){if(+m[2]===0)return{st:'invalid',msg:'Du kan ikke dele på 0.'};v=+m[1]/+m[2]}
+  else if(/^-?\d*\.?\d+$/.test(s))v=parseFloat(s);
+  else return{st:'invalid',msg:inp.type==='int'?'Skriv svaret som et tall.':'Skriv svaret som et tall, for eksempel 0,25.'};
+  if(near(v,inp.target))return{st:'ok'};
+  const x=task.diagnose?task.diagnose(v,raw):null;
+  return{st:'wrong',code:x&&x.code,msg:(x&&x.msg)||''}
+}
+function answerText(task){const i=task.input;if(i.type==='choice'){const o=i.options.find(o=>o.correct);return o?o.html:''}
+  if(i.type==='frac')return i.require==='exact'?fr(i.exact.n,i.exact.d):nice(i.target);
+  if(i.type==='pct')return fmt(i.target)+' %';if(i.type==='dec')return fmt(i.target);return fmt(i.target)+(i.unit?' '+i.unit:'')}
+</script>
+
+<script>
+// ================= lagring og tilstand =================
+const KEY='brokmester-v1';
+const RANKS=[[0,'Brøk-nybegynner'],[30,'Bitjeger'],[90,'Nevnerknuser'],[200,'Tellerturbo'],[380,'Brøkproff'],[650,'Brøkmester'],[1000,'Brøklegende']];
+const BADGES=[
+ {id:'first',name:'Første oppgave',test:s=>s.total>=1},
+ {id:'combo5',name:'5 på rad',test:s=>s.best>=5},
+ {id:'combo10',name:'10 på rad',test:s=>s.best>=10},
+ {id:'tasks100',name:'100 oppgaver',test:s=>s.total>=100},
+ {id:'gold1',name:'Første gullmedalje',test:s=>TOPICS.some(t=>mastery(t.id)>=90)},
+ {id:'allTried',name:'Prøvd alle tema',test:s=>TOPICS.every(t=>s.skills[t.id].n>0)},
+ {id:'test80',name:'Øveprøve over 80 %',test:s=>s.tests.some(x=>x.pct>=80)},
+ {id:'lyn10',name:'Lynrunde: 10 riktige',test:s=>s.lynBest>=10},
+ {id:'days3',name:'3 dager på rad',test:s=>s.dayStreak>=3}
+];
+function fresh(){const sk={};TOPICS.forEach(t=>sk[t.id]={s:1,n:0,hist:[],fails:0,last:0,lesson:false});
+  return{v:1,name:'',stars:0,streak:0,best:0,total:0,skills:sk,mist:{},tests:[],lynBest:0,sound:true,day:'',today:0,dayStreak:0,badges:[],goal:10}}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(x&&x.skills){const f=fresh();TOPICS.forEach(t=>{if(!x.skills[t.id])x.skills[t.id]=f.skills[t.id]});return Object.assign(f,x)}}catch(e){}return fresh()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let S=load();
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`};
+function touchDay(){const t=today();if(S.day===t)return;const y=new Date(Date.now()-864e5),ys=`${y.getFullYear()}-${y.getMonth()+1}-${y.getDate()}`;
+  S.dayStreak=S.day===ys?S.dayStreak+1:1;S.day=t;S.today=0}
+function mastery(id){const k=S.skills[id];if(k.n<3)return null;const h=k.hist.slice(-8);const acc=h.reduce((a,b)=>a+b,0)/h.length;return Math.round(100*(0.55*(k.s-1)/4.99+0.45*acc))}
+function status(id){const m=mastery(id),k=S.skills[id];if(k.n===0)return['Ikke prøvd',''];if(m===null)return['I gang','go'];if(m>=75)return['Mestrer','ok'];if(m>=45)return['På vei','go'];return['Øv mer','bad']}
+function rankOf(st){let r=RANKS[0],nx=null;for(let i=0;i<RANKS.length;i++){if(st>=RANKS[i][0]){r=RANKS[i];nx=RANKS[i+1]||null}}return{name:r[1],from:r[0],next:nx}}
+function priority(id,i){const k=S.skills[id],m=mastery(id);
+  if(k.n===0){const prev=i===0?100:(mastery(TOPICS[i-1].id)??-1);return(prev>=55?1.0:0.15)-i*0.01}
+  if(m===null)return 1.3;
+  return 1.5*(1-m/100)+Math.min(0.3,(S.total-k.last)/80)}
+function focusTopic(){let best=TOPICS[0].id,bp=-9;TOPICS.forEach((t,i)=>{const p=priority(t.id,i);if(p>bp){bp=p;best=t.id}});return best}
+function reviewTopics(f){return shuffle(TOPICS.filter(t=>t.id!==f&&S.skills[t.id].n>0).sort((a,b)=>S.skills[a.id].last-S.skills[b.id].last).slice(0,4)).slice(0,2).map(t=>t.id)}
+function chooseLevel(id,mode){const k=S.skills[id];let L=Math.floor(k.s);
+  if(mode==='test')return Math.min(5,Math.max(2,L));
+  if(mode==='lyn')return Math.max(1,L-1);
+  if(k.fails>=2)return Math.max(1,L-1);
+  if(k.s-L>0.55&&L<5&&Math.random()<0.35)L++;
+  return Math.min(5,Math.max(1,L))}
+
+// ================= lyd og effekter =================
+let AC=null;
+function beep(kind){if(!S.sound)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime;
+  const notes=kind==='ok'?[660,880]:kind==='up'?[523,659,784,1047]:kind==='bad'?[220,180]:[440];
+  notes.forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type=kind==='bad'?'sawtooth':'triangle';o.frequency.value=f;
+    g.gain.setValueAtTime(0.0001,t+i*0.09);g.gain.exponentialRampToValueAtTime(kind==='bad'?0.05:0.12,t+i*0.09+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.09+0.22);
+    o.connect(g).connect(AC.destination);o.start(t+i*0.09);o.stop(t+i*0.09+0.25)})}catch(e){}}
+const reduced=()=>window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function confetti(n=90){if(reduced())return;const c=document.getElementById('fx'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+  const cs=getComputedStyle(document.documentElement),cols=['--rav','--cyan','--rosa','--ok'].map(v=>cs.getPropertyValue(v).trim());
+  const ps=Array.from({length:n},()=>({x:c.width/2+(Math.random()-.5)*120,y:c.height*0.35,vx:(Math.random()-.5)*12,vy:-Math.random()*12-4,s:R(5,10),c:pick(cols),r:Math.random()*6,vr:(Math.random()-.5)*.3}));
+  let f=0;(function step(){x.clearRect(0,0,c.width,c.height);ps.forEach(p=>{p.vy+=0.35;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});
+    if(++f<110)requestAnimationFrame(step);else x.clearRect(0,0,c.width,c.height)})()}
+function toast(msg){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.innerHTML=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+function checkBadges(){BADGES.forEach(b=>{if(!S.badges.includes(b.id)&&b.test(S)){S.badges.push(b.id);setTimeout(()=>{toast('Nytt merke: '+b.name);beep('up');confetti(60)},900)}})}
+
+// ================= ikoner =================
+const STAR='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="var(--rav)" d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg>';
+const FIRE='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="var(--rosa)" d="M12 2c1 4 5 5.5 5 11a5 5 0 01-10 0c0-2.5 1.2-4 2.5-5 0 2 1 3 2 3 0-3-1.5-5.5.5-9z"/></svg>';
+const SOUND_ON='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="var(--kritt)" stroke-width="2" stroke-linejoin="round" d="M4 9h4l5-4v14l-5-4H4z M16 9a4 4 0 010 6 M18.5 6.5a7.5 7.5 0 010 11"/></svg>';
+const SOUND_OFF='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="var(--dempet)" stroke-width="2" stroke-linejoin="round" d="M4 9h4l5-4v14l-5-4H4z M16 9l5 6 M21 9l-5 6"/></svg>';
+function medal(id){const m=mastery(id);let c=null;if(m!==null){if(m>=90)c='#ffcf4a';else if(m>=75)c='#cfd6e6';else if(m>=45)c='#d08a52'}
+  if(!c)return `<svg class="medal" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="11" fill="none" stroke="var(--kant)" stroke-width="2" stroke-dasharray="3 3"/></svg>`;
+  return `<svg class="medal" viewBox="0 0 30 30" role="img" aria-label="Medalje"><circle cx="15" cy="15" r="12" fill="${c}"/><circle cx="15" cy="15" r="8" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/><path d="M15 9.5l1.6 3.4 3.7.4-2.8 2.5.8 3.7-3.3-1.9-3.3 1.9.8-3.7-2.8-2.5 3.7-.4z" fill="rgba(0,0,0,.28)"/></svg>`}
+const pips=L=>`<span class="pips">${[1,2,3,4,5].map(i=>`<i class="${i<=L?'on':''}"></i>`).join('')}</span>`;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ================= visninger =================
+const app=document.getElementById('app');
+let round=null,cur=null,lastKey='',lynTimer=null;
+function topbar(){return `<header class="top"><div class="topin"><button class="logo" id="logo" aria-label="Til start"><span class="ln">Brøk</span><span class="ld">mester</span></button>
+  <div class="stats"><span class="stat" title="Stjerner">${STAR}<span id="st-stars">${S.stars}</span></span><span class="stat combo" title="Riktige på rad">${FIRE}<span id="st-combo">${S.streak}</span></span>
+  <button class="iconbtn" id="snd" aria-label="${S.sound?'Slå av lyd':'Slå på lyd'}">${S.sound?SOUND_ON:SOUND_OFF}</button></div></div></header>`}
+function bindTop(){document.getElementById('logo').onclick=()=>{stopLyn();home()};document.getElementById('snd').onclick=()=>{S.sound=!S.sound;save();const b=document.getElementById('snd');b.innerHTML=S.sound?SOUND_ON:SOUND_OFF;b.setAttribute('aria-label',S.sound?'Slå av lyd':'Slå på lyd')}}
+function updStats(){const a=document.getElementById('st-stars'),b=document.getElementById('st-combo');if(a)a.textContent=S.stars;if(b)b.textContent=S.streak}
+
+function home(){
+  touchDay();save();window.scrollTo(0,0);
+  const f=focusTopic(),rk=rankOf(S.stars),pct=rk.next?Math.round(100*(S.stars-rk.from)/(rk.next[0]-rk.from)):100;
+  const tried=TOPICS.filter(t=>mastery(t.id)!==null),weak=tried.filter(t=>mastery(t.id)<45),strong=tried.filter(t=>mastery(t.id)>=75);
+  const lynOpen=TOPICS.filter(t=>S.skills[t.id].n>=3).length>=2;
+  let lead;
+  if(S.total===0)lead='Her trener du på brøk. Oppgavene blir litt vanskeligere når det går bra, og litt enklere når det butter. Du får tips underveis og kan prøve på nytt.';
+  else lead=`Du har løst ${S.total} oppgaver.`+(strong.length?` Du mestrer ${strong.map(t=>t.name.toLowerCase()).slice(0,2).join(' og ')}.`:'')+(weak.length?` Smart øving tar deg videre med ${weak[0].name.toLowerCase()}.`:'');
+  const goalPct=Math.min(1,S.today/S.goal),C=2*Math.PI*40;
+  app.innerHTML=`${topbar()}<main class="wrap">
+  <section class="hero"><div><h1>Hei${S.name?', '+esc(S.name):''}!</h1><p class="rank">${rk.name}</p><p class="lead">${lead}</p>
+   ${S.name?'':`<form class="row" id="nameform" style="margin-top:12px"><label for="nm0">Hva heter du?</label><input class="txt" id="nm0" maxlength="20" autocomplete="off"><button class="btn" type="submit">Lagre</button></form>`}</div>
+   <div class="ring" title="Dagens mål"><svg viewBox="0 0 96 96"><circle class="bg" cx="48" cy="48" r="40"/><circle class="fg" cx="48" cy="48" r="40" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-goalPct)}"/></svg>
+   <div class="rt"><span><b>${Math.min(S.today,S.goal)}/${S.goal}</b>i dag</span></div></div></section>
+  <div><div class="xpbar"><i style="width:${pct}%"></i></div><div class="xpnote"><span>${S.stars} stjerner</span><span>${rk.next?`${rk.next[0]-S.stars} til ${rk.next[1]}`:'Høyeste rang!'}</span></div></div>
+  <div class="modes">
+   <button class="mode main" id="go-smart"><span class="mt">Smart øving</span><span class="ms">Spillet velger det du trenger mest. Neste: <b>${TOPIC[f].name}</b></span></button>
+   <button class="mode" id="go-test"><span class="mt">Øveprøve</span><span class="ms">12 oppgaver uten tips, som på en ekte prøve.</span></button>
+   <button class="mode${lynOpen?'':' locked'}" id="go-lyn"><span class="mt">Lynrunde</span><span class="ms">${lynOpen?`60 sekunder. Rekord: ${S.lynBest}`:'Låses opp når du har øvd på 2 tema.'}</span></button>
+  </div>
+  <div class="secthead"><h2>Velg tema selv</h2><span>Rekkefølgen følger prøven</span></div>
+  <div class="topics">${TOPICS.map((t,i)=>{const[st,cl]=status(t.id),m=mastery(t.id),k=S.skills[t.id];return `<button class="tcard" data-id="${t.id}"><span class="tnum">${i+1}</span><span class="tname">${t.name}</span>${medal(t.id)}<span class="tsub">${t.sub}</span>
+    <span class="tfoot">${pips(k.n?Math.floor(k.s):0)}<span class="mbar"><i style="width:${m??0}%"></i></span><span class="chip ${cl}">${st}</span></span></button>`}).join('')}</div>
+  <div class="secthead"><h2>Merker</h2><span>${S.badges.length} av ${BADGES.length}${S.dayStreak>1?` · ${S.dayStreak} dager på rad`:''}</span></div>
+  <div class="badges">${BADGES.map(b=>`<span class="badge${S.badges.includes(b.id)?' got':''}">${S.badges.includes(b.id)?STAR:''}${b.name}</span>`).join('')}</div>
+  <div class="foot"><button class="btn" id="go-prog">Se fremgang</button><button class="btn ghost" id="reset-home">Nullstill</button></div>
+  </main>`;
+  bindTop();
+  document.getElementById('go-smart').onclick=()=>startRound('smart');
+  document.getElementById('go-test').onclick=()=>startRound('test');
+  document.getElementById('go-lyn').onclick=()=>{if(lynOpen)startLyn();else toast('Øv litt på to tema først, så åpner Lynrunden seg.')};
+  document.getElementById('go-prog').onclick=progress;
+  bindReset('reset-home','Nullstill');
+  const nf=document.getElementById('nameform');if(nf)nf.onsubmit=e=>{e.preventDefault();const v=document.getElementById('nm0').value.trim();if(!v)return;S.name=v;save();home()};
+  document.querySelectorAll('.tcard').forEach(b=>b.onclick=()=>startRound('topic',b.dataset.id));
+}
+
+function startRound(mode,id){
+  let plan;
+  if(mode==='test')plan=TOPICS.map(t=>t.id);
+  else if(mode==='topic')plan=Array(8).fill(id);
+  else{const f=focusTopic();plan=Array(6).fill(f);const rv=reviewTopics(f);plan.splice(2,0,rv[0]||f);plan.splice(6,0,rv[1]||f)}
+  round={mode,topic:id,plan,i:0,results:[],extra:0,start:Object.fromEntries(TOPICS.map(t=>[t.id,Math.floor(S.skills[t.id].s)])),starsStart:S.stars};
+  nextTask()}
+
+function nextTask(){
+  if(round.i>=round.plan.length)return endRound();
+  const id=round.plan[round.i];
+  if(round.mode!=='test'&&round.mode!=='lyn'&&!S.skills[id].lesson){S.skills[id].lesson=true;save();return showLesson(id)}
+  const L=chooseLevel(id,round.mode);let task,n=0;
+  do{task=TOPIC[id].gen(L);n++}while(task.key===lastKey&&n<8);lastKey=task.key;
+  task.maxAttempts=round.mode==='test'||round.mode==='lyn'?1:(task.maxAttempts||3);
+  cur={topic:id,level:L,task,wrong:0,paid:0,nudges:0,shown:0,done:false};
+  if(round.mode!=='test'&&round.mode!=='lyn'&&S.skills[id].n<3&&L===1&&task.hints.length)cur.shown=1;
+  renderTask()}
+
+function showLesson(id){
+  app.innerHTML=`${topbar()}<main class="wrap"><article class="card lesson"><span class="chip go">Nytt tema</span><h2>${TOPIC[id].name}</h2>${TOPIC[id].lesson()}
+   <div class="btns"><button class="btn pri" id="ready">Jeg er klar</button><button class="btn ghost" id="quit">Tilbake</button></div></article></main>`;
+  bindTop();document.getElementById('ready').onclick=nextTask;document.getElementById('quit').onclick=home;document.getElementById('ready').focus()}
+
+function inputHtml(inp){
+  if(inp.inline)return '';
+  const box=(id,lbl,cls='',mode='numeric')=>`<input id="${id}" class="box ${cls}" inputmode="${mode}" autocomplete="off" aria-label="${lbl}">`;
+  switch(inp.type){
+    case 'frac':return `<div class="ans">${inp.mixed?box('a-w','Hele','w'):''}<span class="fin">${box('a-n','Teller')}<span class="fbar"></span>${box('a-d','Nevner')}</span></div>${inp.mixed?'<p class="note">La feltet for hele stå tomt hvis du ikke trenger det.</p>':''}`;
+    case 'int':return `<div class="ans">${box('a-i','Svar','wide')}${inp.unit?`<span class="unit">${inp.unit}</span>`:''}</div>`;
+    case 'dec':return `<div class="ans">${box('a-i','Svar som desimaltall','wide','decimal')}</div>`;
+    case 'pct':return `<div class="ans">${box('a-i','Svar i prosent','wide','decimal')}<span class="unit">%</span></div>`;
+    case 'choice':return `<div class="choices">${inp.options.map((o,i)=>`<button type="button" class="choice${o.txt?' txt':''}" data-i="${i}">${o.html}</button>`).join('')}</div>`}
+  return ''}
+
+function renderTask(){
+  const t=cur.task,tp=TOPIC[cur.topic],test=round.mode==='test',lyn=round.mode==='lyn';
+  const dots=lyn?'':round.plan.map((_,i)=>{const r=round.results[i];return `<span class="dot ${r?(r.score>=0.8?'g':r.score>0?'y':'r'):i===round.i?'cur':''}"></span>`}).join('');
+  app.innerHTML=`${topbar()}<main class="wrap">
+   <div class="taskhead"><button class="btn ghost" id="quit">Avslutt</button><div class="dots">${dots}</div>${lyn?`<span class="stat">${round.lynOk} riktige</span>`:''}</div>
+   ${lyn?'<div class="timer"><i id="tm" style="width:100%"></i></div>':''}
+   <article class="card" id="tcard">
+    <div class="tmeta"><span class="chip">${tp.name}</span>${test?'<span class="chip go">Øveprøve</span>':`<span class="lvl">${pips(cur.level)} Nivå ${cur.level}</span>`}</div>
+    <p class="prompt">${t.prompt}</p>
+    ${t.visual?`<div class="visual">${t.visual}</div>`:''}
+    ${t.expr||''}
+    <form id="af" autocomplete="off" class="lesson" style="gap:14px">
+     ${inputHtml(t.input)}
+     <div class="hintbox" id="hb"></div>
+     <div class="fb" id="fb" aria-live="polite" hidden></div>
+     ${lyn?'<div class="flash" id="flash" aria-live="polite"></div>':''}
+     <div class="btns" id="btns"></div>
+    </form>
+    ${test||lyn?'':`<details class="lesson"><summary>Husk-kort: ${tp.name}</summary>${tp.lesson()}</details>`}
+   </article></main>`;
+  bindTop();
+  document.getElementById('quit').onclick=()=>{stopLyn();if(round.results.length&&round.mode!=='lyn')endRound();else home()};
+  document.getElementById('af').onsubmit=e=>{e.preventDefault();if(cur.done){goNext();return}submit(readRaw())};
+  document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{if(cur.done||b.disabled)return;submit({i:+b.dataset.i},b)});
+  drawHints();drawButtons();
+  const first=document.querySelector('#a-w,#a-n,#a-i');
+  // hopp videre fra teller til nevner med Enter er naturlig: Enter sender skjemaet, Tab flytter.
+  if(first){const ws=document.getElementById('a-w');(ws?document.getElementById('a-n'):first).focus({preventScroll:true})}
+  if(lyn)updTimer()}
+
+function readRaw(){const g=id=>{const e=document.getElementById(id);return e?e.value.trim():''};
+  return cur.task.input.type==='frac'?{w:g('a-w'),n:g('a-n'),d:g('a-d')}:{v:g('a-i')}}
+function drawHints(){const hb=document.getElementById('hb');if(!hb)return;
+  hb.innerHTML=cur.task.hints.slice(0,cur.shown).map((h,i)=>{const o=typeof h==='string'?{t:h}:h;return `<div class="hint"><b class="h">Tips ${i+1}</b>${o.t}${o.v?`<div class="visual sm">${o.v}</div>`:''}</div>`}).join('')}
+function drawButtons(){const b=document.getElementById('btns');if(!b)return;const t=cur.task,test=round.mode==='test',lyn=round.mode==='lyn',choice=t.input.type==='choice';
+  if(cur.done){b.innerHTML=`<button class="btn pri" type="submit" id="next">${round.i+1>=round.plan.length&&!lyn?'Se resultatet':'Neste oppgave'}</button>`;document.getElementById('next').focus({preventScroll:true});return}
+  const left=t.maxAttempts-cur.wrong,hl=t.hints.length-cur.shown;
+  b.innerHTML=`${choice?'':'<button class="btn pri" type="submit">Sjekk svar</button>'}
+   ${test||lyn?'':`<button class="btn" type="button" id="hint" ${hl?'':'disabled'}>${hl?`Tips (${hl} igjen)`:'Ingen flere tips'}</button>`}
+   <span class="spacer"></span>${test||lyn||t.maxAttempts<2?'':`<span class="tries" title="Forsøk igjen">${[...Array(t.maxAttempts)].map((_,i)=>`<i class="${i<cur.wrong?'used':''}"></i>`).join('')} forsøk</span>`}`;
+  const h=document.getElementById('hint');if(h)h.onclick=()=>{if(cur.shown<t.hints.length){cur.shown++;cur.paid++;drawHints();drawButtons()}}}
+function showFb(kind,big,html=''){const f=document.getElementById('fb');if(!f)return;f.hidden=false;f.className='fb '+kind;f.innerHTML=(big?`<span class="big">${big}</span>`:'')+html}
+function shake(){const c=document.getElementById('tcard');if(!c||reduced())return;c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake')}
+
+function mistake(code){if(!code||code==='exact')return;const m=S.mist[code]||(S.mist[code]={n:0,topic:cur.topic});m.n++;m.topic=cur.topic}
+
+function submit(raw,btn){
+  if(cur.done)return;
+  const res=check(cur.task,raw);
+  if(res.st==='invalid'){showFb('info','',res.msg);return}
+  if(round.mode==='test')return recordTest(res,raw);
+  if(round.mode==='lyn')return recordLyn(res);
+  if(res.st==='ok'){if(btn)btn.classList.add('good');return finish(true)}
+  if(res.st==='nudge'){cur.nudges++;if(res.code)mistake(res.code);
+    showFb('warn','Nesten!',res.msg+(cur.nudges>=2?` <p>Svaret så enkelt som mulig er ${answerText(cur.task)}.</p>`:''));return}
+  cur.wrong++;mistake(res.code);if(btn){btn.classList.add('bad');btn.disabled=true}
+  if(cur.wrong>=cur.task.maxAttempts)return finish(false);
+  beep('bad');shake();
+  let tipNote='';if(cur.shown<cur.task.hints.length){cur.shown++;drawHints();tipNote=' Se tipset under.'}
+  const left=cur.task.maxAttempts-cur.wrong;
+  const why=res.msg?res.msg+' ':(tipNote?'':'Les tipset en gang til, eller åpne husk-kortet nederst. ');
+  showFb('bad','Ikke helt',`${why}${tipNote.trim()} Prøv igjen, du har ${left} forsøk igjen.`);
+  drawButtons();
+  const first=document.querySelector('#a-n,#a-i');if(first)first.select&&first.select()}
+
+const PRAISE=['Riktig!','Helt riktig!','Sterkt!','Der satt den!','Knallbra!','Rett i blinken!','Sånn skal det gjøres!'];
+function finish(ok){
+  cur.done=true;const k=S.skills[cur.topic],L=cur.level;
+  let sc=0;if(ok){sc=cur.wrong===0?1:cur.wrong===1?0.5:0.3;if(cur.wrong===0&&cur.paid>0)sc=L<=2?0.8:0.6;if(cur.nudges>0)sc=Math.min(sc,cur.nudges>=2?0.6:0.85)}
+  const before=Math.floor(k.s),delta=sc>=1?0.45:sc>=0.8?0.2:sc>=0.6?0.1:sc>=0.5?0:sc>=0.3?-0.2:-0.5;
+  k.s=Math.max(1,Math.min(5.99,k.s+delta));k.n++;k.hist.push(sc);if(k.hist.length>10)k.hist.shift();k.last=S.total;k.fails=sc>=0.5?0:k.fails+1;
+  S.total++;touchDay();S.today++;
+  if(sc>=0.8){S.streak++;S.best=Math.max(S.best,S.streak)}else if(sc<0.5)S.streak=0;
+  let st=Math.round(sc*3);if(S.streak>=5&&sc>=0.8)st+=1;S.stars+=st;
+  save();updStats();
+  round.results[round.i]={topic:cur.topic,level:L,score:sc,stars:st};
+  const after=Math.floor(k.s);
+  if(ok){beep('ok');
+    const big=sc>=1?pick(PRAISE):sc>=0.8?'Riktig! Tipset hjalp.':'Riktig! Bra at du ikke ga deg.';
+    showFb('ok',big,`<p>+${st} ${st===1?'stjerne':'stjerner'}${S.streak>=3?` · ${S.streak} på rad!`:''}</p><div class="sol"><b>Slik tenker du:</b> ${cur.task.solution}</div>`);
+    if(S.streak>0&&S.streak%5===0){confetti(70)}}
+  else{beep('bad');showFb('sol','Her er løsningen',`<div class="sol">${cur.task.solution}</div><p class="small muted" style="margin-top:8px">Les gjennom den. Du får en lignende oppgave litt senere.</p>`);
+    if(round.mode!=='test'&&round.extra<2){round.plan.push(cur.topic);round.extra++}}
+  if(after>before){setTimeout(()=>{toast(`Nivå opp! ${TOPIC[cur.topic].name}: nivå ${after}`);beep('up');confetti()},350)}
+  if(S.today===S.goal)setTimeout(()=>{toast('Dagens mål er nådd!');confetti(120)},700);
+  checkBadges();save();
+  document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
+  document.querySelectorAll('#af input').forEach(i=>i.readOnly=true);
+  drawButtons()}
+function goNext(){round.i++;nextTask()}
+
+function rawHtml(raw){if(raw.i!==undefined)return cur.task.input.options[raw.i].html;if(raw.v!==undefined)return esc(raw.v)+(cur.task.input.type==='pct'?' %':'');
+  if(raw.n||raw.d)return (raw.w?num(esc(raw.w)):'')+fr(esc(raw.n),esc(raw.d));return num(esc(raw.w||''))}
+function recordTest(res,raw){
+  const ok=res.st==='ok'||res.st==='nudge',k=S.skills[cur.topic];
+  k.n++;k.hist.push(ok?1:0);if(k.hist.length>10)k.hist.shift();k.s=Math.max(1,Math.min(5.99,k.s+(ok?0.3:-0.4)));k.last=S.total;S.total++;touchDay();S.today++;
+  if(ok){S.stars+=2}else mistake(res.code);
+  round.results[round.i]={topic:cur.topic,level:cur.level,score:ok?1:0,ok,given:rawHtml(raw),task:cur.task,note:res.st==='nudge'?'Riktig verdi, men husk å skrive svaret så enkelt som mulig.':''};
+  save();round.i++;nextTask()}
+
+// ----- lynrunde -----
+function startLyn(){const ids=TOPICS.filter(t=>S.skills[t.id].n>=3).map(t=>t.id);
+  round={mode:'lyn',plan:[],i:0,results:[],ids,lynOk:0,lynN:0,end:Date.now()+60000};
+  lynTimer=setInterval(updTimer,250);nextLyn()}
+function nextLyn(){const id=pick(round.ids);round.plan[round.i]=id;const L=chooseLevel(id,'lyn');let task,n=0;
+  do{task=TOPIC[id].gen(L);n++}while((task.key===lastKey||task.input.type==='choice'&&task.input.options.length>3&&false)&&n<8);lastKey=task.key;task.maxAttempts=1;
+  cur={topic:id,level:L,task,wrong:0,paid:0,nudges:0,shown:0,done:false};renderTask()}
+function updTimer(){if(!round||round.mode!=='lyn')return;const left=Math.max(0,round.end-Date.now()),e=document.getElementById('tm');if(e)e.style.width=(left/600)+'%';if(left<=0)endLyn()}
+function stopLyn(){if(lynTimer){clearInterval(lynTimer);lynTimer=null}}
+function recordLyn(res){const ok=res.st==='ok'||res.st==='nudge';round.lynN++;
+  const fl=document.getElementById('flash');
+  if(ok){round.lynOk++;S.streak++;S.best=Math.max(S.best,S.streak);S.stars+=1;beep('ok');if(fl){fl.className='flash ok';fl.textContent='Riktig! +1'}}
+  else{S.streak=0;beep('bad');mistake(res.code);if(fl){fl.className='flash bad';fl.innerHTML='Svaret var '+answerText(cur.task)}}
+  S.total++;touchDay();S.today++;save();updStats();cur.done=true;
+  document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
+  setTimeout(()=>{if(round&&round.mode==='lyn'&&Date.now()<round.end){round.i++;nextLyn()}},ok?550:1500)}
+function endLyn(){stopLyn();if(!round||round.mode!=='lyn')return;const r=round;round=null;const rec=r.lynOk>S.lynBest;if(rec)S.lynBest=r.lynOk;checkBadges();save();
+  app.innerHTML=`${topbar()}<main class="wrap"><article class="card"><h1>Tiden er ute!</h1>
+   <div class="bigstat"><div class="bs"><b>${r.lynOk}</b><span>riktige</span></div><div class="bs"><b>${r.lynN}</b><span>forsøkt</span></div><div class="bs"><b>${S.lynBest}</b><span>rekord</span></div></div>
+   <p>${rec?'Ny rekord! Kan du slå den?':r.lynOk>=S.lynBest-2?'Nesten rekord. Ett forsøk til?':'Lynrunden blir lettere jo mer du øver i Smart øving.'}</p>
+   <div class="btns"><button class="btn pri" id="again">Prøv igjen</button><button class="btn" id="home">Til start</button></div></article></main>`;
+  bindTop();document.getElementById('again').onclick=startLyn;document.getElementById('home').onclick=home;if(rec){beep('up');confetti(120)}}
+
+// ----- oppsummering -----
+function endRound(){
+  const r=round;window.scrollTo(0,0);
+  if(r.mode==='test'){
+    const res=r.results.filter(Boolean),ok=res.filter(x=>x.ok).length,pct=Math.round(100*ok/Math.max(1,res.length));
+    const weak=[...new Set(res.filter(x=>!x.ok).map(x=>x.topic))];
+    S.tests.push({date:new Date().toISOString().slice(0,10),ok,n:res.length,pct,weak});checkBadges();save();
+    app.innerHTML=`${topbar()}<main class="wrap"><article class="card"><h1>Øveprøve ferdig</h1>
+     <div class="bigstat"><div class="bs"><b>${ok}/${res.length}</b><span>riktige</span></div><div class="bs"><b>${pct} %</b><span>score</span></div><div class="bs"><b>${weak.length}</b><span>tema å øve på</span></div></div>
+     <p>${pct>=80?'Dette er sterkt. Du er godt forberedt!':pct>=50?'Godt jobbet. Øv litt mer på temaene under, så sitter det.':'Bra at du tok prøven. Nå vet vi hva du skal øve på, og Smart øving tar det derfra.'}</p>
+     ${weak.length?`<div class="list">${weak.map(id=>`<div class="li"><span>${TOPIC[id].name}</span><button class="btn" data-id="${id}">Øv på dette</button></div>`).join('')}</div>`:''}
+     <h3>Gå gjennom svarene</h3><div class="list">${res.map((x,i)=>`<details class="rev"><summary><span>${i+1}. ${TOPIC[x.topic].name}</span><span class="mark ${x.ok?'ok':'bad'}">${x.ok?'Riktig':'Feil'}</span></summary>
+       <div class="inner"><p>${x.task.prompt}</p>${x.task.visual?`<div class="visual">${x.task.visual}</div>`:''}${(x.task.expr||'').replace(/<input[^>]*>/,'?')}<p><b>Ditt svar:</b> ${x.given}</p>${x.note?`<p class="small">${x.note}</p>`:''}<div class="sol"><b>Løsning:</b> ${x.task.solution}</div></div></details>`).join('')}</div>
+     <div class="btns"><button class="btn pri" id="smart">Øv på det du trenger</button><button class="btn" id="home">Til start</button></div></article></main>`;
+    bindTop();document.getElementById('smart').onclick=()=>startRound('smart');document.getElementById('home').onclick=home;
+    document.querySelectorAll('.li .btn').forEach(b=>b.onclick=()=>startRound('topic',b.dataset.id));
+    if(pct>=80){confetti(140);beep('up')}return}
+  const res=r.results.filter(Boolean),first=res.filter(x=>x.score>=1).length,good=res.filter(x=>x.score>=0.5).length,stars=S.stars-r.starsStart;
+  const acc=good/Math.max(1,res.length);
+  const changes=[...new Set(res.map(x=>x.topic))].map(id=>({id,a:r.start[id],b:Math.floor(S.skills[id].s)}));
+  app.innerHTML=`${topbar()}<main class="wrap"><article class="card"><h1>${acc>=0.8?'Runden sitter!':acc>=0.5?'Godt jobbet!':'Tøff runde, godt kjempet'}</h1>
+   <div class="bigstat"><div class="bs"><b>${first}/${res.length}</b><span>riktig på første forsøk</span></div><div class="bs"><b>+${stars}</b><span>stjerner</span></div><div class="bs"><b>${S.best}</b><span>beste rekke</span></div></div>
+   <p>${acc>=0.8?'Neste runde blir litt tøffere.':acc>=0.5?'Du er på vei. Spillet justerer seg etter deg.':'Det er sånn man lærer. Neste runde blir litt enklere, og tipsene er der hvis du trenger dem.'}</p>
+   <div class="list">${changes.map(c=>`<div class="li"><span>${TOPIC[c.id].name}</span><span>${pips(c.b)} ${c.b>c.a?`<span class="up">Nivå ${c.a} → ${c.b}</span>`:`Nivå ${c.b}`}</span></div>`).join('')}</div>
+   <div class="btns"><button class="btn pri" id="again">Ny runde</button><button class="btn" id="home">Til start</button></div></article></main>`;
+  bindTop();document.getElementById('again').onclick=()=>startRound(r.mode,r.topic);document.getElementById('home').onclick=home;
+  if(acc>=0.8){confetti(100);beep('up')}}
+
+// ----- fremgang -----
+function progress(){
+  window.scrollTo(0,0);
+  const mist=Object.entries(S.mist).sort((a,b)=>b[1].n-a[1].n).slice(0,8);
+  const rows=TOPICS.map(t=>{const k=S.skills[t.id],m=mastery(t.id),h=k.hist.slice(-10),acc=h.length?Math.round(100*h.filter(x=>x>=0.8).length/h.length):null,[st,cl]=status(t.id);
+    return `<tr><td>${t.name}</td><td>${k.n?pips(Math.floor(k.s)):'–'}</td><td class="n">${m??'–'}${m!==null?' %':''}</td><td class="n">${k.n}</td><td class="n">${acc??'–'}${acc!==null?' %':''}</td><td><span class="chip ${cl}">${st}</span></td></tr>`}).join('');
+  app.innerHTML=`${topbar()}<main class="wrap"><article class="card"><h1>Fremgang</h1>
+   <p class="muted small">Mestring kombinerer nivået (1–5) med hvor ofte svarene var riktige på første forsøk de siste gangene. «Riktig første gang» gjelder de 10 siste oppgavene i temaet.</p>
+   <div class="tbl"><table><thead><tr><th>Tema</th><th>Nivå</th><th style="text-align:right">Mestring</th><th style="text-align:right">Oppgaver</th><th style="text-align:right">Riktig første gang</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>
+   <h3>Typiske feil</h3>
+   ${mist.length?`<div class="list">${mist.map(([c,m])=>`<div class="li"><span>${MISTAKES[c]?MISTAKES[c].label:c}<br><span class="small muted">${TOPIC[m.topic]?TOPIC[m.topic].name:''}</span></span><b>${m.n}×</b></div>`).join('')}</div>`:'<p class="muted">Ingen ennå. Når du svarer feil på en typisk måte, dukker det opp her.</p>'}
+   <h3>Øveprøver</h3>
+   ${S.tests.length?`<div class="list">${S.tests.slice(-8).reverse().map(x=>`<div class="li"><span>${x.date}</span><span>${x.ok}/${x.n} (${x.pct} %)${x.weak.length?` · øv på: ${x.weak.map(id=>TOPIC[id].name).join(', ')}`:''}</span></div>`).join('')}</div>`:'<p class="muted">Ingen øveprøver tatt ennå.</p>'}
+   <h3>Innstillinger</h3>
+   <div class="row"><label for="nm">Navn</label><input class="txt" id="nm" value="${esc(S.name)}" maxlength="20"><label for="gl">Dagsmål</label><input class="txt" id="gl" type="number" min="3" max="50" value="${S.goal}" style="width:5em"><button class="btn" id="savenm">Lagre</button></div>
+   <h3>Flytt fremgangen til en annen maskin</h3>
+   <p class="small muted">Fremgangen lagres i denne nettleseren. Kopier koden, og lim den inn på den andre maskinen.</p>
+   <div class="row"><button class="btn" id="cp">Kopier fremgangskode</button></div>
+   <textarea id="code" aria-label="Fremgangskode" placeholder="Lim inn en fremgangskode her …"></textarea>
+   <div class="row"><button class="btn" id="imp">Hent fremgang fra koden</button><span class="spacer" style="flex:1"></span><button class="btn ghost" id="reset">Nullstill alt</button></div>
+   <div class="btns"><button class="btn pri" id="home">Til start</button></div></article></main>`;
+  bindTop();
+  document.getElementById('home').onclick=home;
+  document.getElementById('savenm').onclick=()=>{S.name=document.getElementById('nm').value.trim();S.goal=Math.max(3,Math.min(50,+document.getElementById('gl').value||10));save();toast('Lagret')};
+  document.getElementById('cp').onclick=()=>{const code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));const ta=document.getElementById('code');ta.value=code;
+    const done=()=>toast('Koden er kopiert');try{navigator.clipboard.writeText(code).then(done,()=>{ta.select();toast('Merk teksten og kopier den')})}catch(e){ta.select();toast('Merk teksten og kopier den')}};
+  document.getElementById('imp').onclick=()=>{try{const x=JSON.parse(decodeURIComponent(escape(atob(document.getElementById('code').value.trim()))));if(!x.skills)throw 0;localStorage.removeItem(KEY);S=Object.assign(fresh(),x);save();toast('Fremgangen er hentet');progress()}catch(e){toast('Koden virker ikke. Sjekk at hele koden er med.')}};
+  bindReset('reset','Nullstill alt')}
+function bindReset(id,label){const b=document.getElementById(id);if(!b)return;let armed=false;
+  b.onclick=()=>{if(!armed){armed=true;b.textContent='Sikker? Trykk igjen for å slette alt';b.classList.add('danger');
+      setTimeout(()=>{armed=false;if(document.body.contains(b)){b.textContent=label;b.classList.remove('danger')}},4000);return}
+    const nm=S.name;S=fresh();S.name=nm;save();toast('Alt er nullstilt. Lykke til på nytt!');home()}}
+
+// ----- tastatur: Enter går videre når oppgaven er ferdig -----
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&cur&&cur.done&&round&&round.mode!=='lyn'&&!['TEXTAREA','BUTTON'].includes(document.activeElement.tagName)){e.preventDefault();goNext()}});
+
+// ----- oppstart -----
+function boot(data){if(data&&data.S&&data.S.skills)S=data.S;home()}
+try{window.claude?.hot?.snapshot?.(()=>({S}))}catch(e){}
+window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
+</script>
