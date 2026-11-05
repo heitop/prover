@@ -4,64 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Øveprøver</title>
-<meta name="description" content="Interaktive øveprøver til skolen">
-<meta name="theme-color" content="#1f3a5f">
-<meta name="apple-mobile-web-app-title" content="Øveprøver">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
-<style>
-  :root {
-    --bg: #f6f4ef; --card: #ffffff; --text: #1d1d1f; --muted: #5f6368;
-    --accent: #1f3a5f; --border: #e3dfd6;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #15171a; --card: #1f2226; --text: #f1f1f1; --muted: #a8adb3;
-            --accent: #8fb7e8; --border: #30343a; }
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text);
-         font: 17px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 48px; }
-  h1 { font-size: 2rem; margin: 0 0 4px; }
-  p.lead { color: var(--muted); margin: 0 0 28px; }
-  h2 { font-size: .85rem; text-transform: uppercase; letter-spacing: .08em;
-       color: var(--muted); margin: 28px 0 10px; }
-  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
-  a.card { display: flex; gap: 14px; align-items: center; padding: 16px;
-           background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-           color: inherit; text-decoration: none; transition: transform .1s, border-color .1s; }
-  a.card:hover, a.card:focus-visible { border-color: var(--accent); transform: translateY(-1px); }
-  .ico { font-size: 2rem; line-height: 1; }
-  .t { font-weight: 700; color: var(--accent); }
-  .d { font-size: .9rem; color: var(--muted); }
-  footer { margin-top: 40px; font-size: .85rem; color: var(--muted); }
-</style>
+<meta http-equiv="refresh" content="0; url=forside/">
+<link rel="canonical" href="forside/">
+<script>location.replace("forside/" + location.search + location.hash);</script>
 </head>
-<body>
-<main>
-  <h1>Øveprøver</h1>
-  <p class="lead">Velg en prøve og sett i gang. Fremgangen lagres på denne enheten.</p>
-
-  <h2>Musikk</h2>
-  <div class="grid">
-    <a class="card" href="blaa-tonar.html"><span class="ico">🎷</span>
-      <span><span class="t">Blå toner</span><br><span class="d">Musikkhistorie: spirituals, blues, jazz og rock (bokmål)</span></span></a>
-    <a class="card" href="blaa-tonar-nynorsk.html"><span class="ico">🎺</span>
-      <span><span class="t">Blå tonar</span><br><span class="d">Same prøve på nynorsk</span></span></a>
-  </div>
-
-  <h2>Matte</h2>
-  <div class="grid">
-    <a class="card" href="brokmester.html"><span class="ico">🍕</span>
-      <span><span class="t">Brøkmester</span><br><span class="d">Øv på brøk</span></span></a>
-  </div>
-
-  <h2>Norsk</h2>
-  <div class="grid">
-    <a class="card" href="eventyrproven.html"><span class="ico">🏰</span>
-      <span><span class="t">Eventyrprøven</span><br><span class="d">Sjangeren eventyr</span></span></a>
-  </div>
-
-  <footer>Tips: På iPhone og iPad, trykk Del → «Legg til på Hjem-skjerm».</footer>
-</main>
+<body style="font-family:system-ui,sans-serif;padding:16px">
+<p>Går til <a href="forside/">forsiden</a> …</p>
 </body>
 </html>

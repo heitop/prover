@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Øveprøver</title>
+<meta name="description" content="Interaktive øveprøver til skolen">
+<meta name="theme-color" content="#1f3a5f">
+<meta name="apple-mobile-web-app-title" content="Øveprøver">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+<style>
+  :root {
+    --bg: #f6f4ef; --card: #ffffff; --text: #1d1d1f; --muted: #5f6368;
+    --accent: #1f3a5f; --border: #e3dfd6; --new: #2e7d32;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #15171a; --card: #1f2226; --text: #f1f1f1; --muted: #a8adb3;
+            --accent: #8fb7e8; --border: #30343a; --new: #81c784; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 17px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 48px; }
+  h1 { font-size: 2rem; margin: 0 0 4px; }
+  p.lead { color: var(--muted); margin: 0 0 12px; }
+  h2 { font-size: .85rem; text-transform: uppercase; letter-spacing: .08em;
+       color: var(--muted); margin: 28px 0 10px; }
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  a.card { display: flex; gap: 14px; align-items: center; padding: 16px; min-height: 84px;
+           background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+           color: inherit; text-decoration: none; transition: transform .1s, border-color .1s; }
+  a.card:hover, a.card:focus-visible { border-color: var(--accent); transform: translateY(-1px); }
+  .ico { font-size: 2rem; line-height: 1; flex: none; }
+  .t { font-weight: 700; color: var(--accent); }
+  .d { display: block; font-size: .9rem; color: var(--muted); }
+  .ny { font-size: .7rem; font-weight: 700; color: var(--new); border: 1px solid currentColor;
+        border-radius: 999px; padding: 0 6px; margin-left: 6px; vertical-align: 2px; }
+  footer { margin-top: 40px; font-size: .85rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Øveprøver</h1>
+  <p class="lead">Velg et spill og sett i gang. Fremgangen lagres på denne enheten.</p>
+  <div id="liste"></div>
+  <footer>Tips: På iPhone og iPad, trykk Del → «Legg til på Hjem-skjerm».</footer>
+</main>
+
+<script>
+/* ==========================================================
+   SPILLISTE – legg nye spill til her.
+   fag:   overskriften spillet havner under (nye fag lages automatisk)
+   fil:   filnavnet i rotmappen (siden ligger i /forside, derfor ../)
+   lagt:  publiseringsdato (ÅÅÅÅ-MM-DD) – gir «Ny»-merke i 14 dager
+   ========================================================== */
+const SPILL = [
+  { fag: "Musikk", ikon: "🎷", tittel: "Blå toner",     fil: "blaa-tonar.html",         lagt: "2026-11-05",
+    beskrivelse: "Musikkhistorie: spirituals, blues, jazz og rock (bokmål)" },
+  { fag: "Musikk", ikon: "🎺", tittel: "Blå tonar",     fil: "blaa-tonar-nynorsk.html", lagt: "2026-11-05",
+    beskrivelse: "Same prøve på nynorsk" },
+  { fag: "Matte",  ikon: "🍕", tittel: "Brøkmester",    fil: "brokmester.html",         lagt: "2026-11-05",
+    beskrivelse: "Øv på brøk" },
+  { fag: "Norsk",  ikon: "🏰", tittel: "Eventyrprøven", fil: "eventyrproven.html",      lagt: "2026-11-05",
+    beskrivelse: "Sjangeren eventyr" },
+];
+
+const NY_DAGER = 14;
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; };
+const liste = document.getElementById("liste");
+const fagRekke = [...new Set(SPILL.map(s => s.fag))];
+for (const fag of fagRekke) {
+  liste.append(el("h2", null, fag));
+  const grid = el("div", "grid");
+  for (const s of SPILL.filter(x => x.fag === fag)) {
+    const a = el("a", "card"); a.href = "../" + s.fil;
+    const tekst = el("span");
+    const t = el("span", "t", s.tittel);
+    const dager = (Date.now() - new Date(s.lagt)) / 864e5;
+    if (dager >= 0 && dager < NY_DAGER) t.append(el("span", "ny", "Ny"));
+    tekst.append(t, el("span", "d", s.beskrivelse));
+    a.append(el("span", "ico", s.ikon), tekst);
+    grid.append(a);
+  }
+  liste.append(grid);
+}
+</script>
+</body>
+</html>
