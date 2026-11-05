@@ -1,0 +1,819 @@
+<title>Eventyrprøven</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,500&family=Alegreya+Sans:wght@400;500;700;800&family=Uncial+Antiqua&display=swap">
+<style>
+/* Layout: én smal «eventyrbok»-kolonne på nattblå skogbunn. Granskog og måne øverst på forsiden, stasjoner som rader, quiz som store trykkflater. Bevisst ett mørkt uttrykk (natt i skogen). */
+:root{
+  --natt:#111823;      /* bakgrunn */
+  --skumring:#1a2330;  /* flater */
+  --skifer:#263142;    /* kanter, bakre skog */
+  --skog:#0b1018;      /* fremre skog */
+  --never:#ece6d7;     /* tekst (bjørkenever) */
+  --taake:#9aa6b6;     /* dempet tekst */
+  --gull:#e6b44a;      /* trollgull, aksent */
+  --mose:#8fb77c;      /* riktig */
+  --troll:#de6a50;     /* feil */
+  --maane:#f1e7c4;
+  --f-display:'Uncial Antiqua', Georgia, 'Times New Roman', serif;
+  --f-body:'Alegreya Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-sitat:'Alegreya', Georgia, serif;
+  --r:14px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--natt)}
+body{color:var(--never);font-family:var(--f-body);font-size:1.0625rem;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--natt)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gull);outline-offset:2px}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.15}
+p{margin:0}
+
+.topp{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--natt) 88%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--skifer)}
+.topp-inn{max-width:760px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.merke{background:none;border:0;padding:4px 0;font-family:var(--f-display);font-size:1.15rem;cursor:pointer;color:var(--never)}
+.pung{display:flex;align-items:center;gap:8px;font-weight:800;font-variant-numeric:tabular-nums}
+.mynt{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe39a,var(--gull) 55%,#9c7020);box-shadow:0 0 0 2px #7a561a inset}
+.pung.dunk{animation:dunk .5s}
+@keyframes dunk{40%{transform:scale(1.25)}}
+
+main{max-width:760px;margin:0 auto;padding-block:20px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.skjerm{display:flex;flex-direction:column;gap:18px}
+
+/* Forside */
+.helt-felt{position:relative;border-radius:var(--r);overflow:hidden;background:linear-gradient(#1b2740,#121a28 70%);min-height:220px;display:flex;flex-direction:column;justify-content:flex-end}
+.helt-felt canvas{position:absolute;inset:0;width:100%;height:100%}
+.helt-tekst{position:relative;padding:22px 20px 20px;display:flex;flex-direction:column;gap:6px}
+.helt-tekst h1{font-family:var(--f-display);font-weight:400;font-size:clamp(2.1rem,7vw,3.2rem);letter-spacing:.01em}
+.helt-tekst p{color:var(--never);max-width:48ch;text-shadow:0 1px 8px #000}
+.nedtelling{align-self:flex-start;font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--natt);background:var(--gull);padding:3px 10px;border-radius:999px}
+
+.knapp{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 18px;border-radius:12px;border:1.5px solid var(--skifer);background:var(--skumring);cursor:pointer;font-weight:700;text-align:center}
+.knapp:hover{border-color:var(--taake)}
+.knapp.hoved{background:var(--gull);border-color:var(--gull);color:#1a1405}
+.knapp.hoved:hover{filter:brightness(1.07)}
+.knapp:disabled{opacity:.45;cursor:not-allowed}
+.knapp.stor{width:100%;min-height:60px;font-size:1.15rem}
+.rad{display:flex;flex-wrap:wrap;gap:10px}
+.rad>.knapp{flex:1 1 180px}
+
+.eyebrow{font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--taake)}
+.seksjon{display:flex;flex-direction:column;gap:10px}
+
+.eventyrliste{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.ekort{display:flex;flex-direction:column;gap:10px;align-items:flex-start;text-align:left;padding:16px;border-radius:var(--r);background:var(--skumring);border:1.5px solid var(--skifer);cursor:pointer;min-width:0}
+.ekort:hover{border-color:var(--gull)}
+.ekort svg{width:44px;height:30px;color:var(--gull)}
+.ekort h3{font-family:var(--f-sitat);font-weight:700;font-size:1.25rem}
+.ekort .smaa{color:var(--taake);font-size:.95rem}
+.prikker{display:flex;gap:5px;align-items:center;margin-top:auto}
+.prikker i{width:22px;height:6px;border-radius:3px;background:var(--skifer)}
+.prikker i.fullt{background:var(--gull)}
+.prikker span{font-size:.8rem;color:var(--taake);margin-left:6px}
+
+.krav{padding:16px 18px;border-radius:var(--r);border:1.5px dashed var(--skifer);display:flex;flex-direction:column;gap:8px}
+.krav ol{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:4px}
+.nullstill{display:flex;flex-direction:column;gap:10px;align-items:flex-start;padding-top:6px;border-top:1px solid var(--skifer)}
+.nullstill .lenkeknapp{color:var(--taake)}
+.nullstill .rad{width:100%}
+.knapp.fare{border-color:var(--troll);color:var(--troll)}
+
+/* Overskrift på undersider */
+.hode{display:flex;align-items:flex-start;gap:12px}
+.tilbake{flex:none;width:44px;height:44px;border-radius:50%;border:1.5px solid var(--skifer);background:var(--skumring);cursor:pointer;display:grid;place-items:center}
+.tilbake:hover{border-color:var(--taake)}
+.hode h2{font-family:var(--f-sitat);font-weight:700;font-size:clamp(1.5rem,5vw,2rem)}
+.hode .eyebrow{margin-bottom:2px}
+.sub{color:var(--taake)}
+
+/* Stasjoner */
+.stasjoner{display:flex;flex-direction:column;gap:10px}
+.stasjon{display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center;padding:14px 16px;border-radius:var(--r);background:var(--skumring);border:1.5px solid var(--skifer);cursor:pointer;text-align:left;width:100%}
+.stasjon:hover{border-color:var(--gull)}
+.stasjon .nr{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-size:1.2rem;border:1.5px solid var(--skifer)}
+.stasjon.ferdig .nr{background:var(--gull);color:#1a1405;border-color:var(--gull)}
+.stasjon b{display:block;font-size:1.1rem}
+.stasjon small{color:var(--taake);font-size:.95rem}
+.stasjon .status{font-size:.82rem;color:var(--taake);white-space:nowrap}
+.tips{padding:14px 16px;border-radius:var(--r);background:color-mix(in srgb,var(--gull) 12%,var(--natt));border:1.5px solid color-mix(in srgb,var(--gull) 45%,var(--natt))}
+.tips b{color:var(--gull)}
+
+/* Rekkefølge */
+.spor{display:flex;flex-direction:column;gap:8px;counter-reset:hend}
+.plass{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center;min-height:54px;padding:8px 12px;border-radius:12px;border:1.5px dashed var(--skifer);color:var(--taake)}
+.plass .tall{font-family:var(--f-display);font-size:1.1rem;color:var(--taake);text-align:center}
+.plass.fylt{border-style:solid;background:var(--skumring);color:var(--never);cursor:pointer}
+.plass.ok{border-color:var(--mose);background:color-mix(in srgb,var(--mose) 14%,var(--natt))}
+.plass.feil{border-color:var(--troll);background:color-mix(in srgb,var(--troll) 14%,var(--natt))}
+.bunke{display:flex;flex-direction:column;gap:8px}
+.hendelse{padding:12px 14px;border-radius:12px;border:1.5px solid var(--skifer);background:var(--skumring);text-align:left;cursor:pointer;min-height:48px}
+.hendelse:hover{border-color:var(--gull)}
+.beskjed{padding:12px 14px;border-radius:12px;background:var(--skumring)}
+.beskjed.ok{border:1.5px solid var(--mose)}
+.beskjed.feil{border:1.5px solid var(--troll)}
+
+/* Quiz */
+.quizbar{display:flex;gap:4px}
+.quizbar span{flex:1;height:6px;border-radius:3px;background:var(--skifer)}
+.quizbar span.ferdig{background:var(--taake)}
+.quizbar span.na{background:var(--gull)}
+.tidbar{height:8px;border-radius:4px;background:var(--skifer);overflow:hidden}
+.tidbar span{display:block;height:100%;background:var(--gull);transition:width .1s linear}
+.sporsmal{padding:20px;border-radius:var(--r);background:var(--skumring);border:1.5px solid var(--skifer);display:flex;flex-direction:column;gap:8px}
+.q{font-family:var(--f-sitat);font-size:1.3rem;line-height:1.4}
+.q mark{background:color-mix(in srgb,var(--gull) 30%,transparent);color:var(--never);padding:0 3px;border-radius:3px;box-shadow:0 2px 0 var(--gull)}
+.hjelpetekst{font-size:.95rem;color:var(--taake)}
+.alts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.alt{min-height:56px;padding:12px 16px;border-radius:12px;border:1.5px solid var(--skifer);background:var(--skumring);text-align:left;cursor:pointer;font-weight:600}
+.alt:hover:not(:disabled){border-color:var(--gull)}
+.alt:disabled{cursor:default}
+.alt.ok{border-color:var(--mose);background:color-mix(in srgb,var(--mose) 18%,var(--natt))}
+.alt.feil{border-color:var(--troll);background:color-mix(in srgb,var(--troll) 18%,var(--natt))}
+.fb{display:flex;flex-direction:column;gap:6px}
+.fb:empty{display:none}
+.fb{padding:14px 16px;border-radius:12px;background:var(--skumring)}
+.fb-tittel{font-weight:800;font-size:1.1rem}
+.fb-tittel.ok{color:var(--mose)}
+.fb-tittel.feil{color:var(--troll)}
+.fb b{color:var(--gull)}
+
+.resultat{text-align:center;padding:28px 20px;border-radius:var(--r);background:var(--skumring);display:flex;flex-direction:column;gap:10px;align-items:center}
+.resultat .stort{font-family:var(--f-display);font-size:3rem;color:var(--gull);line-height:1}
+.resultat .snipp{font-family:var(--f-sitat);font-style:italic;color:var(--taake)}
+
+/* Muntlig */
+.klokke{padding:18px;border-radius:var(--r);background:var(--skumring);border:1.5px solid var(--skifer);display:flex;flex-direction:column;gap:10px}
+.klokke-topp{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tid{font-family:var(--f-display);font-size:2.6rem;font-variant-numeric:tabular-nums;line-height:1}
+.tidsspor{position:relative;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--skifer) 0 50%,color-mix(in srgb,var(--mose) 45%,var(--skifer)) 50% 83.33%,color-mix(in srgb,var(--troll) 45%,var(--skifer)) 83.33%)}
+.tidsspor span{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--gull);opacity:.9}
+.tidsmerker{display:flex;justify-content:space-between;font-size:.78rem;color:var(--taake);position:relative;height:1.2em}
+.tidsmerker i{position:absolute;font-style:normal;transform:translateX(-50%)}
+.klokkestatus{font-weight:700}
+.del{padding:16px 18px;border-radius:var(--r);background:var(--skumring);border:1.5px solid var(--skifer);display:flex;flex-direction:column;gap:10px}
+.del h3{font-family:var(--f-sitat);font-size:1.2rem}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:7px 12px;border-radius:999px;border:1.5px solid var(--skifer);background:var(--natt);cursor:pointer;font-size:.95rem;min-height:38px}
+.chip[aria-pressed="true"]{background:color-mix(in srgb,var(--mose) 22%,var(--natt));border-color:var(--mose)}
+.chip[aria-pressed="true"]::before{content:"✓ ";color:var(--mose);font-weight:800}
+.eksempel{font-family:var(--f-sitat);font-size:1.05rem;line-height:1.55;padding:12px 14px;border-left:3px solid var(--gull);background:var(--natt);border-radius:0 10px 10px 0}
+.lenkeknapp{background:none;border:0;padding:4px 0;color:var(--gull);font-weight:700;cursor:pointer;text-align:left;text-decoration:underline;text-underline-offset:3px}
+.startere{display:flex;flex-wrap:wrap;gap:6px}
+.startere span{font-family:var(--f-sitat);font-style:italic;padding:4px 10px;border-radius:8px;background:var(--natt);border:1px solid var(--skifer)}
+.laerer{padding:16px 18px;border-radius:var(--r);border:1.5px solid var(--gull);display:flex;flex-direction:column;gap:6px}
+.laerer p{font-family:var(--f-sitat);font-size:1.2rem}
+
+/* Sjangertrekk-kort */
+.trekkliste{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;align-items:start}
+.trekk{border-radius:var(--r);background:var(--skumring);border:1.5px solid var(--skifer);min-width:0}
+.trekk summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;justify-content:space-between;gap:10px;align-items:center;font-weight:800;font-size:1.08rem}
+.trekk summary::-webkit-details-marker{display:none}
+.trekk summary::after{content:"+";font-family:var(--f-display);color:var(--gull);font-size:1.3rem}
+.trekk[open] summary::after{content:"–"}
+.trekk[open]{border-color:var(--gull)}
+.trekk .innhold{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px}
+.trekk h4{margin:0;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--taake)}
+.trekk ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px;font-size:.97rem}
+.trekk ul em{color:var(--taake);font-style:normal}
+
+/* Trekning */
+.trekning{position:fixed;inset:0;z-index:20;background:color-mix(in srgb,var(--natt) 92%,transparent);display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+.lapp{width:min(420px,100%);padding:32px 24px;border-radius:18px;background:var(--never);color:#1b1a16;text-align:center;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px #000a}
+.lapp .eyebrow{color:#6b6556}
+.lapp h2{font-family:var(--f-sitat);font-size:1.9rem;min-height:2.4em;display:grid;place-items:center}
+.lapp .knapp{border-color:#c9c1ad;background:#fff;color:#1b1a16}
+.lapp .knapp.hoved{background:#1b1a16;color:var(--never);border-color:#1b1a16}
+.lapp.landet h2{animation:land .45s ease-out}
+@keyframes land{0%{transform:scale(.8);opacity:.3}100%{transform:none;opacity:1}}
+
+.gullpop{position:fixed;z-index:30;font-weight:800;color:var(--gull);pointer-events:none;animation:opp 1s ease-out forwards;top:calc(env(safe-area-inset-top,0px) + 44px);right:max(24px,env(safe-area-inset-right,0px))}
+@keyframes opp{to{transform:translateY(-26px);opacity:0}}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+
+<header class="topp">
+  <div class="topp-inn">
+    <button class="merke" id="hjemknapp" type="button">Eventyrprøven</button>
+    <div class="pung" id="pung" title="Trollgull du har samlet"><span class="mynt" aria-hidden="true"></span><span id="gull">0</span><span class="sub" style="font-weight:500">gull</span></div>
+  </div>
+</header>
+<main id="app"></main>
+
+<script>
+/* ---------- Innhold ---------- */
+const TREKK = {
+  apning:{navn:'Fast åpning – ubestemt tid', hva:'Eventyret begynner med «Det var en gang». Vi får ikke vite når det skjedde.', hvorfor:'Lytteren skjønner med en gang at nå kommer et eventyr. Når tiden er ubestemt, passer historien for alle, til alle tider.'},
+  sted:{navn:'Ubestemt sted', hva:'Vi får ikke vite nøyaktig hvor det skjer: «langt inne i skogen», «bak de sju blåner».', hvorfor:'Historien kunne skjedd hvor som helst. Da er den lett å kjenne seg igjen i, uansett hvor den blir fortalt.'},
+  personer:{navn:'Få og enkle personer', hva:'Det er få personer, og de er typer: snill eller slem, stor eller liten, klok eller dum. Ofte er de hverandres motsetninger.', hvorfor:'Det er lett å følge med når historien fortelles høyt, og kontrastene gjør at vi fort skjønner hvem vi skal heie på.'},
+  vesen:{navn:'Troll og dyr som snakker', hva:'Overnaturlige vesener som troll, og dyr som snakker og oppfører seg som mennesker.', hvorfor:'Troll gjør det spennende og står for det onde og farlige. Dyr som oppfører seg som mennesker lar oss le av oss selv.'},
+  helt:{navn:'Én helt – ofte den minste', hva:'Det er bare én helt eller heltinne. Ofte er det den yngste, minste eller svakeste, som blir satt på prøve.', hvorfor:'Vi heier på den som blir undervurdert. Det gir spenning og et budskap: du trenger ikke være størst for å vinne.'},
+  tall:{navn:'Magiske tall', hva:'Tallene 3, 7, 9 og 12 går igjen. Tretallet er det vanligste.', hvorfor:'Tretallet gir rytme og bygger opp spenning: tredje gang er den avgjørende. Det gjør også historien lett å huske.'},
+  gjentakelse:{navn:'Gjentakelser', hva:'Handlinger og replikker gjentas, ofte tre ganger, med en liten endring hver gang.', hvorfor:'Eventyr ble fortalt muntlig, og gjentakelser gjør dem lette å huske. Lytteren venter spent på når mønsteret brytes.'},
+  reise:{navn:'Reise mot et mål', hva:'Helten eller personene legger ut på en reise for å nå et mål.', hvorfor:'Reisen setter handlingen i gang og fører personene ut i farer og prøvelser.'},
+  list:{navn:'Kløkt og list', hva:'Helten klarer seg ved å være lur, eller får hjelp av gode hjelpere eller ting.', hvorfor:'Det viser at hodet kan slå musklene. Den svake vinner fordi han er smart, ikke fordi han er sterk.'},
+  kamp:{navn:'Kamp mellom godt og ondt', hva:'Det er en konflikt eller kamp, gjerne mellom det gode og det onde.', hvorfor:'Kampen er høydepunktet. Den skaper spenning før alt løser seg.'},
+  uttrykk:{navn:'Faste uttrykk', hva:'Vendinger som går igjen i mange eventyr, for eksempel «langt om lenge».', hvorfor:'De gir rytme og gjør teksten lett å huske og fin å høre.'},
+  moral:{navn:'Moral', hva:'Det gode får sin lønn, og det onde får sin straff.', hvorfor:'Eventyret lærer oss noe om rett og galt uten å si det rett ut.'},
+  slutt:{navn:'Fast slutt', hva:'Eventyret slutter med en fast vending, som «Snipp, snapp, snute, så er eventyret ute».', hvorfor:'Den forteller at historien er ferdig og tar lytteren tilbake til virkeligheten, ofte med en spøk.'},
+  muntlig:{navn:'Muntlig språk', hva:'Mange replikker og et språk som ligner dagligtale.', hvorfor:'Eventyrene ble fortalt muntlig i hundrevis av år før noen skrev dem ned. Replikkene gjør historien levende.'},
+};
+
+const GENERELLE_SPM = [
+  'Hvilket sjangertrekk synes du er viktigst i dette eventyret, og hvorfor?',
+  'Hvorfor tror du eventyr har så mange gjentakelser?',
+  'Hva er moralen i eventyret? Er den fortsatt viktig i dag?',
+  'Hvorfor tror du eventyret begynner med «Det var en gang»?',
+  'Hvordan hadde eventyret blitt uten tretallet?',
+  'Er det noen sjangertrekk som mangler i dette eventyret?',
+];
+
+const STARTERE = ['Eventyret handler om …','Et typisk sjangertrekk er …','Vi ser det når …','Dette fungerer fordi …','Det gjør at lytteren …','Et trekk som mangler, er …'];
+
+const IKON = {
+  bukkene:'<svg viewBox="0 0 48 32" aria-hidden="true"><path d="M2 13h44M4 13v16M44 13v16M10 29a14 12 0 0 1 28 0M2 13l4-5h36l4 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  askeladden:'<svg viewBox="0 0 48 32" aria-hidden="true"><path d="M4 26 L24 8 L44 16 L44 27 L4 27 Z M4 26 L44 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="17" cy="23" r="2" fill="currentColor"/><circle cx="31" cy="22" r="2.4" fill="currentColor"/><circle cx="38" cy="24.5" r="1.4" fill="currentColor"/></svg>',
+  reveenka:'<svg viewBox="0 0 48 32" aria-hidden="true"><path d="M14 30V12a10 9 0 0 1 20 0v18Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="19" cy="17" r="1.9" fill="currentColor"/><circle cx="24" cy="17" r="1.9" fill="currentColor"/><circle cx="29" cy="17" r="1.9" fill="currentColor"/><path d="M4 30h40" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>',
+};
+
+const EVENTYR = [
+  {
+    id:'bukkene', tittel:'De tre bukkene Bruse', kort:'Tre bukker, ei bru og et troll som vil ete dem.',
+    handling:[
+      'Tre bukker skal til setra for å gjøre seg fete.',
+      'På veien må de over ei bru, og under brua bor et stygt troll.',
+      'Den minste bukken går først og ber trollet vente på en som er større.',
+      'Den mellomste bukken gjør akkurat det samme.',
+      'Den store bukken Bruse stanger trollet i stykker og kaster det i fossen.',
+      'Bukkene kommer til setra og blir så fete at de nesten ikke orker å gå hjem.',
+    ],
+    referat:'Eventyret handler om tre bukker som skal til setra for å bli fete. På veien må de over ei bru, og under brua bor et stygt troll som vil ete dem. Den minste og den mellomste bukken lurer trollet til å vente på en som er større. Til slutt kommer den store bukken Bruse, som stanger trollet i stykker og kaster det i fossen. Så kommer bukkene til setra og blir kjempefete.',
+    jakt:[
+      {q:'«<mark>Det var en gang</mark> tre bukker som skulle til setra for å gjøre seg fete.»', a:'apning', not:['tall','reise','sted']},
+      {q:'Det er <mark>tre</mark> bukker, og trollet blir utfordret <mark>tre</mark> ganger.', a:'tall', not:['gjentakelse']},
+      {q:'Trollet roper til hver bukk: <mark>«Hvem er det som tripper på min bru?»</mark>', a:'gjentakelse', not:['tall','uttrykk','muntlig']},
+      {q:'Under brua bor et troll med <mark>øyne som tinntallerkener og en nese så lang som et riveskaft</mark>.', a:'vesen', not:['personer']},
+      {q:'Den minste bukken sier: <mark>«Vent heller til den andre bukken Bruse kommer, han er mye større.»</mark>', a:'list', not:['gjentakelse','muntlig','helt']},
+      {q:'Den store bukken Bruse <mark>stanger trollet i stykker</mark> og kaster det i fossen.', a:'kamp', not:['moral','helt']},
+      {q:'Bukkene skal <mark>til setra</mark> for å gjøre seg fete, og må over brua på veien.', a:'reise', not:['sted']},
+      {q:'«<mark>Snipp, snapp, snute, så er eventyret ute.</mark>»', a:'slutt', not:['uttrykk']},
+      {q:'Det grådige trollet ville ha den største bukken – og <mark>endte selv i fossen</mark>.', a:'moral', not:['kamp']},
+    ],
+    hvorfor:[
+      {q:'Hvorfor kommer bukkene i rekkefølge fra minst til størst?', svar:['Spenningen bygges opp, og oppgjøret med den største blir høydepunktet.','Fordi den minste var mest sulten.','Det er tilfeldig hvem som går først.','For at trollet skal bli mett.'], f:'Hver ny bukk er større enn den forrige. Vi skjønner at noe stort er på vei, og tredje gang brytes mønsteret med en kamp.'},
+      {q:'Hvorfor er trollet beskrevet så stygt og skummelt?', svar:['Så vi skjønner at det er ondt og farlig, og heier på bukkene.','Fordi troll finnes i virkeligheten.','For å gjøre teksten lengre.','Så vi skal synes synd på trollet.'], f:'Eventyr har tydelige typer. Det stygge trollet er det onde, bukkene er de gode.'},
+      {q:'Hvorfor stiller trollet nesten det samme spørsmålet tre ganger?', svar:['Det er lett å huske når eventyret fortelles høyt, og vi venter spent på neste gang.','Trollet hører dårlig.','Den som skrev det ned, glemte at det sto der fra før.','Det har ingen betydning for historien.'], f:'Gjentakelser kommer fra den muntlige fortellertradisjonen. De gir rytme og bygger forventning.'},
+      {q:'Hva kan vi lære av De tre bukkene Bruse?', svar:['Den som er grådig, kan tape alt – og med kløkt og samhold kan de små klare seg.','At man aldri skal gå over bruer.','At troll egentlig er snille.','At den største alltid bør gå først.'], f:'Trollet ville ha den største bukken og fikk ingenting. Det onde og grådige blir straffet.'},
+    ],
+    muntlig:{
+      referat:['tre bukker skal til setra','bru over en foss','troll under brua','minste og mellomste lurer trollet','store bukken stanger trollet','bukkene blir fete'],
+      trekk:['Det var en gang','tretallet','gjentakelse','troll','dyr som snakker','kamp godt mot ondt','kløkt','snipp, snapp, snute','replikker'],
+      hvorfor:['lett å huske og fortelle','spenningen bygges opp','tredje gang = høydepunkt','vi heier på bukkene','grådighet straffes','tilbake til virkeligheten'],
+      eksTrekk:'Eventyret begynner med «Det var en gang», og vi får ikke vite når eller hvor det skjer. Tretallet er tydelig: det er tre bukker, og trollet møter dem tre ganger. Handlingen og replikkene gjentas, for eksempel «Hvem er det som tripper på min bru?». Trollet er et overnaturlig vesen, og dyrene kan snakke. Det er kamp mellom godt og ondt, og de små bukkene bruker kløkt for å slippe unna. Til slutt kommer den faste avslutningen «Snipp, snapp, snute, så er eventyret ute».',
+      eksHvorfor:'Gjentakelsene og tretallet gjør eventyret lett å huske og fortelle, og det var viktig fordi eventyr ble fortalt muntlig før de ble skrevet ned. Hver gang en ny bukk kommer, øker spenningen, fordi bukkene blir større og vi lurer på hva som skal skje. Tredje gang brytes mønsteret, og da kommer kampen, som er høydepunktet. Trollet er beskrevet som stygt og farlig, så vi skjønner at det er ondt og heier på bukkene. Moralen er at det onde og grådige blir straffet: trollet ville ha den største bukken og tapte alt.',
+    },
+    spm:['Hvorfor tror du den minste bukken sier at trollet skal vente på den neste?','Er det rettferdig at trollet blir kastet i fossen?','Hvorfor tror du det er akkurat tre bukker?'],
+    tips:'Tretallet er det tydeligste trekket her. Vis hvordan mønsteret er likt to ganger og brytes tredje gang – det er der kampen kommer.',
+  },
+  {
+    id:'askeladden', tittel:'Askeladden som kappåt med trollet', kort:'Den yngste broren lurer et sterkt, men dumt troll.',
+    handling:[
+      'En fattig bonde har gjeld, og de tre sønnene skal hogge ved i skogen.',
+      'Per og Pål møter et troll som truer dem, og begge flykter hjem.',
+      'Askeladden tar med seg en ost i skreppa og går til skogen.',
+      'Han klemmer osten og sier at han klemmer vann av en stein. Trollet blir redd.',
+      'Trollet hogger ved for ham og ber ham hjem til seg.',
+      'De kappspiser graut, men Askeladden fyller grauten i skreppa under trøya.',
+      'Askeladden skjærer hull på skreppa. Trollet gjør det samme på magen sin og dør.',
+      'Askeladden tar med seg gull og sølv hjem, og familien blir kvitt fattigdommen.',
+    ],
+    referat:'Eventyret handler om en fattig bonde med tre sønner som må hogge ved i skogen for å betale gjelda. Per og Pål møter et troll og flykter hjem. Askeladden tar med seg en ost, og når trollet truer ham, klemmer han osten og sier at han klemmer vann av en stein. Trollet blir redd, hogger ved for ham og ber ham hjem. Der kappspiser de graut, men Askeladden fyller grauten i skreppa under trøya. Han skjærer hull på skreppa, trollet gjør det samme på magen sin og dør. Askeladden tar med seg gull og sølv hjem.',
+    jakt:[
+      {q:'«<mark>Det var en gang</mark> en bonde som hadde tre sønner.»', a:'apning', not:['tall','personer']},
+      {q:'Bonden hadde <mark>tre</mark> sønner.', a:'tall', not:['personer','gjentakelse']},
+      {q:'Først går Per til skogen og flykter fra trollet. <mark>Så går Pål, og det samme skjer.</mark>', a:'gjentakelse', not:['tall','personer']},
+      {q:'<mark>Askeladden, den yngste</mark>, som ingen trodde på, klarer det brødrene ikke klarte.', a:'helt', not:['personer','gjentakelse','list']},
+      {q:'Askeladden klemmer osten og sier at han <mark>klemmer vann av en hvit stein</mark>.', a:'list', not:['helt']},
+      {q:'I skogen møter han <mark>et stort troll</mark> som truer med å drepe ham.', a:'vesen', not:['kamp']},
+      {q:'Trollet er <mark>stort og sterkt, men dumt</mark>. Askeladden er <mark>liten og svak, men lur</mark>.', a:'personer', not:['helt','list']},
+      {q:'Trollet og Askeladden <mark>kappspiser graut</mark> for å se hvem som orker mest.', a:'kamp', not:['list','helt']},
+      {q:'Askeladden får med seg <mark>gull og sølv</mark> hjem, og trollet dør av sin egen dumhet.', a:'moral', not:['kamp','list','helt']},
+    ],
+    hvorfor:[
+      {q:'Hvorfor mislykkes Per og Pål før Askeladden prøver?', svar:['Det bygger opp spenning, og Askeladden blir mer imponerende når brødrene har feilet.','Fordi Per og Pål var syke.','For at trollet skulle bli sliten.','Det er bare tilfeldig.'], f:'Gjentakelsen viser at oppgaven er vanskelig. Tredje gang lykkes det – og da er det den minste som klarer det.'},
+      {q:'Hvorfor er det Askeladden – den yngste – som vinner?', svar:['Vi heier på den som blir undervurdert, og budskapet er at kløkt kan slå styrke.','Fordi han er den sterkeste av brødrene.','Fordi trollet likte ham best.','Fordi han hadde med seg en kniv.'], f:'Askeladden er den typiske eventyrhelten: liten, oversett og lur.'},
+      {q:'Hvorfor er trollet så dumt?', svar:['Det viser kontrasten mellom styrke og kløkt, og gjør eventyret morsomt.','Fordi troll i virkeligheten er dumme.','For at Askeladden skal synes synd på det.','Det er ikke dumt, bare trøtt.'], f:'Kontraster er typisk for eventyr: sterk mot svak, dum mot lur. Humoren gjør eventyret morsomt å fortelle.'},
+      {q:'Hvorfor tar Askeladden med seg gull og sølv hjem til slutt?', svar:['Det gode får sin lønn: helten blir belønnet, og familien slipper fattigdommen.','Han var grådig og ville bli rik.','Trollet ga ham det i gave.','Det har ingen betydning.'], f:'Eventyr ender ofte lykkelig for helten. Moralen er at det lønner seg å bruke hodet.'},
+    ],
+    muntlig:{
+      referat:['fattig bonde med gjeld','tre sønner skal hogge ved','Per og Pål flykter','Askeladden tar med ost','«vann av en stein»','kappspiser graut','trollet skjærer i magen','gull og sølv hjem'],
+      trekk:['Det var en gang','tretallet','Per, Pål og Askeladden','gjentakelse','troll','den yngste vinner','list og kløkt','kontraster','det gode belønnes'],
+      hvorfor:['brødrene feiler først → spenning','vi heier på den undervurderte','kløkt slår styrke','dumt troll → humor','helten belønnes','lett å huske'],
+      eksTrekk:'Eventyret begynner med «Det var en gang en bonde». Bonden har tre sønner, Per, Pål og Askeladden, og det er personer vi kjenner fra mange eventyr. Handlingen gjentas: Per og Pål går til skogen og flykter fra trollet før Askeladden prøver. Trollet er et overnaturlig vesen. Helten er den yngste, og han vinner med list, ikke med styrke: han klemmer en ost og later som det er en stein, og han lurer trollet i kappspisingen. Det er tydelige kontraster mellom det store, dumme trollet og den lille, lure Askeladden. Til slutt blir det gode belønnet med gull og sølv.',
+      eksHvorfor:'At Per og Pål feiler først, bygger opp spenning, og det gjør det enda mer imponerende når Askeladden klarer det. Vi liker å heie på den som blir undervurdert, og budskapet er at det lønner seg å bruke hodet. Kontrasten mellom trollet og Askeladden gjør historien morsom, særlig når trollet skjærer opp sin egen mage fordi det er så dumt. Tretallet og gjentakelsen gjør eventyret lett å huske og fortelle. Slutten viser moralen: helten blir belønnet, og familien blir kvitt fattigdommen.',
+    },
+    spm:['Er det greit at Askeladden lurer trollet?','Hvorfor tror du Per og Pål ikke klarte det?','Hva hadde skjedd hvis trollet var klokt?'],
+    tips:'Per, Pål og Askeladden finnes i mange eventyr. Nevn at Askeladden nesten alltid er den yngste som blir undervurdert og vinner med kløkt.',
+  },
+  {
+    id:'reveenka', tittel:'Reveenka', kort:'Ei sørgende reveenke får besøk av friere – men vil bare ha én sort.',
+    handling:[
+      'En rev og en revekone bor langt inne i skogen og har det godt sammen.',
+      'Reven eter for mange høner hos bonden, blir syk og dør.',
+      'Reveenka sørger. Etter gravølet begynner det å komme friere.',
+      'Bjørnen banker tre ganger, men har brun pels og blir sendt hjem.',
+      'Ulven kommer, men er grå – og blir sendt hjem.',
+      'Haren kommer, men er hvit – og blir sendt hjem.',
+      'En rød rev kommer, «akkurat som han som døde», og blir bedt inn.',
+      'Bryllupet holdes med det samme.',
+    ],
+    referat:'Reveenka handler om en rev og en revekone som bor langt inne i skogen. Reven spiser for mange høner hos bonden, blir syk og dør. Etter gravølet kommer det friere til enka: først en bjørn, så en ulv og så en hare. Katta Korse åpner døra hver gang, men enka sier nei fordi ingen av dem har riktig pels. Til slutt kommer en rød rev som ser ut akkurat som han som døde, og da sier hun ja. De gifter seg med en gang.',
+    jakt:[
+      {q:'«<mark>Det var en gang</mark> en rev og en revefrue.»', a:'apning', not:['sted','personer']},
+      {q:'De bodde <mark>langt inne i skogen</mark> i revehuset.', a:'sted', not:['apning']},
+      {q:'Bjørnen, ulven og haren <mark>går på frierferd, snakker og banker på døra</mark> – akkurat som mennesker.', a:'vesen', not:['gjentakelse','personer']},
+      {q:'Hver frier <mark>banker tre ganger</mark> på døra.', a:'tall', not:['gjentakelse']},
+      {q:'Hver gang svarer reveenka det samme: <mark>«La’n gå, la’n gå!»</mark>', a:'gjentakelse', not:['uttrykk','muntlig','tall']},
+      {q:'Nesten hele eventyret er <mark>samtale mellom katta Korse og reveenka</mark>.', a:'muntlig', not:['gjentakelse','personer']},
+      {q:'«… og har ikke han heller vært i hønsehuset, <mark>så lever de i revehuset den dag i dag</mark>.»', a:'slutt', not:['uttrykk','sted']},
+      {q:'Reven <mark>eter for mange høner</mark> hos bonden – og dør av det.', a:'moral', not:['kamp']},
+    ],
+    hvorfor:[
+      {q:'Hvorfor er personene i Reveenka dyr som oppfører seg som mennesker?', svar:['Da kan vi le av menneskelige sider – som at sorgen går fort over – uten å peke på noen bestemt.','Fordi eventyret er en dokumentar om dyr.','Fordi det ikke fantes mennesker den gangen.','For at barn ikke skal skjønne det.'], f:'Dyreeventyr speiler mennesker. Det blir morsomt, og vi kjenner oss igjen.'},
+      {q:'Hvorfor kommer frierne én etter én og får samme svar?', svar:['Gjentakelsen gjør det lett å huske, og vi gleder oss til mønsteret brytes.','Fordi reveenka ikke hørte etter.','For å vise at bjørnen var den beste.','Det er ingen grunn.'], f:'Etter tre nei skjønner lytteren mønsteret. Når den røde reven kommer, brytes det – det er vendepunktet.'},
+      {q:'Hvorfor sier reveenka ja til den røde reven?', svar:['Han ligner den gamle mannen hennes – det er komisk at hun egentlig bare vil ha en kopi.','Fordi han var rikest.','Fordi han banket hardest.','Fordi katta likte ham best.'], f:'Det er ironi: hun sørget over mannen, men byttet ham ut med en som ser helt lik ut.'},
+      {q:'Hvorfor er slutten morsom?', svar:['Den spøker med at den nye reven kanskje også spiser for mange høner – og knytter slutten til starten.','Fordi alle dør til slutt.','Fordi bjørnen kommer tilbake.','Den er ikke ment å være morsom.'], f:'Faste avslutninger har ofte en spøk som tar oss tilbake til virkeligheten.'},
+    ],
+    muntlig:{
+      referat:['rev og revekone i skogen','reven eter for mange høner og dør','katta Korse åpner døra','bjørn, ulv og hare får nei','rød rev blir bedt inn','bryllup med det samme'],
+      trekk:['Det var en gang','langt inne i skogen','dyr som mennesker','banker tre ganger','gjentakelse: «La’n gå»','mønsteret brytes','replikker','fast slutt med spøk','mangler: troll, helt, reise'],
+      hvorfor:['vi ler av menneskelige sider','sorgen går fort over','gjentakelse → forventning','fjerde frier = vendepunkt','slutten knytter til starten','lett å fortelle muntlig'],
+      eksTrekk:'Eventyret begynner med «Det var en gang en rev og en revefrue», og de bor «langt inne i skogen», så tid og sted er ubestemt. Alle personene er dyr som snakker og oppfører seg som mennesker: de holder gravøl, frir og gifter seg. Hver frier banker tre ganger på døra, og handlingen gjentas: katta Korse åpner, enka spør hvordan frieren ser ut, og svarer «La’n gå, la’n gå!». Mønsteret brytes når den røde reven kommer. Det er mange replikker, så språket er muntlig. Slutten er en fast vending med en spøk. Noen vanlige trekk mangler: det er ingen troll, ingen reise og ingen helt som må bestå prøver. Det er et dyreeventyr.',
+      eksHvorfor:'Fordi personene er dyr, kan vi le av menneskelige sider uten å peke på noen bestemt. Det er komisk at enka sørger, men gifter seg igjen så fort, og at hun bare vil ha en som ser ut akkurat som den gamle mannen. Gjentakelsen gjør eventyret lett å fortelle og gir oss forventninger: vi skjønner at hun kommer til å avvise frierne til den rette dukker opp. Når mønsteret brytes, kommer vendepunktet. Slutten knytter tilbake til starten, fordi den gamle reven døde av å spise høner, og spøken er at den nye kanskje gjør det samme.',
+    },
+    spm:['Hvorfor tror du reveenka bare sa ja til den røde reven?','Hva tror du eventyret gjør narr av?','Hvorfor tror du dyrene oppfører seg som mennesker?'],
+    tips:'Reveenka mangler flere typiske trekk: ingen troll, ingen reise og ingen helt som må bestå prøver. Si det! Det viser at du forstår sjangeren. Poenget med dette eventyret er humor.',
+  },
+];
+
+const STASJONER = [
+  {id:'handling', navn:'Handlingen', besk:'Sett hendelsene i riktig rekkefølge.'},
+  {id:'jakt', navn:'Sjangerjakt', besk:'Hvilket sjangertrekk er det du ser?'},
+  {id:'hvorfor', navn:'Hvorfor virker det?', besk:'Forklar hvordan og hvorfor trekkene fungerer.'},
+  {id:'muntlig', navn:'Generalprøve', besk:'Snakk høyt i 3–5 minutter med stikkord og klokke.'},
+];
+
+const PROVEDATO = new Date(2026, 10, 9);
+
+/* ---------- Tilstand ---------- */
+const LAGER = 'eventyrproven-v1';
+let S = {gull:0, fremdrift:{}};
+try { const r = localStorage.getItem(LAGER); if (r) S = Object.assign(S, JSON.parse(r)); } catch(e) {}
+function lagre(){ try { localStorage.setItem(LAGER, JSON.stringify(S)); } catch(e) {} }
+function fr(id){ if(!S.fremdrift[id]) S.fremdrift[id] = {handling:false, jakt:0, hvorfor:0, muntlig:false}; return S.fremdrift[id]; }
+function stasjonFerdig(id, st){
+  const f = fr(id);
+  if (st==='handling') return f.handling;
+  if (st==='jakt') return f.jakt >= 0.7;
+  if (st==='hvorfor') return f.hvorfor >= 0.75;
+  if (st==='muntlig') return f.muntlig;
+}
+function antallFerdig(id){ return STASJONER.filter(s=>stasjonFerdig(id,s.id)).length; }
+
+/* ---------- Hjelpere ---------- */
+function h(tag, props, ...kids){
+  const el = document.createElement(tag);
+  for (const [k,v] of Object.entries(props||{})){
+    if (k==='class') el.className = v;
+    else if (k==='html') el.innerHTML = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (v===true) el.setAttribute(k,'');
+    else if (v!==false && v!=null) el.setAttribute(k,v);
+  }
+  for (const kid of kids.flat()){
+    if (kid==null || kid===false) continue;
+    el.append(kid.nodeType ? kid : document.createTextNode(kid));
+  }
+  return el;
+}
+const stokk = a => { const b=[...a]; for(let i=b.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]; } return b; };
+const tilfeldig = a => a[Math.floor(Math.random()*a.length)];
+const finn = id => EVENTYR.find(e=>e.id===id);
+const ROS = ['Riktig!','Helt rett!','Der satt den!','Sterkt!','Trollet skjelver!','Akkurat!'];
+
+const app = document.getElementById('app');
+let rydd = null;
+function vis(el, opprydding){
+  if (rydd) { try{ rydd(); }catch(e){} }
+  rydd = opprydding || null;
+  app.replaceChildren(el);
+  window.scrollTo({top:0});
+}
+function oppdaterGull(){ document.getElementById('gull').textContent = S.gull; }
+function giGull(n){
+  if (!n) return;
+  S.gull += n; lagre(); oppdaterGull();
+  const pung = document.getElementById('pung');
+  pung.classList.remove('dunk'); void pung.offsetWidth; pung.classList.add('dunk');
+  const pop = h('div',{class:'gullpop'}, '+'+n);
+  document.body.append(pop); setTimeout(()=>pop.remove(), 1000);
+}
+function hode(eyebrow, tittel, tilbake){
+  return h('div',{class:'hode'},
+    h('button',{class:'tilbake', type:'button', 'aria-label':'Tilbake', onclick:tilbake},
+      h('span',{html:'<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3 5 9l6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'})),
+    h('div',{}, eyebrow ? h('p',{class:'eyebrow'}, eyebrow) : null, h('h2',{}, tittel)));
+}
+function prikker(id){
+  const n = antallFerdig(id);
+  return h('div',{class:'prikker', 'aria-label':`${n} av 4 stasjoner ferdig`},
+    ...STASJONER.map(s=>h('i',{class: stasjonFerdig(id,s.id)?'fullt':'', title:s.navn})),
+    h('span',{}, `${n}/4`));
+}
+
+/* ---------- Skog på forsiden ---------- */
+function tegnSkog(canvas){
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth, hh = canvas.clientHeight;
+  if (!w || !hh) return;
+  canvas.width = w*dpr; canvas.height = hh*dpr;
+  const c = canvas.getContext('2d'); c.scale(dpr,dpr);
+  const css = getComputedStyle(document.documentElement);
+  const farge = n => css.getPropertyValue(n).trim();
+  let seed = 11; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+  c.fillStyle = farge('--taake');
+  for (let i=0;i<55;i++){ c.globalAlpha = .25 + rnd()*.6; const s = rnd()<.15?2:1.2; c.fillRect(rnd()*w, rnd()*hh*.55, s, s); }
+  c.globalAlpha = 1;
+  const mx = w*.82, my = hh*.26;
+  const g = c.createRadialGradient(mx,my,10,mx,my,70); g.addColorStop(0,'rgba(241,231,196,.28)'); g.addColorStop(1,'rgba(241,231,196,0)');
+  c.fillStyle = g; c.fillRect(mx-80,my-80,160,160);
+  c.fillStyle = farge('--maane'); c.beginPath(); c.arc(mx,my,17,0,Math.PI*2); c.fill();
+  const lag = [{f:'--skifer', y:hh*.86, min:40, max:70, tett:20},{f:'--skog', y:hh+2, min:50, max:96, tett:28}];
+  for (const l of lag){
+    c.fillStyle = farge(l.f);
+    let x = -12;
+    while (x < w+20){ gran(c, x, l.y, l.min + rnd()*(l.max-l.min)); x += l.tett*(.55+rnd()*.9); }
+    c.fillRect(0, l.y-2, w, hh);
+  }
+}
+function gran(c, x, y, hh){
+  const b = hh*.36, steg = 5, R = [];
+  for (let i=1;i<=steg;i++){ const yy = y-hh + hh*.9*i/steg; const ww = b*i/steg; R.push([ww,yy]); if (i<steg) R.push([ww*.45, yy]); }
+  R.push([b*.07, y]);
+  c.beginPath(); c.moveTo(x, y-hh);
+  R.forEach(p=>c.lineTo(x+p[0], p[1]));
+  [...R].reverse().forEach(p=>c.lineTo(x-p[0], p[1]));
+  c.closePath(); c.fill();
+}
+
+/* ---------- Forside ---------- */
+function visHjem(){
+  const idag = new Date(); idag.setHours(0,0,0,0);
+  const dager = Math.round((PROVEDATO - idag)/864e5);
+  const ned = dager>1 ? `Prøve om ${dager} dager` : dager===1 ? 'Prøve i morgen' : dager===0 ? 'Prøve i dag – lykke til!' : null;
+  const lerret = h('canvas',{'aria-hidden':'true'});
+  const el = h('section',{class:'skjerm'},
+    h('div',{class:'helt-felt'}, lerret,
+      h('div',{class:'helt-tekst'},
+        ned ? h('span',{class:'nedtelling'}, ned) : null,
+        h('h1',{}, 'Eventyrprøven'),
+        h('p',{}, 'Muntlig vurdering i norsk: du trekker ett av tre eventyr og snakker om det i 3–5 minutter. Samle trollgull og bli klar.'))),
+    h('button',{class:'knapp hoved stor', type:'button', onclick:trekk}, 'Trekk et eventyr – akkurat som på prøven'),
+    h('div',{class:'seksjon'},
+      h('p',{class:'eyebrow'}, 'Øv på ett eventyr'),
+      h('div',{class:'eventyrliste'}, ...EVENTYR.map(e=>
+        h('button',{class:'ekort', type:'button', onclick:()=>visEventyr(e.id)},
+          h('span',{html:IKON[e.id]}),
+          h('h3',{}, e.tittel),
+          h('p',{class:'smaa'}, e.kort),
+          prikker(e.id))))),
+    h('div',{class:'seksjon'},
+      h('p',{class:'eyebrow'}, 'Lær og test deg'),
+      h('div',{class:'rad'},
+        h('button',{class:'knapp', type:'button', onclick:visKort}, 'Sjangertrekk-kortene'),
+        h('button',{class:'knapp', type:'button', onclick:visLynrunde}, 'Lynrunde: alle eventyrene'))),
+    h('div',{class:'krav'},
+      h('p',{class:'eyebrow'}, 'Samtalen skal inneholde'),
+      h('ol',{},
+        h('li',{}, 'Et kort handlingsreferat av eventyret.'),
+        h('li',{}, 'Hvilke kjennetegn fra eventyrsjangeren du finner igjen i eventyret.'),
+        h('li',{}, 'Hvorfor og hvordan sjangertrekkene fungerer i teksten.'))),
+    nullstillBoks()
+  );
+  const tegn = () => tegnSkog(lerret);
+  vis(el, () => window.removeEventListener('resize', tegn));
+  window.addEventListener('resize', tegn);
+  requestAnimationFrame(tegn);
+}
+
+function nullstillBoks(){
+  const boks = h('div',{class:'nullstill'});
+  function vanlig(){
+    boks.replaceChildren(h('button',{class:'lenkeknapp', type:'button', onclick:spor}, 'Nullstill gull og fremdrift'));
+  }
+  function spor(){
+    const avbryt = h('button',{class:'knapp', type:'button', onclick:vanlig}, 'Avbryt');
+    boks.replaceChildren(
+      h('p',{}, `Alt gullet (${S.gull}) og alle fullførte stasjoner slettes. Vil du starte helt på nytt?`),
+      h('div',{class:'rad'}, avbryt,
+        h('button',{class:'knapp fare', type:'button', onclick:()=>{ S = {gull:0, fremdrift:{}}; lagre(); oppdaterGull(); visHjem(); }}, 'Ja, nullstill alt')));
+    avbryt.focus();
+  }
+  vanlig();
+  return boks;
+}
+
+/* ---------- Trekning ---------- */
+function trekk(){
+  const reduser = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tittel = h('h2',{}, '…');
+  const knapper = h('div',{class:'rad', hidden:true});
+  const lapp = h('div',{class:'lapp', role:'dialog', 'aria-modal':'true', 'aria-label':'Trekning'}, h('p',{class:'eyebrow'}, 'Du har trukket'), tittel, knapper);
+  const lag = h('div',{class:'trekning'}, lapp);
+  document.body.append(lag);
+  const valgt = tilfeldig(EVENTYR);
+  let n = 0; const total = reduser ? 0 : 16;
+  const lukk = () => lag.remove();
+  function ferdig(){
+    tittel.textContent = valgt.tittel; lapp.classList.add('landet');
+    knapper.replaceChildren(
+      h('button',{class:'knapp', type:'button', onclick:()=>{ lukk(); trekk(); }}, 'Trekk på nytt'),
+      h('button',{class:'knapp hoved', type:'button', onclick:()=>{ lukk(); visEventyr(valgt.id); }}, 'Øv på dette'));
+    knapper.hidden = false; knapper.lastChild.focus();
+  }
+  (function rull(){
+    if (n >= total) return ferdig();
+    tittel.textContent = EVENTYR[n % 3].tittel; n++;
+    setTimeout(rull, 60 + n*n*1.4);
+  })();
+  lag.addEventListener('click', ev => { if (ev.target===lag && !knapper.hidden) lukk(); });
+}
+
+/* ---------- Eventyr-nav ---------- */
+function visEventyr(id){
+  const e = finn(id);
+  const el = h('section',{class:'skjerm'},
+    hode('Eventyr', e.tittel, visHjem),
+    h('p',{class:'sub'}, 'Ta stasjonene i rekkefølge. Generalprøven til slutt er der du øver på selve samtalen.'),
+    h('div',{class:'stasjoner'}, ...STASJONER.map((s,i)=>{
+      const f = fr(id); const ferdig = stasjonFerdig(id, s.id);
+      let status = ferdig ? 'Klart' : '';
+      if (!ferdig && s.id==='jakt' && f.jakt) status = `Best: ${Math.round(f.jakt*100)} %`;
+      if (!ferdig && s.id==='hvorfor' && f.hvorfor) status = `Best: ${Math.round(f.hvorfor*100)} %`;
+      return h('button',{class:'stasjon'+(ferdig?' ferdig':''), type:'button', onclick:()=>startStasjon(id, s.id)},
+        h('span',{class:'nr'}, ferdig ? '✓' : String(i+1)),
+        h('span',{}, h('b',{}, s.navn), h('small',{}, s.besk)),
+        h('span',{class:'status'}, status));
+    })),
+    h('div',{class:'tips'}, h('b',{}, 'Ekstrapoeng på prøven: '), e.tips)
+  );
+  vis(el);
+}
+function startStasjon(id, st){
+  if (st==='handling') visHandling(id);
+  if (st==='jakt') visJakt(id);
+  if (st==='hvorfor') visHvorfor(id);
+  if (st==='muntlig') visMuntlig(id);
+}
+
+/* ---------- Stasjon 1: rekkefølge ---------- */
+function visHandling(id){
+  const e = finn(id); const N = e.handling.length;
+  let bunke; do { bunke = stokk(e.handling.map((_,i)=>i)); } while (bunke.every((v,i)=>v===i));
+  let plassert = []; let forsok = 0; let sjekket = false;
+  const spor = h('ol',{class:'spor', 'aria-label':'Din rekkefølge'});
+  const bunkeEl = h('div',{class:'bunke'});
+  const beskjed = h('div',{'aria-live':'polite'});
+  const sjekk = h('button',{class:'knapp hoved stor', type:'button', disabled:true, onclick:kontroller}, 'Sjekk rekkefølgen');
+  function tegn(){
+    spor.replaceChildren(...Array.from({length:N}, (_,k)=>{
+      const v = plassert[k];
+      if (v==null) return h('li',{class:'plass'}, h('span',{class:'tall'}, k+1), h('span',{}, k===plassert.length ? 'Trykk på hendelsen som kommer nå' : ''));
+      const cls = 'plass fylt' + (sjekket ? (v===k ? ' ok' : ' feil') : '');
+      return h('li',{class:cls, tabindex:'0', role:'button', 'aria-label':`Fjern: ${e.handling[v]}`, onclick:()=>fjern(k), onkeydown:ev=>{ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); fjern(k);} }},
+        h('span',{class:'tall'}, k+1), h('span',{}, e.handling[v]));
+    }));
+    bunkeEl.replaceChildren(...bunke.map(v=>h('button',{class:'hendelse', type:'button', onclick:()=>legg(v)}, e.handling[v])));
+    sjekk.disabled = plassert.length !== N;
+    sjekk.hidden = false;
+  }
+  function legg(v){ sjekket=false; beskjed.replaceChildren(); plassert.push(v); bunke = bunke.filter(x=>x!==v); tegn(); }
+  function fjern(k){ sjekket=false; beskjed.replaceChildren(); const v = plassert[k]; plassert.splice(k,1); bunke.push(v); tegn(); }
+  function kontroller(){
+    forsok++; sjekket = true;
+    const riktige = plassert.filter((v,k)=>v===k).length;
+    if (riktige === N){
+      const gull = forsok===1 ? 4 : forsok===2 ? 2 : 1;
+      fr(id).handling = true; lagre(); giGull(gull);
+      tegn(); sjekk.hidden = true;
+      beskjed.replaceChildren(h('div',{class:'beskjed ok'},
+        h('p',{class:'fb-tittel ok'}, `Riktig rekkefølge! +${gull} gull`),
+        h('p',{class:'eyebrow', style:'margin-top:10px'}, 'Slik kan du fortelle det kort'),
+        h('p',{class:'eksempel', style:'margin-top:6px'}, e.referat),
+        h('p',{class:'hjelpetekst', style:'margin-top:8px'}, 'Prøv å si referatet høyt med dine egne ord. Det bør ta under ett minutt.'),
+        h('div',{class:'rad', style:'margin-top:12px'},
+          h('button',{class:'knapp', type:'button', onclick:()=>visHandling(id)}, 'Spill igjen'),
+          h('button',{class:'knapp hoved', type:'button', onclick:()=>visJakt(id)}, 'Videre: Sjangerjakt'))));
+    } else {
+      tegn();
+      beskjed.replaceChildren(h('div',{class:'beskjed feil'},
+        h('p',{class:'fb-tittel feil'}, `${riktige} av ${N} står riktig.`),
+        h('p',{}, 'Trykk på de røde for å legge dem tilbake, og prøv igjen.')));
+    }
+  }
+  tegn();
+  vis(h('section',{class:'skjerm'},
+    hode(e.tittel, 'Handlingen', ()=>visEventyr(id)),
+    h('p',{class:'sub'}, 'Trykk på hendelsene i den rekkefølgen de skjer. Trykk på en plassert hendelse for å ta den tilbake.'),
+    spor, beskjed, sjekk,
+    h('p',{class:'eyebrow'}, 'Hendelser'), bunkeEl));
+}
+
+/* ---------- Quizmotor ---------- */
+function jaktSporsmal(item, kilde){
+  const T = TREKK[item.a];
+  const ut = Object.keys(TREKK).filter(k=>k!==item.a && !(item.not||[]).includes(k));
+  const alts = stokk([{t:T.navn, ok:true}, ...stokk(ut).slice(0,3).map(k=>({t:TREKK[k].navn, ok:false}))]);
+  return {q:item.q, kilde, hjelp:'Hvilket sjangertrekk ser du i det uthevede?', alts,
+    forkl:`<b>${T.navn}.</b> ${T.hva}<br><b>Hvorfor virker det?</b> ${T.hvorfor}`};
+}
+function visQuiz(cfg){
+  let i = 0, riktige = 0, rekke = 0, opptjent = 0, timer = null;
+  const wrap = h('section',{class:'skjerm'});
+  const stopp = () => { clearInterval(timer); timer = null; };
+  function steg(){
+    stopp();
+    const it = cfg.items[i];
+    const bar = h('div',{class:'quizbar', 'aria-label':`Spørsmål ${i+1} av ${cfg.items.length}`}, ...cfg.items.map((_,k)=>h('span',{class: k<i?'ferdig':(k===i?'na':'')})));
+    const alts = h('div',{class:'alts'});
+    const fb = h('div',{class:'fb', 'aria-live':'polite'});
+    const neste = h('button',{class:'knapp hoved stor', type:'button', hidden:true, onclick:()=>{ i++; i<cfg.items.length ? steg() : slutt(); }}, i===cfg.items.length-1 ? 'Se resultatet' : 'Neste');
+    let besvart = false;
+    function svar(alt, btn){
+      if (besvart) return; besvart = true; stopp();
+      [...alts.children].forEach((b,k)=>{ b.disabled = true; if (it.alts[k].ok) b.classList.add('ok'); });
+      if (alt && alt.ok){
+        riktige++; rekke++;
+        let p = cfg.poeng; if (cfg.tid && rekke>0 && rekke%3===0) p++;
+        opptjent += p; giGull(p);
+        fb.replaceChildren(h('p',{class:'fb-tittel ok'}, tilfeldig(ROS) + (cfg.tid && rekke%3===0 ? ` ${rekke} på rad – bonusgull!` : '')), h('p',{html:it.forkl}));
+      } else {
+        rekke = 0; if (btn) btn.classList.add('feil');
+        fb.replaceChildren(h('p',{class:'fb-tittel feil'}, alt ? 'Ikke helt.' : 'Tiden er ute!'), h('p',{html:it.forkl}));
+      }
+      neste.hidden = false; neste.focus({preventScroll:true});
+      fb.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }
+    it.alts.forEach(a=>{ const b = h('button',{class:'alt', type:'button'}, a.t); b.addEventListener('click', ()=>svar(a,b)); alts.append(b); });
+    let tidbar = null;
+    if (cfg.tid){
+      let igjen = cfg.tid; const fyll = h('span',{style:'width:100%'}); tidbar = h('div',{class:'tidbar', 'aria-hidden':'true'}, fyll);
+      timer = setInterval(()=>{ igjen -= .1; fyll.style.width = Math.max(0, igjen/cfg.tid*100)+'%'; if (igjen <= 0) svar(null, null); }, 100);
+    }
+    wrap.replaceChildren(
+      hode(cfg.eyebrow, cfg.tittel, cfg.tilbake),
+      bar, tidbar,
+      h('div',{class:'sporsmal'},
+        it.kilde ? h('p',{class:'eyebrow'}, it.kilde) : null,
+        h('p',{class:'q', html:it.q}),
+        it.hjelp ? h('p',{class:'hjelpetekst'}, it.hjelp) : null),
+      alts, fb, neste);
+  }
+  function slutt(){
+    stopp();
+    const total = cfg.items.length, andel = riktige/total;
+    if (cfg.onSlutt) cfg.onSlutt(andel);
+    const dom = andel===1 ? 'Alt riktig! Du er klar.' : andel>=.75 ? 'Veldig bra! Les forklaringene på dem du bommet på.' : andel>=.5 ? 'Godt på vei. Ta en runde til.' : 'Les sjangertrekk-kortene og prøv igjen.';
+    wrap.replaceChildren(
+      hode(cfg.eyebrow, cfg.tittel, cfg.tilbake),
+      h('div',{class:'resultat'},
+        h('p',{class:'stort'}, `${riktige}/${total}`),
+        h('p',{style:'font-weight:700;font-size:1.15rem'}, dom),
+        h('p',{}, `Du fikk ${opptjent} gull.`),
+        h('p',{class:'snipp'}, 'Snipp, snapp, snute – så er runden ute.')),
+      h('div',{class:'rad'},
+        h('button',{class:'knapp', type:'button', onclick:cfg.igjen}, 'Spill igjen'),
+        cfg.videre ? h('button',{class:'knapp hoved', type:'button', onclick:cfg.videre[1]}, cfg.videre[0]) : null));
+  }
+  steg();
+  vis(wrap, stopp);
+}
+
+/* ---------- Stasjon 2 og 3 ---------- */
+function visJakt(id){
+  const e = finn(id);
+  visQuiz({eyebrow:e.tittel, tittel:'Sjangerjakt', poeng:1, tilbake:()=>visEventyr(id),
+    items: stokk(e.jakt).map(it=>jaktSporsmal(it)),
+    onSlutt: a => { const f = fr(id); f.jakt = Math.max(f.jakt, a); lagre(); },
+    igjen: ()=>visJakt(id), videre:['Videre: Hvorfor virker det?', ()=>visHvorfor(id)]});
+}
+function visHvorfor(id){
+  const e = finn(id);
+  visQuiz({eyebrow:e.tittel, tittel:'Hvorfor virker det?', poeng:2, tilbake:()=>visEventyr(id),
+    items: stokk(e.hvorfor).map(it=>({q:it.q, alts: stokk(it.svar.map((t,k)=>({t, ok:k===0}))), forkl:`<b>Riktig svar:</b> ${it.svar[0]}<br>${it.f}`})),
+    onSlutt: a => { const f = fr(id); f.hvorfor = Math.max(f.hvorfor, a); lagre(); },
+    igjen: ()=>visHvorfor(id), videre:['Videre: Generalprøve', ()=>visMuntlig(id)]});
+}
+function visLynrunde(){
+  const alle = EVENTYR.flatMap(e=>e.jakt.map(it=>jaktSporsmal(it, e.tittel)));
+  visQuiz({eyebrow:'Alle eventyrene', tittel:'Lynrunde', poeng:1, tid:20, tilbake:visHjem,
+    items: stokk(alle).slice(0,10), igjen: visLynrunde});
+}
+
+/* ---------- Stasjon 4: muntlig generalprøve ---------- */
+function visMuntlig(id){
+  const e = finn(id);
+  let sek = 0, iv = null;
+  const tidEl = h('span',{class:'tid', 'aria-live':'off'}, '0:00');
+  const fyll = h('span',{style:'width:0%'});
+  const status = h('p',{class:'klokkestatus sub'}, 'Trykk Start og begynn å snakke.');
+  const startKnapp = h('button',{class:'knapp hoved', type:'button', onclick:veksle}, 'Start');
+  function oppdater(){
+    tidEl.textContent = `${Math.floor(sek/60)}:${String(sek%60).padStart(2,'0')}`;
+    fyll.style.width = Math.min(sek/360,1)*100 + '%';
+    if (!iv && sek===0) return;
+    if (sek < 180){ status.textContent = 'Fortsett – målet er minst 3 minutter.'; status.style.color = ''; }
+    else if (sek <= 300){ status.textContent = 'Bra lengde! Du er innenfor 3–5 minutter.'; status.style.color = 'var(--mose)'; }
+    else { status.textContent = 'Over 5 minutter – rund av nå.'; status.style.color = 'var(--troll)'; }
+  }
+  function veksle(){
+    if (iv){ clearInterval(iv); iv = null; startKnapp.textContent = 'Fortsett'; }
+    else { iv = setInterval(()=>{ sek++; oppdater(); }, 1000); startKnapp.textContent = 'Pause'; oppdater(); }
+  }
+  function nullstill(){ clearInterval(iv); iv = null; sek = 0; startKnapp.textContent = 'Start'; status.textContent = 'Trykk Start og begynn å snakke.'; status.style.color=''; oppdater(); }
+
+  const alleChips = [];
+  function del(tittel, forklaring, stikk, eksempel){
+    const eks = h('p',{class:'eksempel', hidden:true}, eksempel);
+    const lenke = h('button',{class:'lenkeknapp', type:'button', onclick:()=>{ eks.hidden = !eks.hidden; lenke.textContent = eks.hidden ? 'Vis eksempel på svar' : 'Skjul eksempelet'; }}, 'Vis eksempel på svar');
+    const chips = stikk.map(s=>{ const c = h('button',{class:'chip', type:'button', 'aria-pressed':'false', onclick:()=>c.setAttribute('aria-pressed', c.getAttribute('aria-pressed')==='true'?'false':'true')}, s); alleChips.push(c); return c; });
+    return h('div',{class:'del'}, h('h3',{}, tittel), h('p',{class:'hjelpetekst'}, forklaring), h('div',{class:'chips'}, ...chips), lenke, eks);
+  }
+  const laererBoks = h('div',{class:'laerer', hidden:true});
+  const sporsmal = [...e.spm, ...GENERELLE_SPM]; let sist = '';
+  function laerer(){
+    let q; do { q = tilfeldig(sporsmal); } while (q===sist && sporsmal.length>1); sist = q;
+    laererBoks.replaceChildren(h('p',{class:'eyebrow'}, 'Læreren spør'), h('p',{}, q), h('p',{class:'hjelpetekst'}, 'Svar høyt. Begynn gjerne med «Jeg tror … fordi …».'));
+    laererBoks.hidden = false; laererBoks.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+  const resultat = h('div',{'aria-live':'polite'});
+  function ferdig(){
+    if (iv){ clearInterval(iv); iv = null; startKnapp.textContent = 'Fortsett'; }
+    const huket = alleChips.filter(c=>c.getAttribute('aria-pressed')==='true').length;
+    const min = `${Math.floor(sek/60)}:${String(sek%60).padStart(2,'0')}`;
+    let gull = 0, tekst;
+    if (sek >= 180 && huket >= alleChips.length*0.6){ gull = 6; tekst = 'Det der var en fullverdig samtale. Du er klar for prøven!'; fr(id).muntlig = true; }
+    else if (sek >= 180){ gull = 3; tekst = 'Bra lengde. Neste gang: prøv å få med flere av stikkordene.'; fr(id).muntlig = true; }
+    else if (sek >= 60){ gull = 1; tekst = 'Godt i gang. Prøv å snakke i minst 3 minutter – bruk «Dette fungerer fordi …» for å utdype.'; }
+    else { tekst = 'Start klokka og snakk høyt for å få gull. Det er lov å se på stikkordene.'; }
+    lagre(); giGull(gull);
+    resultat.replaceChildren(h('div',{class:'beskjed '+(gull>=3?'ok':'feil')},
+      h('p',{class:'fb-tittel '+(gull>=3?'ok':'feil')}, `Tid: ${min} · ${huket} av ${alleChips.length} stikkord${gull ? ` · +${gull} gull` : ''}`),
+      h('p',{}, tekst)));
+    resultat.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
+  const el = h('section',{class:'skjerm'},
+    hode(e.tittel, 'Generalprøve', ()=>visEventyr(id)),
+    h('p',{class:'sub'}, 'Snakk høyt, gjerne for noen hjemme. Trykk på stikkordene etter hvert som du har sagt noe om dem.'),
+    h('div',{class:'klokke'},
+      h('div',{class:'klokke-topp'}, tidEl, h('div',{class:'rad', style:'flex:0 1 auto'}, startKnapp, h('button',{class:'knapp', type:'button', onclick:nullstill}, 'Nullstill'))),
+      h('div',{class:'tidsspor', 'aria-hidden':'true'}, fyll),
+      h('div',{class:'tidsmerker', 'aria-hidden':'true'}, h('i',{style:'left:0;transform:none'}, '0'), h('i',{style:'left:50%'}, '3 min'), h('i',{style:'left:83.33%'}, '5 min')),
+      status),
+    del('1. Kort handlingsreferat', 'Fortell kort hva som skjer, fra start til slutt. Bruk under ett minutt.', e.muntlig.referat, e.referat),
+    del('2. Kjennetegn fra eventyrsjangeren', 'Nevn trekkene og gi et eksempel fra eventyret på hvert av dem.', e.muntlig.trekk, e.muntlig.eksTrekk),
+    del('3. Hvorfor og hvordan fungerer trekkene?', 'Forklar hva trekkene gjør med historien og med oss som hører den.', e.muntlig.hvorfor, e.muntlig.eksHvorfor),
+    h('div',{class:'del'}, h('h3',{}, 'Setninger du kan begynne med'), h('div',{class:'startere'}, ...STARTERE.map(s=>h('span',{}, s)))),
+    h('button',{class:'knapp', type:'button', onclick:laerer}, 'Læreren spør: få et oppfølgingsspørsmål'),
+    laererBoks,
+    h('button',{class:'knapp hoved stor', type:'button', onclick:ferdig}, 'Jeg er ferdig'),
+    resultat);
+  vis(el, ()=>clearInterval(iv));
+}
+
+/* ---------- Sjangertrekk-kort ---------- */
+function visKort(){
+  const eksempler = {};
+  for (const e of EVENTYR) for (const it of e.jakt) (eksempler[it.a] ||= []).push({e:e.tittel, q:it.q.replace(/<\/?mark>/g,'')});
+  const el = h('section',{class:'skjerm'},
+    hode('Lær deg', 'Sjangertrekk-kortene', visHjem),
+    h('p',{class:'sub'}, 'Trykk på et kort. Du ser hva trekket er, hvorfor det virker, og hvor det dukker opp i de tre eventyrene.'),
+    h('div',{class:'trekkliste'}, ...Object.entries(TREKK).map(([k,T])=>
+      h('details',{class:'trekk'},
+        h('summary',{}, T.navn),
+        h('div',{class:'innhold'},
+          h('h4',{}, 'Hva er det?'), h('p',{}, T.hva),
+          h('h4',{}, 'Hvorfor virker det?'), h('p',{}, T.hvorfor),
+          eksempler[k] ? h('h4',{}, 'I eventyrene') : null,
+          eksempler[k] ? h('ul',{}, ...eksempler[k].map(x=>h('li',{}, h('em',{}, x.e+': '), x.q))) : null)))));
+  vis(el);
+}
+
+/* ---------- Start ---------- */
+document.getElementById('hjemknapp').addEventListener('click', visHjem);
+oppdaterGull();
+visHjem();
+</script>

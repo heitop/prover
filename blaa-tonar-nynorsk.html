@@ -1,0 +1,1042 @@
+<title>Blå tonar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Limelight&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: ei smal spalte (maks 880px) som byter mellom «sider»; menyen er ein jukebox av plater, kvar plate er ei øving. */
+:root{
+  --paper:#F2F3F9; --surface:#FFFFFF; --ink:#141729; --muted:#596080; --line:#D7DAE8;
+  --blue:#2742A6; --brass:#A87414; --red:#B0242D; --teal:#18706E;
+  --good:#1D7A45; --bad:#B4232F; --vinyl:#14141A; --groove:#2A2A33;
+  --display:"Limelight","Georgia",serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Consolas",monospace;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0D0F1C; --surface:#161A2E; --ink:#ECEDF6; --muted:#9CA2C0; --line:#2A2F4A;
+  --blue:#8DA2FF; --brass:#E2B24C; --red:#FF7680; --teal:#5BC9C3;
+  --good:#4FC683; --bad:#FF6B76; --vinyl:#050507; --groove:#22222C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0D0F1C; --surface:#161A2E; --ink:#ECEDF6; --muted:#9CA2C0; --line:#2A2F4A;
+  --blue:#8DA2FF; --brass:#E2B24C; --red:#FF7680; --teal:#5BC9C3;
+  --good:#4FC683; --bad:#FF6B76; --vinyl:#050507; --groove:#22222C; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5}
+.wrap{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 72px}
+h1,h2,h3{text-wrap:balance;line-height:1.15;margin:0}
+h2{font-family:var(--display);font-weight:400;font-size:1.7rem;color:var(--blue)}
+h3{font-size:1.2rem}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.muted{color:var(--muted)}
+
+/* topplinje */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:6px 18px}
+.brand{background:none;border:0;padding:0;font-family:var(--display);font-size:1.35rem;color:var(--blue)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 18px;font-weight:700;font-size:.95rem}
+.btn:hover{border-color:var(--blue)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:var(--surface)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding-block:8px 22px}
+.hero h1{font-family:var(--display);font-weight:400;font-size:clamp(3rem,11vw,5.4rem);color:var(--blue);letter-spacing:.01em}
+.hero .lead{font-size:1.15rem;max-width:34ch;margin-top:10px}
+.record{--size:150px;--label:var(--red);width:var(--size);height:var(--size);max-width:100%;border-radius:50%;flex:none;position:relative;
+  background:radial-gradient(circle at center,var(--paper) 0 3.2%,var(--label) 3.6% 30%,var(--vinyl) 30.6% 33%,transparent 33.5%),
+  repeating-radial-gradient(circle at center,var(--vinyl) 0 2px,var(--groove) 2.6px 3.2px);
+  box-shadow:0 0 0 1px var(--line),0 10px 24px -14px rgba(0,0,0,.6)}
+.record::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 30deg,transparent 0 40deg,rgba(255,255,255,.08) 55deg,transparent 75deg 220deg,rgba(255,255,255,.06) 235deg,transparent 255deg)}
+.spin .record.hero-rec,.record.go{animation:spin 1.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin .record.hero-rec,.record.go,.mode:hover .record{animation:none!important}}
+
+/* sjangerstripe */
+.strip-wrap{overflow-x:auto;margin-bottom:28px;border-block:1px solid var(--line)}
+.strip{list-style:none;margin:0;padding:12px 0;display:flex;gap:0;min-width:640px}
+.strip li{flex:1;padding:0 10px;border-left:1px dashed var(--line)}
+.strip li:first-child{border-left:0;padding-left:0}
+.strip .yr{display:block;font-family:var(--mono);font-size:.8rem;color:var(--brass);font-weight:600}
+.strip .nm{font-weight:700}
+
+/* modusar */
+.modes{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-block:14px 34px}
+.mode{display:flex;gap:14px;align-items:center;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r);padding:14px}
+.mode:hover{border-color:var(--blue)}
+.mode:hover .record{animation:spin 2.4s linear infinite}
+.mode .record{--size:62px}
+.mode b{display:block;font-size:1.08rem}
+.mode span{display:block;color:var(--muted);font-size:.92rem;line-height:1.35}
+
+/* meistring */
+.mastery{display:grid;gap:10px;margin-top:12px}
+.m-row{display:grid;grid-template-columns:minmax(0,13rem) 1fr 5.5rem;gap:12px;align-items:center;font-size:.95rem}
+.m-track{height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.m-fill{height:100%;background:var(--teal);border-radius:99px;transition:width .4s}
+.m-row .n{font-family:var(--mono);font-size:.8rem;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:520px){.m-row{grid-template-columns:1fr 4.6rem}.m-track{grid-column:1/-1;grid-row:2}}
+
+/* kort */
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r);padding:20px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:6px 14px;background:var(--surface);font-size:.92rem;font-weight:700}
+.chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--surface)}
+.tag{font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--brass);font-weight:600}
+
+/* quiz */
+.qhead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.qhead b{color:var(--ink)}
+.prog{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-block:8px 18px}
+.prog i{display:block;height:100%;background:var(--brass);transition:width .3s}
+.qtext{font-size:1.3rem;font-weight:700;margin-block:8px 18px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface)}
+.opt:hover:not([disabled]){border-color:var(--blue)}
+.opt .k{flex:none;font-family:var(--mono);font-weight:600;width:1.6em;height:1.6em;display:grid;place-items:center;border-radius:6px;background:var(--paper);font-size:.85rem}
+.opt[disabled]{cursor:default}
+.opt.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 13%,var(--surface))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface))}
+.expl{margin-top:16px;padding:14px 16px;border-radius:10px;background:var(--paper);border-left:4px solid var(--brass)}
+.expl .verdict{font-weight:700;margin-bottom:4px}
+.verdict.ok{color:var(--good)} .verdict.no{color:var(--bad)}
+.next-row{display:flex;justify-content:flex-end;margin-top:16px}
+
+/* resultat */
+.score-big{font-family:var(--display);font-size:clamp(3rem,14vw,5rem);color:var(--blue);line-height:1}
+.wrong-list{display:grid;gap:12px;padding:0;margin:0;list-style:none}
+.wrong-list li{padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.wrong-list .q{font-weight:700}
+.wrong-list .a{color:var(--good);font-weight:700}
+
+/* tidslinje */
+.tl{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.tl li{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface)}
+.tl .pos{font-family:var(--mono);color:var(--muted);font-size:.85rem;width:1.4em;text-align:right}
+.tl .yr{display:none;font-family:var(--mono);font-weight:600;color:var(--brass);font-size:.85rem}
+.tl.checked .yr{display:block}
+.tl li.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 10%,var(--surface))}
+.tl li.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 9%,var(--surface))}
+.mv{display:flex;gap:6px}
+.mv button{width:38px;height:38px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);font-size:1rem;line-height:1}
+.mv button:hover:not([disabled]){border-color:var(--blue)}
+.mv button[disabled]{opacity:.3;cursor:default}
+.tl li.flash{animation:flash .35s}
+@keyframes flash{from{background:color-mix(in srgb,var(--brass) 25%,var(--surface))}}
+
+/* omgrepsjakt */
+.terms{display:flex;flex-wrap:wrap;gap:8px}
+.term{border:1.5px solid var(--line);border-radius:999px;padding:8px 16px;background:var(--surface);font-weight:700}
+.term.sel{background:var(--brass);border-color:var(--brass);color:var(--surface)}
+.term.done,.def.done{opacity:.45;cursor:default;text-decoration:none}
+.term.done{border-color:var(--good)}
+.defs{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.def{width:100%;text-align:left;padding:12px 14px;border:1.5px dashed var(--line);border-radius:10px;background:var(--surface)}
+.def:hover:not(.done){border-color:var(--blue);border-style:solid}
+.def.done{border-style:solid;border-color:var(--good)}
+.def .got{display:block;font-weight:700;color:var(--good);font-size:.9rem}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* sjangerdetektiv */
+.clue{font-size:clamp(1.3rem,5vw,1.8rem);font-weight:700;text-align:center;padding-block:26px;text-wrap:balance}
+.genres{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:520px){.genres{grid-template-columns:repeat(2,1fr)}}
+.genre{padding:14px 8px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);font-weight:700}
+.genre:hover:not([disabled]){border-color:var(--blue)}
+.genre.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 13%,var(--surface))}
+.genre.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface))}
+
+/* lyttestova */
+.demos{display:grid;gap:14px}
+.demo{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start}
+.demo .record{--size:70px}
+.demo .play{margin-top:10px}
+@media (max-width:520px){.demo{grid-template-columns:1fr}.demo>.record{display:none}.hero .record{--size:96px}}
+.demo .vis{margin-top:12px}
+.lamps{display:flex;gap:8px;flex-wrap:wrap}
+.lamp{min-width:44px;padding:6px 10px;border-radius:8px;border:1.5px solid var(--line);text-align:center;font-family:var(--mono);font-size:.85rem;background:var(--paper);transition:background .08s}
+.lamp.on{background:var(--brass);border-color:var(--brass);color:var(--surface)}
+.lamp.acc{border-color:var(--red)}
+.bars12{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:420px}
+.bars12 .lamp{min-width:0}
+.lyr{display:grid;gap:4px;margin-top:10px;font-style:italic;font-size:.95rem}
+.lyr div{padding:2px 8px;border-radius:6px;display:grid;grid-template-columns:1.6em 1fr;gap:6px}
+.lyr div b{font-style:normal;font-family:var(--mono);color:var(--brass)}
+.lyr div.on{background:color-mix(in srgb,var(--brass) 20%,transparent)}
+.toggles{display:flex;flex-wrap:wrap;gap:8px}
+.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.links h3{font-size:1.05rem;margin-bottom:6px}
+.links ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.links a{color:var(--blue);font-weight:700}
+.links small{display:block;color:var(--muted)}
+
+/* repetisjon */
+.rep{display:grid;gap:14px}
+.rep dl{display:grid;grid-template-columns:8.5rem 1fr;gap:6px 14px;margin:12px 0 0}
+.rep dt{font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--brass);padding-top:3px}
+.rep dd{margin:0;min-width:0}
+@media (max-width:520px){.rep dl{grid-template-columns:1fr}.rep dt{padding-top:8px}}
+.gloss{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.gloss li{display:grid;grid-template-columns:11rem 1fr;gap:12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+@media (max-width:520px){.gloss li{grid-template-columns:1fr;gap:2px}}
+.gloss b{color:var(--blue)}
+.star{font-family:var(--mono);font-size:.7rem;color:var(--red);margin-left:6px;letter-spacing:.05em}
+.note{font-size:.88rem;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <div class="bar">
+    <button class="brand" id="brand" type="button" aria-label="Til menyen">Blå tonar</button>
+    <button class="btn" id="to-menu" type="button" hidden>← Meny</button>
+  </div>
+
+  <!-- MENY -->
+  <section id="v-menu" class="view">
+    <div class="hero">
+      <div>
+        <p class="eyebrow">Øving til musikkprøva</p>
+        <h1>Blå tonar</h1>
+        <p class="lead">Frå arbeidssongane på plantasjane til rock and roll. Vel ei plate og øv.</p>
+      </div>
+      <div class="record hero-rec" aria-hidden="true"></div>
+    </div>
+
+    <div class="strip-wrap">
+      <ol class="strip" aria-label="Sjangrane i tidsrekkjefølgje">
+        <li><span class="yr">1600–1800-t.</span><span class="nm">Arbeidssong</span></li>
+        <li><span class="yr">1800-talet</span><span class="nm">Spirituals</span></li>
+        <li><span class="yr">1890-åra</span><span class="nm">Blues</span></li>
+        <li><span class="yr">1910–1920</span><span class="nm">Jazz</span></li>
+        <li><span class="yr">1930–1949</span><span class="nm">Rhythm and blues</span></li>
+        <li><span class="yr">1955</span><span class="nm">Rock and roll</span></li>
+      </ol>
+    </div>
+
+    <h2>Vel ei øving</h2>
+    <div class="modes">
+      <button class="mode" type="button" data-go="setup"><div class="record" style="--label:var(--red)"></div><div><b>Prøveprøva</b><span>Fleirval med forklaring etter kvart svar. Vel tema sjølv.</span></div></button>
+      <button class="mode" type="button" data-go="tid"><div class="record" style="--label:var(--brass)"></div><div><b>Tidslinja</b><span>Set hendingane i rett rekkjefølgje, frå 1500-talet til Elvis.</span></div></button>
+      <button class="mode" type="button" data-go="sort"><div class="record" style="--label:var(--blue)"></div><div><b>Sjangerdetektiven</b><span>Kva sjanger høyrer namnet eller kjenneteiknet til?</span></div></button>
+      <button class="mode" type="button" data-go="match"><div class="record" style="--label:var(--teal)"></div><div><b>Omgrepsjakta</b><span>Para omgrepa med rett forklaring.</span></div></button>
+      <button class="mode" type="button" data-go="lytt"><div class="record" style="--label:var(--brass)"></div><div><b>Lyttestova</b><span>Høyr call and response, 12-taktarsblues, backbeat og dixieland.</span></div></button>
+      <button class="mode" type="button" data-go="rep"><div class="record" style="--label:var(--red)"></div><div><b>Repetisjonsarket</b><span>Alt du må kunne, sjanger for sjanger.</span></div></button>
+    </div>
+
+    <h2>Kor godt kan du det?</h2>
+    <p class="muted" style="margin-top:6px">Kvart svar du gir i spela blir talt med her.</p>
+    <div class="mastery" id="mastery"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn primary" id="weakest" type="button">Øv på det du kan minst</button>
+      <button class="btn" id="reset" type="button">Nullstill</button>
+      <span class="note" id="reset-msg"></span>
+    </div>
+  </section>
+
+  <!-- QUIZ-OPPSETT -->
+  <section id="v-setup" class="view stack" hidden>
+    <div><p class="eyebrow">Fleirval</p><h2>Prøveprøva</h2></div>
+    <p>Vel kva tema du vil øve på. Etter kvart svar får du forklaringa frå læreboka.</p>
+    <div class="card stack">
+      <div class="row" style="justify-content:space-between"><b>Tema</b><span class="row"><button class="btn" type="button" id="all-t">Alle</button><button class="btn" type="button" id="none-t">Ingen</button></span></div>
+      <div class="row" id="topic-chips"></div>
+      <b>Kor mange spørsmål?</b>
+      <div class="row" id="count-chips"></div>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="start-quiz" type="button">Start prøva</button>
+      <button class="btn" id="start-wrong" type="button">Øv på feila mine</button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="v-quiz" class="view" hidden>
+    <div class="qhead"><span id="q-count"></span><span>Poeng <b id="q-score">0</b> · Rekkje <b id="q-streak">0</b></span></div>
+    <div class="prog"><i id="q-prog"></i></div>
+    <div class="card">
+      <span class="tag" id="q-topic"></span>
+      <p class="qtext" id="q-text"></p>
+      <div class="opts" id="q-opts"></div>
+      <div class="expl" id="q-expl" hidden><p class="verdict" id="q-verdict"></p><p id="q-why"></p></div>
+      <div class="next-row"><button class="btn primary" id="q-next" type="button" hidden>Neste →</button></div>
+    </div>
+    <p class="note" style="margin-top:10px">Tips: Trykk 1–4 for å svare og Enter for neste.</p>
+  </section>
+
+  <!-- RESULTAT -->
+  <section id="v-result" class="view stack" hidden>
+    <p class="eyebrow">Resultat</p>
+    <div class="score-big" id="r-score"></div>
+    <p id="r-msg" style="font-size:1.15rem;font-weight:700"></p>
+    <div class="mastery" id="r-topics"></div>
+    <div class="row">
+      <button class="btn primary" id="r-again" type="button">Ny runde</button>
+      <button class="btn" id="r-wrong" type="button">Øv på desse feila</button>
+    </div>
+    <h3 id="r-wrong-h">Dette bomma du på</h3>
+    <ul class="wrong-list" id="r-list"></ul>
+  </section>
+
+  <!-- TIDSLINJE -->
+  <section id="v-tid" class="view stack" hidden>
+    <div><p class="eyebrow">Rekkjefølgje</p><h2>Tidslinja</h2></div>
+    <p>Flytt hendingane med pilene så den eldste står øvst. Trykk «Sjekk» når du er klar.</p>
+    <ol class="tl" id="tl-list"></ol>
+    <p id="tl-msg" style="font-weight:700"></p>
+    <div class="row"><button class="btn primary" id="tl-check" type="button">Sjekk</button><button class="btn" id="tl-new" type="button">Nye hendingar</button><span class="note" id="tl-best"></span></div>
+  </section>
+
+  <!-- OMGREP -->
+  <section id="v-match" class="view stack" hidden>
+    <div><p class="eyebrow">Omgrep</p><h2>Omgrepsjakta</h2></div>
+    <p>Trykk på eit omgrep, og så på forklaringa som passar.</p>
+    <div class="qhead"><span>Par: <b id="m-found">0</b> av 5</span><span>Bom: <b id="m-miss">0</b></span></div>
+    <div class="terms" id="m-terms"></div>
+    <ol class="defs" id="m-defs"></ol>
+    <p id="m-msg" style="font-weight:700"></p>
+    <div class="row"><button class="btn primary" id="m-new" type="button">Nye omgrep</button></div>
+  </section>
+
+  <!-- SJANGERDETEKTIV -->
+  <section id="v-sort" class="view stack" hidden>
+    <div><p class="eyebrow">Sortering</p><h2>Sjangerdetektiven</h2></div>
+    <div class="qhead"><span id="s-count"></span><span>Poeng <b id="s-score">0</b></span></div>
+    <div class="card">
+      <p class="tag" style="text-align:center">Kva sjanger høyrer dette til?</p>
+      <p class="clue" id="s-clue"></p>
+      <div class="genres" id="s-genres"></div>
+      <div class="expl" id="s-expl" hidden><p class="verdict" id="s-verdict"></p><p id="s-why"></p></div>
+      <div class="next-row"><button class="btn primary" id="s-next" type="button" hidden>Neste →</button></div>
+    </div>
+  </section>
+
+  <!-- LYTTESTOVA -->
+  <section id="v-lytt" class="view stack" hidden>
+    <div><p class="eyebrow">Øyret</p><h2>Lyttestova</h2></div>
+    <p>Kjenneteikna i musikken, spelte av ein enkel synthesizar. Skru på lyden og trykk «Spel».</p>
+    <div class="demos" id="demos"></div>
+
+    <div class="card stack">
+      <h3>Kva høyrer du?</h3>
+      <p>Spelet vel eit lydeksempel. Gjett kva kjenneteikn det viser.</p>
+      <div class="row"><button class="btn primary" id="lq-play" type="button">Spel eit tilfeldig eksempel</button><span class="qhead">Rett <b id="lq-score">0</b> av <b id="lq-n">0</b></span></div>
+      <div class="genres" id="lq-opts"></div>
+      <p id="lq-msg" style="font-weight:700"></p>
+    </div>
+
+    <h2 style="margin-top:12px">Lytteliste</h2>
+    <p>Ekte opptak å kjenne att. Linkane opnar eit søk på YouTube.</p>
+    <div class="links" id="links"></div>
+  </section>
+
+  <!-- REPETISJON -->
+  <section id="v-rep" class="view stack" hidden>
+    <div><p class="eyebrow">Pensum</p><h2>Repetisjonsarket</h2></div>
+    <p>Bygd på tekstane frå <i>Opus</i> og lista «Kva må eg kunne til prøve i musikk».</p>
+    <div class="rep" id="rep"></div>
+    <h2 style="margin-top:12px">Omgrep</h2>
+    <p class="note">Omgrep merka <span class="star">PÅ LISTA</span> står på lista frå læraren.</p>
+    <ul class="gloss" id="gloss"></ul>
+  </section>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+
+/* ---------- DATA ---------- */
+var TOPICS={slaveri:'Slaveriet og trekanthandelen',arbeid:'Arbeidssong',spir:'Spirituals',blues:'Blues',jazz:'Jazz',rnb:'Rhythm and blues',rock:'Rock and roll',omgrep:'Omgrep',instr:'Instrument'};
+var TKEYS=Object.keys(TOPICS);
+
+// [tema, spørsmål, [rett svar, feil, feil, feil], forklaring]
+var Q=[
+['slaveri','Når byrja europearane å kolonisere Amerika?',['På 1500-talet','På 1300-talet','På 1700-talet','På 1900-talet'],'Koloniseringa byrja på 1500-talet. Det vart innleiinga til 300 år med slaveri.'],
+['slaveri','Kvifor vart slavar frakta frå Vest-Afrika til Amerika?',['For å gjere det tunge arbeidet på plantasjane','For å bli soldatar i hæren','For å byggje byar i Europa','For å spele musikk for dei kvite'],'Millionar av menneske frå urbefolkninga vart utrydda, og slavar vart henta for å arbeide på plantasjane.'],
+['slaveri','Kor mange vestafrikanarar vart tekne til fange?',['35–40 millionar','1–2 millionar','5 millionar','200 millionar'],'Mellom 35 og 40 millionar vart tekne til fange. Berre om lag 15 millionar overlevde sjøreisa.'],
+['slaveri','Om lag kor mange slavar overlevde sjøreisa til Amerika?',['15 millionar','40 millionar','500 000','100 millionar'],'Av 35–40 millionar som vart tekne til fange, overlevde om lag 15 millionar reisa.'],
+['slaveri','Kva var trekanthandelen?',['Ei handelsrute Europa → Afrika → Amerika → Europa, der slavar var ein del av «varene»','Handel mellom tre land i Asia','Ein marknad der kvar slave vart seld tre gonger','Ein avtale om å forby slaveri'],'Skipa tok tøy og våpen til Afrika og kjøpte slavar. Slavane vart frakta til Amerika, og skipa tok med bomull, sukker, tobakk og kaffi heim til Europa.'],
+['slaveri','Kva frakta skipa frå Amerika til Europa i trekanthandelen?',['Bomull, sukker, tobakk og kaffi','Tøy og våpen','Slavar','Gull og sølv'],'Frå Amerika gjekk bomull, sukker, tobakk og kaffi til Europa.'],
+['slaveri','Kva tok skipa med frå Europa til Afrika for å kjøpe slavar?',['Tøy og våpen','Bomull og sukker','Kaffi og tobakk','Musikkinstrument'],'Ringen slutta ved at skipa gjekk med tøy og våpen tilbake til Afrika for å kjøpe slavar.'],
+['slaveri','Var Noreg med på slavehandelen?',['Ja, norske skip frakta slavar frå dansk-norske utpostar i Ghana','Nei, aldri','Berre etter 1900','Berre med fisk og tørrfisk'],'Også norske skip transporterte slavar til Amerika frå dei dansk-norske utpostane i Ghana.'],
+['slaveri','Kva arbeidde dei mannlege slavane mest med?',['Tungt kroppsarbeid på plantasjane','Matstell og barnepass','Undervisning','Handel i byane'],'Mennene arbeidde på plantasjane, ofte under svært hard leiing. Kvinnene arbeidde med matstell, barnepass og ofte undervisning.'],
+['slaveri','Kvifor vart trommene forbodne blant slavane?',['Slaveeigarane var redde for at slavane skulle samle seg til opprør','Trommene var for dyre','Trommene skremde dyra','Kyrkja forbaud all musikk'],'Med trommene kunne slavane føre samtalar over store avstandar, og det var vanskeleg for dei kvite å forstå.'],
+['slaveri','Kvifor fekk slavane lov til å halde fram med å synge?',['Songen heldt humøret oppe, så dei arbeidde meir effektivt','Eigarane ville lære songane sjølve','Det var ein del av gudstenesta','Det fekk dei ikkje lov til'],'Songen vart oppmuntra: slavane arbeidde meir effektivt, og avkastinga frå bomullsmarkene auka.'],
+['slaveri','Kva år sende president Abraham Lincoln ut erklæringa som gjorde slavane i USA frie?',['1863','1807','1776','1920'],'I 1863 sende Lincoln ut erklæringa. Men først etter borgarkrigen (1861–65) vart forbodet gjennomført i heile USA.'],
+['slaveri','Når var borgarkrigen i USA?',['1861–1865','1807–1812','1914–1918','1890–1895'],'Borgarkrigen varte frå 1861 til 1865. Etter krigen vart forbodet mot slaveri gjennomført i heile USA.'],
+['slaveri','Slaveri var forbode ved lov frå 1807. Kvifor heldt det likevel fram?',['Sørstatane retta seg ikkje etter lova','Lova galdt berre i Afrika','Slavane ville ikkje bli frie','Lova vart oppheva året etter'],'Sørstatane retta seg ikkje etter lova. Først etter borgarkrigen vart forbodet gjennomført.'],
+['slaveri','Korleis var livet for dei fleste svarte etter frigjeringa?',['Lite arbeid, stor fattigdom og veksande rasehat','Alle fekk eigne gardar','Dei vart rike på bomull','Dei flytta tilbake til Afrika'],'Lykka vart kortvarig. Det var lite arbeid, dei fleste levde i stor fattigdom, og rasehatet blussa opp.'],
+['slaveri','Kvar fann svarte ein trygg stad, både åndeleg og fysisk, når rasehetsen var verst?',['I eigne kyrkjelydar','På plantasjane','I dei kvite skolane','I hæren'],'Som eit resultat av raseskiljet organiserte svarte seg i eigne kyrkjelydar. Særleg kvinnene var aktive.'],
+
+['arbeid','Kva er ein «work song»?',['Ein arbeidssong som slavane song medan dei arbeidde','Ein song om å søkje jobb','Ein salme frå Europa','Ein song til dans på klubb'],'Arbeidssongar var vanlege på markene i Afrika. No vart dei tekne i bruk på slavemarkene i Amerika.'],
+['arbeid','Kva vart føresongaren i arbeidssongane ofte kalla?',['Field holler','Crooner','Bandleiar','Predikant'],'«To holler» tyder å rope. Føresongaren ute på marka var ein «field holler».'],
+['arbeid','Kva handla tekstane i arbeidssongane ofte om?',['Det harde arbeidet og lengselen bort frå slavelivet','Kjærleik og bilar','Ungdom og fest','Krig i Europa'],'Tekstane handla ofte om det harde arbeidet eller om lengselen bort frå slavelivet på plantasjen.'],
+['arbeid','Korleis var melodiane i arbeidssongane?',['Korte, pentatone motiv som vart gjentekne mange gonger','Lange og bølgjande, som salmar','Heilt utan rytme','12 takter med fast refreng'],'Melodiane var korte, pentatone motiv som vart gjentekne, anten med ny tekst eller same tekst om att.'],
+['arbeid','Kva tyder det at ein melodi er pentaton?',['At han er bygd på ein skala med fem tonar','At han har fem vers','At fem personar syng han','At han går i 5/4-takt'],'Penta = fem. Ein pentaton skala har fem tonar, til dømes C–D–E–G–A.'],
+['arbeid','Føresongaren kunne improvisere. Korleis var svaret frå dei andre?',['Taktfast, med ein synkopert, dansande rytme','Improvisert og fritt','Heilt stille','Sunge av ein solist'],'Lina til føresongaren kunne vere improvisert, men svaret var taktfast og med ein synkopert, dansande rytme.'],
+['arbeid','James Hungerford skildra i 1859 ein båtsong. Kven svarte føresongaren?',['Dei andre roarane, i takt med åretaka','Ingen','Publikum på land','Ein trommeslagar'],'Ein slave leidde songen, og dei andre roarane svarte i kor i takt med åretaka: «Farewell, ole plantation! Oho, oho».'],
+['arbeid','Kva er eit typisk trekk ved den afrikanske musikken som slavane tok med seg?',['Ein syng ei line, og dei andre svarar i kor','Lange instrumentale soloar','Musikk utan rytme','Berre instrument, ingen song'],'Dette kallar vi «call and response» (rop og svar).'],
+
+['spir','Kva religion tok slavane til seg i Amerika?',['Kristendommen','Islam','Buddhismen','Ingen'],'Den religionen slavane hadde med seg frå Afrika, vart undertrykt og erstatta av kristendommen.'],
+['spir','Kvifor kjende slavane seg att i forteljingane i Bibelen?',['Dei kjende seg att i det forfølgde jødefolket','Dei likte forteljingane om kongane','Bibelen handla om Amerika','Dei hadde lese han i Afrika'],'I forteljingane om det forfølgde jødefolket kjende slavane seg att. Dei laga songar med tema frå Bibelen.'],
+['spir','Kva vart Jordan-elva eit symbol på i spirituals?',['Frigjering frå slaveriet og frå eit syndefullt liv på jorda','Handelen over havet','Arbeidet på marka','Ein ny plantasje'],'Jordan-elva vart symbolet på frigjering, både frå slaveri og frå eit syndefullt liv på jorda.'],
+['spir','Spirituals finst i to grupper. Kvar kjem den eine gruppa frå?',['«Call and response»-forma i arbeidssongane','Europeisk opera','Rock and roll','Militærmarsjar'],'Føresongaren improviserte, og forsamlinga eller eit kor svarte med eit rytmisk refreng.'],
+['spir','Den andre gruppa spirituals har lange, bølgjande melodilinjer. Kva er utgangspunktet?',['Europeiske salmar','Afrikanske trommer','Jazzsoloar','Countrymusikk'],'Her syng kyrkjelyden eller eit kor heile songen. Døme: «Deep River» og «Swing Low».'],
+['spir','Kva gruppe spirituals høyrer «Go Down, Moses» til?',['Call and response-gruppa','Salme-gruppa','Det er ein blues','Det er ein rock and roll-låt'],'«Go Down, Moses» har føresongar og svar, slik som arbeidssongane.'],
+['spir','Kva er «Deep River» og «Swing Low» døme på?',['Spirituals med lange melodilinjer som bygger på europeiske salmar','Arbeidssongar','Bluesar','Coverlåtar'],'Desse to høyrer til gruppa med lange, bølgjande melodilinjer.'],
+['spir','Kva kalla ein songane med bibelske tema som slavane laga?',['Negro spirituals','Race records','Field hollers','Ragtime'],'Songane kallar vi negro spirituals, eller berre spirituals.'],
+['spir','Kva hadde tekstane i spirituals ofte i seg?',['Håpet om fridom og lengselen mot himmelen','Kjærleik til bilar','Reklame','Forteljingar om rockestjerner'],'Tekstane handla om håpet om fridom frå slaveriet og lengselen mot himmelen.'],
+
+['blues','Kvar og når vart dei første bluesane sungne?',['I Mississippi-deltaet i 1890-åra','I New York i 1950-åra','I Afrika på 1500-talet','I Chicago i 1940-åra'],'Dei første bluesane vart sungne av bomullsarbeidarar i Mississippi-deltaet i 1890-åra.'],
+['blues','I bluesen vart svaret frå arbeidsgjengen erstatta av noko. Kva?',['Gitaren','Pianoet','Eit kor','Ei tromme'],'Mange tidlegare slavar budde no åleine, og slavekvarteret var borte. Gitaren tok over svaret.'],
+['blues','Kva tyder «to have the blues»?',['Å vere trist og lei seg, einsam og utanfor','Å vere glad og nøgd','Å gå i blå kle','Å vere sint'],'Uttrykket kjem opphavleg frå «blue devils» og kom i bruk midt på 1800-talet.'],
+['blues','Kven spelte inn dei første bluesplatene?',['Kvinnelege artistar','Kvite crooners','Rockeband','Kyrkjekor'],'Mennene var bundne til arbeidet på landsbygda, mens mange kvinnelege artistar reiste rundt og heldt konsertar.'],
+['blues','Kva var «tent shows»?',['Konsertar i telt','TV-program','Plateselskap','Ein dans'],'Kvinnelege bluesartistar reiste rundt i byane og heldt konsertar i telt. På desse turneane fekk 12-taktarsbluesen si endelege form.'],
+['blues','Kva heitte den første bluesen som vart spelt inn på plate i 1920?',['«Crazy Blues» med Mamie Smith and her Jazz Hounds','«Rock Around the Clock»','«Heartbreak Hotel»','«Go Down, Moses»'],'10. august 1920 spelte Mamie Smith and her Jazz Hounds inn «Crazy Blues», laga av Perry Bradford. Plata vart ein kjempesuksess.'],
+['blues','Kven vart kalla den største bluessongarinna av dei alle?',['Bessie Smith','Mamie Smith','Pat Boone','Fats Domino'],'Bessie Smith var den mest kjende bluessongarinna frå byrjinga av 1900-talet.'],
+['blues','Kva form har teksten og melodien i eit bluesvers?',['AAB','ABAB','AABB','ABC'],'Den første lina blir gjenteken før den andre kjem. Siste ord i linene rimar.'],
+['blues','Kor mange takter har den vanlege bluesforma?',['12','8','16','32'],'12-taktarsbluesen: tre liner (A A B) på fire takter kvar.'],
+['blues','Har ein blues vanlegvis refreng?',['Nei, men han har mange vers','Ja, alltid to','Ja, mellom kvart vers','Berre i jazz'],'Ein blues har som regel mange vers, men vanlegvis ikkje noko refreng.'],
+['blues','Kva fortalde tekstane til dei kvinnelege bluessongarane om?',['Harde livsvilkår: fattigdom, rasehat og valdelege ektemenn','Bilar og fest','Krig i Europa','Naturen'],'Dei svarte kvinnene var undertrykte både av fattigdom, rasehat og ektemenn som tok etter prylinga frå slaveeigarane.'],
+['blues','Kvar spreidde bluesen seg etter Mississippi-deltaet?',['Til byane, særleg New Orleans, og i 1940-åra til Chicago','Til Europa','Tilbake til Afrika','Ingen stad'],'Bluesen spreidde seg raskt til byane, særleg New Orleans. I 1940-åra kom han òg til Chicago i nord.'],
+['blues','«I got the blues so bad, it hurts my feet to walk» er frå ein blues av …',['Blind Lemon Jefferson','Elvis Presley','Louis Armstrong','Pat Boone'],'Frå «Lonesome House Blues» (1926). Legg merke til AAB: lina blir sungen to gonger før ei ny line kjem.'],
+['blues','Kven var mange av bluessongarane påverka av?',['Predikantane i dei svarte kyrkjelydane','Kvite operasongarar','Militærorkester','Hollywood-filmar'],'I dei svarte kyrkjene var formidlinga av evangeliet svært kjensleladd, og det smitta over på bluesen.'],
+
+['jazz','Kvifor vart det behov for dansemusikk etter at slaveriet fall?',['Folk ville more seg når dei hadde fri, og musikarane kunne tene pengar','Det var forbode å synge','Kyrkja kravde det','For å lære barn å telje'],'Mange musikarar meinte oppgåva deira var å skape glede. Dans var populært når folk hadde fri.'],
+['jazz','Kva var ein jam-session?',['Samlingar om natta etter spelejobben der musikarane improviserte','Ei plateinnspeling','Eit kor i kyrkja','Ei rockeplate'],'Musikarane møttest i eigne klubbar om natta og spelte om kapp. Dette vart grunnlaget for jazzen.'],
+['jazz','Kva står i sentrum i jazzen?',['Improvisasjon','Faste notar','Lange tekstar','Kor-song'],'Jazzen er ei musikkform der improvisasjon står i sentrum.'],
+['jazz','Kvifor voks den afroamerikanske befolkninga i byane?',['Den store flyttestraumen frå landsbygda i sørstatane','Krigen i Europa','Gullrush i California','Slavehandelen auka'],'I byane fekk mange arbeid i industrien, tente meir pengar og fekk meir fritid.'],
+['jazz','Kva heitte den nye jazzstilen i New Orleans mellom 1910 og 1920?',['Dixieland','Swing','Rock and roll','Boogie-woogie'],'Fleire ragtimeorkester byrja å spele den nye stilen. I New Orleans vart han kalla dixieland.'],
+['jazz','Kva er kollektiv improvisasjon?',['Eitt blåseinstrument spelar melodien, og dei andre improviserer rundt samtidig','Alle spelar same melodi','Ein solist improviserer åleine','Publikum syng med'],'Mens eitt blåseinstrument spelar melodien omtrent rett fram, improviserer dei andre. Kompet sørgjer for rytme og akkordar.'],
+['jazz','Kven leidde Creole Jazz Band, som gjorde den første jazzinnspelinga i 1923?',['King Oliver','Louis Armstrong','Elvis Presley','T-Bone Walker'],'Den første jazzinnspelinga vart gjort i 1923 med Creole Jazz Band, leidd av King Oliver. Andrekornettisten heitte Louis Armstrong.'],
+['jazz','Kvar fekk musikken namnet jazz, og soloimprovisasjon vart moten?',['I Chicago og New York','I Memphis','I Ghana','I Mississippi-deltaet'],'I Chicago og New York gjekk kollektiv improvisasjon av moten. Musikarane kunne no spele soloimprovisasjonar.'],
+['jazz','Kva heitte orkesteret Louis Armstrong starta i 1925?',['Hot Five','The Comets','Jazz Hounds','Creole Jazz Band'],'Frå 1925 hadde Armstrong sitt eige orkester, Hot Five, som han gjorde mange plateinnspelingar med.'],
+['jazz','Kva er «scat»?',['Å improvisere med stemma, både melodi og tekst','Å spele fort på trommer','Ein dans','Ei hitliste'],'Louis Armstrong var den første som song mens han improviserte melodi og tekst. Det vart kalla scat eller scat singing.'],
+['jazz','Kva kallenamn hadde Louis Armstrong?',['Satchmo','The King','Fats','The Boss'],'Louis «Satchmo» Armstrong (1900–1971) vart fødd i slumkvartera i New Orleans.'],
+['jazz','Kva la Louis Armstrong grunnlaget for då han gjorde improvisasjonen til solo?',['Swing- og storbandjazz i 1930-åra','Rock and roll','Spirituals','Arbeidssongar'],'Ein musikar improviserte om gongen, mens dei andre akkompagnerte. Det vart grunnlaget for swing og storband.'],
+['jazz','Korleis lærte Louis Armstrong å spele trompet?',['På ein barneheim, etter at han hadde skote med ein revolver nyttårsaftan','På eit musikkonservatorium','Av Elvis Presley','I kyrkja i Chicago'],'Som 12-åring løyste han eit skot med revolver nyttårsaftan og vart plassert i ein barneheim. Der lærte han trompet.'],
+['jazz','Kva slags show spelte mange tidlege orkester på, i tillegg til danseklubbar?',['Minstrel shows','Talkshow på TV','Rockekonsertar','Operaar'],'Orkester som spelte ragtime, opptredde blant anna ved «minstrel shows», i bordell, på danseklubbar og kabaretar.'],
+
+['rnb','Kva var den første Billboard-lista frå 1894 basert på?',['Sal av notar','Platesal','Radiospeling','Konsertbillettar'],'Det fanst ikkje plater eller radio på den tida, så lista galdt sal av notar.'],
+['rnb','Kva nedsetjande namn brukte plateselskapa i 1920-åra på plater med afroamerikanske artistar?',['Race records (raseplater)','Crossover','Hot 100','Rock and roll'],'Billboard laga ei liste for blues, ragtime og jazz med det nedsetjande namnet «race records».'],
+['rnb','Når vart namnet «rhythm & blues» teke i bruk?',['1949','1894','1920','1969'],'Først i 1949 kom namnet rhythm & blues i bruk, eit folkeleg namn på den nye stilen.'],
+['rnb','Kven skapte rhythm & blues, og korleis?',['Bluesmusikarar i 1930- og 40-åra, med livlegare rytmar og meir iøyrefallande melodiar','Kvite crooners i 1960-åra','Kyrkjekor på 1800-talet','Dixielandorkester i New Orleans'],'Bluesmusikarar tok i bruk livlege rytmar og gjorde melodiane meir iøyrefallande for eit større publikum.'],
+['rnb','Kva form gjekk att i mange R&B-låtar?',['12-taktarsbluesmønsteret','Salmeforma','Sonateforma','Call and response med kor'],'Det grunnleggjande 12-taktars bluesmønsteret gjekk att. Altså blues og rytme.'],
+['rnb','Kven var to av dei mest framståande R&B-artistane?',['T-Bone Walker og Fats Domino','Elvis Presley og Bill Haley','Bessie Smith og Mamie Smith','King Oliver og Louis Armstrong'],'T-Bone Walker (1910–1975) og Fats Domino (1928–2017).'],
+['rnb','Korleis var dei kvite coverversjonane av svarte låtar ofte?',['Enklare rytme, glattare arrangement og «ufarleg» tekst','Meir rå og ville','Heilt like originalen','Utan song'],'Setningar som kunne tolkast som uanstendige eller politisk provoserande, vart bytte ut med ufarlege ord.'],
+['rnb','Kven var den fremste av dei kvite croonerane?',['Pat Boone','Elvis Presley','Fats Domino','Little Richard'],'Pat Boone hadde ei mengd slagerar som farga artistar hadde laga.'],
+['rnb','«Ain’t That a Shame» (1955): Fats Domino låg på 10.-plass på R&B-lista. Kven låg på 1.-plass med same song?',['Pat Boone','Bill Haley','Elvis Presley','T-Bone Walker'],'Den kvite croonaren Pat Boone fekk førsteplassen med coverversjonen.'],
+['rnb','Kven var den første afroamerikanske crossover-artisten?',['Fats Domino','Pat Boone','Elvis Presley','Bessie Smith'],'Fats Domino kom inn på hovudlista til Billboard fleire gonger. Han vart ei sterk inspirasjonskjelde for rock and roll.'],
+['rnb','Kven laga opphavleg «Tutti Frutti», som Pat Boone seinare fekk hit med?',['Little Richard','Fats Domino','Elvis Presley','Louis Armstrong'],'Boone fekk hit med «Tutti Frutti» av Little Richard, som låg lenger ned på same liste.'],
+['rnb','Kva «usynleg mur» støytte Fats Domino og andre afroamerikanarar på?',['Songane slo ikkje an hos kvite før ein kvit artist hadde laga ein coverversjon','Dei fekk ikkje lov å spele piano','Radioen var forboden','Dei måtte synge på nynorsk'],'Hos det kvite publikumet i USA slo ikkje songane skikkeleg an før ein kvit artist hadde laga sin eigen versjon.'],
+
+['rock','Kva handla Hollywood-filmane med James Dean og Marlon Brando rundt 1950 om?',['Ungdom som kravde større fridom frå foreldregenerasjonen','Slaveriet','Krigen','Jazzmusikarar'],'Filmane slo godt an og gav ungdommen større sjølvmedvit.'],
+['rock','Kva oppdaga underhaldningsbransjen og forbruksindustrien rundt 1950?',['At ungdom var ei ny og kjøpesterk gruppe','At jazzen var død','At radio var forbode','At folk ikkje ville danse'],'Klesfabrikantar, bilprodusentar og kosmetikkindustrien laga reklame for ein ny livsstil for tenåringar.'],
+['rock','Kva film vart «gneisten» for rock and roll våren 1955?',['«Blackboard Jungle»','«King Creole»','«Jailhouse Rock»','«In the Ghetto»'],'I ein scene knuser elevane jazzplatene til musikklæraren og set på ei rockeplate i staden.'],
+['rock','Kva låt gjekk rett til topps på Hot 100-lista etter «Blackboard Jungle»?',['«Rock Around the Clock» med Bill Haley and the Comets','«Hound Dog» med Elvis','«Crazy Blues» med Mamie Smith','«Ain’t That a Shame» med Pat Boone'],'Afroamerikansk rytme hadde endeleg brote den kvite «lydmuren», sjølv om det var ein kvit artist som gjorde det.'],
+['rock','Kva kjenneteiknar rock and roll?',['Energisk song, synkopar og backbeat, boogiebass og bluesskjema','Lange salmemelodiar','Kollektiv improvisasjon på klarinett','Song utan rytme'],'Songen vart meir pågåande og energisk, kompet meir rytmisk med synkopar og backbeat, og melodiane følgde som regel eit bluesskjema.'],
+['rock','Kva er backbeat?',['Trykk på slag 2 og 4 i takta, ofte på skarptromma','At bassen spelar baklengs','Ein song som går baklengs','Eit langt trommesolo'],'Backbeat gir musikken driv. Prøv å klappe på 2 og 4 når du høyrer rock and roll. Du kan høyre det i Lyttestova.'],
+['rock','Kva gjorde bassisten i rock and roll?',['Spelte boogiebass, ein «gåande bass» (walking bass)','Improviserte melodien','Song andrestemme','Spelte ikkje i det heile'],'Boogiebassen går jamt opp og ned, slik som i swingjazzen.'],
+['rock','Kva nye dansar hadde ungdommen?',['Swing, rock and roll og twist','Tango og cha cha cha','Vals og polka','Ballett'],'Foreldra dansa tango og cha cha cha, som verka pripne i samanlikning.'],
+['rock','Kvar voks Elvis Presley opp?',['I fattigkvartera i Memphis, Tennessee','I New Orleans','I Chicago','I Hollywood'],'Elvis Aron Presley (1935–1977) voks opp i fattigkvartera i Memphis.'],
+['rock','Kva musikk høyrde Elvis framført levande som ung?',['Blues, gospel og country','Opera og ballett','Berre jazz','Klassisk musikk'],'I Memphis kunne han høyre både blues, gospel og countrymusikk.'],
+['rock','Kva var debutplata til Elvis i 1954?',['«That’s All Right, Mama»','«Heartbreak Hotel»','«My Happiness»','«In the Ghetto»'],'«My Happiness» spelte han inn i 1953 som bursdagsgåve til mor si, hos Sam Phillips. Debuten kom med «That’s All Right, Mama» i 1954.'],
+['rock','Kvifor skulle kamerafolka i Ed Sullivan-showet berre filme Elvis frå midja og opp?',['Hoftevrikkinga hans vart sett på som usedeleg','Han var for kort','Han hadde stygge sko','Han dansa for dårleg'],'Foreldra fnyste og fordømde den nye artisten som usedeleg. Nokre TV-kanalar nekta lenge å vise han.'],
+['rock','Kva år gjorde Elvis comeback som konsertartist med «In the Ghetto»?',['1969','1955','1977','1949'],'I 1969 kom han tilbake. Han døydde i 1977, berre 42 år gammal.'],
+['rock','Kva kallenamn har Elvis Presley?',['The King of Rock and Roll','Satchmo','The Crooner','Father of the Blues'],'Han kombinerte rytme og rørsler frå svarte artistar med den lyriske syngjemåten i countryen.'],
+['rock','Skreiv Elvis songane sine sjølv?',['Nei, han samarbeidde med låtskrivarar som Leiber og Stoller','Ja, alle','Berre dei første','Mora skreiv dei'],'Jerry Leiber og Mike Stoller skreiv hundrevis av hitlåtar.'],
+['rock','Kven fekk Elvis sin karriere styrt av, slik at han gjekk over til film?',['Manageren hans','Mora hans','Sam Phillips','Pat Boone'],'Manageren kravde 50 prosent av alt Elvis tente. Elvis spelte inn 31 filmar før han vende tilbake til scena.'],
+
+['omgrep','Kva tyder diskriminering?',['Å behandle nokon dårlegare enn andre, til dømes på grunn av hudfarge','Å blande to musikkstilar','Å syngje ein annan sin song','Å improvisere'],'Raseskiljelovene i USA var diskriminering: svarte fekk dårlegare skolar, kafear, toalett og kyrkjer.'],
+['omgrep','Kva er rasisme?',['Å meine at nokre menneske er meir verd enn andre på grunn av hudfarge eller opphav','Ein musikkstil','Ein dans','Ei lov om fridom'],'Rasismen vart svært utbreidd i USA, og på 1900-talet vart han òg offisiell politikk.'],
+['omgrep','Kva var raseskilje?',['Lover som skilde svarte og kvite, slik at svarte ikkje fekk vere på «kvite» stader','At alle fekk same rettar','Ei Billboard-liste','Ein type spiritual'],'Dei «kvite» stadene heldt alltid høgare standard enn stadene dei svarte hadde tilgjenge til.'],
+['omgrep','Kva er ein crossover?',['Ein låt frå ei sjangerliste, til dømes R&B, som også kjem inn på hovudlista','Når to band byter instrument','Ein kvit artist som syng ein svart song','Ein dans frå 1950-åra'],'Fats Domino var den første afroamerikanske crossover-artisten.'],
+['omgrep','Kva er ein crooner?',['Ein kvit songar som song glatte coverversjonar («croon» = å nynne, småsyngje)','Ein føresongar på marka','Ein trommeslagar','Ein jazzsolist'],'Den fremste croonaren var Pat Boone.'],
+['omgrep','Kva er ein coverversjon?',['Ein ny innspeling av ein song som ein annan artist har spelt inn først','Omslaget på ei plate','Ein song utan tekst','Ein ny sjanger'],'Kvite coverversjonar hadde ofte forenkla rytme, glattare arrangement og endra tekst.'],
+['omgrep','Kva er «call and response»?',['Ein syng ei line, og dei andre svarar i kor («rop og svar»)','Ein telefonsamtale','To band som spelar kvar sin song','At publikum klappar'],'Call and response kjem frå Afrika og finst i arbeidssongar og spirituals.'],
+['omgrep','Kva er eit ensemble eller band?',['Ei gruppe musikarar som spelar saman','Ein solist','Ein dans','Ei plateliste'],'Døme: dixielandorkesteret med kornett, trombone, klarinett og rytmeseksjon.'],
+['omgrep','Kva tyder det å improvisere?',['Å finne på musikken der og då, medan ein spelar eller syng','Å spele nøyaktig etter notane','Å øve på same stykke mange gonger','Å lage ein coverversjon'],'Improvisasjon står i sentrum i jazzen, men føresongarane i arbeidssongane improviserte òg.'],
+['omgrep','Kva tyder «feeling blue»?',['Å kjenne seg trist, einsam og utanfor','Å vere forelska','Å vere glad','Å fryse'],'Å «ha the blues» kjem frå «blue devils». Det er kjensla bluesen handlar om.'],
+['omgrep','Kva tyder «field holler»?',['Føresongaren som ropte ut lina i arbeidssongane på marka','Ein bluesgitarist','Eit plateselskap','Ein type tromme'],'«To holler» tyder å rope.'],
+
+['instr','Kva instrument var med i det tidlege dixielandorkesteret?',['Kornett, trombone, klarinett og ein rytmeseksjon','Elgitar, bass og trommer','Fiolin, bratsj og cello','Berre song'],'Rytmeseksjonen varierte, men tuba eller bass, banjo og slagverk var vanleg.'],
+['instr','Kva var vanleg i rytmeseksjonen i den tidlege jazzen?',['Tuba eller bass, banjo og slagverk','Fiolin og fløyte','Orgel og harpe','Ingen instrument'],'Kompet (rytmeseksjonen) sørgjer for stødig rytme og akkordunderlag.'],
+['instr','Kva instrument tok over «svaret» i bluesen?',['Gitaren','Tubaen','Klarinetten','Trommene'],'Svaret frå arbeidsgjengen vart erstatta av gitaren.'],
+['instr','Kva instrument laga slavane seg av det dei fekk tak i?',['Trommer, balafonar og banjoar','Saksofon og piano','Elgitar og bass','Trompet og trombone'],'Desse enkle instrumenta vart brukte til å akkompagnere song og dans.'],
+['instr','Kva er ein balafon?',['Eit afrikansk instrument med treplater ein slår på, litt som ein xylofon','Ei stor tromme','Eit blåseinstrument','Ein type gitar'],'Balafonen kjem frå Vest-Afrika, der mange av slavane kom frå.'],
+['instr','Kva instrument spelte Louis Armstrong?',['Trompet (og kornett)','Saksofon','Piano','Gitar'],'Han lærte trompet på barneheimen, og han var andrekornettist i Creole Jazz Band.'],
+['instr','Kva instrumentgruppe sørgjer for stødig rytme og akkordar i jazzen?',['Kompet, også kalla rytmeseksjonen','Blåsarane','Koret','Solisten'],'Mens blåsarane improviserer, held kompet rytmen og akkordane.'],
+['instr','Kva instrument er typiske i rock and roll?',['Elgitar, bass, trommer, piano og saksofon','Fiolin og harpe','Balafon og banjo','Orgel og kor'],'Bassisten spelte boogiebass, og trommeslagaren spelte backbeat.'],
+['instr','Kva instrument brukte mange bluesmusikarar i tillegg til gitar og song?',['Munnspel','Tuba','Fiolin','Harpe'],'Munnspelet var billig og lett å ha med seg, og det høyrer godt til i bluesen.'],
+['instr','Kva «instrument» er viktigast i spirituals?',['Stemmene: føresongar og kor','Elgitar','Klarinett','Trommesett'],'Spirituals vart sungne av kyrkjelyden eller eit kor, ofte utan instrument.'],
+['instr','Kva instrument slo slavane på for å «snakke» over store avstandar?',['Trommer','Banjo','Fløyte','Fiolin'],'Trommemusikken var avansert, og med tromma kunne dei føre samtalar over store avstandar. Difor vart trommene forbodne.']
+];
+
+var EVENTS=[
+[1500,'1500-talet','Europearane byrjar å kolonisere Amerika, og slavehandelen startar'],
+[1807,'1807','Slaveri blir forbode ved lov i USA, men sørstatane rettar seg ikkje etter det'],
+[1859,'1859','James Hungerford skildrar ein båtsong med call and response'],
+[1861,'1861–65','Borgarkrigen i USA'],
+[1863,'1863','Abraham Lincoln erklærer slavane i USA frie'],
+[1890,'1890-åra','Dei første bluesane blir sungne i Mississippi-deltaet'],
+[1894,'1894','Billboard lagar si første liste, basert på notesal'],
+[1910,'1910–1920','Dixieland veks fram i New Orleans'],
+[1920,'1920','Mamie Smith spelar inn «Crazy Blues», den første bluesen på plate'],
+[1923,'1923','Den første jazzinnspelinga: King Oliver’s Creole Jazz Band'],
+[1925,'1925','Louis Armstrong startar orkesteret Hot Five'],
+[1926,'1926','Blind Lemon Jefferson syng «Lonesome House Blues»'],
+[1940,'1940-åra','Bluesen kjem til Chicago'],
+[1949,'1949','Namnet «rhythm & blues» blir teke i bruk'],
+[1953,'1953','Elvis spelar inn «My Happiness» som gåve til mor si'],
+[1954,'1954','Elvis debuterer med «That’s All Right, Mama»'],
+[1955,'1955','Filmen «Blackboard Jungle» og «Rock Around the Clock»'],
+[1969,'1969','Elvis gjer comeback med «In the Ghetto»'],
+[1977,'1977','Elvis Presley døyr, 42 år gammal']
+];
+
+// [omgrep, forklaring, står på lista]
+var TERMS=[
+['Diskriminering','Å behandle menneske dårlegare enn andre, til dømes på grunn av hudfarge.',1],
+['Rasisme','Å meine at nokre menneske er meir verd enn andre på grunn av hudfarge eller opphav.',1],
+['Raseskilje','Lover som heldt svarte og kvite frå kvarandre. Svarte fekk ikkje vere på «kvite» stader.',1],
+['Crossover','Når ein låt frå ei sjangerliste, til dømes R&B, også kjem inn på hovudlista.',1],
+['Crooner','Kvit songar som «nynna» glatte coverversjonar av svarte låtar, til dømes Pat Boone.',1],
+['Coverversjon','Ein ny versjon av ein song som ein annan artist har spelt inn før.',1],
+['Field holler','Føresongaren i arbeidssongane på marka («to holler» = å rope).',1],
+['Call and response','Ein syng ei line, og dei andre svarar i kor. «Rop og svar».',1],
+['Ensemble / band','Ei gruppe musikarar som spelar saman.',1],
+['Improvisere','Å finne på musikken der og då, medan ein spelar eller syng.',1],
+['Feeling blue','Å kjenne seg trist, einsam og utanfor. Å «ha the blues».',1],
+['Pentaton','Ein skala med berre fem tonar. Arbeidssongane hadde pentatone motiv.',0],
+['AAB-form','Bluesverset: ei line, same line ein gong til, så ei ny line som rimar.',0],
+['12-taktarsblues','Den faste bluesforma: tre liner på fire takter kvar.',0],
+['Kollektiv improvisasjon','Fleire blåsarar improviserer samtidig rundt melodien, slik som i dixieland.',0],
+['Scat','Å improvisere med stemma på stavingar utan meining, slik Louis Armstrong gjorde.',0],
+['Jam-session','Musikarar møtest og improviserer saman, ofte om natta etter spelejobben.',0],
+['Backbeat','Trykk på slag 2 og 4 i takta. Typisk for rock and roll.',0],
+['Walking bass','«Gåande» bass som går jamt steg for steg. Også kalla boogiebass.',0],
+['Race records','Nedsetjande namn på plater med afroamerikanske artistar i 1920-åra.',0],
+['Synkope','Trykk på ein «svak» stad i takta, så rytmen dett litt utanfor slaget.',0]
+];
+
+var GENRES=[['arbeid','Arbeidssong'],['spir','Spirituals'],['blues','Blues'],['jazz','Jazz'],['rnb','Rhythm and blues'],['rock','Rock and roll']];
+var GNAME={};GENRES.forEach(function(g){GNAME[g[0]]=g[1]});
+
+// [kort, sjanger, forklaring]
+var CLUES=[
+['Field holler','arbeid','Føresongaren på marka i arbeidssongane.'],
+['Song i takt med åretak og hakker','arbeid','Arbeidssongane heldt takten i arbeidet.'],
+['«Farewell, ole plantation! Oho, oho»','arbeid','Båtsongen som James Hungerford skildra i 1859.'],
+['Føresongaren improviserer, arbeidsgjengen svarar','arbeid','Call and response på slavemarkene.'],
+['Korte, pentatone motiv som blir gjentekne','arbeid','Slik var melodiane i arbeidssongane.'],
+['Jordan-elva som symbol på fridom','spir','I spirituals var Jordan-elva symbolet på frigjering.'],
+['«Go Down, Moses»','spir','Ein spiritual i call and response-gruppa.'],
+['«Swing Low» og «Deep River»','spir','Spirituals med lange melodilinjer frå salmane.'],
+['Melodiar bygde på europeiske salmar','spir','Den eine av dei to gruppene spirituals.'],
+['Songar med tema frå Bibelen','spir','Slavane kjende seg att i det forfølgde jødefolket.'],
+['AAB-vers','blues','Bluesverset: same line to gonger, så ei ny.'],
+['Bessie Smith','blues','Den største bluessongarinna av dei alle.'],
+['Mamie Smith og «Crazy Blues»','blues','Den første bluesen på plate, 1920.'],
+['Mississippi-deltaet i 1890-åra','blues','Der vart dei første bluesane sungne.'],
+['Tent shows','blues','Kvinnelege bluesartistar heldt konsertar i telt.'],
+['Gitaren tek over svaret frå arbeidsgjengen','blues','Slik oppstod bluesen.'],
+['Blind Lemon Jefferson','blues','«Lonesome House Blues», 1926.'],
+['Kollektiv improvisasjon','jazz','Typisk for dixieland i New Orleans.'],
+['Kornett, trombone og klarinett','jazz','Blåsarane i dixielandorkesteret.'],
+['King Oliver','jazz','Leiaren av Creole Jazz Band, første jazzinnspeling i 1923.'],
+['Louis «Satchmo» Armstrong','jazz','Trompetisten som gjorde improvisasjonen til solo.'],
+['Scat','jazz','Armstrong improviserte med stemma.'],
+['Dixieland i New Orleans','jazz','Den første jazzstilen, 1910–1920.'],
+['Jam-session etter spelejobben','jazz','Grunnlaget for jazzen.'],
+['Namnet kom i 1949','rnb','Rhythm & blues erstatta det nedsetjande «race records».'],
+['Fats Domino','rnb','Den første afroamerikanske crossover-artisten.'],
+['T-Bone Walker','rnb','Ein av dei mest framståande R&B-artistane.'],
+['Pat Boone coverar «Ain’t That a Shame»','rnb','Coverversjonen gjekk forbi originalen til Fats Domino på R&B-lista.'],
+['Livlege rytmar over 12-taktarsbluesen, 1930–40-åra','rnb','Slik skapte bluesmusikarane rhythm & blues.'],
+['Elvis Presley','rock','The King of Rock and Roll.'],
+['Bill Haley and the Comets','rock','«Rock Around the Clock», 1955.'],
+['Backbeat og boogiebass','rock','Kjenneteikn på rock and roll.'],
+['Filmen «Blackboard Jungle»','rock','Gneisten som tende rock and roll i 1955.'],
+['Hoftevrikking som vart sensurert på TV','rock','Elvis vart berre filma frå midja og opp.'],
+['Ungdommen dansar twist','rock','Swing, rock and roll og twist var dei nye dansane.']
+];
+
+var REP=[
+{k:'arbeid',n:'Arbeidssong (work song)',
+ tid:'Slavetida, på plantasjane i sørstatane i USA. Tradisjonen kom frå markene i Vest-Afrika.',
+ sam:'Slaveri. Slavane var eigde av plantasjeeigarar som bestemte over liv og død. Trommer vart forbodne av frykt for opprør, men songen vart oppmuntra fordi slavane då arbeidde meir.',
+ form:'Call and response: ein føresongar (field holler) syng ei line, og arbeidsgjengen svarar i kor. Korte, pentatone motiv som blir gjentekne. Føresongaren improviserer, svaret er taktfast og synkopert.',
+ innh:'Det harde arbeidet og lengselen bort frå slavelivet.',
+ ins:'Stemmer, klapp og arbeidsreiskap. Frå Afrika: trommer, balafon og banjo.',
+ namn:'James Hungerford (båtsongen frå 1859), Frederick Olmsted (1853).'},
+{k:'spir',n:'Spirituals',
+ tid:'Slavetida og etter, i dei svarte kyrkjelydane.',
+ sam:'Den afrikanske religionen vart undertrykt og erstatta av kristendommen. Etter frigjeringa (1863) og under raseskiljet vart kyrkja ein tilfluktsstad.',
+ form:'To typar: 1) call and response-forma frå arbeidssongane, til dømes «Go Down, Moses». 2) Lange, bølgjande melodilinjer frå europeiske salmar, til dømes «Deep River» og «Swing Low».',
+ innh:'Tema frå Bibelen. Slavane kjende seg att i det forfølgde jødefolket. Håpet om fridom. Jordan-elva = frigjering.',
+ ins:'Stemmene: føresongar, kyrkjelyd og kor.',
+ namn:'«Go Down, Moses», «Deep River», «Swing Low».'},
+{k:'blues',n:'Blues',
+ tid:'1890-åra i Mississippi-deltaet. Spreidde seg til New Orleans og (i 1940-åra) til Chicago.',
+ sam:'Dei frigjevne slavane levde i stor fattigdom, med rasehat og raseskilje. Mange arbeidde no åleine, og slavekvarteret var borte.',
+ form:'12-taktarsblues. AAB: same line to gonger, så ei ny line, med enderim. Mange vers, vanlegvis inga refreng.',
+ innh:'Sorg, einsemd og harde livsvilkår: «to have the blues» (frå «blue devils»).',
+ ins:'Song og gitar (gitaren tok over svaret frå arbeidsgjengen). Også munnspel og piano.',
+ namn:'Mamie Smith («Crazy Blues», 10. august 1920, laga av Perry Bradford), Bessie Smith, Blind Lemon Jefferson. Tent shows.'},
+{k:'jazz',n:'Jazz',
+ tid:'1910–1920 i New Orleans (dixieland). I 1920-åra i Chicago og New York.',
+ sam:'Den store flyttestraumen frå landsbygda til byane. Folk fekk meir pengar og fritid, og det vart behov for dansemusikk. Ragtimeorkester, minstrel shows og danseklubbar.',
+ form:'Improvisasjon i sentrum. Dixieland: kollektiv improvisasjon (eitt blåseinstrument spelar melodien, dei andre improviserer). Seinare soloimprovisasjon. Jam-sessions om natta.',
+ innh:'Glede og dans. Liding blir glede.',
+ ins:'Kornett/trompet, trombone, klarinett + rytmeseksjon: tuba eller bass, banjo og slagverk.',
+ namn:'King Oliver (Creole Jazz Band, første jazzinnspeling 1923), Louis «Satchmo» Armstrong (Hot Five 1925, scat). «Tiger Rag».'},
+{k:'rnb',n:'Rhythm and blues',
+ tid:'Skapt i 1930- og 1940-åra. Namnet kom i 1949.',
+ sam:'Plater med svarte artistar vart kalla «race records». Rasefordommar gjorde at kvite artistar laga coverversjonar med glattare lyd og «ufarleg» tekst. Crooners. Crossover.',
+ form:'12-taktars bluesmønster med livlegare rytmar og meir iøyrefallande melodiar.',
+ innh:'Livleg musikk for eit stort publikum: blues og rytme.',
+ ins:'Song, piano, saksofon, elgitar, bass og trommer.',
+ namn:'T-Bone Walker, Fats Domino (første crossover-artist), Pat Boone (crooner), Little Richard («Tutti Frutti»). «Ain’t That a Shame» (1955).'},
+{k:'rock',n:'Rock and roll',
+ tid:'Midt på 1950-talet. Gneisten: filmen «Blackboard Jungle», våren 1955.',
+ sam:'Ungdom vart ei ny, kjøpesterk gruppe og kravde fridom frå foreldra (James Dean, Marlon Brando). Afroamerikansk rytme braut den kvite «lydmuren».',
+ form:'Energisk syngjemåte, rytmisk komp med synkopar og backbeat, boogiebass (walking bass), bluesskjema.',
+ innh:'Ungdom, fest og dans: swing, rock and roll og twist.',
+ ins:'Elgitar, bass, trommer, piano og saksofon.',
+ namn:'Bill Haley and the Comets («Rock Around the Clock»), Elvis Presley («That’s All Right, Mama» 1954, «Heartbreak Hotel», «Hound Dog»), Sam Phillips, Leiber og Stoller.'}
+];
+
+var LINKS=[
+['Arbeidssong','Høyr etter føresongaren og svaret frå gjengen.',[['Prison work song (Alan Lomax-opptak)','prison work song Alan Lomax'],['Field holler','field holler song recording']]],
+['Spirituals','Høyr kor koret svarar eller syng heile songen.',[['Go Down, Moses','Go Down Moses spiritual'],['Swing Low, Sweet Chariot','Swing Low Sweet Chariot Fisk Jubilee Singers'],['Deep River','Deep River spiritual']]],
+['Blues','Tel tre liner: A, A, B.',[['Mamie Smith: Crazy Blues (1920)','Mamie Smith Crazy Blues 1920'],['Bessie Smith: St. Louis Blues','Bessie Smith St Louis Blues'],['Blind Lemon Jefferson: Lonesome House Blues','Blind Lemon Jefferson Lonesome House Blues']]],
+['Jazz','Høyr kornett, klarinett og trombone som improviserer samtidig.',[['King Oliver’s Creole Jazz Band: Dipper Mouth Blues (1923)','King Oliver Creole Jazz Band Dipper Mouth Blues'],['Louis Armstrong Hot Five: Heebie Jeebies (scat)','Louis Armstrong Heebie Jeebies'],['Tiger Rag','Tiger Rag Original Dixieland Jazz Band']]],
+['Rhythm and blues','Samanlikn original og cover. Kva er skilnaden?',[['Fats Domino: Ain’t That a Shame','Fats Domino Ain’t That a Shame'],['Pat Boone: Ain’t That a Shame (cover)','Pat Boone Ain’t That a Shame'],['Little Richard: Tutti Frutti','Little Richard Tutti Frutti'],['T-Bone Walker: Stormy Monday','T-Bone Walker Call It Stormy Monday']]],
+['Rock and roll','Klapp på 2 og 4: backbeat!',[['Bill Haley and the Comets: Rock Around the Clock','Bill Haley Rock Around the Clock'],['Elvis Presley: That’s All Right, Mama','Elvis Presley That’s All Right Mama 1954'],['Elvis Presley: Heartbreak Hotel','Elvis Presley Heartbreak Hotel'],['Elvis Presley: Hound Dog','Elvis Presley Hound Dog']]]
+];
+
+/* ---------- LAGRING ---------- */
+var KEY='blaa-tonar-v1';
+var S=(function(){var d={};try{d=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){d={}}d.m=d.m||{};d.wrong=d.wrong||[];d.best=d.best||{};return d})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function record(topic,ok){var m=S.m[topic]||(S.m[topic]={r:0,n:0});m.n++;if(ok)m.r++;save()}
+
+/* ---------- NAVIGASJON ---------- */
+var current='menu';
+function show(v){
+  Sound.stop();
+  $$('.view').forEach(function(el){el.hidden=(el.id!=='v-'+v)});
+  $('#to-menu').hidden=(v==='menu');
+  current=v;
+  if(v==='menu')renderMastery();
+  window.scrollTo(0,0);
+}
+$('#brand').onclick=function(){show('menu')};
+$('#to-menu').onclick=function(){show('menu')};
+$$('[data-go]').forEach(function(b){b.onclick=function(){var g=b.getAttribute('data-go');
+  if(g==='tid')newTimeline(); if(g==='match')newMatch(); if(g==='sort')newSort(); if(g==='setup')renderSetup();
+  show(g)}});
+
+/* ---------- MEISTRING ---------- */
+function bars(el,data){
+  el.innerHTML=data.map(function(d){var pct=d.n?Math.round(100*d.r/d.n):0;
+    return '<div class="m-row"><span>'+esc(d.label)+'</span><div class="m-track" aria-hidden="true"><div class="m-fill" style="width:'+pct+'%"></div></div><span class="n">'+(d.n?d.r+' av '+d.n:'ikkje øvd')+'</span></div>'}).join('');
+}
+function renderMastery(){bars($('#mastery'),TKEYS.map(function(k){var m=S.m[k]||{r:0,n:0};return {label:TOPICS[k],r:m.r,n:m.n}}))}
+$('#weakest').onclick=function(){
+  var best=null,score=2;
+  TKEYS.forEach(function(k){var m=S.m[k];var s=(!m||!m.n)?-1:m.r/m.n;if(s<score){score=s;best=k}});
+  startQuiz(Q.map(function(_,i){return i}).filter(function(i){return Q[i][0]===best}),10);
+};
+var resetArmed=false;
+$('#reset').onclick=function(){
+  if(!resetArmed){resetArmed=true;$('#reset').textContent='Ja, nullstill alt';$('#reset-msg').textContent='Trykk ein gong til for å slette framgangen.';return}
+  S.m={};S.wrong=[];S.best={};save();resetArmed=false;$('#reset').textContent='Nullstill';$('#reset-msg').textContent='Nullstilt.';renderMastery();
+};
+
+/* ---------- QUIZ ---------- */
+var selTopics=TKEYS.slice(), selCount=10;
+function renderSetup(){
+  $('#topic-chips').innerHTML=TKEYS.map(function(k){var n=Q.filter(function(q){return q[0]===k}).length;
+    return '<button type="button" class="chip" data-t="'+k+'" aria-pressed="'+(selTopics.indexOf(k)>=0)+'">'+esc(TOPICS[k])+' <span class="muted" style="font-weight:400">'+n+'</span></button>'}).join('');
+  $$('#topic-chips .chip').forEach(function(c){c.onclick=function(){var k=c.getAttribute('data-t');var i=selTopics.indexOf(k);if(i>=0)selTopics.splice(i,1);else selTopics.push(k);renderSetup()}});
+  $('#count-chips').innerHTML=[10,20,30,0].map(function(n){return '<button type="button" class="chip" data-n="'+n+'" aria-pressed="'+(selCount===n)+'">'+(n||'Alle')+'</button>'}).join('');
+  $$('#count-chips .chip').forEach(function(c){c.onclick=function(){selCount=+c.getAttribute('data-n');renderSetup()}});
+  $('#start-quiz').disabled=!selTopics.length;
+  var w=S.wrong.length;$('#start-wrong').disabled=!w;$('#start-wrong').textContent='Øv på feila mine ('+w+')';
+}
+$('#all-t').onclick=function(){selTopics=TKEYS.slice();renderSetup()};
+$('#none-t').onclick=function(){selTopics=[];renderSetup()};
+$('#start-quiz').onclick=function(){startQuiz(Q.map(function(_,i){return i}).filter(function(i){return selTopics.indexOf(Q[i][0])>=0}),selCount)};
+$('#start-wrong').onclick=function(){startQuiz(S.wrong.slice(),0)};
+
+var QZ=null;
+function startQuiz(ids,count){
+  ids=shuffle(ids); if(count)ids=ids.slice(0,count);
+  if(!ids.length)return;
+  QZ={ids:ids,i:0,score:0,streak:0,best:0,log:[],answered:false};
+  show('quiz');renderQ();
+}
+function renderQ(){
+  var q=Q[QZ.ids[QZ.i]];
+  QZ.answered=false;
+  $('#q-count').textContent='Spørsmål '+(QZ.i+1)+' av '+QZ.ids.length;
+  $('#q-score').textContent=QZ.score;$('#q-streak').textContent=QZ.streak;
+  $('#q-prog').style.width=(100*QZ.i/QZ.ids.length)+'%';
+  $('#q-topic').textContent=TOPICS[q[0]];
+  $('#q-text').textContent=q[1];
+  var opts=shuffle(q[2].map(function(t,i){return {t:t,ok:i===0}}));
+  QZ.opts=opts;
+  $('#q-opts').innerHTML=opts.map(function(o,i){return '<button type="button" class="opt" data-i="'+i+'"><span class="k">'+(i+1)+'</span><span>'+esc(o.t)+'</span></button>'}).join('');
+  $$('#q-opts .opt').forEach(function(b){b.onclick=function(){answer(+b.getAttribute('data-i'))}});
+  $('#q-expl').hidden=true;$('#q-next').hidden=true;
+}
+function answer(i){
+  if(QZ.answered)return;QZ.answered=true;
+  var id=QZ.ids[QZ.i],q=Q[id],ok=QZ.opts[i].ok;
+  $$('#q-opts .opt').forEach(function(b,j){b.disabled=true;if(QZ.opts[j].ok)b.classList.add('right');else if(j===i)b.classList.add('wrong')});
+  if(ok){QZ.score++;QZ.streak++;QZ.best=Math.max(QZ.best,QZ.streak);var w=S.wrong.indexOf(id);if(w>=0)S.wrong.splice(w,1)}
+  else{QZ.streak=0;if(S.wrong.indexOf(id)<0)S.wrong.push(id)}
+  record(q[0],ok);
+  QZ.log.push({id:id,ok:ok});
+  $('#q-score').textContent=QZ.score;$('#q-streak').textContent=QZ.streak;
+  var v=$('#q-verdict');v.className='verdict '+(ok?'ok':'no');
+  v.textContent=ok?(QZ.streak>=3?'Rett! '+QZ.streak+' på rad.':'Rett!'):'Ikkje heilt. Rett svar: '+q[2][0];
+  $('#q-why').textContent=q[3];
+  $('#q-expl').hidden=false;
+  var nb=$('#q-next');nb.hidden=false;nb.textContent=(QZ.i+1<QZ.ids.length)?'Neste →':'Sjå resultatet';nb.focus();
+}
+$('#q-next').onclick=function(){QZ.i++;if(QZ.i<QZ.ids.length)renderQ();else showResult()};
+document.addEventListener('keydown',function(e){
+  if(current!=='quiz'||!QZ||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(!QZ.answered&&e.key>='1'&&e.key<='4'){answer(+e.key-1);e.preventDefault()}
+  else if(QZ.answered&&e.key==='Enter'&&document.activeElement!==$('#q-next')){$('#q-next').click();e.preventDefault()}
+});
+function showResult(){
+  var n=QZ.ids.length,s=QZ.score,p=s/n;
+  $('#r-score').textContent=s+' / '+n;
+  $('#r-msg').textContent=p>=.9?'Strålande! Du er klar for prøva.':p>=.7?'Godt jobba! Sjå over dei du bomma på.':p>=.5?'Bra start. Les repetisjonsarket og prøv igjen.':'Øv litt meir. Du klarer det!';
+  var by={};QZ.log.forEach(function(l){var t=Q[l.id][0];by[t]=by[t]||{r:0,n:0};by[t].n++;if(l.ok)by[t].r++});
+  bars($('#r-topics'),Object.keys(by).map(function(k){return {label:TOPICS[k],r:by[k].r,n:by[k].n}}));
+  var wr=QZ.log.filter(function(l){return !l.ok});
+  $('#r-wrong').hidden=!wr.length;$('#r-wrong-h').hidden=!wr.length;
+  $('#r-list').innerHTML=wr.map(function(l){var q=Q[l.id];return '<li><p class="q">'+esc(q[1])+'</p><p class="a">'+esc(q[2][0])+'</p><p class="muted">'+esc(q[3])+'</p></li>'}).join('');
+  QZ.wrongIds=wr.map(function(l){return l.id});
+  show('result');
+}
+$('#r-again').onclick=function(){renderSetup();show('setup')};
+$('#r-wrong').onclick=function(){startQuiz(QZ.wrongIds,0)};
+
+/* ---------- TIDSLINJE ---------- */
+var TL=null;
+function newTimeline(){
+  var pick=shuffle(EVENTS).slice(0,6);
+  var order=shuffle(pick);
+  var sorted=pick.slice().sort(function(a,b){return a[0]-b[0]});
+  var same=order.every(function(e,i){return e===sorted[i]});
+  if(same)order.reverse();
+  TL={items:order,checked:false};
+  $('#tl-msg').textContent='';
+  $('#tl-best').textContent=S.best.tid!=null?'Beste: '+S.best.tid+' av 6':'';
+  renderTimeline();
+}
+function renderTimeline(flashIdx){
+  var list=$('#tl-list');list.classList.toggle('checked',TL.checked);
+  var sorted=TL.items.slice().sort(function(a,b){return a[0]-b[0]});
+  list.innerHTML=TL.items.map(function(e,i){
+    var cls=TL.checked?(sorted[i]===e?'ok':'no'):'';
+    if(i===flashIdx)cls+=' flash';
+    return '<li class="'+cls+'"><span class="pos">'+(i+1)+'</span><div><span class="yr">'+esc(e[1])+'</span>'+esc(e[2])+'</div>'+
+      '<div class="mv"><button type="button" data-up="'+i+'" aria-label="Flytt opp"'+(i===0||TL.checked?' disabled':'')+'>↑</button><button type="button" data-dn="'+i+'" aria-label="Flytt ned"'+(i===TL.items.length-1||TL.checked?' disabled':'')+'>↓</button></div></li>'}).join('');
+  $$('#tl-list [data-up]').forEach(function(b){b.onclick=function(){move(+b.getAttribute('data-up'),-1)}});
+  $$('#tl-list [data-dn]').forEach(function(b){b.onclick=function(){move(+b.getAttribute('data-dn'),1)}});
+  $('#tl-check').disabled=TL.checked;
+}
+function move(i,d){var j=i+d;var a=TL.items;var t=a[i];a[i]=a[j];a[j]=t;renderTimeline(j);var btn=$('#tl-list [data-'+(d<0?'up':'dn')+'="'+j+'"]');if(btn&&!btn.disabled)btn.focus()}
+$('#tl-check').onclick=function(){
+  TL.checked=true;
+  var sorted=TL.items.slice().sort(function(a,b){return a[0]-b[0]});
+  var r=TL.items.filter(function(e,i){return sorted[i]===e}).length;
+  if(S.best.tid==null||r>S.best.tid){S.best.tid=r;save()}
+  $('#tl-msg').textContent=r===6?'Alle seks på rett plass. Glimrande!':r+' av 6 på rett plass. Sjå årstala og prøv nye hendingar.';
+  $('#tl-best').textContent='Beste: '+S.best.tid+' av 6';
+  renderTimeline();
+};
+$('#tl-new').onclick=newTimeline;
+
+/* ---------- OMGREPSJAKT ---------- */
+var MT=null;
+function newMatch(){
+  var listed=shuffle(TERMS.filter(function(t){return t[2]})),extra=shuffle(TERMS.filter(function(t){return !t[2]}));
+  var pick=shuffle(listed.slice(0,3).concat(extra.slice(0,2)));
+  MT={pairs:pick,defs:shuffle(pick),sel:null,found:0,miss:0,done:{}};
+  $('#m-msg').textContent='';renderMatch();
+}
+function renderMatch(){
+  $('#m-found').textContent=MT.found;$('#m-miss').textContent=MT.miss;
+  $('#m-terms').innerHTML=MT.pairs.map(function(p,i){var d=MT.done[p[0]];return '<button type="button" class="term'+(d?' done':'')+(MT.sel===i?' sel':'')+'" data-i="'+i+'"'+(d?' disabled':'')+'>'+esc(p[0])+'</button>'}).join('');
+  $('#m-defs').innerHTML=MT.defs.map(function(p,i){var d=MT.done[p[0]];return '<li><button type="button" class="def'+(d?' done':'')+'" data-i="'+i+'"'+(d?' disabled':'')+'>'+(d?'<span class="got">'+esc(p[0])+'</span>':'')+esc(p[1])+'</button></li>'}).join('');
+  $$('#m-terms .term').forEach(function(b){b.onclick=function(){var i=+b.getAttribute('data-i');MT.sel=(MT.sel===i?null:i);renderMatch()}});
+  $$('#m-defs .def').forEach(function(b){b.onclick=function(){
+    if(MT.sel==null){var t=$('#m-terms');t.classList.remove('shake');void t.offsetWidth;t.classList.add('shake');$('#m-msg').textContent='Vel eit omgrep først.';return}
+    var term=MT.pairs[MT.sel],def=MT.defs[+b.getAttribute('data-i')];
+    if(term===def){MT.done[term[0]]=1;MT.found++;MT.sel=null;record('omgrep',true);$('#m-msg').textContent='Rett: '+term[0]+'.';
+      if(MT.found===5){$('#m-msg').textContent=MT.miss===0?'Alle fem utan bom. Imponerande!':'Ferdig! Du bomma '+MT.miss+' gong'+(MT.miss>1?'er':'')+'.'}
+      renderMatch()}
+    else{MT.miss++;record('omgrep',false);$('#m-msg').textContent='Ikkje den. Prøv ei anna forklaring.';$('#m-miss').textContent=MT.miss;b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')}
+  }});
+}
+$('#m-new').onclick=newMatch;
+
+/* ---------- SJANGERDETEKTIV ---------- */
+var SD=null;
+function newSort(){SD={cards:shuffle(CLUES).slice(0,12),i:0,score:0,answered:false};renderSort()}
+function renderSort(){
+  var c=SD.cards[SD.i];SD.answered=false;
+  $('#s-count').textContent='Kort '+(SD.i+1)+' av '+SD.cards.length;
+  $('#s-score').textContent=SD.score;
+  $('#s-clue').textContent=c[0];
+  $('#s-genres').innerHTML=GENRES.map(function(g){return '<button type="button" class="genre" data-g="'+g[0]+'">'+esc(g[1])+'</button>'}).join('');
+  $$('#s-genres .genre').forEach(function(b){b.onclick=function(){sortAnswer(b.getAttribute('data-g'))}});
+  $('#s-expl').hidden=true;$('#s-next').hidden=true;
+}
+function sortAnswer(g){
+  if(SD.answered)return;SD.answered=true;
+  var c=SD.cards[SD.i],ok=g===c[1];
+  $$('#s-genres .genre').forEach(function(b){var k=b.getAttribute('data-g');b.disabled=true;if(k===c[1])b.classList.add('right');else if(k===g)b.classList.add('wrong')});
+  if(ok)SD.score++;
+  record(c[1],ok);
+  $('#s-score').textContent=SD.score;
+  var v=$('#s-verdict');v.className='verdict '+(ok?'ok':'no');v.textContent=ok?'Rett!':'Nei, det høyrer til '+GNAME[c[1]]+'.';
+  $('#s-why').textContent=c[2];$('#s-expl').hidden=false;
+  var nb=$('#s-next');nb.hidden=false;nb.textContent=SD.i+1<SD.cards.length?'Neste →':'Sjå resultatet';nb.focus();
+}
+$('#s-next').onclick=function(){
+  if(SD.finished){newSort();return}
+  if(SD.i+1<SD.cards.length){SD.i++;renderSort();return}
+  SD.finished=true;
+  if(S.best.sort==null||SD.score>S.best.sort){S.best.sort=SD.score;save()}
+  $('#s-count').textContent='Ferdig';
+  $('#s-clue').textContent=SD.score+' av '+SD.cards.length+' rett';
+  $('#s-genres').innerHTML='';$('#s-expl').hidden=false;
+  var v=$('#s-verdict');v.className='verdict ok';v.textContent='Beste så langt: '+S.best.sort+' av 12.';
+  $('#s-why').textContent='Vil du prøve med nye kort?';
+  $('#s-next').textContent='Nye kort';
+};
+
+/* ---------- LYD ---------- */
+var Sound=(function(){
+  var ctx=null,out=null,noiseBuf=null,sess=null,timers=[],onEnd=null;
+  function init(){
+    if(!ctx){var C=window.AudioContext||window.webkitAudioContext;if(!C)return null;ctx=new C();
+      var comp=ctx.createDynamicsCompressor();out=ctx.createGain();out.gain.value=0.7;out.connect(comp);comp.connect(ctx.destination);
+      noiseBuf=ctx.createBuffer(1,Math.floor(ctx.sampleRate*0.5),ctx.sampleRate);var d=noiseBuf.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+    if(ctx.state==='suspended')ctx.resume();return ctx}
+  function begin(end){stop();if(!init())return null;var g=ctx.createGain();g.connect(out);sess={g:g,v:{}};onEnd=end||null;document.body.classList.add('spin');return ctx.currentTime+0.12}
+  function voice(name){if(!sess.v[name]){var g=ctx.createGain();g.connect(sess.g);sess.v[name]=g}return sess.v[name]}
+  function setVoice(name,on){if(sess&&sess.v[name])sess.v[name].gain.setTargetAtTime(on?1:0,ctx.currentTime,0.02)}
+  function stop(){timers.forEach(clearTimeout);timers=[];
+    if(sess){var g=sess.g;try{g.gain.setTargetAtTime(0,ctx.currentTime,0.03)}catch(e){}setTimeout(function(){try{g.disconnect()}catch(e){}},400);sess=null}
+    document.body.classList.remove('spin');
+    if(onEnd){var f=onEnd;onEnd=null;f()}}
+  function at(t,fn){if(!sess)return;timers.push(setTimeout(fn,Math.max(0,(t-ctx.currentTime)*1000)))}
+  function mf(m){return 440*Math.pow(2,(m-69)/12)}
+  function note(dest,m,t,dur,o){o=o||{};var f=mf(m);var osc=ctx.createOscillator();osc.type=o.type||'triangle';
+    if(o.from!=null){osc.frequency.setValueAtTime(mf(o.from),t);osc.frequency.exponentialRampToValueAtTime(f,t+Math.min(0.12,dur*0.5))}else osc.frequency.setValueAtTime(f,t);
+    var g=ctx.createGain(),v=o.vol==null?0.2:o.vol,a=o.a==null?0.01:o.a,r=o.r==null?0.08:o.r;
+    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(v,t+a);g.gain.setValueAtTime(v,Math.max(t+a,t+dur-r));g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    var node=osc;if(o.lp){var fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.value=o.lp;osc.connect(fl);node=fl}
+    node.connect(g);g.connect(dest);
+    if(o.vib){var l=ctx.createOscillator(),lg=ctx.createGain();l.frequency.value=5.2;lg.gain.value=f*0.01;l.connect(lg);lg.connect(osc.frequency);l.start(t);l.stop(t+dur+0.05)}
+    osc.start(t);osc.stop(t+dur+0.05)}
+  function noise(dest,t,dur,hp,v){var s=ctx.createBufferSource();s.buffer=noiseBuf;var f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=hp;var g=ctx.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(0.001,t+dur);s.connect(f);f.connect(g);g.connect(dest);s.start(t);s.stop(t+dur+0.05)}
+  function kick(dest,t,v){var o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(45,t+0.12);g.gain.setValueAtTime(v||0.9,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.3);o.connect(g);g.connect(dest);o.start(t);o.stop(t+0.35)}
+  function snare(dest,t,v){v=v||0.5;noise(dest,t,0.18,1300,v);note(dest,55,t,0.08,{type:'triangle',vol:v*0.5,a:0.002,r:0.05})}
+  function hat(dest,t,v){noise(dest,t,0.05,7000,v||0.16)}
+  function clap(dest,t,v){noise(dest,t,0.12,900,v||0.35)}
+  return {begin:begin,stop:stop,at:at,note:note,kick:kick,snare:snare,hat:hat,clap:clap,voice:voice,setVoice:setVoice,
+    playing:function(){return !!sess},endAt:function(t){at(t,stop)}};
+})();
+
+/* demoar: kvar funksjon får (ui) og returnerer ingenting; ui.el er visualiseringa */
+var CH={C:{r:36,v:[60,64,67,70],n:['C','E','G','A','B♭','A','G','E']},F:{r:41,v:[57,60,63,65],n:['F','A','C','D','E♭','D','C','A']},G:{r:43,v:[59,62,65,67],n:['G','B','D','E','F','E','D','B']}};
+
+var DEMOS=[
+{id:'cr',name:'Call and response',label:'var(--red)',
+ txt:'Føresongaren syng ei line, og koret svarar «O-ho, o-ho». Legg merke til at føresongaren varierer lina (improviserer), mens svaret er likt kvar gong. Slagene held takten i arbeidet.',
+ vis:'<div class="lamps"><span class="lamp" data-l="lead">Føresongar</span><span class="lamp" data-l="kor">Kor</span></div>',
+ play:function(ui){var t0=Sound.begin(ui.end);if(t0==null)return;var b=0.62;
+  var L=[[[67,1],[69,.5],[67,.5],[64,2]],[[72,.5],[69,.5],[67,1],[64,1],[67,1]],[[64,.5],[67,.5],[69,1],[67,.5],[64,.5],[62,1]],[[69,1],[72,1],[69,.5],[67,.5],[64,1]]];
+  var lead=Sound.voice('lead'),kor=Sound.voice('kor'),dr=Sound.voice('dr');
+  for(var c=0;c<4;c++){var t=t0+c*8*b,x=0;
+    L[c].forEach(function(n){Sound.note(lead,n[0],t+x*b,n[1]*b*0.95,{type:'triangle',vol:0.3,vib:1,a:0.03});x+=n[1]});
+    [[60,64,67],[57,60,64],[60,64,67],[55,60,64]].forEach(function(ch,k){ch.forEach(function(m){Sound.note(kor,m,t+(4+k)*b,(k%2?0.5:0.9)*b,{type:'sawtooth',vol:0.06,lp:1000,a:0.04,vib:1})})});
+    for(var k=0;k<8;k+=2){Sound.kick(dr,t+k*b,0.55);Sound.clap(dr,t+(k+1)*b,0.18)}
+    (function(t){Sound.at(t,function(){ui.lamp('lead')});Sound.at(t+4*b,function(){ui.lamp('kor')})})(t)}
+  Sound.endAt(t0+32*b+0.3)}},
+{id:'penta',name:'Pentaton skala',label:'var(--teal)',
+ txt:'Først ein pentaton skala med fem tonar (C D E G A), så ein vanleg durskala med sju (C D E F G A H). Arbeidssongane og mange spirituals bygde på pentatone motiv.',
+ vis:'<div class="lamps" data-row="p"></div><div class="lamps" data-row="d" style="margin-top:8px"></div>',
+ init:function(el){var p=['C','D','E','G','A','C'],d=['C','D','E','F','G','A','H','C'];
+   el.querySelector('[data-row="p"]').innerHTML='<span class="lamp" style="border:0;background:none;min-width:5.5em;text-align:left">5 tonar</span>'+p.map(function(n,i){return '<span class="lamp" data-l="p'+i+'">'+n+'</span>'}).join('');
+   el.querySelector('[data-row="d"]').innerHTML='<span class="lamp" style="border:0;background:none;min-width:5.5em;text-align:left">7 tonar</span>'+d.map(function(n,i){return '<span class="lamp" data-l="d'+i+'">'+n+'</span>'}).join('')},
+ play:function(ui){var t0=Sound.begin(ui.end);if(t0==null)return;var b=0.42,v=Sound.voice('m');
+  [60,62,64,67,69,72].forEach(function(m,i){var t=t0+i*b;Sound.note(v,m,t,b*0.9,{type:'triangle',vol:0.3});Sound.at(t,function(){ui.lamp('p'+i)})});
+  var t1=t0+7*b;
+  [60,62,64,65,67,69,71,72].forEach(function(m,i){var t=t1+i*b;Sound.note(v,m,t,b*0.9,{type:'triangle',vol:0.3});Sound.at(t,function(){ui.lamp('d'+i)})});
+  Sound.endAt(t1+8*b+0.3)}},
+{id:'blues',name:'12-taktarsblues (AAB)',label:'var(--blue)',
+ txt:'12 takter delt i tre liner på fire takter. Melodien i line 1 blir gjenteken i line 2 (A A), og line 3 er ny (B). Akkordane følgjer det faste bluesmønsteret.',
+ vis:'<div class="bars12">'+'C C C C F F C C G F C G'.split(' ').map(function(c,i){return '<span class="lamp" data-l="b'+i+'">'+(i+1)+' · '+c+'</span>'}).join('')+'</div>'+
+  '<div class="lyr"><div data-l="l0"><b>A</b><span>I got the blues so bad, it hurts my feet to walk</span></div><div data-l="l1"><b>A</b><span>I got the blues so bad, it hurts my feet to walk</span></div><div data-l="l2"><b>B</b><span>It have settled on my brain and it hurts my tongue to talk</span></div></div><p class="note" style="margin-top:6px">Tekst: Blind Lemon Jefferson, «Lonesome House Blues» (1926). Melodien her er laga til øvinga.</p>',
+ play:function(ui){var t0=Sound.begin(ui.end);if(t0==null)return;var b=0.7,sw=b*2/3;
+  var prog='C C C C F F C C G F C G'.split(' ');
+  var pn=Sound.voice('piano'),bs=Sound.voice('bass'),dr=Sound.voice('dr'),sg=Sound.voice('song');
+  prog.forEach(function(c,i){var t=t0+i*4*b,ch=CH[c];
+    for(var k=0;k<4;k++){var tb=t+k*b;
+      ch.v.forEach(function(m){Sound.note(pn,m,tb,b*0.5,{type:'triangle',vol:0.045});Sound.note(pn,m,tb+sw,b*0.25,{type:'triangle',vol:0.03})});
+      Sound.note(bs,ch.r+[0,4,7,9][k],tb,b*0.9,{type:'triangle',vol:0.4,lp:700});
+      Sound.hat(dr,tb,0.08);Sound.hat(dr,tb+sw,0.06);if(k%2===0)Sound.kick(dr,tb,0.35)}
+    (function(i,t){Sound.at(t,function(){ui.lamp('b'+i);if(i%4===0)ui.lamp2('l'+(i/4))})})(i,t)});
+  var A=[[0,67,.67],[.67,67,.33],[1,70,1],[2,67,.67],[2.67,64,.33],[3,63,.5],[3.5,60,1.5],[5,60,.67],[5.67,63,.33],[6,60,1.5]];
+  var B=[[0,74,.67],[.67,74,.33],[1,72,1],[2,70,.67],[2.67,67,.33],[3,65,1],[4,67,.67],[4.67,64,.33],[5,63,.5],[5.5,60,2]];
+  [[A,0],[A,4],[B,8]].forEach(function(p){var t=t0+p[1]*4*b;p[0].forEach(function(n){Sound.note(sg,n[1],t+n[0]*b,n[2]*b*0.95,{type:'sawtooth',lp:1600,vol:0.11,vib:1,a:0.03})})});
+  Sound.endAt(t0+48*b+0.4)}},
+{id:'bb',name:'Backbeat',label:'var(--red)',
+ txt:'Først to takter utan backbeat, så fire takter med skarptromme på slag 2 og 4. Kjenn kor musikken får driv. Det er backbeat, typisk for rock and roll.',
+ vis:'<p class="tag" data-l="mode">Utan backbeat</p><div class="lamps" style="margin-top:6px"><span class="lamp" data-l="k0">1</span><span class="lamp" data-l="k1">2</span><span class="lamp" data-l="k2">3</span><span class="lamp" data-l="k3">4</span></div>',
+ play:function(ui){var t0=Sound.begin(ui.end);if(t0==null)return;var b=0.54,dr=Sound.voice('dr'),bs=Sound.voice('bass');
+  for(var bar=0;bar<6;bar++){var bb=bar>=2;
+    for(var k=0;k<4;k++){var t=t0+(bar*4+k)*b;
+      if(k%2===0)Sound.kick(dr,t,0.8);
+      if(bb&&k%2===1)Sound.snare(dr,t,0.55);
+      Sound.hat(dr,t,0.12);Sound.hat(dr,t+b/2,0.08);
+      Sound.note(bs,36+[0,4,7,9][k],t,b*0.85,{type:'triangle',vol:0.35,lp:700});
+      (function(k,t,bb){Sound.at(t,function(){ui.beat(k,bb)})})(k,t,bb)}}
+  Sound.endAt(t0+24*b+0.3)}},
+{id:'boogie',name:'Boogiebass (walking bass)',label:'var(--brass)',
+ txt:'Bassen «går» opp og ned i akkorden: C E G A B♭ A G E. Det er boogiebass, som bassistane i rock and roll tok frå swingjazzen. Trommene spelar backbeat.',
+ vis:'<p class="tag" data-l="chord">Akkord: C</p><div class="lamps" style="margin-top:6px">'+[0,1,2,3,4,5,6,7].map(function(i){return '<span class="lamp" data-l="w'+i+'">'+CH.C.n[i]+'</span>'}).join('')+'</div>',
+ play:function(ui){var t0=Sound.begin(ui.end);if(t0==null)return;var b=0.5,sw=b*2/3;var prog='C C F C G F C C'.split(' ');
+  var bs=Sound.voice('bass'),dr=Sound.voice('dr'),pn=Sound.voice('piano');
+  prog.forEach(function(c,i){var ch=CH[c],t=t0+i*4*b;
+    (function(c,t){Sound.at(t,function(){ui.chord(c)})})(c,t);
+    for(var s=0;s<8;s++){var ts=t+Math.floor(s/2)*b+(s%2?sw:0);
+      Sound.note(bs,ch.r+12+[0,4,7,9,10,9,7,4][s],ts,(s%2?b/3:sw)*0.95,{type:'triangle',vol:0.42,lp:900});
+      (function(s,ts){Sound.at(ts,function(){ui.lamp('w'+s)})})(s,ts)}
+    for(var k=0;k<4;k++){var tb=t+k*b;if(k%2===0)Sound.kick(dr,tb,0.7);else{Sound.snare(dr,tb,0.5);ch.v.forEach(function(m){Sound.note(pn,m+12,tb,b*0.3,{type:'square',vol:0.02,lp:2500})})}
+      Sound.hat(dr,tb,0.1);Sound.hat(dr,tb+sw,0.07)}});
+  Sound.endAt(t0+32*b+0.3)}},
+{id:'dixie',name:'Kollektiv improvisasjon',label:'var(--teal)',
+ txt:'Dixieland: kornetten spelar melodien omtrent rett fram, klarinetten og trombonen improviserer rundt samtidig, og kompet (tuba, banjo, trommer) held rytmen. Skru instrumenta av og på. Klarinetten og trombonen spelar noko nytt kvar gong!',
+ vis:'<div class="toggles"><button type="button" class="chip" data-v="corn" aria-pressed="true">Kornett: melodi</button><button type="button" class="chip" data-v="clar" aria-pressed="true">Klarinett: improviserer</button><button type="button" class="chip" data-v="trb" aria-pressed="true">Trombone: improviserer</button><button type="button" class="chip" data-v="komp" aria-pressed="true">Komp</button></div><p class="tag" data-l="bar" style="margin-top:8px">Takt –</p>',
+ init:function(el){el.querySelectorAll('[data-v]').forEach(function(b){b.onclick=function(){var on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);Sound.setVoice(b.getAttribute('data-v'),on)}})},
+ play:function(ui){var t0=Sound.begin(ui.end);if(t0==null)return;var b=0.36,sw=b*0.62;
+  var prog='C C C C C C C G C C C F C C G C'.split(' ');
+  var V={};['corn','clar','trb','komp'].forEach(function(k){V[k]=Sound.voice(k)});
+  ui.el.querySelectorAll('[data-v]').forEach(function(x){if(x.getAttribute('aria-pressed')!=='true')V[x.getAttribute('data-v')].gain.value=0});
+  var mel=[[0,[[1,72,1],[2,76,1],[3,77,1]]],[1,[[0,79,4]]],[2,[[1,72,1],[2,76,1],[3,77,1]]],[3,[[0,79,4]]],[4,[[1,72,1],[2,76,1],[3,77,1]]],[5,[[0,79,2],[2,76,2]]],[6,[[0,72,2],[2,76,2]]],[7,[[0,74,4]]],
+    [8,[[1,76,1],[2,76,1],[3,74,1]]],[9,[[0,72,3],[3,72,1]]],[10,[[0,76,2],[2,79,2]]],[11,[[0,79,1],[1,77,3]]],[12,[[1,76,1],[2,77,1],[3,79,1]]],[13,[[0,76,2],[2,72,2]]],[14,[[0,74,4]]],[15,[[0,72,4]]]];
+  mel.forEach(function(bm){var t=t0+bm[0]*4*b;bm[1].forEach(function(n){Sound.note(V.corn,n[1],t+n[0]*b,n[2]*b*0.92,{type:'square',lp:1700,vol:0.09,vib:1,a:0.02})})});
+  var pent=[67,69,72,74,76,79,81,84,86,88];var ci=5,prevT=48;
+  prog.forEach(function(c,i){var ch=CH[c],t=t0+i*4*b;
+    (function(i,t){Sound.at(t,function(){ui.bar(i)})})(i,t);
+    // komp
+    for(var k=0;k<4;k++){var tb=t+k*b;
+      if(k%2===0)Sound.note(V.komp,ch.r+(k===0?0:7)-0,tb,b*0.9,{type:'triangle',vol:0.4,lp:500});
+      ch.v.forEach(function(m){Sound.note(V.komp,m,tb,b*0.18,{type:'square',vol:k%2?0.022:0.014,lp:3000,a:0.003,r:0.05})});
+      if(k%2)noiseSn(V.komp,tb)}
+    // klarinett: åttedelar i swing, tilfeldig gange i pentaton
+    for(var s=0;s<8;s++){if(Math.random()<0.18)continue;var ts=t+Math.floor(s/2)*b+(s%2?sw:0);
+      ci=Math.max(0,Math.min(pent.length-1,ci+[-2,-1,-1,1,1,2][Math.floor(Math.random()*6)]));
+      Sound.note(V.clar,pent[ci],ts,(s%2?b-sw:sw)*0.95,{type:'triangle',vol:0.09,a:0.01})}
+    // trombone: halvnotar med glid
+    for(var h=0;h<2;h++){if(Math.random()<0.2)continue;var th=t+h*2*b;var pool=ch.v.map(function(m){return m-12});var nt=pool[Math.floor(Math.random()*pool.length)];
+      Sound.note(V.trb,nt,th,b*1.8,{type:'sawtooth',lp:800,vol:0.09,from:prevT,a:0.03});prevT=nt}
+  });
+  function noiseSn(dest,t){Sound.hat(dest,t,0.12)}
+  Sound.endAt(t0+64*b+0.4)}}
+];
+
+var playingDemo=null;
+function makeUI(card,d){
+  var el=card.querySelector('.vis');
+  function clear(sel){el.querySelectorAll(sel).forEach(function(x){x.classList.remove('on')})}
+  return {el:el,
+    lamp:function(k){clear('.lamp[data-l]');var x=el.querySelector('[data-l="'+k+'"]');if(x)x.classList.add('on')},
+    lamp2:function(k){clear('.lyr [data-l]');var x=el.querySelector('[data-l="'+k+'"]');if(x)x.classList.add('on')},
+    beat:function(k,bb){var m=el.querySelector('[data-l="mode"]');if(m)m.textContent=bb?'Med backbeat: trykk på 2 og 4':'Utan backbeat';
+      [0,1,2,3].forEach(function(i){var x=el.querySelector('[data-l="k'+i+'"]');x.classList.toggle('on',i===k);x.classList.toggle('acc',bb&&i%2===1)})},
+    chord:function(c){var m=el.querySelector('[data-l="chord"]');if(m)m.textContent='Akkord: '+c;for(var i=0;i<8;i++){var x=el.querySelector('[data-l="w'+i+'"]');if(x)x.textContent=CH[c].n[i]}},
+    bar:function(i){var m=el.querySelector('[data-l="bar"]');if(m)m.textContent='Takt '+(i+1)+' av 16'},
+    end:function(){clear('.on');var btn=card.querySelector('.play');btn.textContent='▶ Spel';card.querySelector('.record').classList.remove('go');if(playingDemo===d.id)playingDemo=null}
+  };
+}
+function renderDemos(){
+  $('#demos').innerHTML=DEMOS.map(function(d){return '<div class="card demo" data-d="'+d.id+'"><div class="record" style="--label:'+d.label+'"></div><div style="min-width:0"><h3>'+esc(d.name)+'</h3><p style="margin-top:6px">'+esc(d.txt)+'</p><button type="button" class="btn primary play">▶ Spel</button><div class="vis">'+d.vis+'</div></div></div>'}).join('');
+  DEMOS.forEach(function(d){var card=$('#demos [data-d="'+d.id+'"]');if(d.init)d.init(card.querySelector('.vis'));
+    card.querySelector('.play').onclick=function(){
+      if(playingDemo===d.id){Sound.stop();return}
+      var ui=makeUI(card,d);
+      lq.active=false;
+      d.play(ui);if(!Sound.playing())return;
+      playingDemo=d.id;card.querySelector('.play').textContent='■ Stopp';card.querySelector('.record').classList.add('go')}});
+}
+
+/* kva høyrer du? */
+var lq={cur:null,active:false,score:0,n:0};
+function renderLq(){
+  $('#lq-opts').innerHTML=DEMOS.map(function(d){return '<button type="button" class="genre" data-d="'+d.id+'" disabled>'+esc(d.name)+'</button>'}).join('');
+  $$('#lq-opts .genre').forEach(function(b){b.onclick=function(){
+    if(!lq.active)return;lq.active=false;var ok=b.getAttribute('data-d')===lq.cur.id;lq.n++;if(ok)lq.score++;
+    $$('#lq-opts .genre').forEach(function(x){x.disabled=true;if(x.getAttribute('data-d')===lq.cur.id)x.classList.add('right');else if(x===b)x.classList.add('wrong')});
+    $('#lq-score').textContent=lq.score;$('#lq-n').textContent=lq.n;
+    $('#lq-msg').textContent=ok?'Rett! Det var '+lq.cur.name.toLowerCase()+'.':'Det var '+lq.cur.name.toLowerCase()+'.';
+    $('#lq-play').textContent='Spel eit nytt eksempel'}});
+}
+$('#lq-play').onclick=function(){
+  var prev=lq.cur;var pool=DEMOS.filter(function(d){return d!==prev});var d=pool[Math.floor(Math.random()*pool.length)];
+  lq.cur=d;lq.active=true;renderLq();$$('#lq-opts .genre').forEach(function(x){x.disabled=false});
+  $('#lq-msg').textContent='Lytt … kva kjenneteikn er dette?';
+  var dummy=document.createElement('div');dummy.innerHTML='<div class="vis">'+d.vis+'</div><button class="play"></button><div class="record"></div>';
+  if(d.init)d.init(dummy.querySelector('.vis'));
+  var ui=makeUI(dummy,d);ui.end=function(){};
+  playingDemo=null;$$('#demos .play').forEach(function(b){b.textContent='▶ Spel'});$$('#demos .record').forEach(function(r){r.classList.remove('go')});
+  d.play(ui);
+  clearTimeout(lq.timer);
+  if(Sound.playing())lq.timer=setTimeout(function(){if(!playingDemo)Sound.stop()},10000);
+  $('#lq-play').textContent='Spel eit anna eksempel';
+};
+
+function renderLinks(){
+  $('#links').innerHTML=LINKS.map(function(g){return '<div class="card"><h3>'+esc(g[0])+'</h3><small>'+esc(g[1])+'</small><ul style="margin-top:8px">'+g[2].map(function(l){return '<li><a href="https://www.youtube.com/results?search_query='+encodeURIComponent(l[1])+'" target="_blank" rel="noopener">'+esc(l[0])+'</a></li>'}).join('')+'</ul></div>'}).join('');
+}
+
+/* ---------- REPETISJON ---------- */
+function renderRep(){
+  $('#rep').innerHTML=REP.map(function(r){return '<div class="card"><h3>'+esc(r.n)+'</h3><dl>'+
+    [['Tid og stad',r.tid],['Samfunnet',r.sam],['Form',r.form],['Innhald',r.innh],['Instrument',r.ins],['Namn å kunne',r.namn]].map(function(x){return '<dt>'+x[0]+'</dt><dd>'+esc(x[1])+'</dd>'}).join('')+'</dl></div>'}).join('')+
+    '<div class="card"><h3>Slaveriet og trekanthandelen</h3><dl>'+
+    [['Kolonisering','På 1500-talet byrja europearane å kolonisere Amerika. Det vart innleiinga til 300 år med slaveri.'],
+     ['Tal','35–40 millionar vestafrikanarar vart tekne til fange. Om lag 15 millionar overlevde sjøreisa.'],
+     ['Trekanthandelen','Europa → Afrika: tøy og våpen. Afrika → Amerika: slavar. Amerika → Europa: bomull, sukker, tobakk og kaffi. Også norske skip var med, frå dei dansk-norske utpostane i Ghana.'],
+     ['Livet','Eigaren hadde full råderett over liv og død. Kvinnene: matstell, barnepass, undervisning. Mennene: tungt arbeid på plantasjane. Trommer vart forbodne.'],
+     ['Fridom','Slaveri forbode ved lov i 1807, men sørstatane fulgde ikkje lova. Lincoln erklærte slavane frie i 1863. Borgarkrigen 1861–65.'],
+     ['Etterpå','Lite arbeid, stor fattigdom, rasehat og raseskilje. Kyrkjelydane vart ein tilfluktsstad.']].map(function(x){return '<dt>'+x[0]+'</dt><dd>'+esc(x[1])+'</dd>'}).join('')+'</dl></div>';
+  $('#gloss').innerHTML=TERMS.map(function(t){return '<li><b>'+esc(t[0])+(t[2]?'<span class="star">PÅ LISTA</span>':'')+'</b><span>'+esc(t[1])+'</span></li>'}).join('');
+}
+
+renderDemos();renderLq();renderLinks();renderRep();renderMastery();
+})();
+</script>
