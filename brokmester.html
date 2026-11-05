@@ -1,4 +1,5 @@
 <title>Brøkmester</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -172,6 +173,15 @@ details.lesson summary{cursor:pointer;font-weight:700;color:var(--cyan)}
 .lesson>.chip{align-self:flex-start}
 .lesson ul,.lesson ol{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:4px}
 .lesson .warn{color:var(--hint);font-weight:700}
+.intro{gap:14px}
+.intro h2{font-size:clamp(1.6rem,4vw,2.1rem)}
+.intro .about{font-size:1.12rem;max-width:56ch}
+.intro section{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--kant);padding-top:12px}
+.intro h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--cyan)}
+.lesson ol.rules{gap:8px}
+.lesson ol.rules li::marker{color:var(--rav);font-weight:700}
+.intro .watch{border-left:4px solid var(--hint);padding:8px 12px;border-radius:0 10px 10px 0;background:color-mix(in srgb,var(--hint) 10%,transparent)}
+.intro .watch b{color:var(--hint)}
 .lesson table{border-collapse:collapse;font-variant-numeric:tabular-nums}
 .lesson td,.lesson th{padding:3px 12px;border-bottom:1px solid var(--kant);text-align:left}
 .timer{height:10px;border-radius:999px;background:var(--flate2);overflow:hidden}
@@ -650,20 +660,74 @@ function genTekst(L){
 
 // ================= tema =================
 const TOPICS=[
- {id:'les',name:'Hva er en brøk?',sub:'Teller og nevner',gen:genLes,lesson:()=>`<p>En brøk viser en <b>del av en helhet</b>.</p><div class="row">${pie(3,4,90)}${ex(fr(3,4))}</div><ul><li><b>Telleren</b> (øverst) er hvor mange deler vi har: 3.</li><li><b>Nevneren</b> (nederst) er hvor mange like store deler helheten er delt i: 4.</li></ul>`},
- {id:'utvid',name:'Utvide brøker',sub:'Like store brøker',gen:genUtvid,lesson:()=>`<p>Når du <b>utvider</b>, ganger du teller og nevner med det samme tallet. Brøken blir like stor, bare delt i flere biter.</p>${ex(fr(1,2),op('='),fr('1 · 2','2 · 2'),op('='),fr(2,4))}${compareBars([F(1,2),F(2,4)])}`},
- {id:'forkort',name:'Forkorte brøker',sub:'Så enkel som mulig',gen:genForkort,lesson:()=>`<p>Når du <b>forkorter</b>, deler du teller og nevner på det samme tallet.</p>${ex(fr(9,12),op('='),fr('9 : 3','12 : 3'),op('='),fr(3,4))}<p><b>Så enkel som mulig</b> betyr at du forkorter helt til ingen tall (unntatt 1) går opp i både teller og nevner.</p><p class="warn">Viktig: Du MÅ gjøre det samme med både teller og nevner.</p>`},
- {id:'sammenlign',name:'Hvilken er størst?',sub:'Fellesnevner',gen:genSammenlign,lesson:()=>`<ul><li><b>Lik nevner:</b> Bitene er like store. Størst teller er størst.</li><li><b>Lik teller:</b> Minst nevner er størst, fordi bitene er større.</li><li><b>Ulik nevner:</b> Finn fellesnevner og sammenlign tellerne.</li></ul>${ex(fr(1,2),op('og'),fr(3,4),op('→'),fr(2,4),op('og'),fr(3,4))}<p>${fr(3,4)} er størst.</p>`},
- {id:'uekte',name:'Uekte brøk og blandet tall',sub:'Mer enn 1 hel',gen:genUekte,lesson:()=>`<p>En <b>uekte brøk</b> har teller større enn nevner, for eksempel ${fr(5,4)}. Det er mer enn 1 hel.</p>${ex(fr(5,4),op('='),fr(4,4),op('+'),fr(1,4),op('='),mx(1,1,4))}<p>Fra blandet tall til uekte brøk: gang de hele med nevneren og legg til telleren.</p>${ex(mx(2,3,4),op('='),fr('2 · 4 + 3',4),op('='),fr(11,4))}`},
- {id:'pluss_lik',name:'Pluss og minus, lik nevner',sub:'Regn med tellerne',gen:genPlussLik,lesson:()=>`<p>Når nevnerne er like, legger du sammen (eller trekker fra) <b>bare tellerne</b>. Nevneren blir den samme.</p>${ex(fr(1,4),op('+'),fr(2,4),op('='),fr(3,4))}${ex(fr(3,4),op(M),fr(2,4),op('='),fr(1,4))}<p>Nevneren sier hvor store bitene er. Bitene blir ikke mindre av at du legger dem sammen.</p>`},
- {id:'pluss_ulik',name:'Pluss og minus, ulik nevner',sub:'Finn fellesnevner',gen:genPlussUlik,lesson:()=>`<ol><li>Finn fellesnevner.</li><li>Utvid brøkene.</li><li>Regn ut tellerne.</li><li>Forkort svaret hvis du kan.</li></ol>${ex(fr(3,4),op('+'),fr(1,2),op('='),fr(3,4),op('+'),fr(2,4),op('='),fr(5,4),op('='),mx(1,1,4))}`},
- {id:'gange',name:'Gange med brøk',sub:'Teller · teller',gen:genGange,lesson:()=>`<p><b>Brøk · brøk:</b> teller · teller og nevner · nevner.</p>${ex(fr(2,5),op('·'),fr(3,6),op('='),fr('2 · 3','5 · 6'),op('='),fr(6,30),op('='),fr(1,5))}<p><b>Helt tall · brøk:</b> gang bare telleren.</p>${ex(num(3),op('·'),fr(2,7),op('='),fr(6,7))}<p>Ordet «av» betyr gange: halvparten av ${fr(1,4)} = ${fr(1,2)} · ${fr(1,4)} = ${fr(1,8)}.</p>`},
- {id:'avtall',name:'Brøkdel av et tall',sub:'3/4 av 800',gen:genAvTall,lesson:()=>`<p>Slik finner du ${fr(3,4)} av 800:</p><ol><li>Del 800 i 4 like deler: 800 : 4 = 200.</li><li>Ta 3 av delene: 3 · 200 = 600.</li></ol>${bar(3,4,{labels:'200',h:34})}<p>Kort sagt: del på nevneren, gang med telleren.</p>`},
- {id:'dele',name:'Dele med brøk',sub:'Snu og gang',gen:genDele,lesson:()=>`<p>Å dele med en brøk er det samme som å gange med den <b>omvendte</b> brøken. Den omvendte brøken får du ved å bytte plass på teller og nevner.</p>${ex(fr(1,2),op(':'),fr(1,4),op('='),fr(1,2),op('·'),fr(4,1),op('='),fr(4,2),op('='),num(2))}<p>Det betyr at ${fr(1,4)} får plass 2 ganger i ${fr(1,2)}. En snor på ${fr(1,2)} meter gir to biter på ${fr(1,4)} meter.</p>${bar(2,4,{h:30})}`},
- {id:'desimal',name:'Desimaltall og prosent',sub:'0,25 = 25 %',gen:genDesimal,lesson:()=>`<p>Brøkstreken betyr «delt på»: ${fr(1,4)} = 1 : 4 = 0,25. Prosent betyr hundredeler: 0,25 = ${fr(25,100)} = 25 %.</p><table><tr><th>Brøk</th><th>Desimal</th><th>Prosent</th></tr>${[[1,2],[1,4],[3,4],[1,5],[2,5],[1,8],[1,10],[3,10],[1,20],[1,100]].map(([n,d])=>`<tr><td>${n}/${d}</td><td>${fmt(n/d)}</td><td>${fmt(100*n/d)} %</td></tr>`).join('')}</table>`},
- {id:'tekst',name:'Tekstoppgaver',sub:'Kake, stafett og klasse',gen:genTekst,lesson:()=>`<ol><li>Hva er helheten (hele kaka, hele løypa, hele klassen)?</li><li>Skal du legge sammen, trekke fra, eller finne <b>resten</b>?</li><li>Resten = 1 hel minus det som er brukt.</li><li>Skriv opp brøkene, finn fellesnevner og regn.</li><li>Les spørsmålet en gang til: svarer du på det som blir spurt om?</li></ol>`}
+ {id:'les',name:'Hva er en brøk?',sub:'Teller og nevner',gen:genLes},
+ {id:'utvid',name:'Utvide brøker',sub:'Like store brøker',gen:genUtvid},
+ {id:'forkort',name:'Forkorte brøker',sub:'Så enkel som mulig',gen:genForkort},
+ {id:'sammenlign',name:'Hvilken er størst?',sub:'Fellesnevner',gen:genSammenlign},
+ {id:'uekte',name:'Uekte brøk og blandet tall',sub:'Mer enn 1 hel',gen:genUekte},
+ {id:'pluss_lik',name:'Pluss og minus, lik nevner',sub:'Regn med tellerne',gen:genPlussLik},
+ {id:'pluss_ulik',name:'Pluss og minus, ulik nevner',sub:'Finn fellesnevner',gen:genPlussUlik},
+ {id:'gange',name:'Gange med brøk',sub:'Teller · teller',gen:genGange},
+ {id:'avtall',name:'Brøkdel av et tall',sub:'3/4 av 800',gen:genAvTall},
+ {id:'dele',name:'Dele med brøk',sub:'Snu og gang',gen:genDele},
+ {id:'desimal',name:'Desimaltall og prosent',sub:'0,25 = 25 %',gen:genDesimal},
+ {id:'tekst',name:'Tekstoppgaver',sub:'Kake, stafett og klasse',gen:genTekst}
 ];
 const TOPIC=Object.fromEntries(TOPICS.map(t=>[t.id,t]));
+
+// ================= introsider: hva det handler om, regler, eksempel, pass på =================
+const INTRO={
+ les:{about:()=>`En brøk er en måte å skrive en <b>del av en helhet</b> på, for eksempel en bit av en pizza eller en del av klassen.`,
+  rules:()=>[`<b>Nevneren</b> (under streken) er hvor mange like store deler helheten er delt i.`,`<b>Telleren</b> (over streken) er hvor mange av delene du har.`,`Delene må være like store.`,`Er telleren lik nevneren, har du 1 hel: ${fr(4,4)} = 1.`],
+  ex:()=>`<div class="row">${pie(3,4,90)}${ex(fr(3,4))}</div><p>Pizzaen er delt i 4 like store biter. Det er nevneren. 3 av bitene er farget. Det er telleren.</p>`,
+  watch:()=>`Tell alle bitene når du finner nevneren, ikke bare de som ikke er farget.`},
+ utvid:{about:()=>`Samme mengde kan skrives med mange brøker. ${fr(1,2)}, ${fr(2,4)} og ${fr(5,10)} er alle halvparten. De kalles <b>like store brøker</b>.`,
+  rules:()=>[`Å <b>utvide</b> er å gange både teller og nevner med det samme tallet.`,`Tallene blir større, men brøken er like stor som før.`,`«Utvid med 3» betyr: gang teller og nevner med 3.`],
+  ex:()=>`${ex(fr(1,2),op('='),fr('1 · 2','2 · 2'),op('='),fr(2,4))}${compareBars([F(1,2),F(2,4)])}<p>Like mye, bare delt i flere biter.</p>`,
+  watch:()=>`Du må gange <b>både</b> teller og nevner. Ganger du bare den ene, får du en helt annen brøk.`},
+ forkort:{about:()=>`Å forkorte er det motsatte av å utvide. Du gjør tallene i brøken mindre, men brøken er like stor.`,
+  rules:()=>[`Del både teller og nevner på det samme tallet.`,`Bruk et tall som går opp i begge, for eksempel 2, 3 eller 5.`,`Fortsett til ingen tall (unntatt 1) går opp i både teller og nevner. Da er brøken <b>så enkel som mulig</b>.`],
+  ex:()=>`${ex(fr(9,12),op('='),fr('9 : 3','12 : 3'),op('='),fr(3,4))}<p>3 går opp i både 9 og 12. Ingen tall går opp i både 3 og 4, så ${fr(3,4)} er så enkel som mulig.</p>`,
+  watch:()=>`Du skal dele, ikke trekke fra. ${fr(6,8)} blir ${fr(3,4)}, ikke ${fr(5,7)}.`},
+ sammenlign:{about:()=>`Her finner du ut hvilken brøk som er størst. Det er lett når nevnerne er like. Ellers lager du en <b>fellesnevner</b> først.`,
+  rules:()=>[`Lik nevner: størst teller er størst.`,`Lik teller: minst nevner er størst, fordi bitene er større.`,`Ulik nevner: utvid brøkene så de får lik nevner, og sammenlign tellerne.`],
+  ex:()=>`<p>Hvilken er størst av ${fr(1,2)} og ${fr(3,4)}?</p>${ex(fr(1,2),op('='),fr('1 · 2','2 · 2'),op('='),fr(2,4))}<p>Nå er nevnerne like. ${fr(3,4)} er størst, fordi 3 er mer enn 2.</p>`,
+  watch:()=>`Stor nevner betyr små biter. ${fr(1,8)} er mindre enn ${fr(1,4)}.`},
+ uekte:{about:()=>`Noen brøker er mer enn 1 hel, for eksempel ${fr(5,4)} pizza. Det kan skrives som <b>uekte brøk</b> eller som <b>blandet tall</b>.`,
+  rules:()=>[`Uekte brøk: telleren er større enn nevneren, for eksempel ${fr(5,4)}.`,`Blandet tall: hele og en brøk, for eksempel ${mx(1,1,4)}.`,`Uekte til blandet: del telleren på nevneren. Svaret er de hele, og resten blir den nye telleren.`,`Blandet til uekte: gang de hele med nevneren og legg til telleren.`],
+  ex:()=>`${ex(fr(5,4),op('='),fr(4,4),op('+'),fr(1,4),op('='),mx(1,1,4))}${ex(mx(2,3,4),op('='),fr('2 · 4 + 3',4),op('='),fr(11,4))}`,
+  watch:()=>`Nevneren er den samme når du bytter mellom uekte brøk og blandet tall.`},
+ pluss_lik:{about:()=>`Pluss og minus med brøker som har <b>samme nevner</b>. Det er den enkleste brøkregningen.`,
+  rules:()=>[`Når nevnerne er like, regner du bare med tellerne.`,`Nevneren blir stående som den er.`,`Forkort svaret hvis du kan.`],
+  ex:()=>`${ex(fr(1,4),op('+'),fr(2,4),op('='),fr(3,4))}${ex(fr(3,4),op(M),fr(2,4),op('='),fr(1,4))}<p>Nevneren sier hvor store bitene er. Bitene blir ikke mindre av at du legger dem sammen.</p>`,
+  watch:()=>`Ikke legg sammen nevnerne. ${fr(1,4)} + ${fr(2,4)} er ${fr(3,4)}, ikke ${fr(3,8)}.`},
+ pluss_ulik:{about:()=>`Pluss og minus når nevnerne er <b>ulike</b>. Da må du først gjøre nevnerne like.`,
+  rules:()=>[`Finn en <b>fellesnevner</b>, et tall som begge nevnerne går opp i.`,`Utvid brøkene så de får fellesnevneren.`,`Legg sammen eller trekk fra tellerne.`,`Forkort svaret, og gjør det om til blandet tall hvis oppgaven ber om det.`],
+  ex:()=>`${ex(fr(3,4),op('+'),fr(1,2),op('='),fr(3,4),op('+'),fr(2,4),op('='),fr(5,4),op('='),mx(1,1,4))}<p>Fellesnevneren er 4. ${fr(1,2)} utvides med 2 og blir ${fr(2,4)}.</p>`,
+  watch:()=>`Du kan ikke legge sammen tellerne før nevnerne er like.`},
+ gange:{about:()=>`Gange med brøk. Ordet «av» betyr ofte gange: halvparten av en firedel er ${fr(1,2)} · ${fr(1,4)}.`,
+  rules:()=>[`Brøk · brøk: teller · teller og nevner · nevner.`,`Helt tall · brøk: gang tallet med telleren. Nevneren blir som før.`,`Forkort svaret så mye du kan.`],
+  ex:()=>`${ex(fr(2,5),op('·'),fr(3,6),op('='),fr('2 · 3','5 · 6'),op('='),fr(6,30),op('='),fr(1,5))}${ex(num(3),op('·'),fr(2,7),op('='),fr(6,7))}`,
+  watch:()=>`Her trenger du <b>ikke</b> fellesnevner. Det trenger du bare ved pluss og minus.`},
+ avtall:{about:()=>`Hvor mye er ${fr(3,4)} av 800 kroner? Her finner du en <b>brøkdel av et tall</b>.`,
+  rules:()=>[`Tallet er helheten.`,`Del tallet på nevneren. Da får du én del.`,`Gang med telleren. Da får du så mange deler som du skal ha.`],
+  ex:()=>`<p>${fr(3,4)} av 800: 800 : 4 = 200, og 3 · 200 = <b>600</b>.</p>${bar(3,4,{labels:'200',h:34})}`,
+  watch:()=>`Del på nevneren og gang med telleren, ikke omvendt.`},
+ dele:{about:()=>`Å dele med en brøk betyr: hvor mange ganger får brøken plass? Hvor mange biter på ${fr(1,4)} m kan du klippe av en snor på ${fr(1,2)} m?`,
+  rules:()=>[`Snu den andre brøken, altså bytt plass på teller og nevner. Det kalles den <b>omvendte</b> brøken.`,`Gang den første brøken med den omvendte brøken.`,`Forkort svaret så mye du kan.`],
+  ex:()=>`${ex(fr(1,2),op(':'),fr(1,4),op('='),fr(1,2),op('·'),fr(4,1),op('='),fr(4,2),op('='),num(2))}<p>${fr(1,4)} m får plass 2 ganger i ${fr(1,2)} m.</p>${bar(2,4,{h:30})}`,
+  watch:()=>`Det er bare brøken du deler <b>med</b> (den andre) som skal snus.`},
+ desimal:{about:()=>`Samme tall kan skrives som brøk, desimaltall og prosent. En halv pizza er ${fr(1,2)} = 0,5 = 50 %.`,
+  rules:()=>[`Brøkstreken betyr «delt på»: ${fr(1,4)} = 1 : 4 = 0,25.`,`Prosent betyr hundredeler: 25 % = ${fr(25,100)}.`,`Fra desimaltall til prosent: gang med 100. 0,25 blir 25 %.`,`Lær de vanligste utenat (se tabellen).`],
+  ex:()=>`<table><tr><th>Brøk</th><th>Desimal</th><th>Prosent</th></tr>${[[1,2],[1,4],[3,4],[1,5],[2,5],[1,8],[1,10],[3,10],[1,20],[1,100]].map(([n,d])=>`<tr><td>${n}/${d}</td><td>${fmt(n/d)}</td><td>${fmt(100*n/d)} %</td></tr>`).join('')}</table>`,
+  watch:()=>`0,5 er 50 %, ikke 5 %. Og 0,05 er 5 %.`},
+ tekst:{about:()=>`Tekstoppgaver med brøk, for eksempel om kake, stafettløp eller klassen. Det vanskeligste er ofte å finne ut <b>hva</b> du skal regne.`,
+  rules:()=>[`Finn helheten: hele kaka, hele løypa, hele klassen. Den er 1.`,`Bestem om du skal legge sammen, trekke fra eller finne <b>resten</b>.`,`Resten = 1 minus det som er brukt.`,`Svar på det oppgaven spør om, for eksempel i km og ikke bare som brøk.`],
+  ex:()=>`<p>Lise løper ${fr(1,4)} og Jonas ${fr(1,3)} av løypa. Du løper resten. Hvor stor del er det?</p>${ex(fr(1,4),op('+'),fr(1,3),op('='),fr(3,12),op('+'),fr(4,12),op('='),fr(7,12))}${ex(num(1),op(M),fr(7,12),op('='),fr(12,12),op(M),fr(7,12),op('='),fr(5,12))}<p>Du løper ${fr(5,12)} av løypa.</p>`,
+  watch:()=>`Les spørsmålet en gang til før du svarer.`}
+};
+const rulesHtml=id=>`<ol class="rules">${INTRO[id].rules().map(r=>`<li>${r}</li>`).join('')}</ol>`;
+const memoHtml=id=>`${rulesHtml(id)}${INTRO[id].ex()}<p class="warn">Pass på: ${INTRO[id].watch()}</p>`;
 
 // ================= retting =================
 function checkFrac(task,raw){
@@ -833,13 +897,15 @@ function startRound(mode,id){
   if(mode==='test')plan=TOPICS.map(t=>t.id);
   else if(mode==='topic')plan=Array(8).fill(id);
   else{const f=focusTopic();plan=Array(6).fill(f);const rv=reviewTopics(f);plan.splice(2,0,rv[0]||f);plan.splice(6,0,rv[1]||f)}
-  round={mode,topic:id,plan,i:0,results:[],extra:0,start:Object.fromEntries(TOPICS.map(t=>[t.id,Math.floor(S.skills[t.id].s)])),starsStart:S.stars};
+  round={mode,topic:id,plan,i:0,results:[],extra:0,intro:new Set(),start:Object.fromEntries(TOPICS.map(t=>[t.id,Math.floor(S.skills[t.id].s)])),starsStart:S.stars};
   nextTask()}
 
 function nextTask(){
   if(round.i>=round.plan.length)return endRound();
   const id=round.plan[round.i];
-  if(round.mode!=='test'&&round.mode!=='lyn'&&!S.skills[id].lesson){S.skills[id].lesson=true;save();return showLesson(id)}
+  // introside: alltid før første oppgave i runden, og før et repetisjonstema han aldri har sett
+  if(round.mode!=='test'&&round.mode!=='lyn'&&!round.intro.has(id)&&(round.i===0||!S.skills[id].lesson)){
+    round.intro.add(id);const first=!S.skills[id].lesson;S.skills[id].lesson=true;save();return showLesson(id,first)}
   const L=chooseLevel(id,round.mode);let task,n=0;
   do{task=TOPIC[id].gen(L);n++}while(task.key===lastKey&&n<8);lastKey=task.key;
   task.maxAttempts=round.mode==='test'||round.mode==='lyn'?1:(task.maxAttempts||3);
@@ -847,10 +913,21 @@ function nextTask(){
   if(round.mode!=='test'&&round.mode!=='lyn'&&S.skills[id].n<3&&L===1&&task.hints.length)cur.shown=1;
   renderTask()}
 
-function showLesson(id){
-  app.innerHTML=`${topbar()}<main class="wrap"><article class="card lesson"><span class="chip go">Nytt tema</span><h2>${TOPIC[id].name}</h2>${TOPIC[id].lesson()}
-   <div class="btns"><button class="btn pri" id="ready">Jeg er klar</button><button class="btn ghost" id="quit">Tilbake</button></div></article></main>`;
-  bindTop();document.getElementById('ready').onclick=nextTask;document.getElementById('quit').onclick=home;document.getElementById('ready').focus()}
+const HOWTO=`<ul><li>Skriv svaret og trykk <b>Sjekk svar</b>, eller trykk på riktig alternativ.</li><li>Du har opptil 3 forsøk. Bommer du, får du et tips og kan prøve igjen.</li><li>Står du fast, trykk <b>Tips</b>.</li><li>Riktig på første forsøk gir 3 stjerner. Med tips eller flere forsøk får du litt færre. Fem riktige på rad gir en ekstra stjerne.</li><li>Går det bra, blir oppgavene vanskeligere. Butter det, blir de enklere.</li><li>Reglene finner du igjen i <b>Husk-kortet</b> nederst i hver oppgave.</li></ul>`;
+function showLesson(id,first){
+  const tp=TOPIC[id],k=S.skills[id],I=INTRO[id],pos=TOPICS.indexOf(tp)+1,[st]=status(id);
+  const where=k.n?`Du er på nivå ${Math.floor(k.s)} av 5 · ${st}`:'Du starter på nivå 1';
+  window.scrollTo(0,0);
+  app.innerHTML=`${topbar()}<main class="wrap"><article class="card lesson intro">
+   <div class="tmeta"><span class="chip${first?' go':''}">${first?'Nytt tema':`Tema ${pos} av ${TOPICS.length}`}</span><span class="lvl">${pips(k.n?Math.floor(k.s):1)} ${where}</span></div>
+   <h2>${tp.name}</h2>
+   <p class="about">${I.about()}</p>
+   <section><h3>Reglene</h3>${rulesHtml(id)}</section>
+   <section><h3>Eksempel</h3>${I.ex()}</section>
+   <p class="watch"><b>Pass på:</b> ${I.watch()}</p>
+   <details class="lesson howto"${S.total===0?' open':''}><summary>Slik spiller du</summary>${HOWTO}</details>
+   <div class="btns"><button class="btn pri" id="ready">Start oppgavene</button><button class="btn ghost" id="quit">Tilbake</button></div></article></main>`;
+  bindTop();document.getElementById('ready').onclick=nextTask;document.getElementById('quit').onclick=()=>{if(round.results.length)endRound();else home()};document.getElementById('ready').focus({preventScroll:true})}
 
 function inputHtml(inp){
   if(inp.inline)return '';
@@ -881,7 +958,7 @@ function renderTask(){
      ${lyn?'<div class="flash" id="flash" aria-live="polite"></div>':''}
      <div class="btns" id="btns"></div>
     </form>
-    ${test||lyn?'':`<details class="lesson"><summary>Husk-kort: ${tp.name}</summary>${tp.lesson()}</details>`}
+    ${test||lyn?'':`<details class="lesson"><summary>Husk-kort: ${tp.name}</summary>${memoHtml(cur.topic)}</details>`}
    </article></main>`;
   bindTop();
   document.getElementById('quit').onclick=()=>{stopLyn();if(round.results.length&&round.mode!=='lyn')endRound();else home()};
