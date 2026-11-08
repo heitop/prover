@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Eventyr-juksearket</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,500&family=Alegreya+Sans:wght@400;500;700;800&family=Uncial+Antiqua&display=swap">
+<style>
+/* Layout: ett ark. Øverst samtalens tre deler ved siden av trekk-tabellen, under tre spalter (ett eventyr hver), nederst «står du fast». Samme uttrykk som Eventyrprøven. */
+:root{
+  --bg:#fbfaf7; --flate:#ffffff; --blekk:#141b26; --demp:#5b6676; --linje:#d9dde3;
+  --aksent:#9a6a10; --aksent-bg:#f6ecd3; --mose:#3f7a33;
+  --f-display:'Uncial Antiqua', Georgia, serif;
+  --f-body:'Alegreya Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-sitat:'Alegreya', Georgia, serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#111823; --flate:#1a2330; --blekk:#ece6d7; --demp:#9aa6b6; --linje:#2c384a;
+  --aksent:#e6b44a; --aksent-bg:#2a2617; --mose:#8fb77c; color-scheme:dark}}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--blekk);font-family:var(--f-body);font-size:1.02rem;line-height:1.42;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ul,ol{margin:0}
+h1,h2,h3{text-wrap:balance;line-height:1.15}
+.ark{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:14px;
+  padding-block:max(16px,env(safe-area-inset-top,0px)) max(32px,env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+.hode{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px;border-bottom:2px solid var(--blekk);padding-bottom:8px}
+.hode h1{font-family:var(--f-display);font-weight:400;font-size:clamp(1.8rem,6vw,2.4rem)}
+.hode p{color:var(--demp);font-weight:500}
+.verktoy{display:flex;gap:8px;flex-wrap:wrap}
+.verktoy a,.verktoy button{font:inherit;font-weight:700;font-size:.9rem;color:var(--blekk);background:var(--flate);border:1.5px solid var(--linje);border-radius:10px;padding:7px 12px;cursor:pointer;text-decoration:none}
+.verktoy a:hover,.verktoy button:hover{border-color:var(--aksent)}
+:focus-visible{outline:3px solid var(--aksent);outline-offset:2px}
+
+.etikett{font-size:.74rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--demp)}
+.boks{background:var(--flate);border:1.5px solid var(--linje);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+
+.topp{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:14px;align-items:start}
+.deler{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;counter-reset:d}
+.deler li{display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start}
+.deler li::before{counter-increment:d;content:counter(d);font-family:var(--f-display);font-size:1.05rem;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--blekk);color:var(--bg)}
+.deler b{display:block}
+.deler span{color:var(--demp);font-size:.95em}
+.oppskrift{background:var(--aksent-bg);border-radius:10px;padding:9px 11px;font-family:var(--f-sitat);font-style:italic;line-height:1.5}
+.oppskrift b{font-style:normal;font-family:var(--f-body);color:var(--aksent)}
+.tid{font-weight:700}
+
+.trekk{width:100%;border-collapse:collapse;font-size:.95em}
+.trekk th{text-align:left;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--demp);padding:0 8px 4px 0;font-weight:800}
+.trekk td{padding:4px 8px 4px 0;border-top:1px solid var(--linje);vertical-align:top}
+.trekk td:first-child{font-weight:700;width:38%}
+
+.eventyr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.eventyr h2{font-family:var(--f-sitat);font-weight:700;font-size:1.25rem}
+.pil{list-style:none;padding:0;display:flex;flex-direction:column;gap:1px;font-size:.95em}
+.pil li{padding-left:16px;position:relative}
+.pil li::before{content:"→";position:absolute;left:0;color:var(--aksent);font-weight:700}
+.punkt{padding-left:1.05em;display:flex;flex-direction:column;gap:2px;font-size:.95em}
+.punkt q{font-family:var(--f-sitat);font-style:italic;quotes:"«" "»"}
+.hvorfor{font-size:.95em}
+.ekstra{font-size:.92em;border-top:1px dashed var(--linje);padding-top:6px}
+.ekstra b{color:var(--mose)}
+
+.fast{background:var(--blekk);color:var(--bg);border-color:var(--blekk)}
+.fast .etikett{color:color-mix(in srgb,var(--bg) 70%,var(--blekk))}
+.fast ul{padding-left:1.1em;display:flex;flex-direction:column;gap:3px}
+
+@media (max-width:820px){
+  .topp,.eventyr{grid-template-columns:minmax(0,1fr)}
+}
+
+/* Utskrift: ett A4-ark. Klassen .a4 settes av skriptet før utskrift. */
+@page{size:A4;margin:9mm}
+@media print{
+  :root{--bg:#fff;--flate:#fff;--blekk:#000;--demp:#444;--linje:#bbb;--aksent:#7a5208;--aksent-bg:#f3ead4;--mose:#2f5f27;color-scheme:light}
+  .verktoy{display:none}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+.a4 .ark{max-width:none;width:192mm;padding:0;gap:2.6mm}
+.a4 body,.a4 .ark{font-size:9.3pt;line-height:1.32}
+.a4 .hode{padding-bottom:1.5mm}
+.a4 .hode h1{font-size:18pt}
+.a4 .boks{padding:2.2mm 2.8mm;gap:1.5mm;border-radius:2.5mm;break-inside:avoid}
+.a4 .topp{grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:2.6mm}
+.a4 .eventyr{grid-template-columns:repeat(3,minmax(0,1fr));gap:2.6mm}
+.a4 .eventyr h2{font-size:11pt}
+.a4 .deler{gap:1.5mm}
+.a4 .deler li{grid-template-columns:5mm 1fr;gap:1.6mm}
+.a4 .deler li::before{width:5mm;height:5mm;font-size:8pt}
+.a4 .trekk td{padding:.7mm 1.5mm .7mm 0}
+.a4 .etikett{font-size:6.5pt}
+.a4 .oppskrift{padding:1.6mm 2mm}
+</style>
+</head>
+<body>
+<main class="ark">
+
+  <header class="hode">
+    <div>
+      <h1>Eventyr-juksearket</h1>
+      <p>Muntlig samtale, 3–5 minutter. Du trekker ett av tre eventyr.</p>
+    </div>
+    <div class="verktoy">
+      <a href="eventyrproven.html">Til Eventyrprøven</a>
+      <button type="button" id="skrivut">Skriv ut (ett A4-ark)</button>
+    </div>
+  </header>
+
+  <div class="topp">
+    <section class="boks">
+      <p class="etikett">Samtalen i tre deler</p>
+      <ol class="deler">
+        <li><div><b>Handlingsreferat</b><span>Hva skjer, fra start til slutt. <span class="tid">Under 1 minutt.</span></span></div></li>
+        <li><div><b>Kjennetegn</b><span>Nevn sjangertrekket og gi et eksempel fra eventyret.</span></div></li>
+        <li><div><b>Hvorfor og hvordan</b><span>Hva trekket gjør med historien og med oss som hører den.</span></div></li>
+      </ol>
+      <p class="etikett">Oppskrift for hvert trekk</p>
+      <p class="oppskrift"><b>1</b> «Et sjangertrekk er …» <b>2</b> «Vi ser det når …» <b>3</b> «Dette fungerer fordi …»</p>
+      <p class="etikett">Står du fast? Dette passer alltid</p>
+      <p>Eventyr ble <b>fortalt muntlig</b> i hundrevis av år før de ble skrevet ned. Gjentakelser, tretall og faste uttrykk gjør dem <b>lette å huske og fortelle</b>.</p>
+      <p>Tretallet: <b>to ganger likt, tredje gang skjer det noe nytt.</b> Det bygger spenning.</p>
+    </section>
+
+    <section class="boks">
+      <p class="etikett">Sjangertrekkene, og hvorfor de virker</p>
+      <table class="trekk">
+        <thead><tr><th>Trekk</th><th>Hvorfor det virker</th></tr></thead>
+        <tbody>
+          <tr><td>«Det var en gang», ubestemt tid og sted</td><td>Vi skjønner at et eventyr begynner. Det kunne skjedd hvor og når som helst, så det passer for alle.</td></tr>
+          <tr><td>Magiske tall: 3, 7, 9, 12</td><td>Gir rytme og spenning. Tredje gang er den avgjørende.</td></tr>
+          <tr><td>Gjentakelser</td><td>Lett å huske og fortelle. Vi venter spent på at mønsteret brytes.</td></tr>
+          <tr><td>Få, enkle personer og kontraster</td><td>Lett å følge. Vi skjønner fort hvem vi skal heie på.</td></tr>
+          <tr><td>Troll og dyr som snakker</td><td>Troll står for det onde og farlige. Dyr som oppfører seg som mennesker lar oss le av oss selv.</td></tr>
+          <tr><td>Én helt, ofte den minste</td><td>Vi heier på den som blir undervurdert. Du trenger ikke være størst.</td></tr>
+          <tr><td>Kløkt og list</td><td>Hodet slår musklene.</td></tr>
+          <tr><td>Kamp mellom godt og ondt</td><td>Kampen er høydepunktet.</td></tr>
+          <tr><td>Reise mot et mål</td><td>Setter handlingen i gang og fører helten ut i prøvelser.</td></tr>
+          <tr><td>Moral</td><td>Det gode får sin lønn, det onde sin straff. Vi lærer noe uten at det sies rett ut.</td></tr>
+          <tr><td>Muntlig språk og replikker</td><td>Gjør historien levende, slik den var da den ble fortalt høyt.</td></tr>
+          <tr><td>Fast slutt</td><td>Sier at historien er ferdig og tar oss tilbake til virkeligheten, ofte med en spøk.</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <div class="eventyr">
+    <section class="boks">
+      <h2>De tre bukkene Bruse</h2>
+      <p class="etikett">Handlingen</p>
+      <ul class="pil">
+        <li>Tre bukker skal til setra for å bli fete.</li>
+        <li>Under brua over fossen bor et stygt troll.</li>
+        <li>Den minste og den mellomste: «Vent på den som er større.»</li>
+        <li>Den store bukken stanger trollet ut i fossen.</li>
+        <li>Bukkene blir kjempefete på setra.</li>
+      </ul>
+      <p class="etikett">Trekk med eksempel</p>
+      <ul class="punkt">
+        <li>Tretall: tre bukker, tre ganger over brua</li>
+        <li>Gjentakelse: <q>Hvem er det som tripper på min bru?</q></li>
+        <li>Troll med øyne som tinntallerkener</li>
+        <li>Kløkt: de små lurer trollet</li>
+        <li>Kamp, og fast slutt: <q>Snipp, snapp, snute</q></li>
+      </ul>
+      <p class="etikett">Hvorfor</p>
+      <p class="hvorfor">Bukkene blir større for hver gang, så spenningen øker. Tredje gang brytes mønsteret, og da kommer kampen. Det grådige trollet ville ha den største og tapte alt.</p>
+      <p class="ekstra"><b>Ekstrapoeng:</b> Vis at mønsteret er likt to ganger og brytes tredje gang.</p>
+    </section>
+
+    <section class="boks">
+      <h2>Askeladden som kappåt med trollet</h2>
+      <p class="etikett">Handlingen</p>
+      <ul class="pil">
+        <li>Fattig bonde med gjeld. Sønnene skal hogge ved.</li>
+        <li>Per og Pål møter trollet og flykter hjem.</li>
+        <li>Askeladden klemmer en ost: «vann av en stein».</li>
+        <li>Trollet blir redd, hogger ved og ber ham hjem.</li>
+        <li>Kappspising: grauten havner i skreppa. Trollet skjærer i magen og dør.</li>
+        <li>Askeladden tar med gull og sølv hjem.</li>
+      </ul>
+      <p class="etikett">Trekk med eksempel</p>
+      <ul class="punkt">
+        <li>Tre sønner: Per, Pål og Askeladden</li>
+        <li>Gjentakelse: to brødre feiler først</li>
+        <li>Den yngste vinner, med list</li>
+        <li>Kontrast: stort og dumt troll, liten og lur gutt</li>
+        <li>Moral: helten får gull og sølv</li>
+      </ul>
+      <p class="etikett">Hvorfor</p>
+      <p class="hvorfor">Når brødrene feiler først, blir Askeladden mer imponerende. Vi heier på den som blir undervurdert. Det dumme trollet gjør det morsomt. Budskapet er at kløkt slår styrke.</p>
+      <p class="ekstra"><b>Ekstrapoeng:</b> Askeladden er den typiske eventyrhelten, og han finnes i mange eventyr.</p>
+    </section>
+
+    <section class="boks">
+      <h2>Reveenka</h2>
+      <p class="etikett">Handlingen</p>
+      <ul class="pil">
+        <li>Rev og revekone bor langt inne i skogen.</li>
+        <li>Reven eter for mange høner og dør.</li>
+        <li>Friere kommer. Katta Korse åpner døra.</li>
+        <li>Bjørn (brun), ulv (grå) og hare (hvit) får nei.</li>
+        <li>En rød rev, «akkurat som han som døde», får ja.</li>
+        <li>Bryllup med det samme.</li>
+      </ul>
+      <p class="etikett">Trekk med eksempel</p>
+      <ul class="punkt">
+        <li>«Det var en gang», «langt inne i skogen»</li>
+        <li>Dyr som oppfører seg som mennesker</li>
+        <li>Banker tre ganger. Gjentakelse: <q>La’n gå, la’n gå!</q></li>
+        <li>Mange replikker: muntlig språk</li>
+        <li>Slutt med spøk: lever i revehuset den dag i dag</li>
+      </ul>
+      <p class="etikett">Hvorfor</p>
+      <p class="hvorfor">Dyr som mennesker lar oss le av oss selv: sorgen går fort over, og hun vil bare ha en kopi av den gamle. Gjentakelsen gir forventning, og den røde reven bryter mønsteret. Slutten knytter tilbake til hønene.</p>
+      <p class="ekstra"><b>Ekstrapoeng:</b> Si at trekk mangler: ingen troll, ingen reise, ingen helt. Det er et dyreeventyr der poenget er humor.</p>
+    </section>
+  </div>
+
+</main>
+<script>
+const a4 = on => document.documentElement.classList.toggle('a4', on);
+window.addEventListener('beforeprint', () => a4(true));
+window.addEventListener('afterprint', () => a4(false));
+document.getElementById('skrivut').addEventListener('click', () => { a4(true); window.print(); });
+</script>
+</body>
+</html>

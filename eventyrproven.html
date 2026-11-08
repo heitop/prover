@@ -1,3 +1,7 @@
+<!doctype html>
+<html lang="nb">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Eventyrprøven</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,7 +27,9 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html,body{background:var(--natt)}
+[hidden]{display:none!important}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{background:var(--natt);margin:0}
 body{color:var(--never);font-family:var(--f-body);font-size:1.0625rem;line-height:1.5;-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--natt)}
 button{font:inherit;color:inherit}
@@ -493,7 +499,8 @@ function visHjem(){
       h('p',{class:'eyebrow'}, 'Lær og test deg'),
       h('div',{class:'rad'},
         h('button',{class:'knapp', type:'button', onclick:visKort}, 'Sjangertrekk-kortene'),
-        h('button',{class:'knapp', type:'button', onclick:visLynrunde}, 'Lynrunde: alle eventyrene'))),
+        h('button',{class:'knapp', type:'button', onclick:visLynrunde}, 'Lynrunde: alle eventyrene'),
+        h('a',{class:'knapp', href:'eventyr-jukseark.html', style:'text-decoration:none'}, 'Juksearket: alt på ett ark'))),
     h('div',{class:'krav'},
       h('p',{class:'eyebrow'}, 'Samtalen skal inneholde'),
       h('ol',{},
