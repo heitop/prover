@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<title>Engelske gloser</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Øv på engelske gloser: koble, velg, skriv, lytt, setninger og ordformer">
+<meta name="theme-color" content="#0b6e69">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230b6e69'/><text x='50' y='67' font-size='46' text-anchor='middle' font-family='Arial' font-weight='700' fill='%23ffffff'>EN</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
+<script>
+/* ======================================================================
+   GLOSER – NY PRØVE? Legg en ny blokk ØVERST i PROVER-lista under.
+   Spillet velger automatisk den neste prøven som ikke har vært ennå.
+
+   id         kort navn uten æøå/mellomrom (fremgangen lagres per id)
+   tittel     tema
+   dato       prøvedato, ÅÅÅÅ-MM-DD (kan stå tom "" hvis den ikke er kjent)
+   gloser     en    = engelsk, slik det står på glosearket (små bokstaver)
+              no    = norsk; bruk « / » mellom flere betydninger
+              alt   = andre norske svar som også godtas (valgfritt)
+              enAlt = andre engelske svar som også godtas (valgfritt)
+              par   = et ord det er lett å blande med (valgfritt)
+              def   = forklaring på engelsk (til «Forklaringer»)
+   setninger  enkle setninger; ord = glosen slik den står i setningen
+   ordformer  setning med ___, svar = riktig ord, feil = feile alternativer,
+              forkl = kort forklaring som vises ved feil svar
+   ====================================================================== */
+const PROVER = [
+  {
+    id: "flerkulturelt", tittel: "Et flerkulturelt samfunn", dato: "",
+    gloser: [
+      { en: "multicultural", no: "flerkulturell",       alt: ["multikulturell", "flerkulturelt"],
+        def: "with people from many different cultures" },
+      { en: "empire",        no: "imperium / rike",     alt: ["imperiet", "riket", "keiserrike"],
+        def: "a group of countries ruled by one king, queen or emperor" },
+      { en: "reign",         no: "regjeringstid",       alt: ["regjeringsperiode"],
+        def: "the time when a king or queen rules" },
+      { en: "diversity",     no: "mangfold",            alt: ["mangfoldighet", "mangfoldet"],
+        def: "when there are many different kinds of people or things" },
+      { en: "raw materials", no: "råvarer",             alt: ["råvare", "råstoffer", "råstoff"], par: "resources",
+        def: "natural things like wood, cotton or oil that we use to make products" },
+      { en: "resources",     no: "ressurser",           alt: ["ressurs"], par: "raw materials",
+        def: "useful things we have and can use, like water, money, time or people" },
+      { en: "independent",   no: "uavhengig",           alt: ["selvstendig"],
+        def: "free – not ruled by another country" },
+      { en: "background",    no: "bakgrunn",            alt: [],
+        def: "where you come from: your family, culture and history" },
+      { en: "immigrants",    no: "innvandrere",         alt: ["innvandrer", "immigranter", "immigrant"], par: "refugees",
+        def: "people who move to a new country to live there" },
+      { en: "refugees",      no: "flyktninger",         alt: ["flyktning"], par: "immigrants",
+        def: "people who must flee from their country because of war or danger" },
+      { en: "settled",       no: "bosatte seg",         alt: ["slo seg ned", "bosatt seg", "bosette seg", "bosatte"],
+        def: "made a new home and stayed in a place" },
+    ],
+    setninger: [
+      { en: "Norway is a multicultural country.",               no: "Norge er et flerkulturelt land.",             ord: "multicultural" },
+      { en: "London is a multicultural city.",                  no: "London er en flerkulturell by.",              ord: "multicultural" },
+      { en: "The British Empire was very big.",                 no: "Det britiske imperiet var veldig stort.",     ord: "Empire" },
+      { en: "The Roman Empire lasted for hundreds of years.",   no: "Romerriket varte i flere hundre år.",         ord: "Empire" },
+      { en: "Queen Victoria's reign lasted 63 years.",          no: "Dronning Victorias regjeringstid varte i 63 år.", ord: "reign" },
+      { en: "During his reign, the country grew rich.",         no: "I hans regjeringstid ble landet rikt.",       ord: "reign" },
+      { en: "We celebrate the diversity in our school.",        no: "Vi feirer mangfoldet på skolen vår.",         ord: "diversity" },
+      { en: "The colonies sent raw materials to Britain.",      no: "Koloniene sendte råvarer til Storbritannia.", ord: "raw materials" },
+      { en: "Cotton and wood are raw materials.",               no: "Bomull og tre er råvarer.",                   ord: "raw materials" },
+      { en: "Africa is rich in natural resources.",             no: "Afrika er rikt på naturressurser.",           ord: "resources" },
+      { en: "We must not waste our resources.",                 no: "Vi må ikke sløse med ressursene våre.",       ord: "resources" },
+      { en: "India became independent in 1947.",                no: "India ble uavhengig i 1947.",                 ord: "independent" },
+      { en: "Norway became independent in 1905.",               no: "Norge ble uavhengig i 1905.",                 ord: "independent" },
+      { en: "My friend has a Polish background.",               no: "Vennen min har polsk bakgrunn.",              ord: "background" },
+      { en: "What is your family background?",                  no: "Hva er familiebakgrunnen din?",               ord: "background" },
+      { en: "Many immigrants came to America by boat.",         no: "Mange innvandrere kom til Amerika med båt.",  ord: "immigrants" },
+      { en: "The immigrants found new jobs.",                   no: "Innvandrerne fikk nye jobber.",               ord: "immigrants" },
+      { en: "The refugees fled from the war.",                  no: "Flyktningene flyktet fra krigen.",            ord: "refugees" },
+      { en: "Norway has welcomed many refugees.",               no: "Norge har tatt imot mange flyktninger.",      ord: "refugees" },
+      { en: "They settled in a small town.",                    no: "De bosatte seg i en liten by.",               ord: "settled" },
+      { en: "Many Norwegians settled in Minnesota.",            no: "Mange nordmenn bosatte seg i Minnesota.",     ord: "settled" },
+    ],
+    ordformer: [
+      { en: "Norway became ___ in 1905.", no: "Norge ble uavhengig i 1905.", svar: "independent", feil: ["independence", "depend"],
+        forkl: "Etter <b>became</b> (ble) trenger vi et adjektiv – hvordan noe er: <b>independent</b> = uavhengig. <b>Independence</b> = uavhengighet." },
+      { en: "India got its ___ in 1947.", no: "India fikk sin uavhengighet i 1947.", svar: "independence", feil: ["independent", "independently"],
+        forkl: "Etter <b>its</b> (sin) trenger vi en ting – et substantiv: <b>independence</b> = uavhengighet." },
+      { en: "Our class is very ___.", no: "Klassen vår er veldig mangfoldig.", svar: "diverse", feil: ["diversity", "diversities"],
+        forkl: "Etter <b>very</b> (veldig) kommer et adjektiv: <b>diverse</b> = mangfoldig. <b>Diversity</b> = mangfold." },
+      { en: "We celebrate the ___ in our class.", no: "Vi feirer mangfoldet i klassen vår.", svar: "diversity", feil: ["diverse", "diversely"],
+        forkl: "Etter <b>the</b> kommer en ting – et substantiv: <b>diversity</b> = mangfold." },
+      { en: "She is an ___ from Syria.", no: "Hun er en innvandrer fra Syria.", svar: "immigrant", feil: ["immigrants", "immigration"],
+        forkl: "<b>an</b> = én person → entall uten -s: <b>an immigrant</b>. Flere = <b>immigrants</b>." },
+      { en: "Many ___ came with their families.", no: "Mange flyktninger kom med familiene sine.", svar: "refugees", feil: ["refugee", "refuge"],
+        forkl: "<b>many</b> = flere → flertall med -s: <b>refugees</b>. Én = <b>a refugee</b>." },
+      { en: "My grandparents ___ in Norway in 1970.", no: "Besteforeldrene mine bosatte seg i Norge i 1970.", svar: "settled", feil: ["settle", "settles"],
+        forkl: "<b>in 1970</b> = fortid → legg til <b>-ed</b>: settle → <b>settled</b>." },
+      { en: "Today, many people ___ in big cities.", no: "I dag bosetter mange seg i store byer.", svar: "settle", feil: ["settled", "settles"],
+        forkl: "<b>Today</b> = nåtid, og <b>people</b> er flere → <b>settle</b> (ingen -ed, ingen -s)." },
+      { en: "Oil is an important natural ___.", no: "Olje er en viktig naturressurs.", svar: "resource", feil: ["resources", "resourceful"],
+        forkl: "<b>an</b> = én → entall: <b>a resource</b>. Flere = <b>resources</b>." },
+      { en: "Britain ruled a huge ___ with colonies all over the world.", no: "Storbritannia styrte et enormt imperium med kolonier over hele verden.", svar: "empire", feil: ["emperor", "empty"],
+        forkl: "<b>empire</b> = imperium/rike. <b>emperor</b> = keiser (personen som styrer et rike)." },
+      { en: "A ___ has to flee from war.", no: "En flyktning må flykte fra krig.", svar: "refugee", feil: ["immigrant", "background"],
+        forkl: "En <b>refugee</b> (flyktning) <i>må</i> flykte. En <b>immigrant</b> (innvandrer) flytter til et nytt land, ofte av egen vilje." },
+      { en: "Cotton is a raw ___.", no: "Bomull er en råvare.", svar: "material", feil: ["materials"],
+        forkl: "<b>a</b> = én → entall: <b>a raw material</b>. Flere = <b>raw materials</b>." },
+    ],
+  },
+];
+</script>
+<style>
+/* Havgrønt (teal) og rav på lyst papir. Feil vises i varm korall, aldri knallrødt. */
+:root{
+  --bg:#f4f5f0; --dot:#e2e6dc; --card:#ffffff; --card2:#eef1ea; --line:#dde2d6;
+  --ink:#1c2628; --muted:#5d686a;
+  --pri:#0b6e69; --pri-ink:#ffffff; --pri-soft:#dcefed;
+  --sun:#f0b429; --sun-soft:#fff0c7; --sun-ink:#4a3600;
+  --coral:#b9532e; --coral-soft:#fbe3d8;
+  --ok:#23804e; --ok-soft:#dcf2e4;
+  --lv0:#e6e9e1; --lv1:#d2ebe8; --lv2:#80c3bc; --lv3:#0b6e69; --lv3-ink:#ffffff;
+  --fd:"Fredoka","Segoe UI",system-ui,sans-serif;
+  --fb:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#121818; --dot:#1b2323; --card:#1b2424; --card2:#243030; --line:#324040;
+  --ink:#edf3f2; --muted:#a2b0ae;
+  --pri:#5fd0c5; --pri-ink:#062724; --pri-soft:#173634;
+  --sun:#ffcc3d; --sun-soft:#3a3115; --sun-ink:#ffe7a3;
+  --coral:#f0a07f; --coral-soft:#3d261d;
+  --ok:#62d394; --ok-soft:#15331f;
+  --lv0:#273232; --lv1:#1b3a37; --lv2:#2f6f68; --lv3:#5fd0c5; --lv3-ink:#062724;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121818; --dot:#1b2323; --card:#1b2424; --card2:#243030; --line:#324040;
+    --ink:#edf3f2; --muted:#a2b0ae;
+    --pri:#5fd0c5; --pri-ink:#062724; --pri-soft:#173634;
+    --sun:#ffcc3d; --sun-soft:#3a3115; --sun-ink:#ffe7a3;
+    --coral:#f0a07f; --coral-soft:#3d261d;
+    --ok:#62d394; --ok-soft:#15331f;
+    --lv0:#273232; --lv1:#1b3a37; --lv2:#2f6f68; --lv3:#5fd0c5; --lv3-ink:#062724;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg)}
+body{color:var(--ink);font-family:var(--fb);font-size:1.1rem;line-height:1.5;min-height:100vh;
+  background-image:radial-gradient(var(--dot) 1.6px,transparent 1.6px);background-size:22px 22px}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+h1,h2,h3{font-family:var(--fd);font-weight:600;margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:1.9rem} h2{font-size:1.45rem} h3{font-size:1.1rem}
+p{margin:0}
+.muted{color:var(--muted)} .small{font-size:.92rem}
+[hidden]{display:none!important}
+
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topin{max-width:720px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{background:none;border:0;padding:4px 0;font-family:var(--fd);font-weight:700;font-size:1.3rem;display:flex;align-items:center;gap:8px;color:var(--pri)}
+.badge{width:32px;height:32px;border-radius:9px;background:var(--sun);color:#0b3f3c;display:grid;place-items:center;font-size:.95rem;line-height:1;letter-spacing:.02em}
+.stats{display:flex;gap:6px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-weight:700;font-size:.95rem;font-variant-numeric:tabular-nums}
+.iconbtn{background:var(--card);border:1px solid var(--line);border-radius:999px;width:40px;height:40px;display:inline-grid;place-items:center;padding:0;font-size:1.1rem}
+
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 64px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px}
+.btn{border:1px solid var(--line);background:var(--card2);border-radius:14px;padding:12px 18px;font-weight:700;min-height:50px;transition:transform .08s;text-align:center}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.pri{background:var(--pri);color:var(--pri-ink);border-color:transparent}
+.btn.big{font-size:1.2rem;padding:14px 22px;min-height:58px}
+.btn[disabled]{opacity:.4;cursor:default}
+.back{align-self:flex-start;background:none;border:0;color:var(--pri);font-weight:700;padding:6px 0}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>.btn{flex:1 1 160px}
+.link{background:none;border:0;color:var(--muted);text-decoration:underline;padding:6px 0;font-size:.95rem}
+
+/* forside */
+.hero{display:flex;flex-direction:column;gap:6px}
+.when{display:inline-flex;align-items:center;gap:8px;background:var(--sun-soft);color:var(--sun-ink);border-radius:999px;padding:4px 12px;font-weight:700;font-size:.95rem;align-self:flex-start}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-weight:700;font-size:.95rem}
+.chip[aria-pressed="true"]{background:var(--pri);color:var(--pri-ink);border-color:transparent}
+.prog{display:flex;flex-direction:column;gap:10px}
+.progtop{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tiles{display:flex;flex-wrap:wrap;gap:6px}
+.tile{border:0;border-radius:10px;padding:5px 10px;font-weight:700;font-size:.95rem;background:var(--lv0)}
+.lv1{background:var(--lv1)} .lv2{background:var(--lv2)} .lv3{background:var(--lv3);color:var(--lv3-ink)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:14px;height:14px;border-radius:4px;display:inline-block;background:var(--lv0)}
+.step{display:flex;flex-direction:column;gap:10px}
+.stephead{display:flex;align-items:center;gap:10px}
+.num{flex:none;width:30px;height:30px;border-radius:50%;background:var(--pri);color:var(--pri-ink);display:grid;place-items:center;font-weight:700;font-family:var(--fd)}
+.modes{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.mode{display:flex;gap:12px;align-items:center;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px 14px;transition:transform .1s,border-color .1s;min-height:76px}
+.mode:hover{border-color:var(--pri);transform:translateY(-1px)}
+.mode[disabled]{opacity:.5;transform:none;border-color:var(--line);cursor:default}
+.mode .ic{flex:none;width:46px;height:46px;border-radius:14px;background:var(--pri-soft);display:grid;place-items:center;font-size:1.5rem}
+.mode b{font-family:var(--fd);font-weight:600;font-size:1.08rem;display:block;line-height:1.2}
+.mode small{display:block;color:var(--muted);font-size:.88rem;line-height:1.3}
+.rec{display:inline-block;font-size:.75rem;font-weight:700;color:var(--sun-ink);background:var(--sun-soft);border-radius:999px;padding:1px 8px;margin-top:3px}
+
+/* quiz */
+.qhead{display:flex;align-items:center;gap:12px}
+.qhead .x{flex:none}
+.bar{flex:1;height:12px;border-radius:999px;background:var(--lv0);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--pri);border-radius:999px;transition:width .3s}
+.qcount{font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted);font-size:.95rem}
+.qtitle{font-family:var(--fd);font-weight:600;color:var(--muted)}
+.qcard{display:flex;flex-direction:column;gap:14px;padding:22px 18px}
+.qlabel{font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:.82rem}
+.qbig{font-family:var(--fd);font-weight:600;font-size:2.1rem;line-height:1.2;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qbig.sent{font-size:1.55rem}
+.qsub{color:var(--muted);font-style:italic}
+.gap{display:inline-block;min-width:3.2em;border-bottom:3px solid var(--sun);text-align:center;color:transparent}
+.say{border:1px solid var(--line);background:var(--card2);border-radius:999px;width:42px;height:42px;padding:0;display:inline-grid;place-items:center;font-size:1.1rem;flex:none;vertical-align:middle}
+.say.sm{width:32px;height:32px;font-size:.9rem}
+.say.huge{width:76px;height:76px;font-size:2rem;background:var(--pri-soft);border-color:transparent}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts.one{grid-template-columns:1fr}
+.opt{position:relative;border:2px solid var(--line);background:var(--card);border-radius:16px;padding:14px 14px 14px 40px;text-align:left;font-weight:700;font-size:1.12rem;min-height:60px;transition:border-color .1s,background .1s}
+.opt:hover{border-color:var(--pri)}
+.opt kbd{position:absolute;left:12px;top:50%;transform:translateY(-50%);font:700 .8rem var(--fb);color:var(--muted);background:var(--card2);border-radius:6px;padding:1px 6px}
+.opt.good{border-color:var(--ok);background:var(--ok-soft)}
+.opt.bad{border-color:var(--coral);background:var(--coral-soft)}
+.opt[disabled]{cursor:default}
+.wform{display:flex;gap:10px}
+.wform input{flex:1;min-width:0;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:12px 14px;font-size:1.3rem;font-weight:700}
+.wform input:focus{outline:none;border-color:var(--pri)}
+.wform input.good{border-color:var(--ok);background:var(--ok-soft)}
+.wform input.bad{border-color:var(--coral);background:var(--coral-soft)}
+.hintline{font-family:ui-monospace,Consolas,monospace;font-size:1.35rem;font-weight:700;letter-spacing:.12em;color:var(--pri);background:var(--pri-soft);border-radius:12px;padding:6px 12px;align-self:flex-start;white-space:pre-wrap}
+.links{display:flex;gap:18px;flex-wrap:wrap}
+.fb{border-radius:16px;padding:0;display:flex;flex-direction:column;gap:6px}
+.fb:not(:empty){padding:14px 16px}
+.fb.ok{background:var(--ok-soft)}
+.fb.almost{background:var(--sun-soft)}
+.fb.wrong{background:var(--coral-soft)}
+.fb .head{font-family:var(--fd);font-weight:600;font-size:1.25rem}
+.fb.ok .head{color:var(--ok)} .fb.wrong .head{color:var(--coral)} .fb.almost .head{color:var(--sun-ink)}
+.fb .extra{font-size:.98rem}
+.fb .after{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:700}
+.fb .btn{align-self:flex-start;margin-top:4px}
+@keyframes pop{0%{transform:scale(.96)}60%{transform:scale(1.02)}100%{transform:scale(1)}}
+.pop{animation:pop .25s ease-out}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.shake{animation:shake .25s}
+
+/* glosekort */
+.flip{perspective:1200px;cursor:pointer;user-select:none}
+.flip .inner{position:relative;height:230px;transition:transform .45s;transform-style:preserve-3d}
+.flip.on .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border:1px solid var(--line);border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;text-align:center}
+.face.b{transform:rotateY(180deg);background:var(--pri-soft)}
+.face .w{font-family:var(--fd);font-weight:600;font-size:2.4rem;line-height:1.15}
+.face .def{font-size:.95rem;color:var(--muted);font-style:italic;max-width:30em}
+.face .hint{font-size:.85rem;color:var(--muted)}
+.fnav{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.fnav .btn{min-width:70px}
+.toggles{display:flex;gap:8px;flex-wrap:wrap}
+table.list{width:100%;border-collapse:collapse}
+table.list td{padding:7px 6px;border-top:1px solid var(--line);vertical-align:middle}
+table.list td:first-child{font-weight:700}
+details summary{cursor:pointer;font-weight:700;color:var(--pri)}
+
+/* koble */
+.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kcol{display:flex;flex-direction:column;gap:8px}
+.kb{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:12px 10px;font-weight:700;font-size:1.05rem;min-height:56px;transition:border-color .1s,background .15s,opacity .3s}
+.kb.sel{border-color:var(--pri);background:var(--pri-soft)}
+.kb.bad{border-color:var(--coral);background:var(--coral-soft)}
+.kb.done{border-color:var(--ok);background:var(--ok-soft);opacity:.45;cursor:default}
+
+/* resultat */
+.res{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.res .big{font-size:3.6rem;line-height:1}
+.res .score{font-family:var(--fd);font-weight:700;font-size:2.4rem;color:var(--pri)}
+.misslist{text-align:left;width:100%;display:flex;flex-direction:column;gap:6px}
+.misslist div{background:var(--card2);border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+
+@media (max-width:480px){
+  h1{font-size:1.6rem}
+  .qbig{font-size:1.75rem} .qbig.sent{font-size:1.3rem}
+  .opts{grid-template-columns:1fr}
+  .opts.two{grid-template-columns:1fr 1fr}
+  .kb{font-size:.95rem;padding:10px 6px}
+  .face .w{font-size:2rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="topin">
+  <button class="logo" data-act="home"><span class="badge">EN</span>Gloser</button>
+  <div class="stats">
+    <span class="pill" id="pillKan" title="Gloser du kan">⭐ 0/0</span>
+    <button class="iconbtn" data-act="theme" id="themeBtn" aria-label="Bytt lys/mørk">☾</button>
+  </div>
+</div></header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+/* ---------- hjelpere ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const clean = s => String(s).toLowerCase().replace(/[’`]/g, "'").replace(/[?!.,;:()«»"]/g, " ").replace(/\s+/g, " ").trim();
+function lev(a, b) {
+  const m = a.length, n = b.length; if (Math.abs(m - n) > 2) return 9;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[n];
+}
+
+/* ---------- lagring ---------- */
+const KEY = "engelsk-gloser-v1";
+const fresh = () => ({ v: 1, theme: "auto", valgt: null, prover: {} });
+function load() { try { const x = JSON.parse(localStorage.getItem(KEY)); if (x && x.v === 1) return Object.assign(fresh(), x); } catch (e) {} return fresh(); }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+let S = load();
+
+/* ---------- prøve ---------- */
+const idag = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const dk = p => p.dato || "9999-12-31";
+const sortert = () => PROVER.slice().sort((a, b) => dk(a).localeCompare(dk(b)));
+function standardProve() { const s = sortert(); return (s.find(p => dk(p) >= idag()) || s[s.length - 1]).id; }
+function P() { return PROVER.find(p => p.id === S.valgt) || PROVER.find(p => p.id === standardProve()); }
+function PS() { const id = P().id; if (!S.prover[id]) S.prover[id] = { lv: {}, best: {} }; return S.prover[id]; }
+const lv = g => PS().lv[g.en] || 0;
+function updLv(g, kind, ok) {
+  const st = PS(); let v = st.lv[g.en] || 0;
+  if (ok) v = kind === "write" ? Math.min(3, v + 1) : Math.max(v, 1);
+  else v = Math.max(0, v - 1);
+  st.lv[g.en] = v; save(); updTop();
+}
+const byEn = en => P().gloser.find(g => g.en === en);
+function dagerTil(d) { const a = new Date(idag() + "T00:00:00"), b = new Date(d + "T00:00:00"); return Math.round((b - a) / 864e5); }
+const fmtDato = d => new Date(d + "T00:00:00").toLocaleDateString("nb-NO", { weekday: "long", day: "numeric", month: "long" });
+function naarTekst(d) { const n = dagerTil(d); return n > 1 ? `om ${n} dager` : n === 1 ? "i morgen!" : n === 0 ? "i dag!" : "er ferdig"; }
+
+/* ---------- tale ---------- */
+const TTS = "speechSynthesis" in window;
+let enVoice = null;
+function pickVoice() { const v = speechSynthesis.getVoices(); enVoice = v.find(x => /^en[-_]GB/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null; }
+if (TTS) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function speak(t) {
+  if (!TTS) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(t); u.lang = "en-GB"; if (enVoice) u.voice = enVoice; u.rate = .85;
+  speechSynthesis.speak(u);
+}
+const sayBtn = (t, sm) => TTS ? `<button class="say${sm ? " sm" : ""}" data-say="${esc(t)}" aria-label="Lytt: ${esc(t)}" title="Lytt">🔊</button>` : "";
+
+/* ---------- tema og topp ---------- */
+function applyTheme() { const r = document.documentElement; if (S.theme === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", S.theme); updTop(); }
+function erMork() { const t = document.documentElement.getAttribute("data-theme"); return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; }
+function updTop() {
+  const gl = P().gloser; $("#pillKan").textContent = `⭐ ${gl.filter(g => lv(g) >= 3).length}/${gl.length}`;
+  $("#themeBtn").textContent = erMork() ? "☀" : "☾";
+}
+
+/* ---------- visning ---------- */
+const app = $("#app");
+let kTimer = null, autoTimer = null;
+function show(html) {
+  clearInterval(kTimer); clearTimeout(autoTimer); if (TTS) speechSynthesis.cancel();
+  app.innerHTML = html; window.scrollTo(0, 0); updTop();
+}
+
+/* ---------- forside ---------- */
+function home() {
+  Q = null; K = null;
+  const p = P(), st = PS(), gl = p.gloser;
+  const kan = gl.filter(g => lv(g) >= 3).length, vansk = gl.filter(g => lv(g) < 3).length;
+  const chips = PROVER.length > 1 ? `<div class="chips">${sortert().reverse().map(x =>
+      `<button class="chip" data-act="velgProve:${x.id}" aria-pressed="${x.id === p.id}">${esc(x.tittel)}${x.dato ? ` · ${x.dato.slice(8, 10)}.${x.dato.slice(5, 7)}` : ""}</button>`).join("")}</div>` : "";
+  const b = st.best;
+  const mode = (act, ic, t, d, rec, dis) => `<button class="mode" data-act="${act}"${dis ? " disabled" : ""}><span class="ic">${ic}</span><span><b>${t}</b><small>${d}</small>${rec ? `<span class="rec">${rec}</span>` : ""}</span></button>`;
+  show(`
+  <section class="hero">
+    <h1>Engelsk: ${esc(p.tittel)}</h1>
+    ${p.dato ? `<span class="when">📅 Prøve ${esc(fmtDato(p.dato))} – ${naarTekst(p.dato)}</span>` : ""}
+  </section>
+  ${chips}
+  <section class="card prog">
+    <div class="progtop"><h3>Glosene dine</h3><span class="muted small">${kan} av ${gl.length} sitter</span></div>
+    <div class="tiles">${gl.map(g => `<button class="tile lv${lv(g)}" ${TTS ? `data-say="${esc(g.en)}"` : ""} title="${esc(g.no)}">${esc(g.en)}</button>`).join("")}</div>
+    <div class="legend"><span><i></i>Ny</span><span><i class="lv1"></i>Kjenner igjen</span><span><i class="lv2"></i>På vei</span><span><i class="lv3"></i>Sitter</span></div>
+    <p class="muted small">Et ord «sitter» når du har skrevet det riktig flere ganger. Trykk på et ord for å høre det.</p>
+  </section>
+
+  <section class="step">
+    <div class="stephead"><span class="num">1</span><h2>Bli kjent med glosene</h2></div>
+    <div class="modes">
+      ${mode("kort", "📖", "Glosekort", "Snu kortene og hør uttalen")}
+      ${mode("koble", "🧩", "Koble sammen", "Finn parene – engelsk og norsk", b.koble ? `Rekord: ${b.koble} sek` : "")}
+      ${mode("velg", "🎯", "Velg riktig", "Fire alternativer, begge veier")}
+    </div>
+  </section>
+
+  <section class="step">
+    <div class="stephead"><span class="num">2</span><h2>Skriv selv</h2></div>
+    <div class="modes">
+      ${mode("skrivEn", "✍️", "Skriv på engelsk", "Du ser norsk – skriv engelsk")}
+      ${mode("skrivNo", "📝", "Skriv på norsk", "Du ser engelsk – skriv norsk")}
+      ${TTS ? mode("lytt", "🎧", "Lytt og skriv", "Hør ordet – stav det riktig", b.lytt != null ? `Beste: ${b.lytt} %` : "") : ""}
+      ${mode("vansk", "🔁", "Øv på de vanskelige", vansk ? `${vansk} ord sitter ikke ennå` : "Alle sitter! 🎉", "", !vansk)}
+    </div>
+  </section>
+
+  <section class="step">
+    <div class="stephead"><span class="num">3</span><h2>Prøv deg som på prøven</h2></div>
+    <div class="modes">
+      ${mode("prove", "🏁", "Prøveprøve", `Alle ${gl.length} glosene, blandet – uten hjelp`, b.prove != null ? `Beste: ${b.prove} %` : "")}
+    </div>
+  </section>
+
+  ${(p.setninger || p.ordformer) ? `<section class="step">
+    <div class="stephead"><span class="num">4</span><h2>Neste steg: bruk ordene</h2></div>
+    <div class="modes">
+      ${p.setninger ? mode("setn", "💬", "Setninger", "Hvilket ord mangler? Hva betyr setningen?", b.setn != null ? `Beste: ${b.setn} %` : "") : ""}
+      ${gl.some(g => g.def) ? mode("def", "🔎", "Forklaringer", "Les forklaringen på engelsk – hvilket ord er det?", b.def != null ? `Beste: ${b.def} %` : "") : ""}
+      ${p.ordformer ? mode("form", "🔤", "Ordformer", "independent eller independence? -s eller ikke?", b.form != null ? `Beste: ${b.form} %` : "") : ""}
+    </div>
+  </section>` : ""}
+
+  <p class="small muted">Fremgangen lagres bare på denne enheten. <button class="link" data-act="reset">Nullstill fremgang</button></p>
+  `);
+}
+
+/* ---------- glosekort ---------- */
+let F = null;
+function kort() { F = { list: P().gloser.slice(), i: 0, on: false, noFirst: false, mix: false }; fRender(); }
+function fRender() {
+  const g = F.list[F.i], n = F.list.length;
+  const en = `<span class="w">${esc(g.en)}</span>${sayBtn(g.en)}`;
+  const no = `<span class="w">${esc(g.no)}</span>${g.def ? `<span class="def">«${esc(g.def)}»</span>` : ""}`;
+  const front = F.noFirst ? `<span class="w">${esc(g.no)}</span>` : en, back = F.noFirst ? en : no;
+  show(`
+  <button class="back" data-act="home">← Tilbake</button>
+  <h2>Glosekort</h2>
+  <div class="flip${F.on ? " on" : ""}" data-act="flip" id="flip"><div class="inner">
+    <div class="face a">${front}<span class="hint">Trykk for å snu</span></div>
+    <div class="face b">${back}</div>
+  </div></div>
+  <div class="fnav">
+    <button class="btn" data-act="fprev" aria-label="Forrige">←</button>
+    <span class="qcount">${F.i + 1} / ${n}</span>
+    <button class="btn pri" data-act="fnext" aria-label="Neste">→</button>
+  </div>
+  <div class="toggles">
+    <button class="chip" data-act="fmix" aria-pressed="${F.mix}">🔀 Bland</button>
+    <button class="chip" data-act="fnofirst" aria-pressed="${F.noFirst}">🔁 Norsk først</button>
+  </div>
+  <details class="card"><summary>Hele gloselista</summary>
+    <table class="list">${P().gloser.map(x => `<tr><td>${esc(x.en)}</td><td>${esc(x.no)}</td><td>${sayBtn(x.en, 1)}</td></tr>`).join("")}</table>
+  </details>
+  <p class="small muted">Tastatur: mellomrom snur, piltaster blar.</p>`);
+}
+
+/* ---------- oppgaver ---------- */
+function distract(g, n = 3) {
+  const others = shuffle(P().gloser.filter(x => x !== g));
+  const par = g.par && byEn(g.par);
+  if (par && Math.random() < .7) { others.splice(others.indexOf(par), 1); others.unshift(par); }
+  return others.slice(0, n);
+}
+const enForms = g => [g.en, ...(g.enAlt || [])];
+function itVelgEnNo(g) {
+  return { kind: "choice", g, label: "Hva betyr ordet?", big: g.en, say: g.en, options: [g.no, ...distract(g).map(x => x.no)], answer: g.no, line: `${g.en} = ${g.no}`, sayF: g.en };
+}
+function itVelgNoEn(g) {
+  return { kind: "choice", g, label: "Hva heter det på engelsk?", big: g.no, options: [g.en, ...distract(g).map(x => x.en)], answer: g.en, line: `${g.no} = ${g.en}`, sayF: g.en };
+}
+function itSkrivEn(g) {
+  return { kind: "write", lang: "en", g, label: "Skriv på engelsk", big: g.no, fasit: g.en, line: `${g.no} = ${g.en}`, sayF: g.en, check: v => checkEn(v, enForms(g)) };
+}
+function itSkrivNo(g) {
+  return { kind: "write", lang: "no", g, label: "Skriv på norsk", big: g.en, say: g.en, fasit: g.no, line: `${g.en} = ${g.no}`, check: v => checkNo(v, g) };
+}
+function itLytt(g) {
+  return {
+    kind: "write", lang: "en", g, label: "Hør ordet og skriv det på engelsk",
+    bigHtml: `<button class="say huge" data-say="${esc(g.en)}" aria-label="Spill av ordet igjen" title="Spill av igjen">🔊</button><span class="muted small" style="font-family:var(--fb);font-weight:400">Trykk for å høre igjen</span>`,
+    autoSay: g.en, fasit: g.en, line: `${g.en} = ${g.no}`, sayF: g.en, check: v => checkEn(v, enForms(g)),
+    after: `${sayBtn(g.en, 1)} ${esc(g.en)} = ${esc(g.no)}`
+  };
+}
+const EN_ART = /^(the|a|an|to) /;
+const cleanEn = s => clean(s).replace(/-/g, "").replace(EN_ART, "");
+function checkEn(input, forms) {
+  const a = cleanEn(input); if (!a) return { st: "wrong" };
+  const fs = forms.map(cleanEn);
+  if (fs.includes(a)) return { st: "ok" };
+  if (fs.some(f => f.length >= 4 && lev(a, f) <= 1)) return { st: "almost" };
+  return { st: "wrong" };
+}
+const NO_ART = /^(en|ei|et|å|min|mi|mitt|mine) /;
+function noForms(g) {
+  const set = new Set(), add = s => { const c = clean(s); set.add(c); set.add(c.replace(NO_ART, "")); };
+  add(g.no); add(g.no.replace(/\(.*?\)/g, "")); g.no.split("/").forEach(add); (g.alt || []).forEach(add);
+  return [...set].filter(Boolean);
+}
+function checkNo(input, g) {
+  const a = clean(input).replace(NO_ART, ""); if (!a) return { st: "wrong" };
+  const forms = noForms(g);
+  if (forms.includes(a)) return { st: "ok" };
+  if (forms.some(f => f.length >= 4 && lev(a, f) <= 1)) return { st: "typo" };
+  return { st: "wrong" };
+}
+/* hint: første bokstav i hvert ord, resten som streker */
+const hintPat = w => w.split(" ").map(x => x[0] + " _".repeat(x.length - 1)).join("   ");
+
+/* ---------- quiz-motor ---------- */
+let Q = null;
+function startQuiz(o) {
+  o.items.forEach((it, i) => it.id = i);
+  Q = Object.assign({ requeue: true, first: {}, done: 0, total: o.items.length, queue: o.items.slice(), answered: false }, o);
+  qRender();
+}
+function qRender() {
+  const it = Q.queue[0]; Q.answered = false; it.hinted = false;
+  let body = "";
+  if (it.kind === "choice") {
+    const opts = it.fixed ? it.options.slice() : shuffle(it.options.slice());
+    body = `<div class="opts${opts.length === 2 ? " two" : ""}${it.wide ? " one" : ""}">${opts.map((o, i) => `<button class="opt" data-act="opt" data-v="${esc(o)}"><kbd>${i + 1}</kbd>${esc(o)}</button>`).join("")}</div>`;
+  } else {
+    const kanHint = it.lang === "en" && !Q.noHint;
+    body = `<form class="wform" id="wform" autocomplete="off">
+      <input id="win" type="text" lang="${it.lang === "en" ? "en" : "nb"}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Svar" placeholder="${it.lang === "en" ? "på engelsk …" : "på norsk …"}">
+      <button class="btn pri" type="submit" id="wsub">Sjekk</button></form>
+      <div class="hintline" id="hintline" hidden></div>
+      <div class="links">
+        ${kanHint ? `<button type="button" class="link keep" data-act="hint" id="hintBtn">💡 Hint</button>` : ""}
+        <button type="button" class="link" data-act="idk" id="idk">Vet ikke – vis svaret</button>
+      </div>`;
+  }
+  show(`
+  <div class="qhead"><button class="iconbtn x" data-act="home" aria-label="Avslutt">✕</button>
+    <div class="bar"><i id="qbar" style="width:${Q.done / Q.total * 100}%"></i></div>
+    <span class="qcount" id="qcount">${Q.done}/${Q.total}</span></div>
+  <div class="qtitle">${esc(Q.title)}</div>
+  <div class="card qcard pop" id="qcard">
+    <div class="qlabel">${esc(it.label)}</div>
+    <div class="qbig${it.sent ? " sent" : ""}">${it.bigHtml || esc(it.big)} ${it.say ? sayBtn(it.say) : ""}</div>
+    ${it.sub ? `<div class="qsub">${it.sub}</div>` : ""}
+    ${body}
+    <div class="fb" id="fb" aria-live="polite"></div>
+  </div>`);
+  if (it.autoSay) setTimeout(() => speak(it.autoSay), 250);
+  if (it.kind === "write") setTimeout(() => $("#win") && $("#win").focus(), 60);
+}
+function qAnswer(r, given) {
+  const it = Q.queue[0]; Q.answered = true;
+  const ok = ["ok", "typo"].includes(r.st);
+  if (!(it.id in Q.first)) {
+    Q.first[it.id] = ok && !it.hinted;
+    if (it.g && !Q.noLv) updLv(it.g, it.hinted ? "choice" : it.kind, ok);
+  }
+  if (ok || !Q.requeue) Q.done++;
+  else Q.queue.splice(Math.min(Q.queue.length, 4), 0, it);
+  $("#qbar").style.width = (Q.done / Q.total * 100) + "%";
+  $("#qcount").textContent = `${Q.done}/${Q.total}`;
+  const fas = `<b>${esc(it.fasit || it.answer)}</b>`;
+  let head, extra = "";
+  if (r.st === "ok") head = pick(["Great!", "Correct!", "Well done!", "Perfect!", "Riktig!"]);
+  else if (r.st === "typo") { head = "Riktig!"; extra = `Det skrives ${fas}.`; }
+  else if (r.st === "almost") { head = "Nesten!"; extra = `Sjekk stavingen – riktig er ${fas}.`; }
+  else { head = given ? "Ikke helt" : "Svaret er"; extra = given ? `Riktig svar: ${fas}` : fas; }
+  if (ok && it.hinted) extra += (extra ? "<br>" : "") + `<span class="muted">Med hint – prøv uten neste gang.</span>`;
+  if (r.note) extra += (extra ? "<br>" : "") + r.note;
+  if (!ok && it.forkl) extra += `<br>${it.forkl}`;
+  if (!ok && Q.requeue) extra += `<br><span class="muted">Du får den igjen om litt.</span>`;
+  const after = it.after ? `<div class="after">${it.after}</div>` : (it.sayF && TTS ? `<div class="after">${sayBtn(it.sayF, 1)} ${esc(it.sayF)}</div>` : "");
+  const fb = $("#fb");
+  fb.className = "fb pop " + (ok ? "ok" : r.st === "almost" ? "almost" : "wrong");
+  fb.innerHTML = `<div class="head">${ok ? "✓ " : ""}${head}</div>${extra ? `<div class="extra">${extra}</div>` : ""}${after}
+    <button class="btn pri" data-act="next" id="nextBtn">Neste →</button>`;
+  if (!ok) $("#qcard").classList.add("shake");
+  if (it.kind === "write") {
+    const inp = $("#win"); inp.readOnly = true; inp.classList.add(ok ? "good" : "bad");
+    $("#wsub").hidden = true; $("#idk").hidden = true;
+    if ($("#hintBtn")) $("#hintBtn").hidden = true;
+  }
+  if (it.kind !== "write") $("#nextBtn").focus({ preventScroll: true });
+  else setTimeout(() => $("#nextBtn") && $("#nextBtn").focus({ preventScroll: true }), 0);
+  if (r.st === "ok" && !r.note && !it.after && !it.hinted) autoTimer = setTimeout(qNext, 1100);
+}
+function qNext() { clearTimeout(autoTimer); if (!Q) return; Q.queue.shift(); if (!Q.queue.length) qEnd(); else qRender(); }
+function qEnd() {
+  const ids = Object.keys(Q.first), right = ids.filter(i => Q.first[i]).length;
+  const pct = Math.round(right / Q.total * 100);
+  const items = Q.items.filter(it => Q.first[it.id] === false);
+  if (Q.bestKey) { const b = PS().best; if (b[Q.bestKey] == null || pct > b[Q.bestKey]) { b[Q.bestKey] = pct; Q.rekord = true; } save(); }
+  const [ico, msg] = pct >= 90 ? ["🌟", "Fantastic!"] : pct >= 75 ? ["👏", "Well done!"] : pct >= 50 ? ["💪", "Good! Litt til, så sitter det."] : ["🌱", "Godt jobba – ta en runde til!"];
+  const again = Q.again;
+  show(`
+  <div class="card res pop">
+    <div class="big">${ico}</div>
+    <h2>${msg}</h2>
+    <div class="score">${right} av ${Q.total}</div>
+    <p class="muted">riktig på første forsøk${Q.rekord && Q.bestKey ? " – ny rekord! 🏆" : ""}</p>
+    ${items.length ? `<div class="misslist"><h3>${Q.requeue ? "Disse måtte du ta flere ganger" : "Disse bør du øve mer på"}</h3>
+      ${items.map(it => `<div><span>${esc(it.line)}</span>${it.sayF ? sayBtn(it.sayF, 1) : ""}</div>`).join("")}</div>` : ""}
+    <div class="row" style="width:100%">
+      <button class="btn pri big" data-act="${again}">Én gang til</button>
+      <button class="btn big" data-act="home">Til menyen</button>
+    </div>
+  </div>`);
+}
+
+/* ---------- moduser ---------- */
+const MODES = {
+  velg() {
+    startQuiz({ title: "Velg riktig", again: "velg", items: shuffle(P().gloser.map(g => Math.random() < .5 ? itVelgEnNo(g) : itVelgNoEn(g))) });
+  },
+  skrivEn() { startQuiz({ title: "Skriv på engelsk", again: "skrivEn", items: shuffle(P().gloser.map(itSkrivEn)) }); },
+  skrivNo() { startQuiz({ title: "Skriv på norsk", again: "skrivNo", items: shuffle(P().gloser.map(itSkrivNo)) }); },
+  lytt() { startQuiz({ title: "Lytt og skriv", again: "lytt", bestKey: "lytt", items: shuffle(P().gloser.map(itLytt)) }); },
+  vansk() {
+    const gl = P().gloser.filter(g => lv(g) < 3); if (!gl.length) return home();
+    startQuiz({ title: "Øv på de vanskelige", again: "vansk", items: shuffle(gl.map(g => lv(g) < 1 && Math.random() < .5 ? itVelgNoEn(g) : (Math.random() < .6 ? itSkrivEn(g) : itSkrivNo(g)))) });
+  },
+  prove() {
+    const gl = shuffle(P().gloser.slice()), half = Math.ceil(gl.length / 2);
+    startQuiz({ title: "Prøveprøve", again: "prove", requeue: false, noHint: true, bestKey: "prove", items: shuffle(gl.map((g, i) => i < half ? itSkrivEn(g) : itSkrivNo(g))) });
+  },
+  setn() { startQuiz({ title: "Setninger", again: "setn", bestKey: "setn", noLv: true, items: lagSetninger() }); },
+  def() { startQuiz({ title: "Forklaringer", again: "def", bestKey: "def", items: lagDef() }); },
+  form() { startQuiz({ title: "Ordformer", again: "form", bestKey: "form", noLv: true, items: lagOrdformer() }); },
+};
+
+/* ---------- setninger ---------- */
+function splitGap(s) {
+  const re = new RegExp(`(^|[^\\p{L}])(${s.ord.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})(?=[^\\p{L}]|$)`, "iu");
+  const m = s.en.match(re); if (!m) return [s.en, ""];
+  const i = m.index + m[1].length; return [s.en.slice(0, i), s.en.slice(i + m[2].length)];
+}
+function lagSetninger() {
+  const ss = shuffle(P().setninger.slice());
+  const ords = [...new Map(P().setninger.map(s => [s.ord.toLowerCase(), s.ord])).values()];
+  return shuffle(ss.map((s, i) => {
+    const [a, b] = splitGap(s), gapHtml = `${esc(a)}<span class="gap">____</span>${esc(b)}`;
+    const after = `${sayBtn(s.en, 1)} ${esc(s.en)}`;
+    const kind = i % 3;
+    if (kind === 0) {
+      const g = byEn(s.ord.toLowerCase()), par = g && g.par;
+      let rest = shuffle(ords.filter(o => o.toLowerCase() !== s.ord.toLowerCase()));
+      if (par) { rest = rest.filter(o => o.toLowerCase() !== par); rest.unshift(par); }
+      return { kind: "choice", sent: true, label: "Hvilket ord mangler?", bigHtml: gapHtml, sub: esc(s.no), options: [s.ord, ...rest.slice(0, 3)], answer: s.ord, line: s.en, sayF: s.en, after };
+    }
+    if (kind === 1) {
+      return { kind: "write", lang: "en", sent: true, label: "Skriv ordet som mangler", bigHtml: gapHtml, sub: esc(s.no), fasit: s.ord, check: v => checkEn(v, [s.ord]), line: s.en, sayF: s.en, after };
+    }
+    const others = shuffle(P().setninger.filter(x => x !== s && x.ord !== s.ord)).slice(0, 3).map(x => x.no);
+    return { kind: "choice", sent: true, wide: true, label: "Hva betyr setningen?", big: s.en, say: s.en, options: [s.no, ...others], answer: s.no, line: `${s.en} = ${s.no}`, sayF: s.en };
+  }));
+}
+
+/* ---------- forklaringer ---------- */
+function lagDef() {
+  return shuffle(P().gloser.filter(g => g.def).map(g => ({
+    kind: "choice", g, sent: true, label: "Hvilket ord forklares?", big: `«${g.def}»`, say: g.def,
+    options: [g.en, ...distract(g).map(x => x.en)], answer: g.en, line: `${g.en} – ${g.def}`, sayF: g.en,
+    forkl: `<b>${esc(g.en)}</b> = ${esc(g.no)}`
+  })));
+}
+
+/* ---------- ordformer ---------- */
+function lagOrdformer() {
+  return shuffle(P().ordformer.map(o => {
+    const [a, b] = o.en.split("___"), full = a + o.svar + b;
+    return {
+      kind: "choice", sent: true, label: "Hvilket ord passer?", bigHtml: `${esc(a)}<span class="gap">____</span>${esc(b)}`, sub: esc(o.no),
+      options: [o.svar, ...o.feil], answer: o.svar, forkl: o.forkl, line: full, sayF: full, after: `${sayBtn(full, 1)} ${esc(full)}`
+    };
+  }));
+}
+
+/* ---------- koble sammen ---------- */
+let K = null;
+function koble() {
+  const gl = shuffle(P().gloser.slice()), nR = Math.ceil(gl.length / 6), size = Math.ceil(gl.length / nR), rounds = [];
+  for (let i = 0; i < gl.length; i += size) rounds.push(gl.slice(i, i + size));
+  K = { rounds, r: 0, sel: null, err: 0, t0: Date.now(), feil: new Set() };
+  kRender();
+}
+function kRender() {
+  const rd = K.rounds[K.r]; K.left = rd.length; K.sel = null;
+  const L = shuffle(rd.slice()), R = shuffle(rd.slice());
+  show(`
+  <div class="qhead"><button class="iconbtn x" data-act="home" aria-label="Avslutt">✕</button>
+    <div class="bar"><i style="width:${K.r / K.rounds.length * 100}%"></i></div>
+    <span class="pill" id="ktid">⏱ 0</span></div>
+  <div class="qtitle">Koble sammen – runde ${K.r + 1} av ${K.rounds.length}</div>
+  <p class="muted small">Trykk på et engelsk ord og så på det norske som hører til.</p>
+  <div class="kgrid">
+    <div class="kcol">${L.map(g => `<button class="kb" data-act="kpick" data-side="en" data-k="${esc(g.en)}">${esc(g.en)}</button>`).join("")}</div>
+    <div class="kcol">${R.map(g => `<button class="kb" data-act="kpick" data-side="no" data-k="${esc(g.en)}">${esc(g.no)}</button>`).join("")}</div>
+  </div>
+  <p class="small muted" id="kerr">Feil: ${K.err}</p>`);
+  const tick = () => { const e = $("#ktid"); if (e) e.textContent = `⏱ ${Math.floor((Date.now() - K.t0) / 1000)}`; };
+  tick(); kTimer = setInterval(tick, 1000);
+}
+function kPick(b) {
+  if (b.classList.contains("done")) return;
+  if (K.sel === b) { b.classList.remove("sel"); K.sel = null; return; }
+  if (!K.sel || K.sel.dataset.side === b.dataset.side) { if (K.sel) K.sel.classList.remove("sel"); K.sel = b; b.classList.add("sel"); return; }
+  const a = K.sel; K.sel = null; a.classList.remove("sel");
+  if (a.dataset.k === b.dataset.k) {
+    [a, b].forEach(x => { x.classList.add("done"); x.disabled = true; });
+    const g = byEn(a.dataset.k); if (!K.feil.has(g.en)) updLv(g, "choice", true);
+    if (--K.left === 0) setTimeout(kNeste, 450);
+  } else {
+    K.err++; K.feil.add(a.dataset.k); K.feil.add(b.dataset.k);
+    [a, b].forEach(x => { x.classList.add("bad", "shake"); setTimeout(() => x.classList.remove("bad", "shake"), 550); });
+    $("#kerr").textContent = `Feil: ${K.err}`;
+  }
+}
+function kNeste() {
+  if (!K) return;
+  if (++K.r < K.rounds.length) return kRender();
+  const sek = Math.round((Date.now() - K.t0) / 1000), b = PS().best, rek = b.koble == null || sek < b.koble;
+  if (rek) { b.koble = sek; save(); }
+  const n = K.rounds.flat().length;
+  show(`
+  <div class="card res pop">
+    <div class="big">${K.err === 0 ? "🌟" : "🧩"}</div>
+    <h2>${K.err === 0 ? "Perfect! Ingen feil!" : "Alle parene funnet!"}</h2>
+    <div class="score">${sek} sek</div>
+    <p class="muted">${n} par · ${K.err} feil${rek ? " · ny rekord! 🏆" : ` · rekorden er ${b.koble} sek`}</p>
+    <div class="row" style="width:100%">
+      <button class="btn pri big" data-act="koble">Én gang til</button>
+      <button class="btn big" data-act="home">Til menyen</button>
+    </div>
+  </div>`);
+  K = null;
+}
+
+/* ---------- handlinger ---------- */
+const ACT = {
+  home, kort, koble,
+  velg: () => MODES.velg(), skrivEn: () => MODES.skrivEn(), skrivNo: () => MODES.skrivNo(), lytt: () => MODES.lytt(), vansk: () => MODES.vansk(),
+  prove: () => MODES.prove(), setn: () => MODES.setn(), def: () => MODES.def(), form: () => MODES.form(),
+  theme() { S.theme = erMork() ? "light" : "dark"; save(); applyTheme(); },
+  velgProve(id) { S.valgt = id; save(); home(); },
+  reset() { if (confirm(`Nullstille fremgangen for «${P().tittel}»?`)) { delete S.prover[P().id]; save(); home(); } },
+  flip() { F.on = !F.on; $("#flip").classList.toggle("on", F.on); },
+  fnext() { F.i = (F.i + 1) % F.list.length; F.on = false; fRender(); },
+  fprev() { F.i = (F.i - 1 + F.list.length) % F.list.length; F.on = false; fRender(); },
+  fmix() { F.mix = !F.mix; F.list = F.mix ? shuffle(P().gloser.slice()) : P().gloser.slice(); F.i = 0; F.on = false; fRender(); },
+  fnofirst() { F.noFirst = !F.noFirst; F.on = false; fRender(); },
+  opt(_, b) {
+    if (!Q || Q.answered) return;
+    const it = Q.queue[0], v = b.dataset.v, ok = v === it.answer;
+    document.querySelectorAll(".opt").forEach(x => { x.disabled = true; if (x.dataset.v === it.answer) x.classList.add("good"); });
+    if (!ok) b.classList.add("bad");
+    qAnswer({ st: ok ? "ok" : "wrong" }, true);
+  },
+  idk() { if (Q && !Q.answered) qAnswer({ st: "wrong" }, false); },
+  next() { qNext(); },
+  hint() {
+    if (!Q || Q.answered) return;
+    const it = Q.queue[0]; it.hinted = true;
+    const h = $("#hintline"); h.textContent = hintPat(it.fasit); h.hidden = false;
+    $("#hintBtn").hidden = true; $("#win").focus();
+  },
+  kpick(_, b) { kPick(b); },
+};
+document.addEventListener("click", e => {
+  const s = e.target.closest("[data-say]"); if (s) { speak(s.dataset.say); return; }
+  const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
+  const [act, arg] = b.dataset.act.split(/:(.*)/s);
+  if (ACT[act]) ACT[act](arg, b, e);
+});
+document.addEventListener("mousedown", e => { if (e.target.closest(".keep")) e.preventDefault(); });
+document.addEventListener("submit", e => {
+  if (e.target.id !== "wform") return; e.preventDefault();
+  if (!Q) return;
+  if (Q.answered) return qNext();
+  const v = $("#win").value; if (!v.trim()) return;
+  qAnswer(Q.queue[0].check(v), true);
+});
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  if ($("#flip")) {
+    if (e.key === " ") { e.preventDefault(); ACT.flip(); }
+    else if (e.key === "ArrowRight") ACT.fnext();
+    else if (e.key === "ArrowLeft") ACT.fprev();
+    return;
+  }
+  if (Q && $("#qcard")) {
+    if (!Q.answered && Q.queue[0].kind === "choice" && /^[1-9]$/.test(e.key)) {
+      const b = document.querySelectorAll(".opt")[+e.key - 1]; if (b) b.click();
+    } else if (Q.answered && e.key === "Enter" && e.target.id !== "nextBtn") { e.preventDefault(); qNext(); }
+  }
+});
+
+applyTheme();
+home();
+</script>
+</body>
+</html>
