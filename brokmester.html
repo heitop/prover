@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Brøkmester</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -227,6 +228,7 @@ input.txt{background:var(--tavle);color:var(--kritt);border:1px solid var(--kant
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<script src="felles/gull.js"></script>
 
 <div id="app"></div>
 <canvas id="fx" aria-hidden="true"></canvas>
@@ -1017,7 +1019,7 @@ function finish(ok){
   save();updStats();
   round.results[round.i]={topic:cur.topic,level:L,score:sc,stars:st};
   const after=Math.floor(k.s);
-  if(ok){beep('ok');
+  if(ok){beep('ok');window.Gull&&Gull.tjen(sc>=0.8?2:1);
     const big=sc>=1?pick(PRAISE):sc>=0.8?'Riktig! Tipset hjalp.':'Riktig! Bra at du ikke ga deg.';
     showFb('ok',big,`<p>+${st} ${st===1?'stjerne':'stjerner'}${S.streak>=3?` · ${S.streak} på rad!`:''}</p><div class="sol"><b>Slik tenker du:</b> ${cur.task.solution}</div>`);
     if(S.streak>0&&S.streak%5===0){confetti(70)}}
@@ -1036,7 +1038,7 @@ function rawHtml(raw){if(raw.i!==undefined)return cur.task.input.options[raw.i].
 function recordTest(res,raw){
   const ok=res.st==='ok'||res.st==='nudge',k=S.skills[cur.topic];
   k.n++;k.hist.push(ok?1:0);if(k.hist.length>10)k.hist.shift();k.s=Math.max(1,Math.min(5.99,k.s+(ok?0.3:-0.4)));k.last=S.total;S.total++;touchDay();S.today++;
-  if(ok){S.stars+=2}else mistake(res.code);
+  if(ok){S.stars+=2;window.Gull&&Gull.tjen(2)}else mistake(res.code);
   round.results[round.i]={topic:cur.topic,level:cur.level,score:ok?1:0,ok,given:rawHtml(raw),task:cur.task,note:res.st==='nudge'?'Riktig verdi, men husk å skrive svaret så enkelt som mulig.':''};
   save();round.i++;nextTask()}
 
@@ -1051,7 +1053,7 @@ function updTimer(){if(!round||round.mode!=='lyn')return;const left=Math.max(0,r
 function stopLyn(){if(lynTimer){clearInterval(lynTimer);lynTimer=null}}
 function recordLyn(res){const ok=res.st==='ok'||res.st==='nudge';round.lynN++;
   const fl=document.getElementById('flash');
-  if(ok){round.lynOk++;S.streak++;S.best=Math.max(S.best,S.streak);S.stars+=1;beep('ok');if(fl){fl.className='flash ok';fl.textContent='Riktig! +1'}}
+  if(ok){round.lynOk++;window.Gull&&Gull.tjen(1);S.streak++;S.best=Math.max(S.best,S.streak);S.stars+=1;beep('ok');if(fl){fl.className='flash ok';fl.textContent='Riktig! +1'}}
   else{S.streak=0;beep('bad');mistake(res.code);if(fl){fl.className='flash bad';fl.innerHTML='Svaret var '+answerText(cur.task)}}
   S.total++;touchDay();S.today++;save();updStats();cur.done=true;
   document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
@@ -1061,7 +1063,7 @@ function endLyn(){stopLyn();if(!round||round.mode!=='lyn')return;const r=round;r
    <div class="bigstat"><div class="bs"><b>${r.lynOk}</b><span>riktige</span></div><div class="bs"><b>${r.lynN}</b><span>forsøkt</span></div><div class="bs"><b>${S.lynBest}</b><span>rekord</span></div></div>
    <p>${rec?'Ny rekord! Kan du slå den?':r.lynOk>=S.lynBest-2?'Nesten rekord. Ett forsøk til?':'Lynrunden blir lettere jo mer du øver i Smart øving.'}</p>
    <div class="btns"><button class="btn pri" id="again">Prøv igjen</button><button class="btn" id="home">Til start</button></div></article></main>`;
-  bindTop();document.getElementById('again').onclick=startLyn;document.getElementById('home').onclick=home;if(rec){beep('up');confetti(120)}}
+  bindTop();document.getElementById('again').onclick=startLyn;document.getElementById('home').onclick=home;if(rec){beep('up');confetti(120);window.Gull&&Gull.bonus(3,'Ny rekord!')}}
 
 // ----- oppsummering -----
 function endRound(){
@@ -1079,7 +1081,7 @@ function endRound(){
      <div class="btns"><button class="btn pri" id="smart">Øv på det du trenger</button><button class="btn" id="home">Til start</button></div></article></main>`;
     bindTop();document.getElementById('smart').onclick=()=>startRound('smart');document.getElementById('home').onclick=home;
     document.querySelectorAll('.li .btn').forEach(b=>b.onclick=()=>startRound('topic',b.dataset.id));
-    if(pct>=80){confetti(140);beep('up')}return}
+    window.Gull&&Gull.bonus(pct>=80?5:pct>=50?2:0,'Øveprøve ferdig!');if(pct>=80){confetti(140);beep('up')}return}
   const res=r.results.filter(Boolean),first=res.filter(x=>x.score>=1).length,good=res.filter(x=>x.score>=0.5).length,stars=S.stars-r.starsStart;
   const acc=good/Math.max(1,res.length);
   const changes=[...new Set(res.map(x=>x.topic))].map(id=>({id,a:r.start[id],b:Math.floor(S.skills[id].s)}));
@@ -1089,7 +1091,7 @@ function endRound(){
    <div class="list">${changes.map(c=>`<div class="li"><span>${TOPIC[c.id].name}</span><span>${pips(c.b)} ${c.b>c.a?`<span class="up">Nivå ${c.a} → ${c.b}</span>`:`Nivå ${c.b}`}</span></div>`).join('')}</div>
    <div class="btns"><button class="btn pri" id="again">Ny runde</button><button class="btn" id="home">Til start</button></div></article></main>`;
   bindTop();document.getElementById('again').onclick=()=>startRound(r.mode,r.topic);document.getElementById('home').onclick=home;
-  if(acc>=0.8){confetti(100);beep('up')}}
+  if(res.length>=3)window.Gull&&Gull.bonus(acc>=0.8?3:1,'Runde ferdig!');if(acc>=0.8){confetti(100);beep('up')}}
 
 // ----- fremgang -----
 function progress(){

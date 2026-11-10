@@ -258,6 +258,7 @@ svg.area .av{font:700 18px var(--fb);fill:var(--ink);text-anchor:middle}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<script src="felles/gull.js"></script>
 </head>
 <body>
 <header class="top"><div class="topin">
@@ -689,7 +690,7 @@ document.addEventListener('keydown',e=>{if(SCREEN!=='play'||!Q)return;
 function requeue(){const q=Q,f=P.queue[P.i];if(P.retried.has(q.key)||P.queue.length>=S.len+4)return;P.retried.add(q.key);
   P.queue.splice(Math.min(P.i+3,P.queue.length),0,{n:f.n,t:f.t})}
 function correct(clean){const q=Q;q.done=true;q.input='';
-  if(clean){setBox(q.key,boxOf(q.key)+1);fact(q.key).r++;S.totalRight++;P.streak++;if(P.streak>S.bestStreak)S.bestStreak=P.streak;
+  if(clean){window.Gull&&Gull.tjen(1);setBox(q.key,boxOf(q.key)+1);fact(q.key).r++;S.totalRight++;P.streak++;if(P.streak>S.bestStreak)S.bestStreak=P.streak;
     q.msg={kind:'ok',text:pick(PRAISE)};q.anim='bounce';beep('ok');
     if(P.streak===5||P.streak===10){toast(`${P.streak} på rad! 🔥`);confetti(50)}}
   else{setBox(q.key,Math.max(1,boxOf(q.key)));if(q.attempt>0||q.errors>0)S.comebacks++;P.streak=0;
@@ -727,7 +728,7 @@ let SESSION=0;
 function endRound(){SCREEN='sum';clearTimeout(advT);
   const n=P.res.length,clean=P.res.filter(r=>r&&r.clean).length;
   if(P.kind==='mix')S.rounds.mix=(S.rounds.mix||0)+1;else S.rounds[P.t]=(S.rounds[P.t]||0)+1;
-  S.roundsTotal++;SESSION++;activity();
+  S.roundsTotal++;SESSION++;activity();if(n>=3)window.Gull&&Gull.bonus(clean===n?3:clean>=n/2?2:1,'Runde ferdig!');
   const after=P.kind==='mix'?0:starsOf(P.t);const nw=checkStickers();save();updTop();
   const [ani,name]=mascot();
   const keys=[...new Set(P.res.filter(Boolean).map(r=>r.key))];
@@ -769,7 +770,7 @@ function renderMemo(){const [ani]=ANI[M.t];const done=M.found===6;
 ACT.card=v=>{if(!M||M.lock)return;const c=M.cards[+v];if(c.open||c.match)return;c.open=true;M.open.push(+v);beep('tap');
   if(M.open.length===2){M.moves++;const [x,y]=M.open.map(i=>M.cards[i]);
     if(x.v===y.v){x.match=y.match=true;x.open=y.open=false;M.open=[];M.found++;beep('ok');const q=x.kind==='q'?x:y;say(`${q.txt} = ${q.v}`);
-      if(M.found===6){S.memoryDone++;activity();const nw=checkStickers();save();updTop();setTimeout(()=>{confetti(120);beep('up');nw.forEach(s=>toast('Nytt klistremerke: '+s.i+' '+s.n))},300)}}
+      if(M.found===6){S.memoryDone++;window.Gull&&Gull.bonus(M.moves<=9?3:2,'Alle parene!');activity();const nw=checkStickers();save();updTop();setTimeout(()=>{confetti(120);beep('up');nw.forEach(s=>toast('Nytt klistremerke: '+s.i+' '+s.n))},300)}}
     else{M.lock=true;setTimeout(()=>{x.open=y.open=false;M.open=[];M.lock=false;renderMemo()},1300)}}
   renderMemo()};
 

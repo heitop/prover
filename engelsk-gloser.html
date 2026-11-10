@@ -290,6 +290,7 @@ details summary{cursor:pointer;font-weight:700;color:var(--pri)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
+<script src="felles/gull.js"></script>
 </head>
 <body>
 <header class="top"><div class="topin">
@@ -564,6 +565,7 @@ function qAnswer(r, given) {
   if (!(it.id in Q.first)) {
     Q.first[it.id] = ok && !it.hinted;
     if (it.g && !Q.noLv) updLv(it.g, it.hinted ? "choice" : it.kind, ok);
+    if (Q.first[it.id]) window.Gull&&Gull.tjen(it.kind === "write" ? 2 : 1);
   }
   if (ok || !Q.requeue) Q.done++;
   else Q.queue.splice(Math.min(Q.queue.length, 4), 0, it);
@@ -598,6 +600,7 @@ function qNext() { clearTimeout(autoTimer); if (!Q) return; Q.queue.shift(); if 
 function qEnd() {
   const ids = Object.keys(Q.first), right = ids.filter(i => Q.first[i]).length;
   const pct = Math.round(right / Q.total * 100);
+  if (Q.total >= 5) window.Gull&&Gull.bonus(pct >= 90 ? 5 : pct >= 75 ? 3 : pct >= 50 ? 1 : 0, "Runde ferdig!");
   const items = Q.items.filter(it => Q.first[it.id] === false);
   if (Q.bestKey) { const b = PS().best; if (b[Q.bestKey] == null || pct > b[Q.bestKey]) { b[Q.bestKey] = pct; Q.rekord = true; } save(); }
   const [ico, msg] = pct >= 90 ? ["🌟", "Fantastic!"] : pct >= 75 ? ["👏", "Well done!"] : pct >= 50 ? ["💪", "Good! Litt til, så sitter det."] : ["🌱", "Godt jobba – ta en runde til!"];
@@ -731,6 +734,7 @@ function kNeste() {
   const sek = Math.round((Date.now() - K.t0) / 1000), b = PS().best, rek = b.koble == null || sek < b.koble;
   if (rek) { b.koble = sek; save(); }
   const n = K.rounds.flat().length;
+  window.Gull&&Gull.bonus(Math.max(2, Math.round(n / 2) - K.err), K.err === 0 ? "Ingen feil!" : "Alle parene funnet!");
   show(`
   <div class="card res pop">
     <div class="big">${K.err === 0 ? "🌟" : "🧩"}</div>

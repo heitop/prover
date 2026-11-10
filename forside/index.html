@@ -11,11 +11,12 @@
 <style>
   :root {
     --bg: #f6f4ef; --card: #ffffff; --text: #1d1d1f; --muted: #5f6368;
-    --accent: #1f3a5f; --border: #e3dfd6; --new: #2e7d32;
+    --accent: #1f3a5f; --border: #e3dfd6; --new: #2e7d32; --gold: #e6b44a; --gold-text: #8a6100;
   }
   @media (prefers-color-scheme: dark) {
     :root { --bg: #15171a; --card: #1f2226; --text: #f1f1f1; --muted: #a8adb3;
-            --accent: #8fb7e8; --border: #30343a; --new: #81c784; }
+            --accent: #8fb7e8; --border: #30343a; --new: #81c784;
+            --gold: #c9962f; --gold-text: #ffcf4d; }
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text);
@@ -36,45 +37,52 @@
   .ny { font-size: .7rem; font-weight: 700; color: var(--new); border: 1px solid currentColor;
         border-radius: 999px; padding: 0 6px; margin-left: 6px; vertical-align: 2px; }
   footer { margin-top: 40px; font-size: .85rem; color: var(--muted); }
+  a.meg { display: flex; gap: 16px; align-items: center; padding: 14px 18px 14px 14px; margin: 18px 0 4px;
+           background: var(--card); border: 2px solid var(--gold); border-radius: 18px; color: inherit; text-decoration: none; }
+  a.meg:hover, a.meg:focus-visible { transform: translateY(-1px); }
+  .meg-ava { width: 92px; height: 100px; flex: none; border-radius: 14px; overflow: hidden; background: #e8eef7; }
+  .meg-ava svg { width: 100%; height: 100%; display: block; }
+  .meg-navn { font-weight: 800; font-size: 1.25rem; }
+  .meg-gull { font-weight: 800; font-size: 1.15rem; color: var(--gold-text); display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+  .meg-gull .gm-mynt { font-size: 1.2rem; }
+  .meg-tips { display: block; font-size: .9rem; color: var(--muted); }
+  .meg-pil { margin-left: auto; font-size: 1.4rem; color: var(--accent); }
+  .tjent { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: .8rem; font-weight: 700; color: var(--gold-text); }
 </style>
 </head>
 <body>
 <main>
   <h1>Øveprøver</h1>
-  <p class="lead">Velg et spill og sett i gang. Fremgangen lagres på denne enheten.</p>
+  <p class="lead">Velg et spill og sett i gang. Riktige svar gir gull du kan bruke på avataren din. Alt lagres på denne enheten.</p>
+  <a class="meg" id="meg" href="../avatar.html"></a>
   <div id="liste"></div>
   <footer>Tips: På iPhone og iPad, trykk Del → «Legg til på Hjem-skjerm».</footer>
 </main>
 
+<script src="../felles/gull.js" data-merke="av"></script>
+<script src="../felles/spill.js"></script>
 <script>
-/* ==========================================================
-   SPILLISTE – legg nye spill til her.
-   fag:   overskriften spillet havner under (nye fag lages automatisk)
-   fil:   filnavnet i rotmappen (siden ligger i /forside, derfor ../)
-   lagt:  publiseringsdato (ÅÅÅÅ-MM-DD) – gir «Ny»-merke i 14 dager
-   ========================================================== */
-const SPILL = [
-  { fag: "Musikk", ikon: "🎷", tittel: "Blå toner",     fil: "blaa-tonar.html",         lagt: "2026-11-05",
-    beskrivelse: "Musikkhistorie: spirituals, blues, jazz og rock (bokmål)" },
-  { fag: "Musikk", ikon: "🎺", tittel: "Blå tonar",     fil: "blaa-tonar-nynorsk.html", lagt: "2026-11-05",
-    beskrivelse: "Same prøve på nynorsk" },
-  { fag: "Matte",  ikon: "🍕", tittel: "Brøkmester",    fil: "brokmester.html",         lagt: "2026-11-05",
-    beskrivelse: "Øv på brøk" },
-  { fag: "Matte",  ikon: "🐸", tittel: "Gangestien",    fil: "gangestien.html",         lagt: "2026-11-07",
-    beskrivelse: "Den lille og den store gangetabellen – i ditt eget tempo" },
-  { fag: "Norsk",  ikon: "🏰", tittel: "Eventyrprøven", fil: "eventyrproven.html",      lagt: "2026-11-05",
-    beskrivelse: "Sjangeren eventyr" },
-  { fag: "Norsk",  ikon: "📜", tittel: "Eventyr-juksearket", fil: "eventyr-jukseark.html", lagt: "2026-11-08",
-    beskrivelse: "Det viktigste på ett ark – les det rett før prøven, eller skriv det ut" },
-  { fag: "Spansk", ikon: "💃", tittel: "Spanske gloser", fil: "spansk-gloser.html", lagt: "2026-11-09",
-    beskrivelse: "Gloseprøvene – nå: familien (11.11). Koble, velg, skriv, setninger og bøying" },
-  { fag: "Engelsk", ikon: "🌍", tittel: "Engelske gloser", fil: "engelsk-gloser.html", lagt: "2026-11-10",
-    beskrivelse: "Gloseprøvene – nå: et flerkulturelt samfunn (12.11). Koble, velg, skriv, lytt, setninger og ordformer" },
-];
-
 const NY_DAGER = 14;
 const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; };
 const liste = document.getElementById("liste");
+const gull = window.Gull ? Gull.tilstand() : { spill: {}, gull: 0 };
+
+/* ---------- avatarkortet ---------- */
+function visMeg() {
+  const m = document.getElementById("meg");
+  if (!window.Gull) { m.hidden = true; return; }
+  const s = Gull.tilstand(), mynt = '<span class="gm-mynt" aria-hidden="true"></span>';
+  if (s.laget) {
+    m.innerHTML = `<span class="meg-ava">${Gull.tegn(s)}</span><span><span class="meg-navn">${Gull.esc(s.navn || "Avataren min")}</span>` +
+      `<span class="meg-gull">${mynt} ${s.gull} gull</span><span class="meg-tips">Butikk og garderobe</span></span><span class="meg-pil" aria-hidden="true">→</span>`;
+  } else {
+    m.innerHTML = `<span class="meg-ava">${Gull.tegn({ kjonn: "gutt", ut: { hud: 1, har: "kort", harfarge: 1, oyne: 0 }, paa: { hode: "partyhatt" } })}</span>` +
+      `<span><span class="meg-navn">Lag din avatar!</span>${s.gull ? `<span class="meg-gull">${mynt} ${s.gull} gull</span>` : ""}` +
+      `<span class="meg-tips">Tjen gull i spillene og kjøp klær, utstyr og kjæledyr.</span></span><span class="meg-pil" aria-hidden="true">→</span>`;
+  }
+}
+visMeg();
+if (window.Gull) { Gull.onEndring(visMeg); }
 const fagRekke = [...new Set(SPILL.map(s => s.fag))];
 for (const fag of fagRekke) {
   liste.append(el("h2", null, fag));
@@ -86,6 +94,8 @@ for (const fag of fagRekke) {
     const dager = (Date.now() - new Date(s.lagt)) / 864e5;
     if (dager >= 0 && dager < NY_DAGER) t.append(el("span", "ny", "Ny"));
     tekst.append(t, el("span", "d", s.beskrivelse));
+    const tjent = gull.spill[s.fil.replace(/\.html$/, "")];
+    if (tjent) { const g = el("span", "tjent"); g.innerHTML = '<span class="gm-mynt" aria-hidden="true"></span> ' + tjent + " gull tjent"; tekst.append(g); }
     a.append(el("span", "ico", s.ikon), tekst);
     grid.append(a);
   }

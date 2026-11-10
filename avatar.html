@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Min avatar</title>
+<meta name="description" content="Lag avataren din og bruk gullet du tjener i øveprøvene">
+<meta name="theme-color" content="#5b3fd1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪙</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
+<script src="felles/gull.js" data-merke="av"></script>
+<script src="felles/spill.js"></script>
+<style>
+:root{
+  --bg:#fbf7ef; --kort:#ffffff; --kort2:#f6efe2; --tekst:#2a2620; --dempet:#6f675b; --kant:#eadfca;
+  --pri:#5b3fd1; --pri-tekst:#ffffff; --pri-myk:#ece7ff; --gull:#c98a00; --ok:#2e7d32; --feil:#c62828;
+  --fd:"Fredoka","Segoe UI",system-ui,sans-serif; --fb:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{ --bg:#16141d; --kort:#211e2b; --kort2:#2a2636; --tekst:#f3efe6; --dempet:#b3ab9c; --kant:#363145;
+         --pri:#a593ff; --pri-tekst:#1a1240; --pri-myk:#2d2752; --gull:#ffcf4d; --ok:#7bd88f; --feil:#ff8a80; color-scheme:dark; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tekst);font:16px/1.45 var(--fb);-webkit-text-size-adjust:100%}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+h1,h2,h3{font-family:var(--fd);font-weight:700;margin:0;line-height:1.15}
+.muted{color:var(--dempet)}
+.small{font-size:.88rem}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:1040px;margin:0 auto;padding:12px 16px}
+.top a{color:var(--pri);font-weight:700;text-decoration:none;font-family:var(--fd);font-size:1.05rem}
+.pung{display:flex;align-items:center;gap:6px;font-family:var(--fd);font-weight:700;font-size:1.15rem;background:var(--kort);border:2px solid var(--kant);border-radius:999px;padding:4px 14px}
+.pung b{color:var(--gull)}
+
+main{max-width:1040px;margin:0 auto;padding:0 16px 48px}
+.oppsett{display:grid;gap:20px;grid-template-columns:300px minmax(0,1fr);align-items:start}
+.oppsett>*{min-width:0}
+.side{position:sticky;top:12px;background:var(--kort);border:1px solid var(--kant);border-radius:20px;padding:16px;text-align:center}
+.stor-ava{width:100%;aspect-ratio:240/260;border-radius:16px;overflow:hidden}
+.stor-ava svg{width:100%;height:100%;display:block}
+.side h1{font-size:1.6rem;margin-top:12px;word-break:break-word}
+.saldo{font-family:var(--fd);font-size:1.5rem;font-weight:700;color:var(--gull);margin-top:2px}
+.maal{margin-top:10px;font-size:.92rem;color:var(--dempet)}
+.maal .bar{height:8px;border-radius:99px;background:var(--kort2);margin-top:6px;overflow:hidden}
+.maal .bar i{display:block;height:100%;background:linear-gradient(90deg,#f2c230,#e6a400);border-radius:99px}
+
+.faner{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.fane{border:2px solid var(--kant);background:var(--kort);border-radius:999px;padding:8px 16px;font-family:var(--fd);font-weight:600;font-size:1.02rem}
+.fane[aria-selected="true"]{background:var(--pri);border-color:var(--pri);color:var(--pri-tekst)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;scrollbar-width:thin}
+.chip{flex:none;border:1.5px solid var(--kant);background:var(--kort);border-radius:999px;padding:5px 12px;font-size:.92rem;font-weight:600}
+.chip[aria-pressed="true"]{border-color:var(--pri);background:var(--pri-myk);color:var(--pri)}
+
+.rutenett{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.vare{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:4px;background:var(--kort);border:2px solid var(--kant);border-radius:16px;padding:8px;text-align:left;transition:transform .1s,border-color .1s}
+.vare:hover{border-color:var(--pri);transform:translateY(-1px)}
+.vare .bilde{aspect-ratio:1;border-radius:10px;background:var(--kort2);overflow:hidden}
+.vare .bilde svg{width:100%;height:100%;display:block}
+.vare .navn{font-weight:700;font-size:.95rem;line-height:1.2}
+.vare .rad{display:flex;align-items:center;justify-content:space-between;gap:4px;font-size:.85rem}
+.vare .pris{font-weight:800;font-family:var(--fd);display:flex;align-items:center;gap:4px}
+.vare.dyr .pris{color:var(--dempet)}
+.vare.dyr .bilde{opacity:.75}
+.vare.paa{border-color:var(--ok)}
+.merkelapp{position:absolute;top:12px;right:12px;font-size:.72rem;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--ok);color:#fff}
+.niv{font-size:.7rem;font-weight:800;padding:1px 7px;border-radius:99px;color:#fff;white-space:nowrap}
+
+.kort{background:var(--kort);border:1px solid var(--kant);border-radius:18px;padding:16px;margin-bottom:14px}
+.kort h2{font-size:1.25rem;margin-bottom:10px}
+.kort h3{font-size:1.05rem;margin:14px 0 8px}
+.valg{display:flex;flex-wrap:wrap;gap:8px}
+.prikk{width:44px;height:44px;border-radius:50%;border:3px solid var(--kant);padding:0}
+.prikk[aria-pressed="true"]{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-myk)}
+.hodeknapp{width:84px;border:2px solid var(--kant);background:var(--kort2);border-radius:14px;padding:4px;display:flex;flex-direction:column;align-items:center;font-size:.8rem;font-weight:600}
+.hodeknapp svg{width:72px;height:72px;display:block}
+.hodeknapp[aria-pressed="true"]{border-color:var(--pri);background:var(--pri-myk)}
+.kjonn{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:420px}
+.kjonn button{border:3px solid var(--kant);background:var(--kort2);border-radius:18px;padding:8px;font-family:var(--fd);font-size:1.2rem;font-weight:700}
+.kjonn button svg{width:100%;max-width:150px;display:block;margin:0 auto}
+.kjonn button[aria-pressed="true"]{border-color:var(--pri);background:var(--pri-myk);color:var(--pri)}
+input[type=text],textarea{width:100%;max-width:420px;border:2px solid var(--kant);background:var(--kort2);border-radius:12px;padding:10px 12px;font-size:1.05rem}
+textarea{max-width:none;font:13px/1.4 ui-monospace,Consolas,monospace;min-height:90px;resize:vertical;word-break:break-all}
+.knapp{border:2px solid var(--kant);background:var(--kort);border-radius:14px;padding:10px 18px;font-family:var(--fd);font-weight:700;font-size:1.05rem}
+.knapp.pri{background:var(--pri);border-color:var(--pri);color:var(--pri-tekst)}
+.knapp.stor{font-size:1.25rem;padding:14px 26px}
+.knapp:disabled{opacity:.55;cursor:default}
+.knapp.fare{color:var(--feil);border-color:currentColor;background:transparent}
+.knapper{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+td,th{padding:8px 6px;border-bottom:1px solid var(--kant);text-align:left}
+th{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--dempet)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dagbar{display:inline-block;width:70px;height:7px;border-radius:9px;background:var(--kort2);vertical-align:middle;margin-right:6px;overflow:hidden}
+.dagbar i{display:block;height:100%;background:#f2c230}
+ul.regler{margin:0;padding-left:20px}
+ul.regler li{margin:4px 0}
+
+.lag{max-width:760px;margin:0 auto}
+.lag .oppsett{grid-template-columns:260px minmax(0,1fr)}
+.lag h1{font-size:2rem;margin-bottom:6px}
+
+dialog{border:0;border-radius:22px;padding:0;background:var(--kort);color:var(--tekst);width:min(92vw,380px);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,8,20,.55)}
+.dlg{padding:18px;text-align:center}
+.dlg .stor-ava{max-width:260px;margin:0 auto}
+.dlg h2{font-size:1.45rem;margin-top:12px}
+.dlg .pris{font-family:var(--fd);font-size:1.3rem;font-weight:700;color:var(--gull);margin:6px 0 2px;display:flex;justify-content:center;align-items:center;gap:6px}
+.dlg .knapper{justify-content:center}
+.dlg .knapp{flex:1 1 auto}
+
+.konfetti{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+.konfetti i{position:absolute;top:-20px;width:10px;height:14px;border-radius:3px;animation:fall 1.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){.konfetti{display:none}.vare{transition:none}}
+
+@media (max-width:720px){
+  .oppsett,.lag .oppsett{grid-template-columns:1fr}
+  .side{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center;text-align:left;border-radius:0 0 18px 18px;margin:0 -16px;border-width:0 0 1px;padding:10px 16px}
+  .side h1{font-size:1.25rem;margin-top:0}
+  .saldo{font-size:1.2rem}
+  .maal{margin-top:4px;font-size:.82rem}
+  .rutenett{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
+  .vare .navn{font-size:.85rem}
+  .lag .side{position:static;margin:0;border-radius:18px;border-width:1px;grid-template-columns:1fr;text-align:center}
+  .lag .side .stor-ava{max-width:220px;margin:0 auto}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="forside/">← Øveprøver</a>
+  <span class="pung" aria-live="polite"><span class="gm-mynt" aria-hidden="true"></span><b id="saldo">0</b> gull</span>
+</header>
+<main id="app"></main>
+<dialog id="dlg"></dialog>
+
+<script>
+"use strict";
+const G = window.Gull;
+const $ = s => document.querySelector(s);
+const esc = G.esc;
+const mynt = '<span class="gm-mynt" aria-hidden="true"></span>';
+const app = $("#app"), dlg = $("#dlg");
+let fane = "butikk", kat = "alle", raad = false;
+let utkast = null;           // under oppretting
+let flyttekode = "";
+
+function S() { return G.tilstand(); }
+function oppdaterSaldo() { $("#saldo").textContent = S().gull; }
+
+/* ---------- små byggeklosser ---------- */
+function nivaaTag(pris) { const n = G.nivaa(pris); return `<span class="niv" style="background:${n.farge}">${n.navn}</span>`; }
+function hodeVB() { return "40 10 160 160"; }
+function konfetti() {
+  const k = document.createElement("div"); k.className = "konfetti";
+  const farger = ["#f2c230", "#ff4f7b", "#5b3fd1", "#26a69a", "#42a5f5", "#ff9800"];
+  for (let i = 0; i < 60; i++) {
+    const e = document.createElement("i");
+    e.style.left = Math.random() * 100 + "vw"; e.style.background = farger[i % farger.length];
+    e.style.animationDelay = Math.random() * .4 + "s"; e.style.animationDuration = 1.2 + Math.random() * .9 + "s";
+    k.appendChild(e);
+  }
+  document.body.appendChild(k); setTimeout(() => k.remove(), 2600);
+}
+function nesteMaal(s) {
+  const ikkeEid = G.KATALOG.filter(it => it.pris > 0 && !G.eier(it.id, s)).sort((a, b) => a.pris - b.pris);
+  return ikkeEid.find(it => it.pris > s.gull) || null;
+}
+
+/* ---------- utseende-velgere (brukes både ved oppretting og senere) ---------- */
+function utseendeHTML(st) {
+  const ut = st.ut;
+  const kjopt = G.ITEM[(st.paa || {}).harfarge];
+  return `
+    <h3>Hudfarge</h3>
+    <div class="valg">${G.HUD.map((f, i) => `<button class="prikk" style="background:${f}" data-ut="hud:${i}" aria-pressed="${ut.hud === i}" aria-label="Hudfarge ${i + 1}"></button>`).join("")}</div>
+    <h3>Frisyre</h3>
+    <div class="valg">${Object.keys(G.HAR).map(h => `<button class="hodeknapp" data-ut="har:${h}" aria-pressed="${ut.har === h}">${G.tegn(Object.assign({}, st, { ut: Object.assign({}, ut, { har: h }) }), { bakgrunn: false, venn: false, vb: hodeVB(), uten: "hode" })}${G.HAR[h].navn}</button>`).join("")}</div>
+    <h3>Hårfarge</h3>
+    <div class="valg">${G.HARFARGE.map(([navn, f], i) => `<button class="prikk" style="background:${f}" data-ut="harfarge:${i}" aria-pressed="${!kjopt && ut.harfarge === i}" aria-label="${navn}" title="${navn}"></button>`).join("")}</div>
+    <p class="small muted" style="margin:6px 0 0">Flere hårfarger finner du i butikken.</p>
+    <h3>Øyne</h3>
+    <div class="valg">${G.OYNE.map(([navn, f], i) => `<button class="prikk" style="background:radial-gradient(circle,#1a1a1a 22%,${f} 24% 55%,#fff 57%)" data-ut="oyne:${i}" aria-pressed="${ut.oyne === i}" aria-label="${navn} øyne" title="${navn}"></button>`).join("")}</div>`;
+}
+function kjonnHTML(st) {
+  const vis = k => G.tegn({ kjonn: k, ut: Object.assign({}, st.ut, st.harRort !== false ? {} : { har: k === "jente" ? "lang" : "kort" }), paa: st.paa || {} }, { bakgrunn: false, venn: false, vb: "40 20 160 230" });
+  return `<div class="kjonn">
+    <button data-kjonn="gutt" aria-pressed="${st.kjonn === "gutt"}">${vis("gutt")}Gutt</button>
+    <button data-kjonn="jente" aria-pressed="${st.kjonn === "jente"}">${vis("jente")}Jente</button></div>`;
+}
+
+/* ==========================================================
+   OPPRETTING
+   ========================================================== */
+function visLag() {
+  if (!utkast) utkast = { kjonn: null, navn: "", ut: { hud: 1, har: "kort", harfarge: 1, oyne: 0 }, harRort: false, paa: {} };
+  const u = utkast;
+  const forh = u.kjonn ? G.tegn({ kjonn: u.kjonn, ut: u.ut, paa: {} }) : "";
+  app.innerHTML = `<div class="lag">
+    <div class="kort" style="margin-bottom:16px">
+      <h1>Lag din avatar</h1>
+      <p style="margin:0">Når du svarer riktig i spillene, tjener du <b>gull</b>. Gullet bruker du på klær, utstyr, kjæledyr og bakgrunner til avataren din.
+      Du får <b>${G.STARTGAVE} gull</b> i startgave!</p>
+      ${S().gull ? `<p style="margin:8px 0 0">Du har allerede samlet <b>${S().gull} gull</b> ${mynt}</p>` : ""}
+    </div>
+    <div class="kort"><h2>1. Er du gutt eller jente?</h2>${kjonnHTML(u)}</div>
+    ${u.kjonn ? `
+    <div class="oppsett">
+      <div class="side"><div class="stor-ava">${forh}</div></div>
+      <div>
+        <div class="kort"><h2>2. Hva heter du?</h2>
+          <input type="text" id="navn" maxlength="20" placeholder="Kallenavn" value="${esc(u.navn)}" autocomplete="off">
+          <p class="small muted" style="margin:6px 0 0">Navnet lagres bare på denne enheten. Bruk gjerne et kallenavn.</p></div>
+        <div class="kort"><h2>3. Slik ser du ut</h2>${utseendeHTML(u)}</div>
+        <button class="knapp pri stor" id="ferdig">Lag avataren min →</button>
+      </div>
+    </div>` : ""}
+  </div>`;
+  const n = $("#navn"); if (n) n.oninput = () => { u.navn = n.value; };
+  const f = $("#ferdig"); if (f) f.onclick = () => {
+    G.lagBruker({ navn: u.navn, kjonn: u.kjonn, ut: u.ut });
+    utkast = null; fane = "butikk";
+    visHoved(); konfetti();
+    G.melding(`Velkommen! Du fikk ${G.STARTGAVE} gull i startgave.`, true);
+  };
+}
+
+/* ==========================================================
+   HOVEDSIDE
+   ========================================================== */
+function visHoved() {
+  const s = S();
+  oppdaterSaldo();
+  const ting = s.eid.length;
+  const maal = nesteMaal(s);
+  const faner = [["butikk", "🛍️ Butikk"], ["garderobe", "👕 Garderobe"], ["utseende", "🙂 Utseende"], ["gull", `${mynt} Gullet mitt`]];
+  app.innerHTML = `<div class="oppsett">
+    <aside class="side" id="side">${sideHTML(s, maal, ting)}</aside>
+    <section>
+      <div class="faner" role="tablist">${faner.map(([k, t]) => `<button class="fane" role="tab" data-fane="${k}" aria-selected="${fane === k}">${t}</button>`).join("")}</div>
+      <div id="innhold"></div>
+    </section></div>`;
+  tegnFane();
+}
+function sideHTML(s, maal, ting) {
+  return `<div class="stor-ava">${G.tegn(s)}</div>
+    <div><h1>${esc(s.navn || "Avataren min")}</h1>
+    <div class="saldo">${mynt} ${s.gull} gull</div>
+    <div class="small muted">Tjent totalt: ${s.totalt} · ${ting} ${ting === 1 ? "ting" : "ting"} kjøpt</div>
+    ${maal ? `<div class="maal">Neste mål: <b>${esc(maal.navn)}</b> (${maal.pris})<div class="bar"><i style="width:${Math.min(100, Math.round(100 * s.gull / maal.pris))}%"></i></div></div>` : ""}</div>`;
+}
+function oppdaterSide() { const s = S(); const e = $("#side"); if (e) e.innerHTML = sideHTML(s, nesteMaal(s), s.eid.length); oppdaterSaldo(); }
+
+function tegnFane() {
+  const el = $("#innhold"); if (!el) return;
+  document.querySelectorAll("[data-fane]").forEach(b => b.setAttribute("aria-selected", b.dataset.fane === fane));
+  if (fane === "butikk") el.innerHTML = butikkHTML();
+  if (fane === "garderobe") el.innerHTML = garderobeHTML();
+  if (fane === "utseende") el.innerHTML = `<div class="kort"><h2>Gutt eller jente</h2>${kjonnHTML(S())}</div>
+    <div class="kort"><h2>Navn</h2><input type="text" id="navn" maxlength="20" placeholder="Kallenavn" value="${esc(S().navn)}" autocomplete="off">
+      <p class="small muted" style="margin:6px 0 0">Lagres bare på denne enheten.</p></div>
+    <div class="kort"><h2>Utseende</h2><p class="small muted" style="margin:0">Det er gratis å endre utseendet så mye du vil.</p>${utseendeHTML(S())}</div>`;
+  if (fane === "gull") el.innerHTML = gullHTML();
+  const n = $("#navn");
+  if (n && fane === "utseende") n.onchange = n.oninput = () => { G.endre(s => { s.navn = n.value.trim().slice(0, 20); }); oppdaterSide(); };
+}
+
+function vareHTML(it, s, iGarderobe) {
+  const eid = G.eier(it.id, s), paa = paaNa(s)[it.slot] === it.id;
+  const dyr = !eid && it.pris > s.gull;
+  return `<button class="vare${dyr ? " dyr" : ""}${paa ? " paa" : ""}" data-vare="${it.id}">
+    ${paa ? '<span class="merkelapp">På</span>' : (eid && !iGarderobe ? '<span class="merkelapp">Har</span>' : "")}
+    <span class="bilde">${G.tegnTing(it.id, s)}</span>
+    <span class="navn">${esc(it.navn)}</span>
+    <span class="rad">${eid ? (iGarderobe ? `<span class="small muted">${paa ? "Trykk for å ta av" : "Trykk for å ta på"}</span>` : '<span class="small muted">Din</span>') : `<span class="pris">${mynt}${it.pris}</span>`}${it.pris ? nivaaTag(it.pris) : ""}</span>
+  </button>`;
+}
+function standard(s) { return { overdel: s.kjonn === "jente" ? "ts-rosa" : "ts-bla", underdel: "bukse-jeans", sko: "sko-hvit" }; }
+function paaNa(s) { return Object.assign(standard(s), s.paa); }
+
+function butikkHTML() {
+  const s = S();
+  let varer = G.KATALOG.filter(it => it.pris > 0 && (kat === "alle" || it.slot === kat));
+  if (raad) varer = varer.filter(it => G.eier(it.id, s) || it.pris <= s.gull);
+  varer.sort((a, b) => a.pris - b.pris);
+  return `<div class="chips">
+      <button class="chip" data-kat="alle" aria-pressed="${kat === "alle"}">Alle</button>
+      ${G.PLASSER.map(([k, t]) => `<button class="chip" data-kat="${k}" aria-pressed="${kat === k}">${t}</button>`).join("")}
+    </div>
+    <div class="chips" style="margin-top:-6px"><button class="chip" data-raad aria-pressed="${raad}">${raad ? "✓ " : ""}Bare det jeg har råd til</button></div>
+    ${varer.length ? `<div class="rutenett">${varer.map(it => vareHTML(it, s)).join("")}</div>`
+      : `<div class="kort"><p style="margin:0">Du har ikke råd til noe her ennå. Svar riktig i spillene for å tjene mer gull!</p></div>`}`;
+}
+function garderobeHTML() {
+  const s = S();
+  return G.PLASSER.map(([k, t]) => {
+    const mine = G.KATALOG.filter(it => it.slot === k && G.eier(it.id, s));
+    if (!mine.length) return "";
+    return `<div class="kort"><h2>${t}</h2><div class="rutenett">${mine.map(it => vareHTML(it, s, true)).join("")}</div></div>`;
+  }).join("") + `<p class="small muted">Du kan ha på én ting av hver sort. Overdel, bukse og sko må du alltid ha på.</p>`;
+}
+function gullHTML() {
+  const s = S();
+  const dag = s.dag && s.dag.d === G.idag() ? s.dag.n : {};
+  const navn = {}; (window.SPILL || []).forEach(sp => { navn[sp.fil.replace(/\.html$/, "")] = sp.ikon + " " + sp.tittel; });
+  navn.startgave = "🎁 Startgave";
+  const rader = Object.entries(s.spill).sort((a, b) => b[1] - a[1]);
+  const spillMedGull = (window.SPILL || []).filter(sp => sp.gull !== false);
+  return `<div class="kort"><h2>Slik tjener du gull</h2>
+      <ul class="regler">
+        <li>Hvert riktige svar gir gull – vanskelige oppgaver gir litt mer.</li>
+        <li>Du får bonusgull når du fullfører en runde, og ekstra når den går bra.</li>
+        <li>Du kan tjene opptil <b>${G.DAGSTAK} gull per spill hver dag</b>. Øv på flere fag, så samler du mer!</li>
+        <li>Gullet er det samme i alle spillene.</li>
+      </ul></div>
+    <div class="kort"><h2>Her har du tjent gullet</h2>
+      ${rader.length ? `<table><thead><tr><th>Spill</th><th class="n">I dag</th><th class="n">Totalt</th></tr></thead><tbody>
+        ${rader.map(([k, n]) => `<tr><td>${esc(navn[k] || k)}</td><td class="n">${k === "startgave" ? "" : `<span class="dagbar"><i style="width:${Math.min(100, 100 * (dag[k] || 0) / G.DAGSTAK)}%"></i></span>${dag[k] || 0}`}</td><td class="n">${n}</td></tr>`).join("")}
+      </tbody></table>` : `<p style="margin:0">Ingen gull ennå. Velg et spill på forsiden!</p>`}
+      ${spillMedGull.filter(sp => !s.spill[sp.fil.replace(/\.html$/, "")]).length ? `<p class="small muted" style="margin:10px 0 0">Ikke prøvd ennå: ${spillMedGull.filter(sp => !s.spill[sp.fil.replace(/\.html$/, "")]).map(sp => `<a href="${sp.fil}">${esc(sp.tittel)}</a>`).join(", ")}</p>` : ""}
+    </div>
+    <div class="kort"><h2>Bytte til en annen enhet?</h2>
+      <p style="margin:0 0 8px">Avataren og gullet ligger lagret på denne enheten. Vil du ta dem med til en annen mobil, iPad eller PC, lag en flyttekode her og lim den inn på den nye enheten.</p>
+      <div class="knapper" style="margin-top:0"><button class="knapp" id="lagKode">Lag flyttekode</button></div>
+      ${flyttekode ? `<textarea readonly id="kode" aria-label="Flyttekode">${esc(flyttekode)}</textarea><div class="knapper"><button class="knapp pri" id="kopier">Kopier koden</button></div>` : ""}
+      <h3>Har du en kode fra en annen enhet?</h3>
+      <textarea id="innKode" placeholder="Lim inn flyttekoden her"></textarea>
+      <div class="knapper"><button class="knapp" id="hentKode">Hent avataren</button></div>
+      <p class="small muted" id="kodeMsg" style="margin:6px 0 0"></p>
+    </div>
+    <div class="kort"><h2>Begynne på nytt</h2>
+      <p style="margin:0 0 8px">Sletter avataren, gullet og alt du har kjøpt på denne enheten. Fremgangen inne i spillene beholdes.</p>
+      <button class="knapp fare" id="slett">Slett avataren</button></div>`;
+}
+
+/* ---------- dialog for en vare ---------- */
+function apneVare(id) {
+  const s = S(), it = G.ITEM[id]; if (!it) return;
+  const eid = G.eier(id, s), paa = paaNa(s)[it.slot] === id;
+  const mangler = it.pris - s.gull;
+  let knapper;
+  if (!eid) knapper = mangler > 0
+    ? `<button class="knapp pri" disabled>Du trenger ${mangler} gull til</button>`
+    : `<button class="knapp pri" data-kjop="${id}">Kjøp for ${it.pris} gull</button>`;
+  else if (paa) knapper = G.PAKREVD.includes(it.slot) ? `<button class="knapp" disabled>Du har den på</button>` : `<button class="knapp" data-av="${it.slot}">Ta av</button>`;
+  else knapper = `<button class="knapp pri" data-paa="${id}">Ta på</button>`;
+  dlg.innerHTML = `<div class="dlg">
+    <div class="stor-ava">${G.tegn(s, { prov: id })}</div>
+    <h2>${esc(it.navn)}</h2>
+    <div style="margin-top:6px">${nivaaTag(it.pris)}</div>
+    ${eid ? `<p class="muted" style="margin:8px 0 0">Denne er din.</p>` : `<p class="pris">${mynt} ${it.pris} gull</p>
+      ${mangler > 0 ? `<p class="small muted" style="margin:0">Du har ${s.gull}. Svar riktig i spillene for å tjene mer!</p>` : `<p class="small muted" style="margin:0">Du har ${s.gull} gull.</p>`}`}
+    <div class="knapper">${knapper}<button class="knapp" data-lukk>Lukk</button></div>
+  </div>`;
+  if (dlg.showModal) { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute("open", "");
+}
+function lukk() { if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); }
+dlg.addEventListener("click", e => { if (e.target === dlg) lukk(); });
+
+/* ---------- klikk ---------- */
+document.addEventListener("click", e => {
+  const t = e.target.closest("button,[data-vare]"); if (!t) return;
+  const d = t.dataset;
+  if (d.kjonn) {
+    if (utkast) { utkast.kjonn = d.kjonn; if (!utkast.harRort) utkast.ut.har = d.kjonn === "jente" ? "lang" : "kort"; visLag(); }
+    else { G.endre(s => { s.kjonn = d.kjonn; }); oppdaterSide(); tegnFane(); }
+    return;
+  }
+  if (d.ut) {
+    const [k, v] = d.ut.split(":"), verdi = k === "har" ? v : +v;
+    if (utkast) { utkast.ut[k] = verdi; if (k === "har") utkast.harRort = true; visLag(); }
+    else { G.endre(s => { s.ut[k] = verdi; if (k === "harfarge") delete s.paa.harfarge; }); oppdaterSide(); tegnFane(); }
+    return;
+  }
+  if (d.fane) { fane = t.dataset.fane; tegnFane(); return; }
+  if (d.kat) { kat = d.kat; tegnFane(); return; }
+  if ("raad" in d) { raad = !raad; tegnFane(); return; }
+  if (d.vare) {
+    if (fane === "garderobe") {
+      const s = S(), it = G.ITEM[d.vare];
+      if (paaNa(s)[it.slot] === it.id) { if (!G.taAv(it.slot)) G.melding("Den må du ha på – velg en annen i stedet."); }
+      else G.taPaa(it.id);
+      oppdaterSide(); tegnFane(); return;
+    }
+    apneVare(d.vare); return;
+  }
+  if (d.kjop) {
+    const it = G.ITEM[d.kjop];
+    if (G.kjop(d.kjop)) { lukk(); oppdaterSide(); tegnFane(); konfetti(); G.melding(`Gratulerer med ${it.navn.toLowerCase()}! Du har tatt den på.`, true); }
+    return;
+  }
+  if (d.paa) { G.taPaa(d.paa); lukk(); oppdaterSide(); tegnFane(); return; }
+  if (d.av) { G.taAv(d.av); lukk(); oppdaterSide(); tegnFane(); return; }
+  if ("lukk" in d) { lukk(); return; }
+  if (t.id === "lagKode") { flyttekode = G.eksport(); tegnFane(); return; }
+  if (t.id === "kopier") {
+    const k = $("#kode"); k.select();
+    (navigator.clipboard ? navigator.clipboard.writeText(flyttekode) : Promise.reject()).then(() => G.melding("Koden er kopiert."), () => { try { document.execCommand("copy"); G.melding("Koden er kopiert."); } catch (er) {} });
+    return;
+  }
+  if (t.id === "hentKode") {
+    const v = $("#innKode").value.trim(), msg = $("#kodeMsg");
+    if (!v) { msg.textContent = "Lim inn koden først."; return; }
+    if (S().laget && !confirm("Dette erstatter avataren og gullet på denne enheten. Vil du fortsette?")) return;
+    if (G.importKode(v)) { flyttekode = ""; visHoved(); G.melding("Avataren er hentet!", true); }
+    else msg.textContent = "Koden virker ikke. Sjekk at du har fått med hele.";
+    return;
+  }
+  if (t.id === "slett") {
+    if (!t.dataset.sikker) { t.dataset.sikker = 1; t.textContent = "Er du sikker? Trykk igjen for å slette"; return; }
+    G.slett(); utkast = null; flyttekode = ""; visLag(); return;
+  }
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape" && dlg.open) lukk(); });
+
+G.onEndring(() => oppdaterSaldo());
+function start() { if (S().laget) visHoved(); else visLag(); oppdaterSaldo(); }
+window.addEventListener("pageshow", e => { if (e.persisted) start(); });
+start();
+</script>
+</body>
+</html>

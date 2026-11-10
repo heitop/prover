@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Blå toner</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -192,6 +193,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--brass);outline-offs
 .star{font-family:var(--mono);font-size:.7rem;color:var(--red);margin-left:6px;letter-spacing:.05em}
 .note{font-size:.88rem;color:var(--muted)}
 </style>
+<script src="felles/gull.js"></script>
 
 <div class="wrap">
   <div class="bar">
@@ -706,7 +708,7 @@ function answer(i){
   if(QZ.answered)return;QZ.answered=true;
   var id=QZ.ids[QZ.i],q=Q[id],ok=QZ.opts[i].ok;
   $$('#q-opts .opt').forEach(function(b,j){b.disabled=true;if(QZ.opts[j].ok)b.classList.add('right');else if(j===i)b.classList.add('wrong')});
-  if(ok){QZ.score++;QZ.streak++;QZ.best=Math.max(QZ.best,QZ.streak);var w=S.wrong.indexOf(id);if(w>=0)S.wrong.splice(w,1)}
+  if(ok){window.Gull&&Gull.tjen(1);QZ.score++;QZ.streak++;QZ.best=Math.max(QZ.best,QZ.streak);var w=S.wrong.indexOf(id);if(w>=0)S.wrong.splice(w,1)}
   else{QZ.streak=0;if(S.wrong.indexOf(id)<0)S.wrong.push(id)}
   record(q[0],ok);
   QZ.log.push({id:id,ok:ok});
@@ -724,7 +726,7 @@ document.addEventListener('keydown',function(e){
   else if(QZ.answered&&e.key==='Enter'&&document.activeElement!==$('#q-next')){$('#q-next').click();e.preventDefault()}
 });
 function showResult(){
-  var n=QZ.ids.length,s=QZ.score,p=s/n;
+  var n=QZ.ids.length,s=QZ.score,p=s/n;if(n>=5)window.Gull&&Gull.bonus(p>=.9?5:p>=.7?3:p>=.5?1:0,'Runde ferdig!');
   $('#r-score').textContent=s+' / '+n;
   $('#r-msg').textContent=p>=.9?'Strålende! Du er klar for prøven.':p>=.7?'Godt jobbet! Se over de du bommet på.':p>=.5?'Bra start. Les repetisjonsarket og prøv igjen.':'Øv litt mer. Du klarer det!';
   var by={};QZ.log.forEach(function(l){var t=Q[l.id][0];by[t]=by[t]||{r:0,n:0};by[t].n++;if(l.ok)by[t].r++});
@@ -768,7 +770,7 @@ $('#tl-check').onclick=function(){
   TL.checked=true;
   var sorted=TL.items.slice().sort(function(a,b){return a[0]-b[0]});
   var r=TL.items.filter(function(e,i){return sorted[i]===e}).length;
-  if(S.best.tid==null||r>S.best.tid){S.best.tid=r;save()}
+  if(S.best.tid==null||r>S.best.tid){S.best.tid=r;save()}window.Gull&&Gull.tjen(Math.floor(r/2)+(r===6?2:0));
   $('#tl-msg').textContent=r===6?'Alle seks på riktig plass. Glimrende!':r+' av 6 på riktig plass. Se årstallene og prøv nye hendelser.';
   $('#tl-best').textContent='Beste: '+S.best.tid+' av 6';
   renderTimeline();
@@ -792,7 +794,7 @@ function renderMatch(){
     if(MT.sel==null){var t=$('#m-terms');t.classList.remove('shake');void t.offsetWidth;t.classList.add('shake');$('#m-msg').textContent='Velg et begrep først.';return}
     var term=MT.pairs[MT.sel],def=MT.defs[+b.getAttribute('data-i')];
     if(term===def){MT.done[term[0]]=1;MT.found++;MT.sel=null;record('omgrep',true);$('#m-msg').textContent='Riktig: '+term[0]+'.';
-      if(MT.found===5){$('#m-msg').textContent=MT.miss===0?'Alle fem uten bom. Imponerende!':'Ferdig! Du bommet '+MT.miss+' gang'+(MT.miss>1?'er':'')+'.'}
+      if(MT.found===5){window.Gull&&Gull.bonus(Math.max(1,5-MT.miss),'Alle begrepene!');$('#m-msg').textContent=MT.miss===0?'Alle fem uten bom. Imponerende!':'Ferdig! Du bommet '+MT.miss+' gang'+(MT.miss>1?'er':'')+'.'}
       renderMatch()}
     else{MT.miss++;record('omgrep',false);$('#m-msg').textContent='Ikke den. Prøv en annen forklaring.';$('#m-miss').textContent=MT.miss;b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')}
   }});
@@ -815,7 +817,7 @@ function sortAnswer(g){
   if(SD.answered)return;SD.answered=true;
   var c=SD.cards[SD.i],ok=g===c[1];
   $$('#s-genres .genre').forEach(function(b){var k=b.getAttribute('data-g');b.disabled=true;if(k===c[1])b.classList.add('right');else if(k===g)b.classList.add('wrong')});
-  if(ok)SD.score++;
+  if(ok){SD.score++;window.Gull&&Gull.tjen(1)}
   record(c[1],ok);
   $('#s-score').textContent=SD.score;
   var v=$('#s-verdict');v.className='verdict '+(ok?'ok':'no');v.textContent=ok?'Riktig!':'Nei, det hører til '+GNAME[c[1]]+'.';
@@ -825,7 +827,7 @@ function sortAnswer(g){
 $('#s-next').onclick=function(){
   if(SD.finished){newSort();return}
   if(SD.i+1<SD.cards.length){SD.i++;renderSort();return}
-  SD.finished=true;
+  SD.finished=true;window.Gull&&Gull.bonus(SD.score>=11?3:SD.score>=8?1:0,'Ferdig!');
   if(S.best.sort==null||SD.score>S.best.sort){S.best.sort=SD.score;save()}
   $('#s-count').textContent='Ferdig';
   $('#s-clue').textContent=SD.score+' av '+SD.cards.length+' riktig';
@@ -998,7 +1000,7 @@ var lq={cur:null,active:false,score:0,n:0};
 function renderLq(){
   $('#lq-opts').innerHTML=DEMOS.map(function(d){return '<button type="button" class="genre" data-d="'+d.id+'" disabled>'+esc(d.name)+'</button>'}).join('');
   $$('#lq-opts .genre').forEach(function(b){b.onclick=function(){
-    if(!lq.active)return;lq.active=false;var ok=b.getAttribute('data-d')===lq.cur.id;lq.n++;if(ok)lq.score++;
+    if(!lq.active)return;lq.active=false;var ok=b.getAttribute('data-d')===lq.cur.id;lq.n++;if(ok){lq.score++;window.Gull&&Gull.tjen(1)}
     $$('#lq-opts .genre').forEach(function(x){x.disabled=true;if(x.getAttribute('data-d')===lq.cur.id)x.classList.add('right');else if(x===b)x.classList.add('wrong')});
     $('#lq-score').textContent=lq.score;$('#lq-n').textContent=lq.n;
     $('#lq-msg').textContent=ok?'Riktig! Det var '+lq.cur.name.toLowerCase()+'.':'Det var '+lq.cur.name.toLowerCase()+'.';
