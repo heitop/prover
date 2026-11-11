@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<title>Spanske -ar-verb</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Øv på regelrette -ar-verb på spansk: regelen, verbene, bøying, finn personen og oversetting">
+<meta name="theme-color" content="#1d4e89">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f2b705'/><text x='50' y='68' font-size='46' text-anchor='middle' font-family='Arial' font-weight='700' fill='%231d4e89'>-ar</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
+<script>
+/* ======================================================================
+   VERBENE – fra øvearket og PowerPointen om -ar-verb.
+   es   infinitiv på spansk
+   no   norsk betydning slik den vises
+   pres norsk presens (brukes i setningene: «Jeg ___ spansk»)
+   alt  andre norske svar som godtas (også nynorsk)
+   obj  ting som passer etter verbet: [spansk, norsk]
+   ====================================================================== */
+const VERB = [
+  { es: "hablar",   no: "å snakke",            pres: "snakker",   alt: ["snakka", "prate", "prata"],                  obj: [["español", "spansk"], ["noruego", "norsk"], ["inglés", "engelsk"], ["mucho", "mye"]] },
+  { es: "estudiar", no: "å studere / å øve",   pres: "studerer",  alt: ["studera", "øva", "lese", "lesa"],             obj: [["en la escuela", "på skolen"], ["español", "spansk"], ["mucho", "mye"], ["en casa", "hjemme"]] },
+  { es: "escuchar", no: "å lytte / å høre på", pres: "hører på",  alt: ["lytta", "høyre på", "høyra på", "høre", "høyre", "lytte til", "lytta til"], obj: [["música", "musikk"], ["la radio", "radio"]] },
+  { es: "bailar",   no: "å danse",             pres: "danser",    alt: ["dansa"],                                       obj: [["salsa", "salsa"], ["tango", "tango"], ["bien", "godt"], ["mucho", "mye"]] },
+  { es: "cantar",   no: "å synge",             pres: "synger",    alt: ["syngje", "synga"],                             obj: [["una canción", "en sang"], ["bien", "godt"]] },
+  { es: "mirar",    no: "å se på",             pres: "ser på",    alt: ["sjå på", "se", "sjå", "titte på"],             obj: [["la televisión", "TV"], ["un libro", "i en bok"]] },
+  { es: "trabajar", no: "å jobbe",             pres: "jobber",    alt: ["jobba", "arbeide", "arbeida"],                 obj: [["hoy", "i dag"], ["mucho", "mye"], ["en casa", "hjemme"]] },
+  { es: "saltar",   no: "å hoppe",             pres: "hopper",    alt: ["hoppa"],                                       obj: [["mucho", "mye"], ["alto", "høyt"]] },
+  { es: "tocar",    no: "å spille / å ta på",  pres: "spiller",   alt: ["spela", "spele", "røre", "røra"],              obj: [["la guitarra", "gitar"], ["el piano", "piano"]] },
+  { es: "pagar",    no: "å betale",            pres: "betaler",   alt: ["betala"],                                      obj: [["la pizza", "pizzaen"], ["mucho", "mye"]] },
+  { es: "cocinar",  no: "å lage mat",          pres: "lager mat", alt: ["laga mat", "koke", "koka"],                    obj: [["", ""], ["en casa", "hjemme"], ["hoy", "i dag"]] },
+  { es: "viajar",   no: "å reise",             pres: "reiser",    alt: ["reisa"],                                       obj: [["a España", "til Spania"], ["mucho", "mye"]] },
+  { es: "caminar",  no: "å gå / å spasere",    pres: "går",       alt: ["spasera", "gå tur"],                           obj: [["mucho", "mye"], ["a la escuela", "til skolen"]] },
+  { es: "nadar",    no: "å svømme",            pres: "svømmer",   alt: ["symja", "symje", "svømma"],                    obj: [["bien", "godt"], ["en el mar", "i havet"]] },
+  { es: "comprar",  no: "å kjøpe / å handle",  pres: "kjøper",    alt: ["kjøpa", "handla", "handle"],                   obj: [["pan", "brød"], ["una pizza", "en pizza"]] },
+];
+
+/* Hvem gjør noe? p = person (0 yo, 1 tú, 2 él/ella, 3 nosotros, 4 vosotros, 5 ellos/ellas).
+   pron = vanlig pronomen (kan sløyfes på spansk). alt = andre former som godtas. */
+const SUBJ = [
+  { p: 0, es: "Yo",            no: "jeg",               pron: true },
+  { p: 1, es: "Tú",            no: "du",                pron: true, alt: ["tu"] },
+  { p: 2, es: "Él",            no: "han",               pron: true },
+  { p: 2, es: "Ella",          no: "hun",               pron: true },
+  { p: 2, es: "María",         no: "María" },
+  { p: 2, es: "Pedro",         no: "Pedro" },
+  { p: 2, es: "Mi amigo",      no: "vennen min",        alt: ["mi amiga"] },
+  { p: 3, es: "Nosotros",      no: "vi",                pron: true, alt: ["nosotras"] },
+  { p: 3, es: "María y yo",    no: "María og jeg" },
+  { p: 3, es: "Mi amigo y yo", no: "vennen min og jeg", alt: ["mi amiga y yo"] },
+  { p: 4, es: "Vosotros",      no: "dere",              pron: true, alt: ["vosotras"] },
+  { p: 4, es: "Tú y María",    no: "du og María",       alt: ["tu y maría"] },
+  { p: 4, es: "Tú y Pedro",    no: "du og Pedro",       alt: ["tu y pedro"] },
+  { p: 5, es: "Ellos",         no: "de",                pron: true, alt: ["ellas"] },
+  { p: 5, es: "María y Pedro", no: "María og Pedro" },
+];
+
+/* Øvearket, akkurat som på papiret (oppgåve A, B og C). */
+const ARK = {
+  A: [
+    { s: "Yo",       v: "hablar",   o: "español",       no: "Eg snakkar spansk." },
+    { s: "Tú",       v: "bailar",   o: "bien",          no: "Du dansar godt." },
+    { s: "María",    v: "escuchar", o: "música",        no: "María lyttar til musikk." },
+    { s: "Nosotros", v: "estudiar", o: "en la escuela", no: "Vi studerer på skulen." },
+    { s: "Vosotros", v: "cantar",   o: "una canción",   no: "Dokker syng ein song." },
+    { s: "Ellos",    v: "mirar",    o: "la televisión", no: "Dei ser på TV." },
+  ],
+  B: [
+    { v: "bailar", p: 1, o: "salsa" }, { v: "hablar", p: 0, o: "noruego" }, { v: "escuchar", p: 5, o: "la radio" },
+    { v: "trabajar", p: 3, o: "hoy" }, { v: "mirar", p: 4, o: "un libro" }, { v: "cantar", p: 2, o: "bien" },
+  ],
+  C: [
+    { no: "Eg dansar.",                   s: "Yo",            v: "bailar",  o: "" },
+    { no: "Du snakkar spansk.",           s: "Tú",            v: "hablar",  o: "español" },
+    { no: "Vi høyrer på musikk.",         s: "Nosotros",      v: "escuchar", o: "música" },
+    { no: "Han jobbar.",                  s: "Él",            v: "trabajar", o: "" },
+    { no: "Pedro dansar.",                s: "Pedro",         v: "bailar",  o: "" },
+    { no: "Min venn og eg snakkar norsk.", s: "Mi amigo y yo", v: "hablar",  o: "noruego" },
+    { no: "Du og María dansar.",          s: "Tú y María",    v: "bailar",  o: "" },
+    { no: "María og Pedro dansar tango.", s: "María y Pedro", v: "bailar",  o: "tango" },
+  ],
+};
+</script>
+<style>
+/* Samme azulejo-blå og safran som Spanske gloser. Feil vises i varm korall, aldri knallrødt. */
+:root{
+  --bg:#f7f3ea; --dot:#ebe3d2; --card:#ffffff; --card2:#f3eddf; --line:#e3dac8;
+  --ink:#1f2633; --muted:#626b78;
+  --pri:#1d4e89; --pri-ink:#ffffff; --pri-soft:#e0eaf6;
+  --sun:#f2b705; --sun-soft:#fff1c4; --sun-ink:#4a3700;
+  --coral:#b9532e; --coral-soft:#fbe3d8;
+  --ok:#23804e; --ok-soft:#dcf2e4;
+  --end:#b9532e;
+  --lv0:#ece5d6; --lv1:#d6e4f5; --lv2:#8fb3df; --lv3:#1d4e89; --lv3-ink:#ffffff;
+  --fd:"Fredoka","Segoe UI",system-ui,sans-serif;
+  --fb:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#13171d; --dot:#1c222a; --card:#1d232b; --card2:#262e38; --line:#333d49;
+  --ink:#eef1f5; --muted:#a3acb8;
+  --pri:#7fb0ec; --pri-ink:#0b1d33; --pri-soft:#1b2d45;
+  --sun:#ffcc3d; --sun-soft:#3a3115; --sun-ink:#ffe7a3;
+  --coral:#f0a07f; --coral-soft:#3d261d;
+  --ok:#62d394; --ok-soft:#15331f;
+  --end:#ffb08f;
+  --lv0:#29313b; --lv1:#1f3550; --lv2:#36598a; --lv3:#7fb0ec; --lv3-ink:#0b1d33;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#13171d; --dot:#1c222a; --card:#1d232b; --card2:#262e38; --line:#333d49;
+    --ink:#eef1f5; --muted:#a3acb8;
+    --pri:#7fb0ec; --pri-ink:#0b1d33; --pri-soft:#1b2d45;
+    --sun:#ffcc3d; --sun-soft:#3a3115; --sun-ink:#ffe7a3;
+    --coral:#f0a07f; --coral-soft:#3d261d;
+    --ok:#62d394; --ok-soft:#15331f;
+    --end:#ffb08f;
+    --lv0:#29313b; --lv1:#1f3550; --lv2:#36598a; --lv3:#7fb0ec; --lv3-ink:#0b1d33;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg)}
+body{color:var(--ink);font-family:var(--fb);font-size:1.1rem;line-height:1.5;min-height:100vh;
+  background-image:radial-gradient(var(--dot) 1.6px,transparent 1.6px);background-size:22px 22px}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+h1,h2,h3{font-family:var(--fd);font-weight:600;margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:1.9rem} h2{font-size:1.45rem} h3{font-size:1.1rem}
+p{margin:0}
+.muted{color:var(--muted)} .small{font-size:.92rem}
+[hidden]{display:none!important}
+.e{color:var(--end);font-weight:700}
+.st{color:var(--muted)}
+
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topin{max-width:720px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{background:none;border:0;padding:4px 0;font-family:var(--fd);font-weight:700;font-size:1.3rem;display:flex;align-items:center;gap:8px;color:var(--pri)}
+.badge{width:36px;height:32px;border-radius:9px;background:var(--sun);color:#1d4e89;display:grid;place-items:center;font-size:1rem;line-height:1}
+.stats{display:flex;gap:6px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-weight:700;font-size:.95rem;font-variant-numeric:tabular-nums}
+.iconbtn{background:var(--card);border:1px solid var(--line);border-radius:999px;width:40px;height:40px;display:inline-grid;place-items:center;padding:0;font-size:1.1rem}
+
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 64px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px}
+.btn{border:1px solid var(--line);background:var(--card2);border-radius:14px;padding:12px 18px;font-weight:700;min-height:50px;transition:transform .08s;text-align:center}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.pri{background:var(--pri);color:var(--pri-ink);border-color:transparent}
+.btn.big{font-size:1.2rem;padding:14px 22px;min-height:58px}
+.btn[disabled]{opacity:.4;cursor:default}
+.back{align-self:flex-start;background:none;border:0;color:var(--pri);font-weight:700;padding:6px 0}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>.btn{flex:1 1 160px}
+.link{background:none;border:0;color:var(--muted);text-decoration:underline;padding:6px 0;font-size:.95rem}
+
+/* forside */
+.hero{display:flex;flex-direction:column;gap:6px}
+.when{display:inline-flex;align-items:center;gap:8px;background:var(--sun-soft);color:var(--sun-ink);border-radius:999px;padding:4px 12px;font-weight:700;font-size:.95rem;align-self:flex-start}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-weight:700;font-size:.95rem}
+.chip[aria-pressed="true"]{background:var(--pri);color:var(--pri-ink);border-color:transparent}
+.prog{display:flex;flex-direction:column;gap:10px}
+.progtop{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tiles{display:flex;flex-wrap:wrap;gap:6px}
+.tile{border:0;border-radius:10px;padding:5px 10px;font-weight:700;font-size:.95rem;background:var(--lv0)}
+.tile small{font-weight:400;opacity:.85}
+.lv1{background:var(--lv1)} .lv2{background:var(--lv2)} .lv3{background:var(--lv3);color:var(--lv3-ink)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:14px;height:14px;border-radius:4px;display:inline-block;background:var(--lv0)}
+.step{display:flex;flex-direction:column;gap:10px}
+.stephead{display:flex;align-items:center;gap:10px}
+.num{flex:none;width:30px;height:30px;border-radius:50%;background:var(--pri);color:var(--pri-ink);display:grid;place-items:center;font-weight:700;font-family:var(--fd)}
+.modes{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.mode{display:flex;gap:12px;align-items:center;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px 14px;transition:transform .1s,border-color .1s;min-height:76px}
+.mode:hover{border-color:var(--pri);transform:translateY(-1px)}
+.mode[disabled]{opacity:.5;transform:none;border-color:var(--line);cursor:default}
+.mode .ic{flex:none;width:46px;height:46px;border-radius:14px;background:var(--pri-soft);display:grid;place-items:center;font-size:1.5rem}
+.mode b{font-family:var(--fd);font-weight:600;font-size:1.08rem;display:block;line-height:1.2}
+.mode small{display:block;color:var(--muted);font-size:.88rem;line-height:1.3}
+.rec{display:inline-block;font-size:.75rem;font-weight:700;color:var(--sun-ink);background:var(--sun-soft);border-radius:999px;padding:1px 8px;margin-top:3px}
+
+/* quiz */
+.qhead{display:flex;align-items:center;gap:12px}
+.qhead .x{flex:none}
+.bar{flex:1;height:12px;border-radius:999px;background:var(--lv0);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--pri);border-radius:999px;transition:width .3s}
+.qcount{font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted);font-size:.95rem}
+.qtitle{font-family:var(--fd);font-weight:600;color:var(--muted)}
+.qcard{display:flex;flex-direction:column;gap:14px;padding:22px 18px}
+.qlabel{font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:.82rem}
+.qbig{font-family:var(--fd);font-weight:600;font-size:2.1rem;line-height:1.2;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qbig.sent{font-size:1.55rem;display:block}
+.qbig.sent .say{margin-left:6px}
+.qsub{color:var(--muted);font-style:italic}
+.gap{display:inline-block;min-width:3.2em;border-bottom:3px solid var(--sun);text-align:center;color:transparent}
+.paren{color:var(--muted);font-weight:500}
+.say{border:1px solid var(--line);background:var(--card2);border-radius:999px;width:42px;height:42px;padding:0;display:inline-grid;place-items:center;font-size:1.1rem;flex:none;vertical-align:middle}
+.say.sm{width:32px;height:32px;font-size:.9rem}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts.one{grid-template-columns:1fr}
+.opt{position:relative;border:2px solid var(--line);background:var(--card);border-radius:16px;padding:14px 14px 14px 40px;text-align:left;font-weight:700;font-size:1.12rem;min-height:60px;transition:border-color .1s,background .1s}
+.opt:hover{border-color:var(--pri)}
+.opt kbd{position:absolute;left:12px;top:50%;transform:translateY(-50%);font:700 .8rem var(--fb);color:var(--muted);background:var(--card2);border-radius:6px;padding:1px 6px}
+.opt.good{border-color:var(--ok);background:var(--ok-soft)}
+.opt.bad{border-color:var(--coral);background:var(--coral-soft)}
+.opt[disabled]{cursor:default}
+.wform{display:flex;gap:10px}
+.wform input{flex:1;min-width:0;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:12px 14px;font-size:1.3rem;font-weight:700}
+.wform input:focus,.tin:focus{outline:none;border-color:var(--pri)}
+.wform input.good,.tin.good{border-color:var(--ok);background:var(--ok-soft)}
+.wform input.bad,.tin.bad{border-color:var(--coral);background:var(--coral-soft)}
+.accbar{display:flex;gap:6px;flex-wrap:wrap}
+.acc{border:1px solid var(--line);background:var(--card2);border-radius:10px;min-width:44px;height:44px;font-weight:700;font-size:1.15rem}
+.fb{border-radius:16px;padding:0;display:flex;flex-direction:column;gap:6px}
+.fb:not(:empty){padding:14px 16px}
+.fb.ok{background:var(--ok-soft)}
+.fb.almost{background:var(--sun-soft)}
+.fb.wrong{background:var(--coral-soft)}
+.fb .head{font-family:var(--fd);font-weight:600;font-size:1.25rem}
+.fb.ok .head{color:var(--ok)} .fb.wrong .head{color:var(--coral)} .fb.almost .head{color:var(--sun-ink)}
+.fb .extra{font-size:.98rem}
+.fb .after{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:700}
+.fb .btn{align-self:flex-start;margin-top:4px}
+@keyframes pop{0%{transform:scale(.96)}60%{transform:scale(1.02)}100%{transform:scale(1)}}
+.pop{animation:pop .25s ease-out}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.shake{animation:shake .25s}
+
+/* tabell-øving */
+.tgrid{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center}
+.tgrid label{font-weight:700;color:var(--muted)}
+.tcell{display:flex;flex-direction:column;gap:2px}
+.tin{width:100%;min-width:0;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:9px 12px;font-size:1.2rem;font-weight:700}
+.tfas{font-size:.92rem;font-weight:700;color:var(--coral)}
+
+/* glosekort */
+.flip{perspective:1200px;cursor:pointer;user-select:none}
+.flip .inner{position:relative;height:230px;transition:transform .45s;transform-style:preserve-3d}
+.flip.on .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border:1px solid var(--line);border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;text-align:center}
+.face.b{transform:rotateY(180deg);background:var(--pri-soft)}
+.face .w{font-family:var(--fd);font-weight:600;font-size:2.4rem;line-height:1.15}
+.face .hint{font-size:.85rem;color:var(--muted)}
+.face .ex{font-size:.95rem;color:var(--muted)}
+.fnav{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.fnav .btn{min-width:70px}
+.toggles{display:flex;gap:8px;flex-wrap:wrap}
+table.list{width:100%;border-collapse:collapse}
+table.list td,table.list th{padding:7px 6px;border-top:1px solid var(--line);vertical-align:middle;text-align:left}
+table.list th{font-size:.82rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-top:0}
+table.list td.f{font-weight:700;font-size:1.15rem}
+details summary{cursor:pointer;font-weight:700;color:var(--pri)}
+
+/* koble */
+.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kcol{display:flex;flex-direction:column;gap:8px}
+.kb{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:12px 10px;font-weight:700;font-size:1.05rem;min-height:56px;transition:border-color .1s,background .15s,opacity .3s}
+.kb.sel{border-color:var(--pri);background:var(--pri-soft)}
+.kb.bad{border-color:var(--coral);background:var(--coral-soft)}
+.kb.done{border-color:var(--ok);background:var(--ok-soft);opacity:.45;cursor:default}
+
+/* regler */
+.rules{display:flex;flex-direction:column;gap:12px}
+.rule{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.rule .ex{background:var(--card2);border-radius:12px;padding:8px 12px;font-weight:700}
+.big-ex{font-family:var(--fd);font-size:1.6rem;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.big-ex .e,td.f .e{background:var(--coral-soft);border-radius:6px;padding:0 3px}
+.big-ex .cut{text-decoration:line-through;text-decoration-thickness:3px;color:var(--muted)}
+.who{display:grid;grid-template-columns:auto auto auto;gap:4px 12px;justify-content:start;align-items:baseline}
+
+/* resultat */
+.res{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.res .big{font-size:3.6rem;line-height:1}
+.res .score{font-family:var(--fd);font-weight:700;font-size:2.4rem;color:var(--pri)}
+.misslist{text-align:left;width:100%;display:flex;flex-direction:column;gap:6px}
+.misslist div{background:var(--card2);border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+
+@media (max-width:480px){
+  h1{font-size:1.6rem}
+  .qbig{font-size:1.75rem} .qbig.sent{font-size:1.3rem}
+  .opts{grid-template-columns:1fr}
+  .opts.two,.opts.pron{grid-template-columns:1fr 1fr}
+  .kb{font-size:.95rem;padding:10px 6px}
+  .face .w{font-size:2rem}
+  .big-ex{font-size:1.3rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<script src="felles/gull.js"></script>
+</head>
+<body>
+<header class="top"><div class="topin">
+  <button class="logo" data-act="home"><span class="badge">-ar</span>Verb</button>
+  <div class="stats">
+    <span class="pill" id="pillKan" title="Verb du kan">⭐ 0/0</span>
+    <button class="iconbtn" data-act="theme" id="themeBtn" aria-label="Bytt lys/mørk">☾</button>
+  </div>
+</div></header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+/* ---------- hjelpere ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const fold = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+const clean = s => String(s).toLowerCase().replace(/[¿?¡!.,;:()«»"→]/g, " ").replace(/\s+/g, " ").trim();
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+function lev(a, b) {
+  const m = a.length, n = b.length;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[n];
+}
+
+/* ---------- bøying ---------- */
+const END = ["o", "as", "a", "amos", "áis", "an"];
+const PERS = ["yo", "tú", "él / ella", "nosotros", "vosotros", "ellos / ellas"];
+const PERS_B = ["Yo", "Tú", "Él / Ella", "Nosotros", "Vosotros", "Ellos / Ellas"];
+const PERS_FULL = ["yo", "tú", "él / ella / usted", "nosotros / nosotras", "vosotros / vosotras", "ellos / ellas / ustedes"];
+const PERS_NO = ["jeg", "du", "han / hun", "vi", "dere", "de"];
+const PRON_ALL = ["yo", "tú", "tu", "él", "el", "ella", "usted", "nosotros", "nosotras", "vosotros", "vosotras", "ellos", "ellas", "ustedes"];
+const stem = v => v.es.slice(0, -2);
+const form = (v, p) => stem(v) + END[p];
+const formHtml = (v, p) => `<span class="st">${esc(stem(v))}</span><span class="e">${END[p]}</span>`;
+const byEs = es => VERB.find(v => v.es === es);
+const subjOf = es => SUBJ.find(s => s.es === es);
+
+/* ---------- lagring ---------- */
+const KEY = "spansk-ar-verb-v1";
+const fresh = () => ({ v: 1, theme: "auto", lv: {}, lvP: {}, best: {}, regel: "hablar" });
+function load() { try { const x = JSON.parse(localStorage.getItem(KEY)); if (x && x.v === 1) return Object.assign(fresh(), x); } catch (e) {} return fresh(); }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+let S = load();
+const lv = g => S.lv[g.es] || 0;
+const lvP = p => S.lvP[p] || 0;
+function step(v, kind, ok) { return ok ? (kind === "write" ? Math.min(3, v + 1) : Math.max(v, 1)) : Math.max(0, v - 1); }
+function updLv(g, kind, ok) { S.lv[g.es] = step(lv(g), kind, ok); save(); updTop(); }
+function updP(p, kind, ok) { S.lvP[p] = step(lvP(p), kind, ok); save(); }
+
+/* ---------- tale ---------- */
+const TTS = "speechSynthesis" in window;
+let esVoice = null;
+function pickVoice() { const v = speechSynthesis.getVoices(); esVoice = v.find(x => /^es[-_]ES/i.test(x.lang)) || v.find(x => /^es/i.test(x.lang)) || null; }
+if (TTS) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function speak(t) {
+  if (!TTS) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(t); u.lang = "es-ES"; if (esVoice) u.voice = esVoice; u.rate = .85;
+  speechSynthesis.speak(u);
+}
+const sayBtn = (t, sm) => TTS ? `<button class="say${sm ? " sm" : ""}" data-say="${esc(t)}" aria-label="Lytt: ${esc(t)}" title="Lytt">🔊</button>` : "";
+
+/* ---------- tema og topp ---------- */
+function applyTheme() { const r = document.documentElement; if (S.theme === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", S.theme); updTop(); }
+function erMork() { const t = document.documentElement.getAttribute("data-theme"); return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; }
+function updTop() {
+  $("#pillKan").textContent = `⭐ ${VERB.filter(g => lv(g) >= 3).length}/${VERB.length}`;
+  $("#themeBtn").textContent = erMork() ? "☀" : "☾";
+}
+
+/* ---------- visning ---------- */
+const app = $("#app");
+let kTimer = null, autoTimer = null;
+function show(html) {
+  clearInterval(kTimer); clearTimeout(autoTimer); if (TTS) speechSynthesis.cancel();
+  app.innerHTML = html; window.scrollTo(0, 0); updTop();
+}
+
+/* ---------- forside ---------- */
+function home() {
+  Q = null; K = null; T = null;
+  const b = S.best, kan = VERB.filter(g => lv(g) >= 3).length;
+  const mode = (act, ic, t, d, rec) => `<button class="mode" data-act="${act}"><span class="ic">${ic}</span><span><b>${t}</b><small>${d}</small>${rec ? `<span class="rec">${rec}</span>` : ""}</span></button>`;
+  const pst = k => b[k] != null ? `Beste: ${b[k]} %` : "";
+  show(`
+  <section class="hero">
+    <h1>Spansk: regelrette -ar-verb</h1>
+    <span class="when">✂️ Ta bort -ar · ➕ legg til ny ending</span>
+  </section>
+
+  <section class="card prog">
+    <div class="progtop"><h3>Endingene dine</h3><span class="muted small">${[0, 1, 2, 3, 4, 5].filter(p => lvP(p) >= 3).length} av 6 sitter</span></div>
+    <div class="tiles">${END.map((e, p) => `<span class="tile lv${lvP(p)}">${PERS[p]} <small>-${e}</small></span>`).join("")}</div>
+    <div class="progtop"><h3>Verbene dine</h3><span class="muted small">${kan} av ${VERB.length} sitter</span></div>
+    <div class="tiles">${VERB.map(g => `<button class="tile lv${lv(g)}" ${TTS ? `data-say="${esc(g.es)}"` : ""} title="${esc(g.no)}">${esc(g.es)}</button>`).join("")}</div>
+    <div class="legend"><span><i></i>Ny</span><span><i class="lv1"></i>Kjenner igjen</span><span><i class="lv2"></i>På vei</span><span><i class="lv3"></i>Sitter</span></div>
+  </section>
+
+  <section class="step">
+    <div class="stephead"><span class="num">1</span><h2>Regelen og verbene</h2></div>
+    <div class="modes">
+      ${mode("regel", "📏", "Regelen", "Slik bøyer du et -ar-verb – med tabell")}
+      ${mode("kort", "📖", "Verbkort", "Snu kortene og hør uttalen")}
+      ${mode("koble", "🧩", "Koble sammen", "Spansk verb og norsk betydning", b.koble ? `Rekord: ${b.koble} sek` : "")}
+      ${mode("velgVerb", "🎯", "Hva betyr verbet?", "Fire alternativer, begge veier")}
+      ${mode("skrivVerb", "✍️", "Skriv verbet", "Du ser norsk – skriv spansk")}
+    </div>
+  </section>
+
+  <section class="step">
+    <div class="stephead"><span class="num">2</span><h2>Bøy verbene</h2></div>
+    <div class="modes">
+      ${mode("velgForm", "🔘", "Velg riktig form", "habla, hablas eller hablamos?", pst("velgForm"))}
+      ${mode("tabell", "🔤", "Fyll tabellen", "Alle seks formene av et verb", pst("tab"))}
+      ${mode("boyA", "✏️", "Bøy verbet i parentes", "Som oppgåve A på arket", pst("boyA"))}
+      ${mode("finnB", "🕵️", "Finn rett person", "Som oppgåve B – se på endingen", pst("finnB"))}
+    </div>
+  </section>
+
+  <section class="step">
+    <div class="stephead"><span class="num">3</span><h2>Setninger</h2></div>
+    <div class="modes">
+      ${mode("betyr", "💬", "Hva betyr setningen?", "Endingen avslører hvem det er", pst("betyr"))}
+      ${mode("omsetC", "🇪🇸", "Oversett til spansk", "Som oppgåve C – skriv hele setningen", pst("omsetC"))}
+    </div>
+  </section>
+
+  <section class="step">
+    <div class="stephead"><span class="num">4</span><h2>Prøv deg</h2></div>
+    <div class="modes">
+      ${mode("ark", "📄", "Øvearket", "Akkurat de 20 oppgavene fra arket", pst("ark"))}
+      ${mode("prove", "🏁", "Prøveprøve", "20 nye oppgaver av samme slag – uten hjelp", pst("prove"))}
+    </div>
+  </section>
+
+  <p class="small muted">Fremgangen lagres bare på denne enheten. <button class="link" data-act="reset">Nullstill fremgang</button></p>
+  `);
+}
+
+/* ---------- regelen ---------- */
+function regel() {
+  const v = byEs(S.regel) || VERB[0];
+  show(`
+  <button class="back" data-act="home">← Tilbake</button>
+  <h2>Regelen: -ar-verb</h2>
+  <div class="rules">
+    <div class="rule"><h3>To steg</h3>
+      <p><b>1.</b> Ta bort <b>-ar</b> fra infinitiven. Da står du igjen med <b>stammen</b>.</p>
+      <div class="big-ex">habl<span class="cut">ar</span> → habl-</div>
+      <p><b>2.</b> Legg til endingen som passer til personen.</p>
+      <div class="big-ex">habl<span class="e">o</span> ${sayBtn("hablo", 1)} <span class="muted small" style="font-family:var(--fb)">= jeg snakker</span></div>
+    </div>
+
+    <div class="rule"><h3>Bøy et verb</h3>
+      <p class="muted small">Velg et verb. Stammen er grå, endingen er farget.</p>
+      <div class="chips">${VERB.map(x => `<button class="chip" data-act="regelVerb:${x.es}" aria-pressed="${x === v}">${x.es}</button>`).join("")}</div>
+      <p><b>${esc(v.es)}</b> = ${esc(v.no)} · stammen er <b>${esc(stem(v))}-</b></p>
+      <table class="list">
+        <tr><th>Person</th><th>Form</th><th></th><th>Norsk</th></tr>
+        ${END.map((e, p) => `<tr><td>${PERS_FULL[p]}</td><td class="f">${formHtml(v, p)}</td><td>${sayBtn(form(v, p), 1)}</td><td class="muted">${PERS_NO[p]} ${esc(v.pres)}</td></tr>`).join("")}
+      </table>
+    </div>
+
+    <div class="rule"><h3>Hugseregel for endingene</h3>
+      <div class="ex">-o · -as · -a · -amos · -áis · -an</div>
+      <p class="small">Husk aksenten på <b>-áis</b> (vosotros). <b>Usted</b> (De, høflig) bøyes som él, og <b>ustedes</b> som ellos.</p>
+    </div>
+
+    <div class="rule"><h3>Hvem er det? Når to gjør noe sammen</h3>
+      <div class="who">
+        <span>María <b>y yo</b></span><span>= nosotros</span><span class="e">-amos</span>
+        <span><b>Tú y</b> María</span><span>= vosotros</span><span class="e">-áis</span>
+        <span>María y Pedro</span><span>= ellos</span><span class="e">-an</span>
+        <span>María / Pedro</span><span>= ella / él</span><span class="e">-a</span>
+      </div>
+      <p class="small">Er <b>jeg</b> med, er det <b>vi</b>. Er <b>du</b> med (og ikke jeg), er det <b>dere</b>. Ellers er det <b>de</b>.</p>
+      <div class="ex">Tú y María bailáis. = Du og María danser.</div>
+    </div>
+
+    <div class="rule"><h3>Pronomenet kan sløyfes</h3>
+      <p>Endingen viser hvem det er, så spanjolene dropper ofte yo, tú og nosotros.</p>
+      <div class="ex">Hablo español. = Yo hablo español. = Jeg snakker spansk.</div>
+    </div>
+  </div>
+  <button class="btn pri big" data-act="velgForm">Øv på å bøye →</button>`);
+}
+
+/* ---------- verbkort ---------- */
+let F = null;
+function kort() { F = { list: VERB.slice(), i: 0, on: false, noFirst: false, mix: false }; fRender(); }
+function fRender() {
+  const g = F.list[F.i], n = F.list.length;
+  const es = `<span class="w">${esc(g.es)}</span>${sayBtn(g.es)}`;
+  const no = `<span class="w">${esc(g.no)}</span><span class="ex">yo ${esc(form(g, 0))} · nosotros ${esc(form(g, 3))}</span>`;
+  const front = F.noFirst ? `<span class="w">${esc(g.no)}</span>` : es, back = F.noFirst ? es : no;
+  show(`
+  <button class="back" data-act="home">← Tilbake</button>
+  <h2>Verbkort</h2>
+  <div class="flip${F.on ? " on" : ""}" data-act="flip" id="flip"><div class="inner">
+    <div class="face a">${front}<span class="hint">Trykk for å snu</span></div>
+    <div class="face b">${back}</div>
+  </div></div>
+  <div class="fnav">
+    <button class="btn" data-act="fprev" aria-label="Forrige">←</button>
+    <span class="qcount">${F.i + 1} / ${n}</span>
+    <button class="btn pri" data-act="fnext" aria-label="Neste">→</button>
+  </div>
+  <div class="toggles">
+    <button class="chip" data-act="fmix" aria-pressed="${F.mix}">🔀 Bland</button>
+    <button class="chip" data-act="fnofirst" aria-pressed="${F.noFirst}">🔁 Norsk først</button>
+  </div>
+  <details class="card"><summary>Alle verbene</summary>
+    <table class="list">${VERB.map(x => `<tr><td class="f">${esc(x.es)}</td><td>${esc(x.no)}</td><td>${sayBtn(x.es, 1)}</td></tr>`).join("")}</table>
+  </details>
+  <p class="small muted">Tastatur: mellomrom snur, piltaster blar.</p>`);
+}
+
+/* ---------- sjekk av svar ---------- */
+function noForms(g) {
+  const set = new Set(), add = s => { const c = clean(s).replace(/^å /, ""); if (c) set.add(c); };
+  g.no.split("/").forEach(add); (g.alt || []).forEach(add);
+  return [...set];
+}
+function checkNo(input, g) {
+  const a = clean(input).replace(/^å /, ""); if (!a) return { st: "wrong" };
+  const forms = noForms(g);
+  if (forms.includes(a)) return { st: "ok" };
+  if (forms.some(f => f.length >= 4 && lev(a, f) <= 1)) return { st: "typo" };
+  return { st: "wrong" };
+}
+function checkWord(input, fasit) {
+  const a = clean(input), f = clean(fasit);
+  if (!a) return { st: "wrong" };
+  if (a === f) return { st: "ok" };
+  if (fold(a) === fold(f)) return { st: "accent" };
+  if (f.length >= 4 && lev(fold(a), fold(f)) <= 1) return { st: "almost" };
+  return { st: "wrong" };
+}
+/* Én bøyd form. Godtar at subjektet skrives foran. */
+function checkForm(input, v, p, subjEs) {
+  let a = clean(input);
+  const subs = [subjEs ? clean(subjEs) : null, ...PRON_ALL].filter(Boolean);
+  for (const s of subs) if (a.startsWith(s + " ")) { a = a.slice(s.length + 1); break; }
+  const f = form(v, p);
+  if (!a) return { st: "wrong" };
+  if (a === f) return { st: "ok" };
+  if (fold(a) === fold(f)) return { st: "accent" };
+  const other = END.findIndex(e => fold(a) === fold(stem(v) + e));
+  if (other >= 0) return { st: "wrong", note: `<b>${esc(a)}</b> er formen for <b>${PERS[other]}</b>.` };
+  if (fold(a) === fold(v.es)) return { st: "wrong", note: `Du skrev infinitiven. Ta bort <b>-ar</b> og legg til endingen.` };
+  if (lev(fold(a), fold(f)) <= 1) return { st: "almost" };
+  return { st: "wrong" };
+}
+/* Hel setning: verbet må være riktig bøyd, resten tåler små skrivefeil. */
+function checkSetn(input, it) {
+  const a = clean(input); if (!a) return { st: "wrong" };
+  const acc = it.acc.map(clean);
+  if (acc.includes(a)) return { st: "ok" };
+  if (acc.some(x => fold(x) === fold(a))) return { st: "accent" };
+  const st = fold(stem(it.v));
+  const vt = a.split(" ").find(t => fold(t).startsWith(st) && fold(t).length <= st.length + 5);
+  if (!vt) return { st: "wrong", note: `Bruk verbet <b>${esc(it.v.es)}</b> (${esc(it.v.no)}).` };
+  const f = form(it.v, it.p);
+  if (fold(vt) !== fold(f)) {
+    const other = END.findIndex(e => fold(vt) === st + fold(e));
+    return { st: "wrong", note: other >= 0 ? `<b>${esc(vt)}</b> er formen for <b>${PERS[other]}</b>. Her skal det være <b>${esc(f)}</b>.` : `Verbet skal være <b>${esc(f)}</b>.` };
+  }
+  const d = Math.min(...acc.map(x => lev(fold(a), fold(x))));
+  if (d <= 3) return { st: vt === f ? "typo" : "accent" };
+  return { st: "almost", note: `Verbet <b>${esc(f)}</b> er riktig ✓ – men sjekk resten av setningen.` };
+}
+function forklP(s, v, p) {
+  const who = s.pron ? `<b>${esc(s.es.toLowerCase())}</b>` : `<b>${esc(s.es)}</b> = <b>${PERS[p]}</b>`;
+  return `${who} → endingen <b>-${END[p]}</b>: ${formHtml(v, p)}`;
+}
+
+/* ---------- oppgavetyper ---------- */
+const subjFor = (p, kunPron) => pick(SUBJ.filter(s => s.p === p && (!kunPron || s.pron)));
+const objFor = v => { const o = pick(v.obj); return { es: o[0], no: o[1] }; };
+const sentEs = (sEs, v, p, oEs) => [sEs, form(v, p), oEs].filter(Boolean).join(" ") + ".";
+const sentNo = (sNo, v, oNo) => cap([sNo, v.pres, oNo].filter(Boolean).join(" ")) + ".";
+function accFor(s, v, p, oEs) {
+  const subs = [s.es, ...(s.alt || [])].concat(s.pron ? [""] : []);
+  return subs.map(x => sentEs(x, v, p, oEs));
+}
+
+function distract(g, n = 3) { return shuffle(VERB.filter(x => x !== g)).slice(0, n); }
+function itVelgEsNo(g) { return { kind: "choice", g, label: "Hva betyr verbet?", big: g.es, say: g.es, options: [g.no, ...distract(g).map(x => x.no)], answer: g.no, line: `${g.es} = ${g.no}`, sayF: g.es }; }
+function itVelgNoEs(g) { return { kind: "choice", g, label: "Hva heter det på spansk?", big: g.no, options: [g.es, ...distract(g).map(x => x.es)], answer: g.es, line: `${g.no} = ${g.es}`, sayF: g.es }; }
+function itSkrivVerb(g) { return { kind: "write", g, label: "Skriv verbet på spansk", big: g.no, sub: "i infinitiv – slik det står i ordlista", fasit: g.es, check: v => checkWord(v, g.es), line: `${g.no} = ${g.es}`, sayF: g.es }; }
+
+/* Velg riktig form: Tú ___ (cantar) bien. */
+function itVelgForm(v, p) {
+  const s = subjFor(p), o = objFor(v), f = form(v, p);
+  const opts = [f, ...shuffle([0, 1, 2, 3, 4, 5].filter(x => x !== p)).slice(0, 3).map(x => form(v, x))];
+  return { kind: "choice", sent: true, p, label: "Velg riktig form", bigHtml: `${esc(s.es)} <span class="gap">___</span> <span class="paren">(${esc(v.es)})</span> ${esc(o.es)}.`, sub: esc(sentNo(s.no, v, o.no)),
+    options: opts, answer: f, forkl: forklP(s, v, p), line: sentEs(s.es, v, p, o.es), sayF: sentEs(s.es, v, p, o.es) };
+}
+/* Oppgåve A: skriv formen. */
+function itBoyA(v, p, s, o, noTxt) {
+  s = s || subjFor(p); o = o || objFor(v);
+  const full = sentEs(s.es, v, p, o.es);
+  return { kind: "write", sent: true, p, label: "Bøy verbet i parentes", bigHtml: `${esc(s.es)} <span class="gap">___</span> <span class="paren">(${esc(v.es)})</span> ${esc(o.es)}.`,
+    sub: esc(noTxt || sentNo(s.no, v, o.no)), fasit: form(v, p), check: x => checkForm(x, v, p, s.es), forkl: forklP(s, v, p), line: full, sayF: full, after: `${sayBtn(full, 1)} ${esc(full)}` };
+}
+/* Oppgåve B: finn personen ut fra endingen. */
+function itFinnB(v, p, oEs) {
+  if (oEs == null) oEs = objFor(v).es;
+  const f = form(v, p), s = SUBJ.find(x => x.p === p && x.pron);
+  const full = sentEs(PERS_B[p].split(" / ")[0], v, p, oEs);
+  return { kind: "choice", fixed: true, pron: true, sent: true, p, label: "Hvem? Se på endingen", bigHtml: `<span class="gap">___</span> ${esc(f)} ${esc(oEs)}.`,
+    options: PERS_B.slice(), answer: PERS_B[p], forkl: `Endingen <b>-${END[p]}</b> (${formHtml(v, p)}) hører til <b>${PERS[p]}</b>.`, line: full, sayF: full };
+}
+/* Hvem er det? María y yo → Nosotros */
+function itHvem() {
+  const s = pick(SUBJ.filter(x => !x.pron));
+  return { kind: "choice", fixed: true, pron: true, p: s.p, label: "Hvilket pronomen passer?", big: s.es, sub: esc(cap(s.no)),
+    options: PERS_B.slice(), answer: PERS_B[s.p], forkl: s.p === 3 ? "Jeg (yo) er med → <b>nosotros</b>." : s.p === 4 ? "Du (tú) er med, men ikke jeg → <b>vosotros</b>." : s.p === 5 ? "To andre enn deg og meg → <b>ellos</b>." : "Én annen person → <b>él / ella</b>.",
+    line: `${s.es} = ${PERS[s.p]}` };
+}
+/* Oppgåve C: oversett til spansk. */
+function itOmsetC(v, p, s, o, noTxt) {
+  s = s || subjFor(p); o = o || objFor(v);
+  const fasit = sentEs(s.es, v, p, o.es);
+  return { kind: "write", sent: true, wide: true, p, v, label: "Oversett til spansk", big: noTxt || sentNo(s.no, v, o.no), sub: `Verbet: <b>${esc(v.es)}</b>`,
+    fasit, acc: accFor(s, v, p, o.es), check(x) { return checkSetn(x, this); }, forkl: forklP(s, v, p), line: fasit, sayF: fasit, after: `${sayBtn(fasit, 1)} ${esc(fasit)}` };
+}
+/* Hva betyr setningen? Alternativene har samme verb, men ulik person. */
+function itBetyr(v, p) {
+  const s = subjFor(p), o = objFor(v), dropp = s.pron && p !== 2 && p !== 5 && Math.random() < .5;
+  const es = cap(sentEs(dropp ? "" : s.es, v, p, o.es));
+  const andre = shuffle([0, 1, 2, 3, 4, 5].filter(x => x !== p)).slice(0, 3).map(x => sentNo(subjFor(x, true).no, v, o.no));
+  return { kind: "choice", wide: true, sent: true, p, label: "Hva betyr setningen?", big: es, say: es, sub: dropp ? "Pronomenet er sløyfet – se på endingen!" : "",
+    options: [sentNo(s.no, v, o.no), ...andre], answer: sentNo(s.no, v, o.no), forkl: forklP(dropp ? Object.assign({}, s, { pron: true }) : s, v, p), line: `${es} = ${sentNo(s.no, v, o.no)}`, sayF: es };
+}
+const persRekke = n => { const out = []; while (out.length < n) out.push(...shuffle([0, 1, 2, 3, 4, 5])); return out.slice(0, n); };
+const verbRekke = n => { const out = []; while (out.length < n) out.push(...shuffle(VERB.slice())); return out.slice(0, n); };
+
+/* ---------- quiz-motor ---------- */
+let Q = null;
+function startQuiz(o) {
+  o.items.forEach((it, i) => it.id = i);
+  Q = Object.assign({ requeue: true, first: {}, done: 0, total: o.items.length, queue: o.items.slice(), answered: false }, o);
+  qRender();
+}
+function qRender() {
+  const it = Q.queue[0]; Q.answered = false;
+  let body = "";
+  if (it.kind === "choice") {
+    const opts = it.fixed ? it.options.slice() : shuffle(it.options.slice());
+    body = `<div class="opts${opts.length === 2 ? " two" : ""}${it.pron ? " pron" : ""}${it.wide ? " one" : ""}">${opts.map((o, i) => `<button class="opt" data-act="opt" data-v="${esc(o)}"><kbd>${i + 1}</kbd>${esc(o)}</button>`).join("")}</div>`;
+  } else {
+    const nor = it.lang === "no";
+    body = `<form class="wform" id="wform" autocomplete="off">
+      <input id="win" type="text" lang="${nor ? "nb" : "es"}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Svar" placeholder="${nor ? "på norsk …" : "på spansk …"}">
+      <button class="btn pri" type="submit" id="wsub">Sjekk</button></form>
+      ${nor ? "" : `<div class="accbar">${["á", "é", "í", "ó", "ú", "ñ"].map(c => `<button type="button" class="acc" data-act="acc:${c}">${c}</button>`).join("")}</div>`}
+      <button class="link" data-act="idk" id="idk">Vet ikke – vis svaret</button>`;
+  }
+  show(`
+  <div class="qhead"><button class="iconbtn x" data-act="home" aria-label="Avslutt">✕</button>
+    <div class="bar"><i id="qbar" style="width:${Q.done / Q.total * 100}%"></i></div>
+    <span class="qcount" id="qcount">${Q.done}/${Q.total}</span></div>
+  <div class="qtitle">${esc(Q.title)}${it.del ? ` · ${esc(it.del)}` : ""}</div>
+  <div class="card qcard pop" id="qcard">
+    <div class="qlabel">${esc(it.label)}</div>
+    <div class="qbig${it.sent ? " sent" : ""}">${it.bigHtml || esc(it.big)}${it.say ? " " + sayBtn(it.say) : ""}</div>
+    ${it.sub ? `<div class="qsub">${it.sub}</div>` : ""}
+    ${body}
+    <div class="fb" id="fb" aria-live="polite"></div>
+  </div>`);
+  if (it.kind === "write") setTimeout(() => $("#win") && $("#win").focus(), 60);
+}
+function qAnswer(r, given) {
+  const it = Q.queue[0]; Q.answered = true;
+  const ok = ["ok", "accent", "typo"].includes(r.st);
+  if (!(it.id in Q.first)) {
+    Q.first[it.id] = ok;
+    if (it.g) updLv(it.g, it.kind, ok);
+    if (it.p != null) updP(it.p, it.kind, ok);
+    if (ok) window.Gull && Gull.tjen(it.kind === "write" ? 2 : 1);
+  }
+  if (ok || !Q.requeue) Q.done++;
+  else Q.queue.splice(Math.min(Q.queue.length, 4), 0, it);
+  $("#qbar").style.width = (Q.done / Q.total * 100) + "%";
+  $("#qcount").textContent = `${Q.done}/${Q.total}`;
+  const fas = `<b>${esc(it.fasit || it.answer)}</b>`;
+  let head, extra = "";
+  if (r.st === "ok") head = pick(["¡Muy bien!", "¡Correcto!", "¡Bien!", "¡Perfecto!", "Riktig!"]);
+  else if (r.st === "accent") { head = "Riktig!"; extra = `Husk aksenten: ${fas}`; }
+  else if (r.st === "typo") { head = "Riktig!"; extra = `Det skrives ${fas}.`; }
+  else if (r.st === "almost") { head = "Nesten!"; extra = `Riktig er ${fas}.`; }
+  else { head = given ? "Ikke helt" : "Svaret er"; extra = given ? `Riktig svar: ${fas}` : fas; }
+  if (r.note) extra += (extra ? "<br>" : "") + r.note;
+  if (!ok && it.forkl) extra += `<br>${it.forkl}`;
+  if (!ok && Q.requeue) extra += `<br><span class="muted">Du får den igjen om litt.</span>`;
+  const after = it.after ? `<div class="after">${it.after}</div>` : (it.sayF && TTS ? `<div class="after">${sayBtn(it.sayF, 1)} ${esc(it.sayF)}</div>` : "");
+  const fb = $("#fb");
+  fb.className = "fb pop " + (ok ? "ok" : r.st === "almost" ? "almost" : "wrong");
+  fb.innerHTML = `<div class="head">${ok ? "✓ " : ""}${head}</div>${extra ? `<div class="extra">${extra}</div>` : ""}${after}
+    <button class="btn pri" data-act="next" id="nextBtn">Neste →</button>`;
+  if (!ok) $("#qcard").classList.add("shake");
+  if (it.kind === "write") {
+    const inp = $("#win"); inp.readOnly = true; inp.classList.add(ok ? "good" : "bad");
+    $("#wsub").hidden = true; $("#idk").hidden = true;
+    if ($(".accbar")) $(".accbar").hidden = true;
+  }
+  if (it.kind !== "write") $("#nextBtn").focus({ preventScroll: true });
+  else setTimeout(() => $("#nextBtn") && $("#nextBtn").focus({ preventScroll: true }), 0);
+  if (r.st === "ok" && !r.note && !it.after) autoTimer = setTimeout(qNext, 1100);
+}
+function qNext() { clearTimeout(autoTimer); if (!Q) return; Q.queue.shift(); if (!Q.queue.length) qEnd(); else qRender(); }
+function resultat({ right, total, bestKey, missHtml, missTitle, again }) {
+  const pct = Math.round(right / total * 100);
+  if (total >= 5) window.Gull && Gull.bonus(pct >= 90 ? 5 : pct >= 75 ? 3 : pct >= 50 ? 1 : 0, "Runde ferdig!");
+  let rekord = false;
+  if (bestKey) { const b = S.best; if (b[bestKey] == null || pct > b[bestKey]) { b[bestKey] = pct; rekord = true; } save(); }
+  const [ico, msg] = pct >= 90 ? ["🌟", "¡Fantástico!"] : pct >= 75 ? ["👏", "¡Muy bien!"] : pct >= 50 ? ["💪", "¡Bien! Litt til, så sitter det."] : ["🌱", "Godt jobba – ta en runde til!"];
+  show(`
+  <div class="card res pop">
+    <div class="big">${ico}</div>
+    <h2>${msg}</h2>
+    <div class="score">${right} av ${total}</div>
+    <p class="muted">riktig på første forsøk${rekord && bestKey ? " – ny rekord! 🏆" : ""}</p>
+    ${missHtml ? `<div class="misslist"><h3>${missTitle}</h3>${missHtml}</div>` : ""}
+    <div class="row" style="width:100%">
+      <button class="btn pri big" data-act="${again}">Én gang til</button>
+      <button class="btn big" data-act="home">Til menyen</button>
+    </div>
+  </div>`);
+}
+function qEnd() {
+  const right = Object.values(Q.first).filter(Boolean).length;
+  const items = Q.items.filter(it => Q.first[it.id] === false);
+  resultat({ right, total: Q.total, bestKey: Q.bestKey, again: Q.again,
+    missTitle: Q.requeue ? "Disse måtte du ta flere ganger" : "Disse bør du øve mer på",
+    missHtml: items.map(it => `<div><span>${esc(it.line)}</span>${it.sayF ? sayBtn(it.sayF, 1) : ""}</div>`).join("") });
+}
+
+/* ---------- moduser ---------- */
+const MODES = {
+  velgVerb() { startQuiz({ title: "Hva betyr verbet?", again: "velgVerb", items: shuffle(VERB.map(g => Math.random() < .5 ? itVelgEsNo(g) : itVelgNoEs(g))) }); },
+  skrivVerb() { startQuiz({ title: "Skriv verbet", again: "skrivVerb", items: shuffle(VERB.map(itSkrivVerb)) }); },
+  velgForm() { const ps = persRekke(12), vs = verbRekke(12); startQuiz({ title: "Velg riktig form", again: "velgForm", bestKey: "velgForm", items: ps.map((p, i) => itVelgForm(vs[i], p)) }); },
+  boyA() { const ps = persRekke(12), vs = verbRekke(12); startQuiz({ title: "Bøy verbet i parentes", again: "boyA", bestKey: "boyA", items: ps.map((p, i) => itBoyA(vs[i], p)) }); },
+  finnB() {
+    const ps = persRekke(9), vs = verbRekke(9);
+    const items = ps.map((p, i) => itFinnB(vs[i], p));
+    for (let i = 0; i < 3; i++) items.splice(3 + i * 4, 0, itHvem());
+    startQuiz({ title: "Finn rett person", again: "finnB", bestKey: "finnB", items });
+  },
+  betyr() { const ps = persRekke(10), vs = verbRekke(10); startQuiz({ title: "Hva betyr setningen?", again: "betyr", bestKey: "betyr", items: ps.map((p, i) => itBetyr(vs[i], p)) }); },
+  omsetC() {
+    const ps = persRekke(8), vs = verbRekke(8);
+    startQuiz({ title: "Oversett til spansk", again: "omsetC", bestKey: "omsetC", items: ps.map((p, i) => itOmsetC(vs[i], p)) });
+  },
+  ark() {
+    const A = ARK.A.map(x => { const s = subjOf(x.s), v = byEs(x.v); return Object.assign(itBoyA(v, s.p, s, { es: x.o, no: "" }, x.no), { del: "Oppgåve A" }); });
+    const B = ARK.B.map(x => Object.assign(itFinnB(byEs(x.v), x.p, x.o), { del: "Oppgåve B" }));
+    const C = ARK.C.map(x => { const s = subjOf(x.s), v = byEs(x.v); return Object.assign(itOmsetC(v, s.p, s, { es: x.o, no: "" }, x.no), { del: "Oppgåve C" }); });
+    startQuiz({ title: "Øvearket", again: "ark", bestKey: "ark", items: [...A, ...B, ...C] });
+  },
+  prove() {
+    const vs = verbRekke(20);
+    const A = persRekke(6).map((p, i) => Object.assign(itBoyA(vs[i], p), { del: "Del A" }));
+    const B = persRekke(6).map((p, i) => Object.assign(itFinnB(vs[6 + i], p), { del: "Del B" }));
+    const cs = [...persRekke(5), 3, 4, 5];   // de tre siste: «María y yo», «Tú y María», «María y Pedro»
+    const C = cs.map((p, i) => {
+      const v = vs[12 + i];
+      const s = i >= 5 ? pick(SUBJ.filter(x => x.p === p && !x.pron)) : subjFor(p);
+      return Object.assign(itOmsetC(v, p, s), { del: "Del C" });
+    });
+    startQuiz({ title: "Prøveprøve", again: "prove", requeue: false, bestKey: "prove", items: [...A, ...B, ...C] });
+  },
+};
+
+/* ---------- fyll tabellen ---------- */
+let T = null;
+function tabell() { T = { verbs: shuffle(VERB.slice()).slice(0, 5), i: 0, right: 0, total: 0, miss: [] }; tRender(); }
+function tRender() {
+  const v = T.verbs[T.i]; T.checked = false;
+  show(`
+  <div class="qhead"><button class="iconbtn x" data-act="home" aria-label="Avslutt">✕</button>
+    <div class="bar"><i style="width:${T.i / T.verbs.length * 100}%"></i></div>
+    <span class="qcount">${T.i}/${T.verbs.length}</span></div>
+  <div class="qtitle">Fyll tabellen – verb ${T.i + 1} av ${T.verbs.length}</div>
+  <div class="card qcard pop" id="qcard">
+    <div class="qlabel">Bøy verbet</div>
+    <div class="qbig">${esc(v.es)} ${sayBtn(v.es)}</div>
+    <div class="qsub">${esc(v.no)}</div>
+    <form class="tgrid" id="tform" autocomplete="off">
+      ${END.map((e, p) => `<label for="t${p}">${PERS[p]}</label><div class="tcell"><input class="tin" id="t${p}" type="text" lang="es" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><span class="tfas" id="tf${p}"></span></div>`).join("")}
+      <button type="submit" hidden></button>
+    </form>
+    <div class="accbar">${["á", "é", "í", "ó", "ú"].map(c => `<button type="button" class="acc" data-act="acc:${c}">${c}</button>`).join("")}</div>
+    <button class="link" data-act="tstem" id="tstem">Hint: vis stammen</button>
+    <button class="btn pri" data-act="tcheck" id="tcheck">Sjekk</button>
+    <div class="fb" id="fb" aria-live="polite"></div>
+  </div>`);
+  setTimeout(() => $("#t0") && $("#t0").focus(), 60);
+}
+function tCheck() {
+  if (!T || T.checked) return;
+  const v = T.verbs[T.i]; T.checked = true;
+  let n = 0;
+  END.forEach((e, p) => {
+    const inp = $("#t" + p), r = checkForm(inp.value, v, p), ok = r.st === "ok" || r.st === "accent";
+    inp.readOnly = true; inp.classList.add(ok ? "good" : "bad");
+    if (!ok || r.st === "accent") $("#tf" + p).innerHTML = `${ok ? "Husk aksenten: " : "→ "}${formHtml(v, p)}`;
+    if (ok) { n++; window.Gull && Gull.tjen(1); } else T.miss.push(`${PERS[p]} ${form(v, p)}`);
+    updP(p, "write", ok);
+  });
+  T.right += n; T.total += 6;
+  updLv(v, n >= 5 ? "write" : "choice", n >= 3);
+  $("#tcheck").hidden = true; $("#tstem").hidden = true; $(".accbar").hidden = true;
+  const fb = $("#fb");
+  fb.className = "fb pop " + (n === 6 ? "ok" : n >= 4 ? "almost" : "wrong");
+  fb.innerHTML = `<div class="head">${n === 6 ? "✓ ¡Perfecto! Alle seks riktige" : `${n} av 6 riktig`}</div>
+    ${n < 6 ? `<div class="extra">Stammen er <b>${esc(stem(v))}-</b>. Endingene: -o · -as · -a · -amos · -áis · -an</div>` : ""}
+    <button class="btn pri" data-act="tnext" id="nextBtn">${T.i + 1 < T.verbs.length ? "Neste verb →" : "Ferdig →"}</button>`;
+  $("#nextBtn").focus({ preventScroll: true });
+}
+function tNext() {
+  if (!T) return;
+  if (++T.i < T.verbs.length) return tRender();
+  const { right, total, miss } = T; T = null;
+  resultat({ right, total, bestKey: "tab", again: "tabell", missTitle: "Disse bør du øve mer på", missHtml: miss.map(m => `<div><span>${esc(m)}</span>${sayBtn(m.split(" ").pop(), 1)}</div>`).join("") });
+}
+
+/* ---------- koble sammen ---------- */
+let K = null;
+function koble() {
+  const gl = shuffle(VERB.slice()), nR = Math.ceil(gl.length / 5), size = Math.ceil(gl.length / nR), rounds = [];
+  for (let i = 0; i < gl.length; i += size) rounds.push(gl.slice(i, i + size));
+  K = { rounds, r: 0, sel: null, err: 0, t0: Date.now(), feil: new Set() };
+  kRender();
+}
+function kRender() {
+  const rd = K.rounds[K.r]; K.left = rd.length; K.sel = null;
+  const L = shuffle(rd.slice()), R = shuffle(rd.slice());
+  show(`
+  <div class="qhead"><button class="iconbtn x" data-act="home" aria-label="Avslutt">✕</button>
+    <div class="bar"><i style="width:${K.r / K.rounds.length * 100}%"></i></div>
+    <span class="pill" id="ktid">⏱ 0</span></div>
+  <div class="qtitle">Koble sammen – runde ${K.r + 1} av ${K.rounds.length}</div>
+  <p class="muted small">Trykk på et spansk verb og så på det norske som hører til.</p>
+  <div class="kgrid">
+    <div class="kcol">${L.map(g => `<button class="kb" data-act="kpick" data-side="es" data-k="${esc(g.es)}">${esc(g.es)}</button>`).join("")}</div>
+    <div class="kcol">${R.map(g => `<button class="kb" data-act="kpick" data-side="no" data-k="${esc(g.es)}">${esc(g.no)}</button>`).join("")}</div>
+  </div>
+  <p class="small muted" id="kerr">Feil: ${K.err}</p>`);
+  const tick = () => { const e = $("#ktid"); if (e) e.textContent = `⏱ ${Math.floor((Date.now() - K.t0) / 1000)}`; };
+  tick(); kTimer = setInterval(tick, 1000);
+}
+function kPick(b) {
+  if (b.classList.contains("done")) return;
+  if (K.sel === b) { b.classList.remove("sel"); K.sel = null; return; }
+  if (!K.sel || K.sel.dataset.side === b.dataset.side) { if (K.sel) K.sel.classList.remove("sel"); K.sel = b; b.classList.add("sel"); return; }
+  const a = K.sel; K.sel = null; a.classList.remove("sel");
+  if (a.dataset.k === b.dataset.k) {
+    [a, b].forEach(x => { x.classList.add("done"); x.disabled = true; });
+    const g = byEs(a.dataset.k); if (!K.feil.has(g.es)) updLv(g, "choice", true);
+    if (--K.left === 0) setTimeout(kNeste, 450);
+  } else {
+    K.err++; K.feil.add(a.dataset.k); K.feil.add(b.dataset.k);
+    [a, b].forEach(x => { x.classList.add("bad", "shake"); setTimeout(() => x.classList.remove("bad", "shake"), 550); });
+    $("#kerr").textContent = `Feil: ${K.err}`;
+  }
+}
+function kNeste() {
+  if (!K) return;
+  if (++K.r < K.rounds.length) return kRender();
+  const sek = Math.round((Date.now() - K.t0) / 1000), b = S.best, rek = b.koble == null || sek < b.koble;
+  if (rek) { b.koble = sek; save(); }
+  const n = K.rounds.flat().length;
+  window.Gull && Gull.bonus(Math.max(2, Math.round(n / 2) - K.err), K.err === 0 ? "Ingen feil!" : "Alle parene funnet!");
+  show(`
+  <div class="card res pop">
+    <div class="big">${K.err === 0 ? "🌟" : "🧩"}</div>
+    <h2>${K.err === 0 ? "¡Perfecto! Ingen feil!" : "Alle parene funnet!"}</h2>
+    <div class="score">${sek} sek</div>
+    <p class="muted">${n} par · ${K.err} feil${rek ? " · ny rekord! 🏆" : ` · rekorden er ${b.koble} sek`}</p>
+    <div class="row" style="width:100%">
+      <button class="btn pri big" data-act="koble">Én gang til</button>
+      <button class="btn big" data-act="home">Til menyen</button>
+    </div>
+  </div>`);
+  K = null;
+}
+
+/* ---------- handlinger ---------- */
+const ACT = {
+  home, kort, koble, regel, tabell,
+  velgVerb: () => MODES.velgVerb(), skrivVerb: () => MODES.skrivVerb(), velgForm: () => MODES.velgForm(),
+  boyA: () => MODES.boyA(), finnB: () => MODES.finnB(), betyr: () => MODES.betyr(), omsetC: () => MODES.omsetC(),
+  ark: () => MODES.ark(), prove: () => MODES.prove(),
+  theme() { S.theme = erMork() ? "light" : "dark"; save(); applyTheme(); },
+  regelVerb(es) { S.regel = es; save(); const y = window.scrollY; regel(); window.scrollTo(0, y); },
+  reset() { if (confirm("Nullstille fremgangen i -ar-verb?")) { S = Object.assign(fresh(), { theme: S.theme }); save(); home(); } },
+  flip() { F.on = !F.on; $("#flip").classList.toggle("on", F.on); },
+  fnext() { F.i = (F.i + 1) % F.list.length; F.on = false; fRender(); },
+  fprev() { F.i = (F.i - 1 + F.list.length) % F.list.length; F.on = false; fRender(); },
+  fmix() { F.mix = !F.mix; F.list = F.mix ? shuffle(VERB.slice()) : VERB.slice(); F.i = 0; F.on = false; fRender(); },
+  fnofirst() { F.noFirst = !F.noFirst; F.on = false; fRender(); },
+  opt(_, b) {
+    if (!Q || Q.answered) return;
+    const it = Q.queue[0], v = b.dataset.v, ok = v === it.answer;
+    document.querySelectorAll(".opt").forEach(x => { x.disabled = true; if (x.dataset.v === it.answer) x.classList.add("good"); });
+    if (!ok) b.classList.add("bad");
+    qAnswer({ st: ok ? "ok" : "wrong" }, true);
+  },
+  idk() { if (Q && !Q.answered) qAnswer({ st: "wrong" }, false); },
+  next() { qNext(); },
+  tcheck() { tCheck(); },
+  tnext() { tNext(); },
+  tstem() { const v = T && T.verbs[T.i]; if (!v) return; document.querySelectorAll(".tin").forEach(i => { if (!i.value) i.value = stem(v); }); $("#tstem").hidden = true; $("#t0").focus(); },
+  acc(ch) {
+    const a = document.activeElement, i = a && a.tagName === "INPUT" ? a : ($("#win") || $("#t0"));
+    if (!i || i.readOnly) return;
+    const s = i.selectionStart ?? i.value.length, e = i.selectionEnd ?? s;
+    i.value = i.value.slice(0, s) + ch + i.value.slice(e); i.focus(); i.setSelectionRange(s + 1, s + 1);
+  },
+  kpick(_, b) { kPick(b); },
+};
+document.addEventListener("click", e => {
+  const s = e.target.closest("[data-say]"); if (s) { speak(s.dataset.say); return; }
+  const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
+  const [act, arg] = b.dataset.act.split(/:(.*)/s);
+  if (ACT[act]) ACT[act](arg, b, e);
+});
+document.addEventListener("mousedown", e => { if (e.target.closest(".acc")) e.preventDefault(); });
+document.addEventListener("submit", e => {
+  e.preventDefault();
+  if (e.target.id === "tform") {
+    if (T && T.checked) return tNext();
+    const ins = [...document.querySelectorAll(".tin")], i = ins.indexOf(document.activeElement);
+    if (i >= 0 && i < ins.length - 1 && !ins.slice(i + 1).every(x => x.value)) { ins[i + 1].focus(); return; }
+    return tCheck();
+  }
+  if (e.target.id !== "wform" || !Q) return;
+  if (Q.answered) return qNext();
+  const v = $("#win").value; if (!v.trim()) return;
+  qAnswer(Q.queue[0].check(v), true);
+});
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  if ($("#flip")) {
+    if (e.key === " ") { e.preventDefault(); ACT.flip(); }
+    else if (e.key === "ArrowRight") ACT.fnext();
+    else if (e.key === "ArrowLeft") ACT.fprev();
+    return;
+  }
+  if (Q && $("#qcard")) {
+    if (!Q.answered && Q.queue[0].kind === "choice" && /^[1-9]$/.test(e.key)) {
+      const b = document.querySelectorAll(".opt")[+e.key - 1]; if (b) b.click();
+    } else if (Q.answered && e.key === "Enter" && e.target.id !== "nextBtn") { e.preventDefault(); qNext(); }
+  }
+});
+
+applyTheme();
+home();
+</script>
+</body>
+</html>
