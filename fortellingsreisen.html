@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<title>Fortellingsreisen</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Pek-og-klikk-eventyr gjennom de store fortellingene i jødedommen, kristendommen, islam, hinduismen og buddhismen">
+<meta name="theme-color" content="#3a2a5a">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%233a2a5a'/><text x='50' y='70' font-size='58' text-anchor='middle'>📖</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Playfair+Display:wght@600;700&display=swap">
+<!-- Historien, kortene og omgrepene: felles/fortellingsreisen-kapitler.js · Tegningene: felles/fortellingsreisen-kunst.js (bygger på tidsreisen-kunst.js) -->
+<script src="felles/tidsreisen-kunst.js"></script>
+<script src="felles/fortellingsreisen-kunst.js"></script>
+<script src="felles/fortellingsreisen-kapitler.js"></script>
+<style>
+:root{
+  --bg:#f3ecdf; --card:#fffdf8; --card2:#f1e8d8; --line:#e0d3bc;
+  --ink:#1e2230; --muted:#5f6676;
+  --pri:#1f3d7a; --pri-ink:#fff; --pri-soft:#e1e8f5;
+  --gold:#b48a1e; --gold-soft:#f8ecc8; --gold-ink:#4d3a06;
+  --coral:#b9532e; --coral-soft:#fbe3d8; --ok:#23804e; --ok-soft:#dcf2e4;
+  --humor:#c2185b; --humor-soft:#fde4ef;
+  --fd:"Playfair Display",Georgia,serif; --fb:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#11141b; --card:#1b2029; --card2:#252c37; --line:#323b48; --ink:#eef1f5; --muted:#a3acb8;
+  --pri:#8fb0ec; --pri-ink:#0c1a33; --pri-soft:#1d2c47; --gold:#e3bd55; --gold-soft:#3a3016; --gold-ink:#f7e2a6;
+  --coral:#f0a07f; --coral-soft:#3d261d; --ok:#62d394; --ok-soft:#15331f; --humor:#f48fb1; --humor-soft:#3d1a2a;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#11141b; --card:#1b2029; --card2:#252c37; --line:#323b48; --ink:#eef1f5; --muted:#a3acb8;
+    --pri:#8fb0ec; --pri-ink:#0c1a33; --pri-soft:#1d2c47; --gold:#e3bd55; --gold-soft:#3a3016; --gold-ink:#f7e2a6;
+    --coral:#f0a07f; --coral-soft:#3d261d; --ok:#62d394; --ok-soft:#15331f; --humor:#f48fb1; --humor-soft:#3d1a2a;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg)}
+body{color:var(--ink);font-family:var(--fb);font-size:1.08rem;line-height:1.5;min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+h1,h2,h3{font-family:var(--fd);font-weight:700;margin:0;line-height:1.15;text-wrap:balance}
+p{margin:0}
+[hidden]{display:none!important}
+.muted{color:var(--muted)} .small{font-size:.92rem}
+.btn{border:1px solid var(--line);background:var(--card2);border-radius:14px;padding:10px 16px;font-weight:700;min-height:46px;transition:transform .08s}
+.btn:active{transform:translateY(1px)}
+.btn.pri{background:var(--pri);color:var(--pri-ink);border-color:transparent}
+.btn.humor{background:var(--humor);color:#fff;border-color:transparent}
+.btn[disabled]{opacity:.45;cursor:default}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:.95rem;font-variant-numeric:tabular-nums}
+.iconbtn{background:var(--card);border:1px solid var(--line);border-radius:999px;width:42px;height:42px;display:inline-grid;place-items:center;padding:0;font-size:1.15rem;flex:none}
+.link{background:none;border:0;color:var(--muted);text-decoration:underline;padding:4px 0;font-size:.92rem}
+
+/* topp */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topin{max-width:980px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:10px}
+.topin .tt{flex:1;min-width:0;font-family:var(--fd);font-weight:700;font-size:1.1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hchip{background:var(--humor-soft);color:var(--humor);border-radius:999px;padding:2px 10px;font-weight:700;font-size:.85rem;white-space:nowrap}
+.wrap{max-width:980px;margin:0 auto;padding:14px 16px 40px;display:flex;flex-direction:column;gap:14px}
+
+/* kart */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:linear-gradient(135deg,#2a1f45,#4a3a7a);color:#f4efe2;border-radius:22px;padding:18px}
+.hero svg{width:110px;height:110px;display:block}
+.hero h1{font-size:2.1rem;color:#ffd97a}
+.hero p{color:#dfe5f3}
+.prog{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fort{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--gold-soft);color:var(--gold-ink);border-radius:18px;padding:12px 16px}
+.kaps{display:flex;flex-direction:column;gap:10px;position:relative}
+.kap{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 14px}
+.kap .nr{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-size:1.8rem;background:var(--pri-soft)}
+.kap.laast,.kap.kommer{opacity:.62}
+.kap.laast .nr,.kap.kommer .nr{filter:grayscale(1)}
+.kap.ferdig .nr{background:var(--ok-soft)}
+.kap h3{font-size:1.15rem}
+.kap .meta{font-size:.88rem;color:var(--muted)}
+.kap .knapper{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tag{font-size:.78rem;font-weight:700;border-radius:999px;padding:2px 9px;background:var(--card2);color:var(--muted);white-space:nowrap}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}
+
+/* scene */
+.stagewrap{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#000;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+#stage{display:block;width:100%;height:auto;aspect-ratio:16/9;user-select:none;-webkit-user-select:none}
+#stage .pkt:not(.pynt){cursor:pointer}
+#stage .pkt:not(.pynt):hover,#stage .pkt:not(.pynt):focus,#stage.glow .pkt:not(.pynt){filter:drop-shadow(0 0 6px #ffd54a) drop-shadow(0 0 2px #ffd54a)}
+#stage .pkt:focus{outline:none}
+#stage.opptatt .pkt{cursor:default}
+#stage.holder .pkt:not(.pynt){cursor:copy}
+#spiller{transition:transform .55s ease-in-out}
+.flakk{animation:flakk 2.4s infinite}
+@keyframes flakk{0%,100%{opacity:1}45%{opacity:.75}50%{opacity:.35}55%{opacity:.8}}
+.tip{position:absolute;pointer-events:none;background:rgba(20,22,30,.88);color:#fff;font-weight:700;font-size:.9rem;padding:3px 10px;border-radius:999px;transform:translate(-50%,-140%);white-space:nowrap;z-index:3}
+.fade{animation:fade .45s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.regn{animation:regn .5s linear infinite}
+.sno{animation:regn 2.6s linear infinite}
+@keyframes regn{from{transform:translateY(-36px)}to{transform:translateY(0)}}
+
+/* panel */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;min-height:118px}
+.dlg{display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:start}
+.port{width:76px;height:76px;border-radius:50%;overflow:hidden;background:var(--card2);border:3px solid var(--line);display:grid;place-items:center}
+.port svg{width:100%;height:100%;display:block}
+.port.tom{display:none}
+.dlg.uten{grid-template-columns:1fr}
+.dnavn{font-family:var(--fd);font-size:1.08rem;color:var(--pri);display:block}
+.dtekst{font-size:1.12rem}
+.dlg .vid{grid-column:1/-1;justify-self:end}
+.valg{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.valg .btn{text-align:left}
+.idle{display:flex;flex-direction:column;gap:8px}
+.idle .rad{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.holdeinfo{background:var(--gold-soft);color:var(--gold-ink);border-radius:12px;padding:8px 12px;font-weight:700}
+
+/* sekk */
+.sekk{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sekk .lbl{font-weight:700;color:var(--muted);font-size:.9rem;margin-right:2px}
+.tingb{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:6px 10px;font-weight:700;font-size:.95rem}
+.tingb .i{font-size:1.3rem}
+.tingb.valgt{border-color:var(--gold);background:var(--gold-soft);color:var(--gold-ink)}
+
+/* gåter */
+.gt{display:flex;flex-direction:column;gap:12px}
+.gt .gq{font-family:var(--fd);font-weight:700;font-size:1.3rem}
+.gt .glbl{font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;font-size:.8rem}
+.alts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.alt{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:10px 12px;text-align:left;font-weight:700;min-height:52px}
+.alt:hover{border-color:var(--pri)}
+.alt.good,.chipv.good{border-color:var(--ok);background:var(--ok-soft)}
+.alt.bad,.chipv.bad{border-color:var(--coral);background:var(--coral-soft)}
+.fbk{border-radius:12px;padding:10px 12px}
+.fbk.ok{background:var(--ok-soft)} .fbk.feil{background:var(--coral-soft)}
+.fbk b{font-family:var(--fd)}
+.kurver{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kurv{border:2px dashed var(--line);border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--card2);min-height:96px}
+.kurv>button{border:0;background:var(--pri);color:var(--pri-ink);border-radius:10px;padding:8px;font-weight:700}
+.kurv .lagt{display:flex;flex-wrap:wrap;gap:4px}
+.kurv .lagt span{background:var(--card);border-radius:8px;padding:1px 7px;font-size:.85rem}
+.nesteTing{align-self:center;font-family:var(--fd);font-weight:700;font-size:1.5rem;background:var(--gold-soft);color:var(--gold-ink);border-radius:14px;padding:6px 18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chipv{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:8px 12px;font-weight:700;text-align:left}
+.chipv[aria-pressed="true"]{border-color:var(--pri);background:var(--pri-soft)}
+.ord{display:flex;flex-direction:column;gap:6px}
+.ob{display:flex;align-items:center;gap:10px;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:8px 10px;font-weight:700}
+.ob .n{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--card2)}
+.ob.done{border-color:var(--ok);background:var(--ok-soft);cursor:default}
+.ob.done .n{background:var(--ok);color:#fff}
+.ob .yr{margin-left:auto;font-family:var(--fd);color:var(--ok)}
+.avl{display:grid;grid-template-columns:minmax(0,220px) 1fr;gap:14px;align-items:center}
+.avl svg{width:100%;height:auto;display:block}
+.logg{display:flex;flex-wrap:wrap;gap:6px}
+.logg span{background:var(--card2);border-radius:999px;padding:2px 10px;font-size:.88rem;font-weight:700}
+.stem{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stem .sk{border:2px solid var(--line);border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center;background:var(--card2)}
+.stem .sk.ja{border-color:var(--ok)} .stem .sk.nei{border-color:var(--coral)}
+.stem .si{font-size:1.6rem;line-height:1}
+.stem .bar{width:100%;height:12px;border-radius:6px;background:var(--card);overflow:hidden}
+.stem .bar i{display:block;height:100%;background:var(--pri)}
+.stem .tall{font-family:var(--fd);font-weight:700}
+.stem .sv{font-weight:700;font-size:.9rem}
+.perg{background:#fbf3dc;color:#3a2a06;border:2px solid #c9a227;border-radius:12px;padding:12px 14px;font-family:Georgia,serif;display:flex;flex-direction:column;gap:6px}
+.perg .ptit{font-family:var(--fd);font-size:1.05rem;text-align:center}
+.perg .part{font-size:.98rem}
+.perg .part.ok{opacity:.85}
+.perg .part.naa{background:#f3e3b0;border-radius:8px;padding:6px 8px;font-weight:700;animation:fade .4s}
+.perg .anr{font-weight:700;color:#8a6a1a}
+.perg .aik{float:right}
+.kortvalg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kv{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.kv .ki{font-size:1.6rem;line-height:1.1}
+.kv.good{border-color:var(--ok);background:var(--ok-soft)} .kv.bad{border-color:var(--coral);background:var(--coral-soft)}
+.shake{animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* overlegg */
+.ov{position:fixed;inset:0;z-index:50;background:rgba(10,12,20,.6);display:grid;place-items:center;padding:16px;animation:fade .25s}
+.ovbox{background:var(--card);border-radius:22px;max-width:640px;width:100%;max-height:calc(100vh - 32px);overflow:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+.ovhead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-weight:700}
+.tab[aria-pressed="true"]{background:var(--pri);color:var(--pri-ink);border-color:transparent}
+.kortgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.ikort{border:3px solid var(--gold);background:linear-gradient(160deg,#fff8e0,#f6e6b4);color:#3a2a06;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:6px;min-height:170px}
+.ikort .ik{font-size:2rem}
+.ikort b{font-family:var(--fd);font-size:1.1rem}
+.ikort .fra{font-size:.8rem;font-weight:700;color:#8a6a1a;text-transform:uppercase;letter-spacing:.05em}
+.ikort.tomt{border-style:dashed;background:var(--card2);color:var(--muted);border-color:var(--line);align-items:center;justify-content:center;text-align:center}
+.stort{max-width:320px;margin:0 auto;min-height:260px;animation:kortinn .6s cubic-bezier(.2,1.4,.4,1)}
+@keyframes kortinn{from{transform:rotateY(90deg) scale(.6);opacity:0}to{transform:none;opacity:1}}
+.stort .ik{font-size:3.4rem;text-align:center}
+.olist{display:flex;flex-direction:column;gap:8px}
+.olist div{background:var(--card2);border-radius:12px;padding:8px 12px}
+.olist b{font-family:var(--fd)}
+.sentrert{text-align:center;align-items:center}
+.stor-emoji{font-size:3.4rem;line-height:1}
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,160%);z-index:60;background:#2a1f45;color:#fff4d0;border:2px solid #e6b44a;border-radius:14px;padding:10px 16px;font-weight:700;transition:transform .35s;max-width:92vw;text-align:center}
+.toast.vis{transform:translate(-50%,0)}
+
+/* svevende lykt */
+.svev{animation:svev 3s ease-in-out infinite}
+@keyframes svev{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+/* symbolkort */
+.skort{border:3px solid var(--kf,#b48a1e);background:var(--card);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-height:170px}
+.skort .sk-top{background:var(--kf,#b48a1e);color:#fff;display:flex;align-items:center;gap:10px;padding:10px 12px}
+.skort .sk-top .ik{font-size:2rem;line-height:1;background:#fff;border-radius:12px;width:46px;height:46px;display:grid;place-items:center;flex:none}
+.skort .sk-top b{font-family:var(--fd);font-size:1.15rem;display:block}
+.skort .sk-top span{font-size:.82rem;opacity:.92}
+.skort dl{margin:0;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:.9rem}
+.skort dt{font-weight:700;color:var(--muted)} .skort dd{margin:0}
+.skort .regel{margin:0 12px 12px;padding:8px 10px;border-radius:10px;background:var(--gold-soft);color:var(--gold-ink);font-size:.88rem;font-style:italic}
+.skort.tomt{border-style:dashed;border-color:var(--line);background:var(--card2);color:var(--muted);align-items:center;justify-content:center;text-align:center;padding:16px;gap:6px}
+.skort.tomt .ik{font-size:2rem;filter:grayscale(1);opacity:.5}
+.skort.stort{max-width:420px;width:100%;margin:0 auto;animation:kortinn .6s cubic-bezier(.2,1.4,.4,1);text-align:left}
+.kortgrid.s{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+/* koble-gåten */
+.koble{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.koble .kol{display:flex;flex-direction:column;gap:8px}
+.kb{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:8px 10px;text-align:left;font-weight:700;min-height:48px;font-size:.95rem}
+.kb[aria-pressed="true"]{border-color:var(--pri);background:var(--pri-soft)}
+.kb.good{border-color:var(--ok);background:var(--ok-soft);cursor:default}
+.kb.bad{border-color:var(--coral);background:var(--coral-soft)}
+.kb .par{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ok);color:#fff;font-size:.8rem;margin-right:6px}
+@media (max-width:620px){
+  .koble{gap:6px} .kb{font-size:.85rem;padding:6px 8px}
+  .hero{grid-template-columns:1fr;text-align:center;justify-items:center}
+  .kap{grid-template-columns:44px 1fr}
+  .kap .nr{width:44px;height:44px;font-size:1.4rem}
+  .kap .knapper{grid-column:1/-1;justify-content:stretch}
+  .kap .knapper .btn{flex:1}
+  .dlg{grid-template-columns:54px 1fr}
+  .port{width:54px;height:54px}
+  .dtekst{font-size:1.02rem}
+  .alts{grid-template-columns:1fr}
+  .kurver{grid-template-columns:1fr}
+  .avl{grid-template-columns:1fr}
+  .stem{gap:5px} .stem .sk{padding:6px 4px;font-size:.85rem}
+  .kortvalg{grid-template-columns:repeat(2,1fr)}
+  .stagewrap{margin:0 -8px;border-radius:12px}
+  .hidesm,.hchip .t{display:none}
+  .topin{gap:6px;padding:8px 10px}
+  .topin .tt{font-size:1rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<script src="felles/gull.js" data-merke="av"></script>
+</head>
+<body>
+<header class="top"><div class="topin" id="topp"></div></header>
+<main class="wrap" id="app"></main>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+"use strict";
+const T = window.FORTELLING, KU = window.KUNST, OMG = T.OMGREP || [];
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const vent = ms => new Promise(r => setTimeout(r, ms));
+const STOPP = Symbol("stopp");
+
+/* ---------- lagring ---------- */
+const KEY = "fortellingsreisen-v1";
+const fresh = () => ({ v: 1, theme: "auto", ferdig: {}, humorFerdig: {}, sekk: [], kort: [], omgrep: [], aktiv: null });
+function load() { try { const x = JSON.parse(localStorage.getItem(KEY)); if (x && x.v === 1) return Object.assign(fresh(), x); } catch (e) {} return fresh(); }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+let S = load();
+let A = S.aktiv;          // aktiv kjøring: { kap, scene, flagg, humor, x, snu }
+let opptatt = false, valgt = null, venter = null, gen = 0;
+
+const kapitler = () => T.KAPITLER;
+const kapBy = id => T.KAPITLER.find(k => k.id === id);
+const scene = () => A && kapBy(A.kap).scener[A.scene];
+const spillbar = k => !k.kommer && k.scener;
+function aapen(k) {
+  const i = T.KAPITLER.indexOf(k); if (i === 0) return true;
+  if (k.krever) return k.krever.every(id => S.ferdig[id]);
+  return !!S.ferdig[T.KAPITLER[0].id];   // alle religionene åpnes når prologen er klar
+}
+const laastTekst = k => k.krever ? "🔒 Klar alle fem religionene først" : "🔒 Spill prologen først";
+
+/* ---------- tema, topp, gull ---------- */
+function applyTheme() { const r = document.documentElement; if (S.theme === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", S.theme); }
+function erMork() { const t = document.documentElement.getAttribute("data-theme"); return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; }
+const gullPill = () => `<a class="pill" href="avatar.html" data-gull-pung title="Gullet ditt – trykk for avataren"><span class="gm-mynt" aria-hidden="true"></span><span id="gullN">${window.Gull ? Gull.saldo() : 0}</span></a>`;
+const temaBtn = () => `<button class="iconbtn" data-act="tema" aria-label="Bytt lys/mørk">${erMork() ? "☀" : "☾"}</button>`;
+if (window.Gull) Gull.onEndring(st => { const e = $("#gullN"); if (e) e.textContent = st.gull; });
+
+let toastT = null;
+function toast(t) { const e = $("#toast"); e.textContent = t; e.classList.add("vis"); clearTimeout(toastT); toastT = setTimeout(() => e.classList.remove("vis"), 2600); }
+
+/* ---------- betingelser ---------- */
+function sant(c) {
+  if (!c) return true;
+  if (c.includes("|")) return c.split("|").some(sant);
+  return c.split("&").every(p => {
+    p = p.trim(); const neg = p[0] === "!"; if (neg) p = p.slice(1).trim();
+    let v;
+    if (p.startsWith("har:")) v = S.sekk.includes(p.slice(4));
+    else if (p.startsWith("kort:")) v = S.kort.includes(p.slice(5));
+    else if (p === "humor") v = !!A.humor;
+    else v = !!A.flagg[p];
+    return neg ? !v : v;
+  });
+}
+
+/* =====================================================================
+   KARTET
+   ===================================================================== */
+function kart() {
+  gen++; opptatt = false; venter = null; valgt = null; P = null;
+  if (A) { S.aktiv = A; save(); }
+  $("#topp").innerHTML = `<span class="tt">📖 Fortellingsreisen</span>${gullPill()}<button class="iconbtn" data-act="dagbok" aria-label="Dagbok">📔</button>${temaBtn()}`;
+  const nKort = S.kort.length, totKort = Object.keys(T.KORT).length;
+  const fortsett = A && kapBy(A.kap) ? `<div class="fort"><span><b>Du er midt i et kapittel:</b> ${esc(kapBy(A.kap).tittel)}${A.humor ? " 😂" : ""}</span><button class="btn pri" data-act="fortsett">Fortsett ▸</button></div>` : "";
+  const kort = k => {
+    const i = T.KAPITLER.indexOf(k), ferdig = !!S.ferdig[k.id], open = aapen(k);
+    let cls = "kap", knapper = "", tag = "";
+    if (!spillbar(k)) { cls += " kommer"; tag = `<span class="tag">Kommer snart</span>`; }
+    else if (!open) { cls += " laast"; tag = `<span class="tag">${laastTekst(k)}</span>`; }
+    else if (ferdig) {
+      cls += " ferdig"; tag = `<span class="tag ok">✓ Ferdig${S.humorFerdig[k.id] ? " · 😂" : ""}</span>`;
+      knapper = `<button class="btn" data-act="start:${k.id}">Spill igjen</button><button class="btn humor" data-act="humor:${k.id}">😂 Humormodus</button>`;
+    } else knapper = `<button class="btn pri" data-act="start:${k.id}">${i === 0 ? "Start eventyret" : "Spill"} ▸</button>`;
+    const kortTag = T.KORT[k.id] && S.kort.includes(k.id) ? ` <span class="tag ok">${T.KORT[k.id].ikon} Symbolkort</span>` : "";
+    return `<div class="${cls}"><div class="nr">${k.ikon}</div>
+      <div><div class="meta">${k.nr === 0 ? "Prolog" : k.id === "epilog" ? "Epilog" : "Kapittel " + k.nr} · ${esc(k.sted)} · ${esc(k.aar)}</div><h3>${esc(k.tittel)}</h3><p class="small muted">${esc(k.om || "")}</p>${tag}${kortTag}</div>
+      <div class="knapper">${knapper}</div></div>`;
+  };
+  $("#app").innerHTML = `
+  <section class="hero">
+    <svg viewBox="-110 -170 220 172">${KU.ting.bok({ hel: S.kort.length >= Object.keys(T.KORT).length })}<g transform="translate(70 0)">${KU.fig.lumi({})}</g></svg>
+    <div><h1>Fortellingsreisen</h1>
+      <p>Bokormen Glupsk har spist hull i de store fortellingene fra religionene! Hopp inn i Fortellingsboka sammen med lykta Lumi – fra Moses og Jesus til profeten Muhammad, Rama og Buddha.</p></div>
+  </section>
+  ${fortsett}
+  <div class="prog"><span class="pill">🃏 ${nKort}/${totKort} symbolkort</span><span class="pill">📔 ${S.omgrep.length} omgrep</span>
+    <button class="btn" data-act="dagbok">Åpne dagboka</button></div>
+  <p class="small muted">Etter prologen kan du velge fritt hvilken religion du vil begynne med – ta gjerne den dere har om i KRLE nå.</p>
+  <p class="small muted">😂 Klarer du et kapittel, låses <b>humormodus</b> opp: samme historie og samme fakta – med mye mer tull.</p>
+  <section class="kaps">${T.KAPITLER.map(kort).join("")}</section>
+  <p class="small muted">Fremgangen lagres på denne enheten. <button class="link" data-act="nullstill">Start helt på nytt</button></p>`;
+  window.scrollTo(0, 0);
+}
+
+/* =====================================================================
+   SPILL
+   ===================================================================== */
+function startKap(id, humor) {
+  const k = kapBy(id); if (!k || !spillbar(k)) return;
+  S.sekk = S.sekk.filter(t => !(T.TING[t] && T.TING[t].kap === id));
+  const sc = k.scener[k.start];
+  A = { kap: id, scene: k.start, flagg: {}, humor: !!humor, x: sc.spillerX || 120, snu: false };
+  S.aktiv = A; save();
+  spillSkjerm();
+  kjorScript([]);
+}
+function fortsett() { if (!A) return kart(); spillSkjerm(); idle(); }
+function spillSkjerm() {
+  gen++; opptatt = false; venter = null; valgt = null; P = null;
+  const k = kapBy(A.kap);
+  $("#topp").innerHTML = `<button class="iconbtn" data-act="kart" aria-label="Til kartet">🗺️</button>
+    <span class="tt">${k.nr === 0 ? "Prolog" : k.id === "epilog" ? "Epilog" : "Kap. " + k.nr}: ${esc(k.tittel)}</span>${A.humor ? `<span class="hchip">😂<span class="t"> Humor</span></span>` : ""}
+    ${gullPill()}<button class="iconbtn" data-act="dagbok" aria-label="Dagbok">📔</button><span class="hidesm">${temaBtn()}</span>`;
+  $("#app").innerHTML = `
+    <div class="stagewrap"><svg id="stage" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Scene"></svg><div class="tip" id="tip" hidden></div></div>
+    <div class="panel" id="panel" aria-live="polite"></div>
+    <div class="sekk" id="sekk"></div>`;
+  tegnScene(true); tegnSekk();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- tegne scenen ---------- */
+const BAKKE = 432;
+function avatar() {
+  let s = window.Gull ? Gull.tegn(Gull.tilstand(), { bakgrunn: false, venn: true }) : `<svg viewBox="0 0 240 260"><circle cx="120" cy="80" r="40" fill="#ccc"/></svg>`;
+  return s.replace("<svg ", `<svg x="-80" y="-160" width="160" height="173" `);
+}
+function punktArt(p) {
+  const o = Object.assign({}, p.o || {});
+  (p.variant || []).forEach(v => { if (sant(v.hvis)) Object.assign(o, v.o); });
+  if (p.fig) { const key = (T.FIGURER[p.fig] || {}).fig || p.fig; return KU.fig[key] ? KU.fig[key](o) : ""; }
+  if (p.ting) return KU.ting[p.ting] ? KU.ting[p.ting](o) : "";
+  return "";
+}
+function synlige() { return scene().punkter.filter(p => sant(p.vis) && (!p.kunHumor || A.humor)); }
+function tegnScene(fade) {
+  const sc = scene(), st = $("#stage"); if (!st) return;
+  let s = KU.bg[sc.bg] ? KU.bg[sc.bg]() : "";
+  for (const p of synlige()) {
+    const sk = p.skala || 1;
+    const hit = p.pynt ? "" : `<rect x="${-p.w / 2 / sk}" y="${-p.h / sk}" width="${p.w / sk}" height="${p.h / sk}" fill="transparent"/>`;
+    s += `<g class="pkt${p.pynt ? " pynt" : ""}" data-id="${p.id}" transform="translate(${p.x} ${p.y}) scale(${sk})"${p.pynt ? ' pointer-events="none"' : ` tabindex="0" role="button" aria-label="${esc(p.navn)}"`}>${punktArt(p)}${hit}</g>`;
+  }
+  s += `<g id="spiller" pointer-events="none" style="transform:translate(${A.x}px,${BAKKE}px)"><g id="spInner" transform="scale(${A.snu ? -1 : 1} 1)">${avatar()}</g></g>`;
+  st.innerHTML = s;
+  if (fade) { st.classList.remove("fade"); void st.getBoundingClientRect(); st.classList.add("fade"); }
+  st.classList.toggle("opptatt", opptatt);
+  st.classList.toggle("holder", !!valgt);
+}
+async function gaaTil(p) {
+  let mal;
+  if (p.ting === "pil" || p.ting === "dor") mal = p.x;
+  else if (Math.abs(p.x - A.x) < 120) return;
+  else mal = p.x + (p.x > A.x ? -95 : 95);
+  mal = Math.max(60, Math.min(740, mal));
+  if (Math.abs(mal - A.x) < 10) return;
+  A.snu = mal < A.x; A.x = mal;
+  const g = $("#spiller"), i = $("#spInner");
+  if (i) i.setAttribute("transform", `scale(${A.snu ? -1 : 1} 1)`);
+  if (g) g.style.transform = `translate(${A.x}px,${BAKKE}px)`;
+  await vent(480);
+}
+
+/* ---------- sekken ---------- */
+function tegnSekk() {
+  const e = $("#sekk"); if (!e) return;
+  e.innerHTML = S.sekk.length ? `<span class="lbl">🎒 Sekken:</span>` + S.sekk.map(id => {
+    const t = T.TING[id] || { navn: id, ikon: "❔" };
+    return `<button class="tingb${valgt === id ? " valgt" : ""}" data-act="ting:${id}" title="${esc(t.om || "")}"><span class="i">${t.ikon}</span>${esc(t.navn)}</button>`;
+  }).join("") : `<span class="lbl">🎒 Sekken er tom.</span>`;
+}
+
+/* ---------- panelet ---------- */
+const panel = h => { const p = $("#panel"); if (p) p.innerHTML = h; };
+function idle() {
+  if (!A) return;
+  const sc = scene();
+  const hold = valgt ? `<div class="holdeinfo">Du holder: ${T.TING[valgt].ikon} ${esc(T.TING[valgt].navn)} – trykk på noe i bildet for å bruke den. <button class="link" data-act="slipp">Legg tilbake</button></div>` : "";
+  panel(`<div class="idle"><h3>${esc(sc.tittel)}</h3>${hold}
+    <p class="muted small">Trykk på ting og folk i bildet for å utforske.</p>
+    <div class="rad"><button class="btn" data-act="hint">💡 Hint</button><button class="btn" data-act="lys">🔍 Vis hva jeg kan trykke på</button></div></div>`);
+  const st = $("#stage"); if (st) { st.classList.remove("opptatt"); st.classList.toggle("holder", !!valgt); }
+}
+function portrettFor(fig) {
+  if (fig === "deg") return KU.portrett("deg");
+  const F = T.FIGURER[fig]; return F && F.fig ? KU.portrett(F.fig) : "";
+}
+function replikk(a) {
+  const [fig, t, h] = a, F = T.FIGURER[fig] || { navn: fig };
+  const tekst = A.humor && h ? h : t, port = portrettFor(fig);
+  panel(`<div class="dlg${port ? "" : " uten"}">${port ? `<div class="port">${port}</div>` : ""}
+    <div>${F.navn ? `<b class="dnavn">${esc(F.navn)}</b>` : ""}<p class="dtekst">${esc(tekst)}</p></div>
+    <button class="btn pri vid" data-act="videre" id="vid">Videre ▸</button></div>`);
+  setTimeout(() => { const b = $("#vid"); if (b) b.focus({ preventScroll: true }); }, 30);
+  return new Promise(r => { venter = r; });
+}
+function valgMeny(a) {
+  const navn = (T.FIGURER.deg || {}).navn || "Du";
+  panel(`<div class="dlg"><div class="port">${portrettFor("deg")}</div><div><b class="dnavn">${esc(navn)}</b>
+    <div class="valg">${a.valg.map((o, i) => `<button class="btn" data-act="velg:${i}">${esc(A.humor && o.h ? o.h : o.t)}</button>`).join("")}</div></div></div>`);
+  return new Promise(r => { venter = r; });
+}
+
+/* ---------- skriptmotoren ---------- */
+async function kjor(liste) {
+  for (const a of liste || []) {
+    const r = await utfor(a);
+    if (r === STOPP) return STOPP;
+  }
+}
+async function utfor(a) {
+  const g = gen;
+  if (Array.isArray(a)) { await replikk(a); return g !== gen ? STOPP : undefined; }
+  if (a.valg) { const i = await valgMeny(a); if (g !== gen) return STOPP; return kjor(a.valg[i].gjor); }
+  if (a.hvis !== undefined) return kjor(sant(a.hvis) ? a.da : a.ellers);
+  if (a.sett) { A.flagg[a.sett] = true; tegnScene(); return; }
+  if (a.fjern) { delete A.flagg[a.fjern]; tegnScene(); return; }
+  if (a.gi) {
+    if (!S.sekk.includes(a.gi)) S.sekk.push(a.gi);
+    const t = T.TING[a.gi] || { navn: a.gi, ikon: "" }; toast(`🎒 Ny ting i sekken: ${t.ikon} ${t.navn}`); tegnSekk(); tegnScene(); save(); return;
+  }
+  if (a.ta) { S.sekk = S.sekk.filter(x => x !== a.ta); if (valgt === a.ta) valgt = null; tegnSekk(); tegnScene(); save(); return; }
+  if (a.omgrep) {
+    if (!S.omgrep.includes(a.omgrep)) { S.omgrep.push(a.omgrep); toast(`📔 Nytt omgrep i dagboka: ${a.omgrep}`); save(); }
+    return;
+  }
+  if (a.kort) { await visKort(a.kort); return g !== gen ? STOPP : undefined; }
+  if (a.gull) { window.Gull && Gull.tjen(a.gull); return; }
+  if (a.gaa) { await byttScene(a.gaa); return g !== gen ? STOPP : undefined; }
+  if (a.gaate) { const ok = await kjorGaate(a.gaate); if (g !== gen) return STOPP; if (ok) window.Gull && Gull.tjen(2); return; }
+  if (a.stopp) return STOPP;
+  if (a.ferdig) { kapittelFerdig(); return STOPP; }
+}
+async function byttScene(id) {
+  A.scene = id; const sc = scene();
+  A.x = sc.spillerX || 120; A.snu = false;
+  tegnScene(true); save();
+  if (!A.flagg["_inn_" + id]) { A.flagg["_inn_" + id] = true; await kjor(sc.inngang); }
+}
+async function kjorScript(liste) {
+  const g = gen;
+  opptatt = true; const st = $("#stage"); if (st) st.classList.add("opptatt");
+  try {
+    let r;
+    if (!A.flagg["_inn_" + A.scene]) { A.flagg["_inn_" + A.scene] = true; r = await kjor(scene().inngang); }
+    if (r !== STOPP && g === gen) r = await kjor(liste);
+    if (r !== STOPP && g === gen && A && scene().etter) await kjor(scene().etter);
+  } finally {
+    if (g === gen) { opptatt = false; if (A) { save(); idle(); } }
+  }
+}
+async function klikkPunkt(id) {
+  if (opptatt || !A) return;
+  const p = synlige().find(x => x.id === id); if (!p || p.pynt) return;
+  const holder = valgt; valgt = null; tegnSekk();
+  opptatt = true; $("#stage").classList.add("opptatt"); $("#stage").classList.remove("holder");
+  await gaaTil(p);
+  opptatt = false;
+  if (holder) {
+    const t = T.TING[holder];
+    const svar = p.bruk && p.bruk[holder];
+    return kjorScript(svar || [["deg", `${t.navn} og ${p.navn.toLowerCase()}? Det fungerer nok ikke.`, `${t.navn} på ${p.navn.toLowerCase()}? Nei. Det står ikke i noen fortelling jeg kjenner.`]]);
+  }
+  return kjorScript(p.klikk || []);
+}
+
+/* ---------- symbolkort ---------- */
+function kortHtml(id, stort) {
+  const k = T.KORT[id];
+  return `<div class="skort${stort ? " stort" : ""}" style="--kf:${k.farge}"><div class="sk-top"><span class="ik">${k.ikon}</span><div><b>${esc(k.navn)}</b><span>Symbol: ${esc(k.symbol)}</span></div></div>
+    <dl>${k.fakta.map(([a, b]) => `<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("")}</dl>
+    <p class="regel">Den gylne regel: ${esc(k.regel)}</p></div>`;
+}
+function tomtKort(id) {
+  const k = T.KORT[id], kap = kapBy(id);
+  return `<div class="skort tomt"><span class="ik">${k.ikon}</span><b>${esc(k.navn)}</b><span class="small">${kap ? "Klar kapitlet «" + esc(kap.tittel) + "»" : "Klar epilogen"}</span></div>`;
+}
+function visKort(id) {
+  const ny = !S.kort.includes(id);
+  if (ny) { S.kort.push(id); save(); }
+  return new Promise(r => {
+    const ov = document.createElement("div"); ov.className = "ov";
+    ov.innerHTML = `<div class="ovbox sentrert"><span class="glbl" style="font-weight:700;color:var(--gold);letter-spacing:.06em">${ny ? "NYTT SYMBOLKORT!" : "SYMBOLKORT"}</span>${kortHtml(id, true)}
+      <p class="muted small">${S.kort.length} av ${Object.keys(T.KORT).length} symbolkort samlet</p><button class="btn pri" id="kortOk">Legg i samlingen ▸</button></div>`;
+    document.body.appendChild(ov);
+    if (ny) window.Gull && Gull.tjen(3);
+    const lukk = () => { ov.remove(); r(); };
+    ov.querySelector("#kortOk").addEventListener("click", lukk); ov.querySelector("#kortOk").focus();
+  });
+}
+
+/* ---------- kapittel ferdig ---------- */
+function kapittelFerdig() {
+  const k = kapBy(A.kap), forste = !S.ferdig[k.id], humor = A.humor, forsteHumor = humor && !S.humorFerdig[k.id];
+  S.ferdig[k.id] = true; if (humor) S.humorFerdig[k.id] = true;
+  A = null; S.aktiv = null; save();
+  gen++; opptatt = false; venter = null;
+  const kNavn = k.nr === 0 ? "Prologen" : k.id === "epilog" ? "Epilogen" : "Kapittel " + k.nr;
+  if (window.Gull) Gull.bonus(forste ? 10 : forsteHumor ? 6 : 2, `${kNavn} er ferdig!`);
+  const i = T.KAPITLER.indexOf(k), neste = T.KAPITLER[i + 1];
+  const nesteKap = T.KAPITLER.find(x => x !== k && spillbar(x) && aapen(x) && !S.ferdig[x.id]);
+  const nesteKnapp = nesteKap ? `<button class="btn pri" data-act="start:${nesteKap.id}">${k.nr === 0 ? "Begynn med" : "Neste"}: ${esc(nesteKap.tittel)} ▸</button>` : "";
+  const ov = document.createElement("div"); ov.className = "ov"; ov.id = "ferdigOv";
+  ov.innerHTML = `<div class="ovbox sentrert"><div class="stor-emoji">${humor ? "😂" : "🎉"}</div>
+    <h2>${kNavn} er ferdig!</h2><p>${esc(k.tittel)} · ${esc(k.aar)}</p>
+    ${forste ? `<p class="fbk ok" style="border-radius:12px">😂 <b>Humormodus er låst opp</b> for dette kapitlet! Spill det igjen med mye mer tull.</p>` : ""}
+    <p class="muted small">🃏 ${S.kort.length}/${Object.keys(T.KORT).length} symbolkort · 📔 ${S.omgrep.length} omgrep i dagboka</p>
+    ${k.id === "epilog" ? `<p>🌍 <b>Du har reist gjennom alle fortellingene!</b> Fortellingsboka er hel igjen.</p>` : ""}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${nesteKnapp}<button class="btn${nesteKnapp ? "" : " pri"}" data-act="kart">${k.nr === 0 ? "Velg selv på kartet" : "Til kartet"}</button></div></div>`;
+  document.body.appendChild(ov);
+}
+
+/* ---------- dagboka ---------- */
+let dagFane = "kort";
+function dagbok() {
+  const lukk = $("#dagOv"); if (lukk) lukk.remove();
+  const ov = document.createElement("div"); ov.className = "ov"; ov.id = "dagOv";
+  const faner = [["kort", "🃏 Symbolkort"], ["omgrep", "📔 Omgrep"], ["sekk", "🎒 Sekken"]];
+  let inn = "";
+  if (dagFane === "kort") inn = `<p class="small muted">Kortene er et lite jukseark for hver religion. Den gylne regel står nederst på alle.</p><div class="kortgrid s">${Object.keys(T.KORT).map(id => S.kort.includes(id) ? kortHtml(id) : tomtKort(id)).join("")}</div>`;
+  if (dagFane === "omgrep") inn = S.omgrep.length ? `<div class="olist">${OMG.filter(g => S.omgrep.includes(g.o)).map(g => `<div><b>${esc(g.o)}</b><br><span>${esc(g.d || "")}</span>${g.ex ? `<br><span class="small muted">${esc(g.ex)}</span>` : ""}</div>`).join("")}</div>
+      <p class="small muted">${S.omgrep.length} av ${OMG.length} omgrep funnet.</p>` : `<p class="muted">Dagboka er tom. Omgrepene du lærer i eventyret havner her.</p>`;
+  if (dagFane === "sekk") inn = S.sekk.length ? `<div class="olist">${S.sekk.map(id => { const t = T.TING[id]; return `<div><b>${t.ikon} ${esc(t.navn)}</b><br><span class="small">${esc(t.om || "")}</span></div>`; }).join("")}</div>` : `<p class="muted">Sekken er tom.</p>`;
+  ov.innerHTML = `<div class="ovbox"><div class="ovhead"><h2>Dagboka</h2><button class="iconbtn" data-act="lukkDag" aria-label="Lukk">✕</button></div>
+    <div class="tabs">${faner.map(([id, t]) => `<button class="tab" data-act="fane:${id}" aria-pressed="${dagFane === id}">${t}</button>`).join("")}</div>${inn}</div>`;
+  ov.addEventListener("click", e => { if (e.target === ov) ov.remove(); });
+  document.body.appendChild(ov);
+}
+
+/* =====================================================================
+   GÅTENE
+   ===================================================================== */
+let P = null;   // aktiv gåte
+function kjorGaate(id) {
+  const g = kapBy(A.kap).gaater[id];
+  return new Promise(res => { P = Object.assign({ g, res, feil: 0 }, GAATER[g.type]); P.start(); });
+}
+function gaateFerdig(ok, forklaring) {
+  const f = forklaring ? `<p class="small">${esc(forklaring)}</p>` : "";
+  const fb = $("#gfb");
+  fb.className = "fbk ok"; fb.innerHTML = `<b>✓ Riktig!</b>${ok ? " Første forsøk – +2 gull" : ""}${f}`;
+  const b = document.createElement("button"); b.className = "btn pri"; b.textContent = "Videre ▸"; b.style.marginTop = "8px";
+  b.addEventListener("click", () => { const p = P; P = null; p.res(ok); });
+  fb.appendChild(b); b.focus({ preventScroll: true });
+}
+const GAATER = {
+  velg: {
+    start() {
+      const g = this.g;
+      this.alts = shuffle([{ t: g.riktig, ok: true }, ...g.feil.map(f => typeof f === "string" ? { t: f } : f)]);
+      panel(`<div class="gt"><span class="glbl">🧩 Gåte</span><div class="gq">${esc(g.sporsmal)}</div>
+        <div class="alts">${this.alts.map((a, i) => `<button class="alt" data-act="p:${i}">${esc(a.t)}</button>`).join("")}</div><div id="gfb"></div></div>`);
+    },
+    klikk(i, el) {
+      const a = this.alts[+i]; if (this.ferdig || el.disabled) return;
+      if (a.ok) { this.ferdig = true; el.classList.add("good"); document.querySelectorAll(".alt").forEach(b => b.disabled = true); gaateFerdig(this.feil === 0, this.g.forklaring); }
+      else { this.feil++; el.classList.add("bad", "shake"); el.disabled = true; const fb = $("#gfb"); fb.className = "fbk feil"; fb.innerHTML = `<b>Ikke helt.</b> ${esc(a.f || "Prøv igjen!")}`; }
+    },
+  },
+  flervalg: {
+    start() {
+      const g = this.g; this.alts = shuffle([...g.riktige.map(t => ({ t, ok: true })), ...g.feil.map(t => ({ t }))]); this.paa = new Set();
+      panel(`<div class="gt"><span class="glbl">🧩 Gåte</span><div class="gq">${esc(g.sporsmal)}</div>
+        <div class="chips">${this.alts.map((a, i) => `<button class="chipv" data-act="p:${i}" aria-pressed="false">${esc(a.t)}</button>`).join("")}</div>
+        <button class="btn pri" data-act="p:sjekk" style="align-self:flex-start">Sjekk</button><div id="gfb"></div></div>`);
+    },
+    klikk(i, el) {
+      if (this.ferdig) return;
+      if (i !== "sjekk") { const n = +i; if (this.paa.has(n)) this.paa.delete(n); else this.paa.add(n); el.setAttribute("aria-pressed", this.paa.has(n)); el.classList.remove("bad"); return; }
+      const riktigeValgt = [...this.paa].filter(n => this.alts[n].ok).length, galeValgt = [...this.paa].filter(n => !this.alts[n].ok);
+      const tot = this.alts.filter(a => a.ok).length;
+      if (riktigeValgt === tot && !galeValgt.length) {
+        this.ferdig = true; document.querySelectorAll(".chipv").forEach((b, n) => { b.disabled = true; if (this.alts[n].ok) b.classList.add("good"); });
+        document.querySelector('[data-act="p:sjekk"]').hidden = true; gaateFerdig(this.feil === 0, this.g.forklaring);
+      } else {
+        this.feil++;
+        galeValgt.forEach(n => { const b = document.querySelectorAll(".chipv")[n]; b.classList.add("bad", "shake"); b.setAttribute("aria-pressed", "false"); this.paa.delete(n); });
+        const fb = $("#gfb"); fb.className = "fbk feil";
+        fb.innerHTML = galeValgt.length ? `<b>Noe passer ikke.</b> ${esc(this.g.feilTekst || "De røde passer ikke her.")}` : `<b>Nesten!</b> Du har ${riktigeValgt} av ${tot}. Det mangler noe.`;
+      }
+    },
+  },
+  sorter: {
+    start() {
+      const g = this.g; this.ko = shuffle(g.ting.slice()); this.lagt = {}; g.kurver.forEach(k => this.lagt[k.id] = []);
+      this.tegn();
+    },
+    tegn() {
+      const g = this.g, neste = this.ko[0];
+      panel(`<div class="gt"><span class="glbl">🧩 ${esc(g.tittel)}</span>
+        ${neste ? `<div class="nesteTing" id="nesteTing">${esc(neste[0])}</div><p class="small muted" style="text-align:center">Hvor hører dette hjemme? (${this.ko.length} igjen)</p>` : ""}
+        <div class="kurver">${g.kurver.map(k => `<div class="kurv" id="kurv-${k.id}"><button data-act="p:${k.id}" ${neste ? "" : "disabled"}>${k.ikon} ${esc(k.navn)}</button><div class="lagt">${this.lagt[k.id].map(t => `<span>${esc(t)}</span>`).join("")}</div></div>`).join("")}</div>
+        <div id="gfb"></div></div>`);
+    },
+    klikk(kid) {
+      const neste = this.ko[0]; if (!neste) return;
+      if (neste[1] === kid) { this.lagt[kid].push(neste[0]); this.ko.shift(); this.tegn(); if (!this.ko.length) gaateFerdig(this.feil <= Math.floor(this.g.ting.length / 6), this.g.forklaring); }
+      else { this.feil++; const k = $("#kurv-" + kid); k.classList.remove("shake"); void k.offsetWidth; k.classList.add("shake"); const fb = $("#gfb"); fb.className = "fbk feil"; fb.innerHTML = `<b>Ikke der.</b> Prøv en annen!`; }
+    },
+  },
+  rekkefolge: {
+    start() {
+      this.vis = shuffle(this.g.ting.map((t, i) => Object.assign({ i }, t))); this.neste = 0;
+      panel(`<div class="gt"><span class="glbl">🧩 Rekkefølge</span><div class="gq">${esc(this.g.tittel)}</div>
+        <div class="ord">${this.vis.map((t, n) => `<button class="ob" data-act="p:${n}"><span class="n">•</span><span>${esc(t.t)}</span></button>`).join("")}</div><div id="gfb"></div></div>`);
+    },
+    klikk(n, el) {
+      const t = this.vis[+n]; if (el.classList.contains("done")) return;
+      if (t.i === this.neste) {
+        this.neste++; el.classList.add("done"); el.disabled = true; el.querySelector(".n").textContent = this.neste;
+        if (t.aar) el.insertAdjacentHTML("beforeend", `<span class="yr">${esc(t.aar)}</span>`);
+        if (this.neste === this.vis.length) gaateFerdig(this.feil === 0, this.g.forklaring);
+      } else { this.feil++; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); const fb = $("#gfb"); fb.className = "fbk feil"; fb.innerHTML = `<b>Ikke helt.</b> ${esc(this.g.feilTekst || "Hva skjedde før dette?")}`; }
+    },
+  },
+  koble: {
+    start() {
+      const g = this.g;
+      this.v = g.par.map((p, i) => ({ t: p[0], i }));
+      this.h = shuffle(g.par.map((p, i) => ({ t: p[1], i })));
+      this.valgtV = null; this.ok = new Set();
+      panel(`<div class="gt"><span class="glbl">🧩 ${esc(g.tittel || "Koble sammen")}</span><div class="gq">${esc(g.sporsmal || "Hva hører sammen?")}</div>
+        <div class="koble"><div class="kol">${this.v.map((x, n) => `<button class="kb" data-act="p:v${n}" aria-pressed="false">${esc(x.t)}</button>`).join("")}</div>
+        <div class="kol">${this.h.map((x, n) => `<button class="kb" data-act="p:h${n}">${esc(x.t)}</button>`).join("")}</div></div><div id="gfb"></div></div>`);
+    },
+    klikk(arg, el) {
+      if (this.ferdig || el.classList.contains("good")) return;
+      const side = arg[0], n = +arg.slice(1);
+      if (side === "v") {
+        document.querySelectorAll('.kb[data-act^="p:v"]').forEach(b => b.setAttribute("aria-pressed", "false"));
+        this.valgtV = n; el.setAttribute("aria-pressed", "true"); el.classList.remove("bad"); return;
+      }
+      const fb = $("#gfb");
+      if (this.valgtV === null) { fb.className = "fbk feil"; fb.innerHTML = `<b>Velg fra venstre først.</b> Trykk på noe i venstre kolonne, så på det som passer til høyre.`; return; }
+      const v = this.v[this.valgtV], hEl = el, vEl = document.querySelector(`[data-act="p:v${this.valgtV}"]`);
+      if (this.h[n].i === v.i) {
+        this.ok.add(v.i); const nr = this.ok.size;
+        [vEl, hEl].forEach(b => { b.classList.remove("bad"); b.classList.add("good"); b.setAttribute("aria-pressed", "false"); b.insertAdjacentHTML("afterbegin", `<span class="par">${nr}</span>`); });
+        this.valgtV = null; fb.className = ""; fb.innerHTML = "";
+        if (this.ok.size === this.v.length) { this.ferdig = true; gaateFerdig(this.feil <= 1, this.g.forklaring); }
+      } else {
+        this.feil++; hEl.classList.remove("shake"); void hEl.offsetWidth; hEl.classList.add("bad", "shake");
+        setTimeout(() => hEl.classList.remove("bad"), 700);
+        fb.className = "fbk feil"; fb.innerHTML = `<b>Ikke helt.</b> Prøv en annen!`;
+      }
+    },
+  },
+};
+
+/* =====================================================================
+   HANDLINGER
+   ===================================================================== */
+const ACT = {
+  kart() { const o = $("#ferdigOv"); if (o) o.remove(); kart(); },
+  fortsett,
+  start(id) { const o = $("#ferdigOv"); if (o) o.remove(); startKap(id, false); },
+  humor(id) { startKap(id, true); },
+  tema() { S.theme = erMork() ? "light" : "dark"; save(); applyTheme(); document.querySelectorAll('[data-act="tema"]').forEach(b => b.textContent = erMork() ? "☀" : "☾"); },
+  dagbok() { dagbok(); },
+  lukkDag() { const o = $("#dagOv"); if (o) o.remove(); },
+  fane(id) { dagFane = id; dagbok(); },
+  videre() { if (venter) { const r = venter; venter = null; r(); } },
+  velg(i) { if (venter) { const r = venter; venter = null; r(+i); } },
+  p(arg, el) { if (P && P.klikk) P.klikk(arg, el); },
+  ting(id) {
+    if (opptatt) { toast("Vent til samtalen er ferdig."); return; }
+    valgt = valgt === id ? null : id; tegnSekk(); idle();
+  },
+  slipp() { valgt = null; tegnSekk(); idle(); },
+  hint() {
+    if (opptatt) return;
+    const sc = scene(); kjorScript([["lumi", sc.hint || "Trykk på ting og folk i bildet!", sc.hint || "Trykk på alt! Det er sånn eventyr fungerer."]]);
+  },
+  lys() { const st = $("#stage"); st.classList.add("glow"); setTimeout(() => st.classList.remove("glow"), 1600); },
+  nullstill() {
+    if (!confirm("Starte hele eventyret på nytt? Symbolkort, dagbok og fremgang slettes (gullet ditt beholder du).")) return;
+    S = Object.assign(fresh(), { theme: S.theme }); A = null; save(); kart();
+  },
+};
+document.addEventListener("click", e => {
+  const pk = e.target.closest && e.target.closest("#stage .pkt");
+  if (pk) { if (venter && !$("#panel .valg")) { ACT.videre(); return; } klikkPunkt(pk.dataset.id); return; }
+  if (e.target.closest && e.target.closest("#stage") && venter && !$("#panel .valg")) { ACT.videre(); return; }
+  const b = e.target.closest && e.target.closest("[data-act]"); if (!b || b.disabled) return;
+  const [act, arg] = b.dataset.act.split(/:(.*)/s);
+  if (ACT[act]) { e.preventDefault(); ACT[act](arg, b, e); }
+});
+document.addEventListener("keydown", e => {
+  if ((e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest("#stage .pkt")) { e.preventDefault(); klikkPunkt(e.target.closest(".pkt").dataset.id); return; }
+  if (e.key === "Escape") { const o = $("#dagOv"); if (o) o.remove(); }
+});
+/* navnelapp når musa er over noe i scenen */
+document.addEventListener("pointermove", e => {
+  const tip = $("#tip"); if (!tip) return;
+  const pk = e.target.closest && e.target.closest("#stage .pkt:not(.pynt)");
+  if (!pk || e.pointerType === "touch") { tip.hidden = true; return; }
+  const p = A && synlige().find(x => x.id === pk.dataset.id); if (!p) { tip.hidden = true; return; }
+  const r = $(".stagewrap").getBoundingClientRect();
+  tip.textContent = valgt ? `Bruk ${T.TING[valgt].navn.toLowerCase()} på ${p.navn.toLowerCase()}` : p.navn;
+  tip.style.left = (e.clientX - r.left) + "px"; tip.style.top = (e.clientY - r.top) + "px"; tip.hidden = false;
+});
+
+applyTheme();
+kart();
+</script>
+</body>
+</html>

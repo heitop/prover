@@ -32,6 +32,8 @@ window.SPILL = [
     beskrivelse: "Opplysningstiden, den franske revolusjonen og Napoleon: omgrep, standssamfunnet, filosofene, tidslinja og prøveprøve" },
   { fag: "Samfunnsfag", ikon: "🦉", tittel: "Tidsreisen", fil: "tidsreisen.html", lagt: "2026-11-12",
     beskrivelse: "Pek-og-klikk-eventyr: reis til 1789 og redd idékortene. Humormodus låses opp for hvert kapittel" },
+  { fag: "KRLE", ikon: "📖", tittel: "Fortellingsreisen", fil: "fortellingsreisen.html", lagt: "2026-11-12",
+    beskrivelse: "Pek-og-klikk-eventyr gjennom de store fortellingene: Moses, Jesus, profeten Muhammad, Rama og Sita og Buddha. Samle symbolkort – humormodus låses opp" },
   { fag: "Engelsk", ikon: "🌍", tittel: "Engelske gloser", fil: "engelsk-gloser.html", lagt: "2026-11-10",
     beskrivelse: "Gloseprøvene – nå: et flerkulturelt samfunn. Koble, velg, skriv, lytt, setninger og ordformer" },
 ];
