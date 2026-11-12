@@ -24,6 +24,8 @@ window.SPILL = [
     beskrivelse: "Regelrette -ar-verb: regelen, 15 verb, bøying, finn personen, oversetting og øvearket" },
   { fag: "Samfunnsfag", ikon: "⚖️", tittel: "Kampen for rettigheter", fil: "revolusjon.html", lagt: "2026-11-12",
     beskrivelse: "Opplysningstiden, den franske revolusjonen og Napoleon: omgrep, standssamfunnet, filosofene, tidslinja og prøveprøve" },
+  { fag: "Samfunnsfag", ikon: "🦉", tittel: "Tidsreisen", fil: "tidsreisen.html", lagt: "2026-11-12",
+    beskrivelse: "Pek-og-klikk-eventyr: reis til 1789 og redd idékortene. Humormodus låses opp for hvert kapittel" },
   { fag: "Engelsk", ikon: "🌍", tittel: "Engelske gloser", fil: "engelsk-gloser.html", lagt: "2026-11-10",
     beskrivelse: "Gloseprøvene – nå: et flerkulturelt samfunn. Koble, velg, skriv, lytt, setninger og ordformer" },
 ];
