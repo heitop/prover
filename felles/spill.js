@@ -22,6 +22,8 @@ window.SPILL = [
     beskrivelse: "Gloseprøvene – nå: familien (11.11). Koble, velg, skriv, setninger og bøying" },
   { fag: "Spansk", ikon: "🗣️", tittel: "Spanske -ar-verb", fil: "spansk-ar-verb.html", lagt: "2026-11-11",
     beskrivelse: "Regelrette -ar-verb: regelen, 15 verb, bøying, finn personen, oversetting og øvearket" },
+  { fag: "Samfunnsfag", ikon: "⚖️", tittel: "Kampen for rettigheter", fil: "revolusjon.html", lagt: "2026-11-12",
+    beskrivelse: "Opplysningstiden, den franske revolusjonen og Napoleon: omgrep, standssamfunnet, filosofene, tidslinja og prøveprøve" },
   { fag: "Engelsk", ikon: "🌍", tittel: "Engelske gloser", fil: "engelsk-gloser.html", lagt: "2026-11-10",
     beskrivelse: "Gloseprøvene – nå: et flerkulturelt samfunn. Koble, velg, skriv, lytt, setninger og ordformer" },
 ];
