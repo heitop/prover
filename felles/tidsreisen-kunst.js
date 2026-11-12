@@ -55,6 +55,10 @@
       L.push(`<path d="M${-22 * W} -140 Q${-25 * W} -115 ${-21 * W} -96 L${21 * W} -96 Q${25 * W} -115 ${22 * W} -140 Q0 -148 ${-22 * W} -140 Z" fill="${fr}"/>`);
       L.push(`<path d="M-14 -141 Q0 -128 14 -141" fill="${mix(fr, .35)}"/>`);
     }
+    if (o.kappe && o.hermelin) {
+      L.push(`<path d="M-30 -138 Q-46 -60 -42 -6 M30 -138 Q46 -60 42 -6" stroke="#fff" stroke-width="6" fill="none"/>`);
+      L.push(`<path d="M-30 -146 Q0 -130 30 -146 L28 -128 Q0 -112 -28 -128 Z" fill="#fff"/><path d="M-20 -132 v4 M-8 -126 v4 M6 -126 v4 M18 -132 v4" stroke="#222" stroke-width="2"/>`);
+    }
     // armer
     const arm = mix(fr, -.12);
     L.push(`<path d="M${-26 * W} -138 Q${-38 * W} -110 ${-34 * W} -84" stroke="${arm}" stroke-width="12" stroke-linecap="round" fill="none"/>`);
@@ -115,7 +119,13 @@
       lue: `<path d="M-23 ${hy - 10} Q-20 ${hy - 34} 4 ${hy - 33} Q26 ${hy - 30} 23 ${hy - 10} Z" fill="${o.lueF || "#8b3a2b"}"/><path d="M-24 ${hy - 10} L24 ${hy - 10}" stroke="${mix(o.lueF || "#8b3a2b", -.2)}" stroke-width="5" stroke-linecap="round"/>`,
       rodlue: `<path d="M-22 ${hy - 10} Q-18 ${hy - 36} 6 ${hy - 34} Q30 ${hy - 30} 34 ${hy - 14} Q26 ${hy - 20} 22 ${hy - 12} Z" fill="#c0392b"/><path d="M-23 ${hy - 10} L23 ${hy - 10}" stroke="#9a2a20" stroke-width="5" stroke-linecap="round"/>`,
       skaut: `<path d="M-25 ${hy + 6} Q-28 ${hy - 30} 0 ${hy - 30} Q28 ${hy - 30} 25 ${hy + 6} Q20 ${hy - 14} 0 ${hy - 16} Q-20 ${hy - 14} -25 ${hy + 6} Z" fill="${o.skautF || "#e8e0cc"}"/>`,
-      tricorn: `<path d="M-34 ${hy - 14} Q0 ${hy - 4} 34 ${hy - 14} Q22 ${hy - 22} 18 ${hy - 36} Q0 ${hy - 28} -18 ${hy - 36} Q-22 ${hy - 22} -34 ${hy - 14} Z" fill="${o.hattF || "#2a2a2a"}"/><path d="M-30 ${hy - 15} Q0 ${hy - 7} 30 ${hy - 15}" stroke="#c9a227" stroke-width="1.6" fill="none"/>`,
+      tricorn: `<path d="M-34 ${hy - 14} Q0 ${hy - 4} 34 ${hy - 14} Q22 ${hy - 22} 18 ${hy - 36} Q0 ${hy - 28} -18 ${hy - 36} Q-22 ${hy - 22} -34 ${hy - 14} Z" fill="${o.hattF || "#2a2a2a"}"/><path d="M-30 ${hy - 15} Q0 ${hy - 7} 30 ${hy - 15}" stroke="${o.kant || "#c9a227"}" stroke-width="1.6" fill="none"/>`,
+      fjaer: `<path d="M-34 ${hy - 14} Q0 ${hy - 4} 34 ${hy - 14} Q22 ${hy - 22} 18 ${hy - 36} Q0 ${hy - 28} -18 ${hy - 36} Q-22 ${hy - 22} -34 ${hy - 14} Z" fill="${o.hattF || "#2a2a2a"}"/><path d="M-30 ${hy - 15} Q0 ${hy - 7} 30 ${hy - 15}" stroke="#c9a227" stroke-width="1.6" fill="none"/>
+              <path d="M8 ${hy - 28} Q26 ${hy - 66} 48 ${hy - 50} Q30 ${hy - 46} 14 ${hy - 24} Z" fill="${o.fjaerF || "#fff"}" stroke="#ddd" stroke-width=".8"/>`,
+      krone: `<path d="M-18 ${hy - 18} L-19 ${hy - 40} L-9 ${hy - 29} L0 ${hy - 45} L9 ${hy - 29} L19 ${hy - 40} L18 ${hy - 18} Z" fill="#e3b53a" stroke="#a8811c" stroke-width="1.5"/>
+              <circle cx="0" cy="${hy - 25}" r="3.2" fill="#c0392b"/><circle cx="-10" cy="${hy - 23}" r="2.2" fill="#1f6fb5"/><circle cx="10" cy="${hy - 23}" r="2.2" fill="#1f6fb5"/>`,
+      mitra: `<path d="M-16 ${hy - 16} L-14 ${hy - 44} Q0 ${hy - 66} 14 ${hy - 44} L16 ${hy - 16} Z" fill="#f4f1ea" stroke="#c9a227" stroke-width="2"/><path d="M0 ${hy - 60} V${hy - 18} M-15 ${hy - 30} H15" stroke="#c9a227" stroke-width="2.5"/>`,
+      fjaerpynt: `<path d="M-6 ${hy - 56} Q-28 ${hy - 96} -8 ${hy - 106} Q-4 ${hy - 82} -1 ${hy - 58} Z" fill="#fff" stroke="#ddd" stroke-width=".8"/><path d="M4 ${hy - 56} Q20 ${hy - 102} 32 ${hy - 92} Q16 ${hy - 78} 8 ${hy - 56} Z" fill="#f2a7c0"/><circle cx="0" cy="${hy - 56}" r="4.5" fill="#5aa0d8"/>`,
       prest: `<ellipse cx="0" cy="${hy - 14}" rx="34" ry="7" fill="#1d1d1d"/><path d="M-17 ${hy - 14} Q-16 ${hy - 34} 0 ${hy - 34} Q16 ${hy - 34} 17 ${hy - 14} Z" fill="#1d1d1d"/>`,
       kappe: `<path d="M-24 ${hy + 2} Q-26 ${hy - 30} 0 ${hy - 32} Q26 ${hy - 30} 24 ${hy + 2} Q18 ${hy - 18} 0 ${hy - 18} Q-18 ${hy - 18} -24 ${hy + 2} Z" fill="${o.kappe || "#1b1b22"}"/>`,
       topphatt: `<rect x="-17" y="${hy - 58}" width="34" height="40" rx="3" fill="#1b1b22"/><ellipse cx="0" cy="${hy - 18}" rx="30" ry="6" fill="#1b1b22"/><rect x="-17" y="${hy - 28}" width="34" height="5" fill="#6a1f2b"/>`,
@@ -131,6 +141,9 @@
       papir: `<rect x="26" y="-104" width="26" height="32" rx="1" fill="#fbf6e8" stroke="#c9b98f" transform="rotate(8 38 -88)"/><path d="M30 -96 h16 M30 -90 h18 M30 -84 h14" stroke="#9a8a6a" stroke-width="1.4" transform="rotate(8 38 -88)"/>`,
       eple: `<circle cx="40" cy="-84" r="8" fill="#c8312b"/><path d="M40 -92 q2 -6 6 -6" stroke="#4a3220" stroke-width="1.6" fill="none"/>`,
       kors: `<path d="M0 -128 v20 M-6 -122 h12" stroke="#c9a227" stroke-width="3" stroke-linecap="round"/>`,
+      gevaer: `<path d="M41 -36 L41 -196" stroke="#5a3a1a" stroke-width="5" stroke-linecap="round"/><path d="M41 -150 L41 -200" stroke="#888" stroke-width="2.5"/><path d="M39 -200 l2 -18 l2 18 Z" fill="#bbb"/>`,
+      stav: `<path d="M40 -2 L37 -200" stroke="#1b1b22" stroke-width="4" stroke-linecap="round"/><circle cx="37" cy="-203" r="7" fill="#c9a227"/>`,
+      sverd: `<path d="M-30 -70 L-50 -14" stroke="#c8c8c8" stroke-width="3.5" stroke-linecap="round"/><path d="M-37 -78 L-23 -64" stroke="#c9a227" stroke-width="4" stroke-linecap="round"/>`,
       pung: `<path d="M28 -86 Q24 -64 40 -62 Q56 -64 52 -86 Q40 -92 28 -86 Z" fill="#8a6a2a"/><path d="M30 -88 Q40 -94 50 -88" stroke="#5a4316" stroke-width="2" fill="none"/>`,
     };
     if (o.hand) L.push(HAND[o.hand] || "");
@@ -180,6 +193,23 @@
     voltaire: o => person(Object.assign({ hud: "#f0cfb0", har: "#d8cfbf", harType: "krollLang", frakk: "#7a5a2a", vest: "#efe0b8", bukse: "#4a3a2a", krage: "jabot", hand: "penn", uttrykk: "lur", mager: true }, o)),
     rousseau: o => person(Object.assign({ hud: "#e8c4a0", har: "#4a3424", harType: "kort", frakk: "#4a5a3a", vest: "#c9b48a", bukse: "#3a3a2a", uttrykk: "sint", hand: "papir" }, o)),
     kant: o => person(Object.assign({ hud: "#f3d8c0", har: "#f4f1ea", harType: "parykk", frakk: "#3a4a6a", vest: "#d8d0c0", bukse: "#2a3040", krage: "hvit", hand: "stokk", uttrykk: "noytral", mager: true, skala: .92 }, o)),
+    // kapittel 4–5: Versailles og Ballhuset
+    kongen: o => person(Object.assign({ hud: "#f6d5bb", har: "#f4f1ea", harType: "parykk", frakk: "#1f3d7a", vest: "#e8c870", bukse: "#e8e0cc", strompe: "#fff", kappe: "#24438a", hermelin: true, hatt: "krone", krage: "jabot", uttrykk: "noytral" }, o)),
+    dronning: o => person(Object.assign({ hud: "#fbe0cc", har: "#f4f1ea", harType: "oppsatt", kjole: true, kjoleF: "#f2a7c0", hatt: "fjaerpynt", hand: "vifte", uttrykk: "glad" }, o)),
+    markis: o => person(Object.assign({ hud: "#f8dcc6", har: "#f4f1ea", harType: "parykk", frakk: "#e889a8", vest: "#f8ecc8", bukse: "#e889a8", strompe: "#fff", krage: "jabot", hand: "stokk", uttrykk: "lur" }, o)),
+    necker: o => person(Object.assign({ hud: "#f0cfb0", har: "#e8e4da", harType: "parykk", frakk: "#5a4a3a", vest: "#d8c8a8", bukse: "#3a2a20", krage: "hvit", hand: "papir", uttrykk: "lei" }, o)),
+    biskop: o => person(Object.assign({ hud: "#f0c8a8", har: "#c8c8c8", harType: "skallet", frakk: "#6a2a7a", vest: "#7a3a8a", bukse: "#6a2a7a", strompe: "#6a2a7a", krage: "prest", hatt: "mitra", hand: "kors", uttrykk: "noytral" }, o)),
+    adelsmann: o => person(Object.assign({ hud: "#f6d5bb", har: "#f4f1ea", harType: "parykk", frakk: "#2a6a5a", vest: "#e8c870", bukse: "#2a4a3a", krage: "jabot", hatt: "fjaer", hand: "sverd", uttrykk: "lur" }, o)),
+    soldat: o => person(Object.assign({ hud: "#efc9a4", har: "#3a2a1a", harType: "kort", frakk: "#1f3d7a", vest: "#f4f1ea", bukse: "#f4f1ea", strompe: "#f4f1ea", sko: "#111", hatt: "tricorn", hattF: "#1b1b22", hand: "gevaer", uttrykk: "noytral" }, o)),
+    seremonimester: o => person(Object.assign({ hud: "#d8d2e0", har: "#e8e4da", harType: "parykk", frakk: "#1b1b22", vest: "#c9a227", bukse: "#1b1b22", strompe: "#1b1b22", krage: "jabot", hatt: "fjaer", hattF: "#1b1b22", fjaerF: "#9a8ab0", hand: "stav", uttrykk: "lur" }, o)),
+    deputert: o => person(Object.assign({ hud: "#efc9a4", har: "#e8e4da", harType: "parykk", frakk: "#24242a", vest: "#2e2e34", bukse: "#24242a", strompe: "#2a2a30", krage: "hvit", hatt: "tricorn", hattF: "#1b1b22", kant: "#1b1b22", uttrykk: "glad" }, o)),
+    duval: o => person(Object.assign({ hud: "#f1c7a3", har: "#2a2a2a", harType: "kort", frakk: "#24242a", vest: "#2e2e34", bukse: "#24242a", strompe: "#2a2a30", briller: true, krage: "hvit", hand: "penn", uttrykk: "glad" }, o)),
+    sieyes: o => person(Object.assign({ hud: "#f0cfb0", har: "#d8d2c8", harType: "kort", frakk: "#1d1d1d", vest: "#1d1d1d", bukse: "#1d1d1d", strompe: "#1d1d1d", krage: "prest", hand: "papir", uttrykk: "lur", mager: true }, o)),
+    bailly: o => person(Object.assign({ hud: "#f0cfb0", har: "#e8e4da", harType: "parykk", frakk: "#24242a", vest: "#2e2e34", bukse: "#24242a", strompe: "#2a2a30", krage: "hvit", hand: "papir", uttrykk: "noytral", mager: true, skala: 1.05 }, o)),
+    guillotin: o => person(Object.assign({ hud: "#f3d2b5", har: "#e8e4da", harType: "parykk", frakk: "#2a2a30", vest: "#3a3a40", bukse: "#24242a", strompe: "#2a2a30", krage: "hvit", hand: "bok", uttrykk: "glad", briller: true }, o)),
+    mirabeau: o => person(Object.assign({ hud: "#e2b090", har: "#e8e4da", harType: "parykk", frakk: "#24242a", vest: "#7a1f2b", bukse: "#24242a", strompe: "#2a2a30", krage: "jabot", uttrykk: "sint", skala: 1.1 }, o)),
+    dauch: o => person(Object.assign({ hud: "#f1c7a3", har: "#6a4a2a", harType: "kort", frakk: "#24242a", vest: "#2e2e34", bukse: "#24242a", strompe: "#2a2a30", krage: "hvit", hand: "penn", uttrykk: "lei" }, o)),
+    landsprest: o => person(Object.assign({ hud: "#e8bc96", har: "#7a5a3a", harType: "kort", frakk: "#1d1d1d", vest: "#1d1d1d", bukse: "#1d1d1d", strompe: "#1d1d1d", krage: "prest", hand: "kors", uttrykk: "glad", mager: true }, o)),
     // portrettbilder til dialog for ting/forteller
     forteller: () => `<g><circle cx="0" cy="-160" r="30" fill="#f2eadb"/><text x="0" y="-148" font-size="34" text-anchor="middle">📜</text></g>`,
   };
@@ -229,13 +259,15 @@
       ${[[-70, -70], [-50, -40], [60, -30]].map(([x, y]) => `<rect x="${x}" y="${y}" width="14" height="8" fill="#b0a080" opacity=".7"/>`).join("")}</g>`,
     skilt: o => `<g><rect x="-3" y="-80" width="6" height="80" fill="#6b4a2a"/><path d="${o && o.venstre ? "M30 -78 L-34 -78 L-46 -64 L-34 -50 L30 -50 Z" : "M-30 -78 L34 -78 L46 -64 L34 -50 L-30 -50 Z"}" fill="#a07a50" stroke="#6b4a2a" stroke-width="2"/>
       <text x="${o && o.venstre ? -4 : 4}" y="-59" font-size="12" font-family="Atkinson Hyperlegible,Arial" font-weight="700" text-anchor="middle" fill="#2a1a0a">${(o && o.tekst) || ""}</text></g>`,
-    bord: o => `<g><rect x="-60" y="-56" width="120" height="10" fill="#8a5a3a"/><rect x="-54" y="-46" width="8" height="46" fill="#6b4a2a"/><rect x="46" y="-46" width="8" height="46" fill="#6b4a2a"/>
+    bord: o => `<g>${o && o.duk ? `<path d="M-64 -56 L64 -56 L70 -10 L-70 -10 Z" fill="${o.duk}"/>` : ""}<rect x="-60" y="-56" width="120" height="10" fill="#8a5a3a"/>
+      ${o && o.papir ? `<rect x="-44" y="-62" width="34" height="6" fill="#fbf6e8" stroke="#c9b98f"/><rect x="-40" y="-68" width="30" height="6" fill="#f4ecd8" stroke="#c9b98f"/><rect x="-6" y="-63" width="30" height="7" fill="#fbf6e8" stroke="#c9b98f" transform="rotate(-6 9 -60)"/>
+        ${[30, 38, 46].map((x, i) => `<ellipse cx="${x}" cy="${-58 - i * 3}" rx="7" ry="2.5" fill="#e3b53a" stroke="#a8811c"/>`).join("")}` : ""}<rect x="-54" y="-46" width="8" height="46" fill="#6b4a2a"/><rect x="46" y="-46" width="8" height="46" fill="#6b4a2a"/>
       ${o && o.bok ? `<rect x="-30" y="-66" width="44" height="10" fill="#7a2e2e"/><rect x="-28" y="-64" width="40" height="6" fill="#f4e7c9"/><path d="M24 -56 L34 -84" stroke="#333" stroke-width="1.5"/><path d="M34 -84 q6 -10 2 -16 q-6 8 -4 16" fill="#f4f1ea"/>` : ""}</g>`,
     bronn: () => `<g><rect x="-40" y="-40" width="80" height="40" fill="#a59c8c"/><ellipse cx="0" cy="-40" rx="40" ry="10" fill="#3a3a40"/><ellipse cx="0" cy="-40" rx="40" ry="10" fill="none" stroke="#bdb3a2" stroke-width="5"/>
       <rect x="-36" y="-110" width="6" height="70" fill="#6b4a2a"/><rect x="30" y="-110" width="6" height="70" fill="#6b4a2a"/><path d="M-44 -108 L0 -132 L44 -108 Z" fill="#7a4a3a"/></g>`,
     oppslag: o => `<g><rect x="-30" y="-140" width="60" height="70" fill="#f4ecd8" stroke="#c9b98f" ${o && o.revet ? 'transform="rotate(-12 0 -105)"' : ""}/>
-      <text x="0" y="-118" font-size="9" text-anchor="middle" font-family="Georgia" fill="#2a1a0a">ALLE</text><text x="0" y="-104" font-size="9" text-anchor="middle" font-family="Georgia" fill="#2a1a0a">MENNESKER</text>
-      <text x="0" y="-90" font-size="9" text-anchor="middle" font-family="Georgia" fill="#2a1a0a">ER LIKE?</text><rect x="-4" y="-70" width="8" height="70" fill="#6b4a2a"/></g>`,
+      ${((o && o.linjer) || ["ALLE", "MENNESKER", "ER LIKE?"]).map((l, i) => `<text x="0" y="${-118 + i * 14}" font-size="9" text-anchor="middle" font-family="Georgia" fill="#2a1a0a">${l}</text>`).join("")}
+      ${o && o.stang === false ? "" : `<rect x="-4" y="-70" width="8" height="70" fill="#6b4a2a"/>`}</g>`,
     skrivebord: () => `<g><rect x="-80" y="-70" width="160" height="12" fill="#6b3a1f"/><rect x="-74" y="-58" width="50" height="58" fill="#5a2f18"/><rect x="40" y="-58" width="10" height="58" fill="#5a2f18"/>
       <rect x="-60" y="-84" width="40" height="14" fill="#2e4a7a"/><rect x="-58" y="-96" width="36" height="12" fill="#7a2e2e"/><path d="M10 -70 L10 -84 L26 -84 L26 -70" fill="#f4e7c9"/>
       <rect x="40" y="-92" width="6" height="22" fill="#efe6d0"/><path d="M43 -92 q-4 -8 0 -14 q4 6 0 14" fill="#ffb347"/></g>`,
@@ -244,8 +276,10 @@
         style="stroke:url(#regnbue)"/>` : ""}<rect x="-24" y="0" width="48" height="6" fill="#6b3a1f"/></g>`,
     globus: () => `<g><circle cx="0" cy="-46" r="26" fill="#5a8ab0" stroke="#c9a227" stroke-width="3"/><path d="M-12 -60 q10 6 4 16 q-6 10 6 16 M8 -66 q8 10 12 20" stroke="#7aa05a" stroke-width="6" fill="none" stroke-linecap="round"/>
       <path d="M0 -18 L0 0 M-14 0 L14 0" stroke="#6b4a2a" stroke-width="4"/></g>`,
-    dor: o => `<g><rect x="-36" y="-170" width="72" height="170" fill="${(o && o.f) || "#6b3a1f"}"/><rect x="-28" y="-160" width="24" height="70" fill="${mix((o && o.f) || "#6b3a1f", .1)}"/><rect x="4" y="-160" width="24" height="70" fill="${mix((o && o.f) || "#6b3a1f", .1)}"/>
-      <rect x="-28" y="-80" width="24" height="70" fill="${mix((o && o.f) || "#6b3a1f", .1)}"/><rect x="4" y="-80" width="24" height="70" fill="${mix((o && o.f) || "#6b3a1f", .1)}"/><circle cx="24" cy="-86" r="4" fill="#c9a227"/></g>`,
+    dor: o => `<g>${o && o.gull ? `<rect x="-42" y="-178" width="84" height="178" fill="#c9a227"/>` : ""}<rect x="-36" y="-170" width="72" height="170" fill="${(o && o.f) || "#6b3a1f"}"/><rect x="-28" y="-160" width="24" height="70" fill="${mix((o && o.f) || "#6b3a1f", .1)}"/><rect x="4" y="-160" width="24" height="70" fill="${mix((o && o.f) || "#6b3a1f", .1)}"/>
+      <rect x="-28" y="-80" width="24" height="70" fill="${mix((o && o.f) || "#6b3a1f", .1)}"/><rect x="4" y="-80" width="24" height="70" fill="${mix((o && o.f) || "#6b3a1f", .1)}"/><circle cx="24" cy="-86" r="4" fill="#c9a227"/>
+      ${o && o.laast ? `<path d="M-40 -130 L40 -100 M-40 -60 L40 -90" stroke="#7a5a3a" stroke-width="12"/>
+        <rect x="-10" y="-96" width="20" height="16" rx="3" fill="#888"/><path d="M-6 -96 v-6 a6 6 0 0 1 12 0 v6" stroke="#888" stroke-width="3" fill="none"/>` : ""}</g>`,
     epletre: o => `<g><path d="M-14 0 Q-10 -80 -18 -150 L18 -150 Q10 -80 14 0 Z" fill="#6b4a2a"/>
       <circle cx="-60" cy="-190" r="60" fill="#3f7a3a"/><circle cx="40" cy="-210" r="70" fill="#4a8a42"/><circle cx="-10" cy="-250" r="56" fill="#56984c"/><circle cx="70" cy="-160" r="44" fill="#3f7a3a"/>
       ${[[-70, -200], [-30, -170], [30, -240], [60, -190], [0, -280], [90, -150], [-90, -170]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="9" fill="#c8312b"/>`).join("")}
@@ -259,6 +293,14 @@
     cembalo: o => `<g><path d="M-90 -80 L60 -80 Q110 -80 110 -60 L110 -50 L-90 -50 Z" fill="#2a4a3a"/><rect x="-90" y="-50" width="200" height="8" fill="#c9a227"/>
       <rect x="-86" y="-62" width="70" height="10" fill="#f4f1ea"/>${Array.from({ length: 9 }, (_, i) => `<rect x="${-84 + i * 8}" y="-62" width="3" height="6" fill="#222"/>`).join("")}
       <path d="M-80 -42 l-4 42 M90 -42 l4 42" stroke="#c9a227" stroke-width="5"/>${o && o.skjult ? `<rect x="10" y="-88" width="30" height="10" fill="#fbf6e8" stroke="#c9b98f" transform="rotate(-6 25 -83)"/>` : ""}</g>`,
+    trone: () => `<g><rect x="-110" y="-40" width="220" height="40" fill="#8a1f2b"/><rect x="-116" y="-46" width="232" height="8" fill="#c9a227"/>
+      <path d="M-92 -46 L-92 -250 L92 -250 L92 -46 Z" fill="#24438a"/>${[-60, -20, 20, 60].map(x => [-210, -160, -110].map(y => `<circle cx="${x}" cy="${y}" r="4" fill="#e3b53a"/>`).join("")).join("")}
+      <path d="M-104 -250 L104 -250 L94 -222 Q0 -210 -94 -222 Z" fill="#c9a227"/><path d="M-104 -250 Q-120 -150 -100 -46 L-88 -46 Q-100 -150 -92 -250 Z M104 -250 Q120 -150 100 -46 L88 -46 Q100 -150 92 -250 Z" fill="#8a1f2b"/>
+      <rect x="-32" y="-150" width="64" height="104" rx="12" fill="#c9a227"/><rect x="-24" y="-140" width="48" height="60" rx="9" fill="#8a1f2b"/><rect x="-38" y="-80" width="76" height="14" rx="4" fill="#8a1f2b"/></g>`,
+    peis: o => `<g><rect x="-84" y="-134" width="168" height="16" fill="#e8e0d0"/><rect x="-74" y="-118" width="148" height="118" fill="#d8d0c0"/><rect x="-50" y="-92" width="100" height="92" rx="4" fill="#2a2420"/>
+      <path d="M-34 -6 L34 -10 M-30 -12 L30 -4" stroke="#6b4a2a" stroke-width="7" stroke-linecap="round"/>
+      ${o && o.av ? "" : `<g class="flakk"><path d="M-30 -8 Q-34 -36 -16 -54 Q-14 -34 0 -64 Q8 -40 16 -52 Q32 -30 28 -8 Z" fill="#ff8a2a"/><path d="M-16 -8 Q-18 -26 -4 -38 Q2 -22 12 -30 Q20 -16 14 -8 Z" fill="#ffd54a"/></g>`}
+      <rect x="-60" y="-200" width="120" height="66" rx="4" fill="#c9a227"/><rect x="-54" y="-194" width="108" height="54" fill="#a9c2d6"/></g>`,
     lysekrone: () => `<g><path d="M0 -450 L0 -380" stroke="#c9a227" stroke-width="3"/><ellipse cx="0" cy="-370" rx="70" ry="14" fill="none" stroke="#c9a227" stroke-width="5"/>
       ${[-60, -30, 0, 30, 60].map(x => `<rect x="${x - 3}" y="-392" width="6" height="16" fill="#f4f1ea"/><path d="M${x} -392 q-4 -8 0 -14 q4 6 0 14" fill="#ffcf5a"/><circle cx="${x}" cy="-398" r="14" fill="#ffd36a" opacity=".18"/>`).join("")}</g>`,
     idekort: o => `<g><rect x="-26" y="-36" width="52" height="36" rx="5" fill="#fff8e0" stroke="#c9a227" stroke-width="2.5"/><text x="0" y="-11" font-size="18" text-anchor="middle">${(o && o.ikon) || "💡"}</text></g>`,
@@ -332,17 +374,84 @@
       s += `<g transform="translate(400 450)">${TING.lysekrone()}</g>`;
       return s;
     },
+    speilsal() {
+      let s = `<defs><linearGradient id="speil" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6eef4"/><stop offset=".5" stop-color="#b9c9d8"/><stop offset="1" stop-color="#dfe8ef"/></linearGradient></defs>`;
+      s += `<rect width="800" height="450" fill="#ead9a8"/><rect width="800" height="64" fill="#7d9cc4"/>`;
+      srand(21); for (let i = 0; i < 9; i++) s += `<ellipse cx="${rnd() * 800}" cy="${14 + rnd() * 34}" rx="${30 + rnd() * 30}" ry="9" fill="#fff" opacity=".7"/>`;
+      s += `<rect y="58" width="800" height="12" fill="#c9a227"/>`;
+      for (let x = 15; x < 800; x += 130) {
+        s += `<path d="M${x} 298 V128 A45 45 0 0 1 ${x + 90} 128 V298 Z" fill="url(#speil)" stroke="#c9a227" stroke-width="7"/>`;
+        s += `<path d="M${x + 30} 90 V298 M${x + 60} 90 V298 M${x} 160 H${x + 90} M${x} 230 H${x + 90}" stroke="#c9a227" stroke-width="2" opacity=".8"/>`;
+        s += `<path d="M${x + 12} 280 L${x + 52} 120" stroke="#fff" stroke-width="7" opacity=".45"/>`;
+        s += `<rect x="${x + 100}" y="80" width="20" height="220" fill="#e0c46e"/><circle cx="${x + 110}" cy="96" r="8" fill="#c9a227"/>`;
+      }
+      s += `<rect y="296" width="800" height="26" fill="#d9be78"/><rect y="320" width="800" height="130" fill="#a8743f"/>`;
+      for (let x = -200; x < 1000; x += 46) s += `<path d="M${x} 320 L${x + 130} 450 M${x + 130} 320 L${x} 450" stroke="#8a5a2f" stroke-width="2"/>`;
+      [140, 400, 660].forEach(x => { s += `<g transform="translate(${x} 450) scale(.85)">${TING.lysekrone()}</g>`; });
+      return s;
+    },
+    forhall() {
+      let s = `<rect width="800" height="450" fill="#ece3d0"/>`;
+      for (let x = 20; x < 800; x += 160) s += `<rect x="${x}" y="70" width="120" height="200" fill="none" stroke="#d4c7a8" stroke-width="5"/><rect x="${x + 12}" y="82" width="96" height="176" fill="none" stroke="#c9a227" stroke-width="2" opacity=".6"/>`;
+      s += `<rect width="800" height="40" fill="#d8c9a6"/><rect y="38" width="800" height="8" fill="#c9a227"/>`;
+      s += `<rect y="300" width="800" height="22" fill="#c9b88f"/><rect y="320" width="800" height="130" fill="#e8e4dc"/>`;
+      for (let r = 0; r < 5; r++) for (let x = (r % 2) * 50; x < 800; x += 100) s += `<rect x="${x}" y="${320 + r * 26}" width="50" height="26" fill="#2e2e34" opacity=".85"/>`;
+      return s;
+    },
+    stendersal() {
+      let s = `<rect width="800" height="450" fill="#eadfc6"/><rect width="800" height="44" fill="#d6c49c"/><rect y="40" width="800" height="8" fill="#c9a227"/>`;
+      s += `<rect y="120" width="800" height="14" fill="#c9a227"/>`;
+      srand(31); for (let x = 30; x < 800; x += 26) if (x < 290 || x > 510) s += `<circle cx="${x}" cy="${110 - rnd() * 6}" r="7" fill="${pick(["#f1c7a3", "#e2b48c", "#f6d5bb"])}"/><path d="M${x - 9} 124 q9 -14 18 0" fill="${pick(["#3a4a6a", "#7a2e2e", "#2a2a30", "#6a5a3a"])}"/>`;
+      for (let x = 20; x < 800; x += 95) s += `<rect x="${x}" y="48" width="24" height="254" fill="#f6f1e6"/><rect x="${x - 4}" y="48" width="32" height="10" fill="#e0d4b8"/><rect x="${x - 4}" y="292" width="32" height="10" fill="#e0d4b8"/>`;
+      s += `<rect y="300" width="800" height="150" fill="#8a5a3a"/><path d="M330 300 L470 300 L560 450 L240 450 Z" fill="#9a2a2a" opacity=".85"/>`;
+      const benk = (x, y, w, f, hode, hatt) => {
+        let b = `<rect x="${x}" y="${y}" width="${w}" height="16" rx="3" fill="${f}"/><rect x="${x}" y="${y + 16}" width="${w}" height="6" fill="${mix(f, -.3)}"/>`;
+        for (let hx = x + 12; hx < x + w - 6; hx += 20) b += `<path d="M${hx - 9} ${y + 2} q9 -22 18 0 Z" fill="${hatt}"/><circle cx="${hx}" cy="${y - 18}" r="7" fill="${hode}"/>${hatt === "#f4f1ea" ? `<circle cx="${hx}" cy="${y - 24}" r="6" fill="#f4f1ea"/>` : `<path d="M${hx - 7} ${y - 22} q7 -8 14 0" fill="${hatt}"/>`}`;
+        return b;
+      };
+      s += benk(20, 320, 200, "#6a3a7a", "#f0c8a8", "#5a2a6a") + benk(40, 352, 180, "#6a3a7a", "#f0c8a8", "#5a2a6a");
+      s += benk(580, 320, 200, "#9a2a2a", "#f6d5bb", "#f4f1ea") + benk(580, 352, 180, "#9a2a2a", "#f6d5bb", "#f4f1ea");
+      return s;
+    },
+    regngate() {
+      let s = sky("rgSky", "#6f7c8c", "#aeb8c2");
+      s += `<rect x="40" y="70" width="720" height="262" fill="#d6cdbc"/><rect x="30" y="58" width="740" height="16" fill="#bfb49e"/><path d="M30 58 L400 18 L770 58 Z" fill="#8a8f99"/>`;
+      for (let x = 70; x < 760; x += 90) if (x < 340 || x > 470) s += `<rect x="${x}" y="100" width="44" height="80" fill="#5a6676"/><rect x="${x}" y="210" width="44" height="80" fill="#5a6676"/><path d="M${x + 22} 100 v80 M${x + 22} 210 v80" stroke="#d6cdbc" stroke-width="3"/>`;
+      s += `<rect x="350" y="90" width="100" height="40" fill="#bfb49e"/><text x="400" y="116" font-size="11" text-anchor="middle" font-family="Georgia" fill="#4a4030">MENUS-PLAISIRS</text>`;
+      s += `<rect y="330" width="800" height="120" fill="#7f7a74"/>`;
+      srand(41); for (let i = 0; i < 80; i++) s += `<ellipse cx="${rnd() * 800}" cy="${338 + rnd() * 108}" rx="${9 + rnd() * 8}" ry="${3 + rnd() * 3}" fill="#6c6761"/>`;
+      s += `<ellipse cx="180" cy="420" rx="70" ry="9" fill="#a9b8c8" opacity=".6"/><ellipse cx="610" cy="398" rx="50" ry="7" fill="#a9b8c8" opacity=".6"/>`;
+      srand(43); let d = ""; for (let i = 0; i < 18; i++) { const x = rnd() * 820 - 10, y = rnd() * 36; for (let k = -1; k < 14; k++) d += `M${x} ${y + k * 36} l-4 14 `; }
+      s += `<g class="regn"><path d="${d}" stroke="#e4eef8" stroke-width="1.6" opacity=".55" stroke-linecap="round"/></g>`;
+      return s;
+    },
+    ballhus() {
+      let s = `<rect width="800" height="450" fill="#ece6d8"/><rect width="800" height="30" fill="#8a6a4a"/>`;
+      for (let x = 30; x < 800; x += 105) {
+        s += `<rect x="${x}" y="50" width="60" height="120" fill="#a9bfd0"/><path d="M${x + 30} 50 v120 M${x} 110 h60" stroke="#ece6d8" stroke-width="4"/>`;
+        s += `<path d="M${x - 4} 46 Q${x + 18} 110 ${x + 6} 178 L${x - 6} 178 Z" fill="#f4f1ea" opacity=".9"/>`;
+      }
+      srand(51); for (let x = 30; x < 800; x += 105) for (let i = 0; i < 3; i++) s += `<circle cx="${x + 12 + i * 18}" cy="${150 + rnd() * 6}" r="6" fill="${pick(["#f1c7a3", "#e2b48c", "#f6d5bb"])}"/><path d="M${x + 4 + i * 18} 170 q8 -14 16 0" fill="${pick(["#c0392b", "#2a2a30", "#6a5a3a", "#1f3d7a"])}"/>`;
+      s += `<rect y="178" width="800" height="10" fill="#8a6a4a"/><rect y="188" width="800" height="124" fill="#2b2b30"/>`;
+      s += `<path d="M0 188 L800 188" stroke="#555" stroke-width="2"/><path d="M0 250 L800 250" stroke="#3a3a40" stroke-width="2" stroke-dasharray="10 8"/>`;
+      s += `<rect y="310" width="800" height="140" fill="#cdbfa6"/>`;
+      for (let y = 330; y < 450; y += 24) s += `<path d="M0 ${y} H800" stroke="#b8a98e" stroke-width="2"/>`;
+      for (let x = -200; x < 1000; x += 80) s += `<path d="M${x} 310 L${(x - 400) * 1.4 + 400} 450" stroke="#b8a98e" stroke-width="2"/>`;
+      return s;
+    },
     kart() { return `<rect width="800" height="450" fill="#f2e6c8"/>`; },
   };
 
-  /* ---------- portrett: hodeutsnitt av en figur ---------- */
+  /* ---------- portrett: hodeutsnitt av en figur (viewBox per figur, ellers standard) ---------- */
+  const PVB = { ugle: "-34 -100 68 68", barn: "-34 -142 68 68", forteller: "-34 -194 68 68", madame: "-40 -236 80 80", kant: "-36 -194 72 72",
+    dronning: "-44 -246 88 88", kongen: "-40 -218 80 80", biskop: "-42 -236 84 84", mirabeau: "-42 -232 84 84", bailly: "-40 -222 80 80", seremonimester: "-40 -216 80 80", adelsmann: "-40 -216 80 80" };
   function portrett(navn, o) {
     if (navn === "deg") {
       if (window.Gull) return Gull.tegn(Gull.tilstand(), { bakgrunn: false, venn: false, vb: "62 22 116 116" });
       return `<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="#ccc"/></svg>`;
     }
     const f = FIG[navn]; if (!f) return "";
-    const vb = navn === "ugle" ? "-34 -100 68 68" : navn === "barn" ? "-34 -142 68 68" : navn === "forteller" ? "-34 -194 68 68" : navn === "madame" ? "-40 -236 80 80" : navn === "kant" ? "-36 -194 72 72" : "-38 -210 76 76";
+    const vb = PVB[navn] || "-38 -210 76 76";
     return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">${f(o || {})}</svg>`;
   }
 

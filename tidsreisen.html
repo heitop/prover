@@ -97,6 +97,8 @@ p{margin:0}
 .tip{position:absolute;pointer-events:none;background:rgba(20,22,30,.88);color:#fff;font-weight:700;font-size:.9rem;padding:3px 10px;border-radius:999px;transform:translate(-50%,-140%);white-space:nowrap;z-index:3}
 .fade{animation:fade .45s ease}
 @keyframes fade{from{opacity:0}to{opacity:1}}
+.regn{animation:regn .5s linear infinite}
+@keyframes regn{from{transform:translateY(-36px)}to{transform:translateY(0)}}
 
 /* panel */
 .panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;min-height:118px}
@@ -152,6 +154,14 @@ p{margin:0}
 .avl svg{width:100%;height:auto;display:block}
 .logg{display:flex;flex-wrap:wrap;gap:6px}
 .logg span{background:var(--card2);border-radius:999px;padding:2px 10px;font-size:.88rem;font-weight:700}
+.stem{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stem .sk{border:2px solid var(--line);border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center;background:var(--card2)}
+.stem .sk.ja{border-color:var(--ok)} .stem .sk.nei{border-color:var(--coral)}
+.stem .si{font-size:1.6rem;line-height:1}
+.stem .bar{width:100%;height:12px;border-radius:6px;background:var(--card);overflow:hidden}
+.stem .bar i{display:block;height:100%;background:var(--pri)}
+.stem .tall{font-family:var(--fd);font-weight:700}
+.stem .sv{font-weight:700;font-size:.9rem}
 .shake{animation:shake .3s}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
@@ -191,6 +201,7 @@ p{margin:0}
   .alts{grid-template-columns:1fr}
   .kurver{grid-template-columns:1fr}
   .avl{grid-template-columns:1fr}
+  .stem{gap:5px} .stem .sk{padding:6px 4px;font-size:.85rem}
   .stagewrap{margin:0 -8px;border-radius:12px}
   .hidesm,.hchip .t{display:none}
   .topin{gap:6px;padding:8px 10px}
@@ -567,7 +578,7 @@ const GAATER = {
         this.feil++;
         galeValgt.forEach(n => { const b = document.querySelectorAll(".chipv")[n]; b.classList.add("bad", "shake"); b.setAttribute("aria-pressed", "false"); this.paa.delete(n); });
         const fb = $("#gfb"); fb.className = "fbk feil";
-        fb.innerHTML = galeValgt.length ? `<b>Noe passer ikke.</b> De røde hører ikke hjemme i klageboka.` : `<b>Nesten!</b> Du har ${riktigeValgt} av ${tot}. Det mangler noe.`;
+        fb.innerHTML = galeValgt.length ? `<b>Noe passer ikke.</b> ${esc(this.g.feilTekst || "De røde passer ikke her.")}` : `<b>Nesten!</b> Du har ${riktigeValgt} av ${tot}. Det mangler noe.`;
       }
     },
   },
@@ -599,9 +610,34 @@ const GAATER = {
       const t = this.vis[+n]; if (el.classList.contains("done")) return;
       if (t.i === this.neste) {
         this.neste++; el.classList.add("done"); el.disabled = true; el.querySelector(".n").textContent = this.neste;
-        el.insertAdjacentHTML("beforeend", `<span class="yr">${esc(t.aar)}</span>`);
+        if (t.aar) el.insertAdjacentHTML("beforeend", `<span class="yr">${esc(t.aar)}</span>`);
         if (this.neste === this.vis.length) gaateFerdig(this.feil === 0, this.g.forklaring);
-      } else { this.feil++; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); const fb = $("#gfb"); fb.className = "fbk feil"; fb.innerHTML = `<b>Ikke helt.</b> Hva skjedde før dette?`; }
+      } else { this.feil++; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); const fb = $("#gfb"); fb.className = "fbk feil"; fb.innerHTML = `<b>Ikke helt.</b> ${esc(this.g.feilTekst || "Hva skjedde før dette?")}`; }
+    },
+  },
+  stemmer: {
+    start() { this.steg = 0; this.tegn(); },
+    tegn() {
+      const g = this.g, st = g.steg[this.steg], hode = st.ordning === "hode", maks = Math.max(...g.stender.map(s => s.antall));
+      this.alts = shuffle([{ t: st.riktig, ok: true }, ...st.feil.map(t => ({ t }))]);
+      const kol = g.stender.map(s => `<div class="sk ${s.stemme}"><div class="si">${s.ikon}</div><b>${esc(s.navn)}</b>
+        ${hode ? `<div class="bar"><i style="width:${Math.round(s.antall / maks * 100)}%"></i></div><span class="tall">${s.antall} stemmer</span>` : `<span class="tall">1 stemme</span>`}
+        <span class="sv">${s.stemme === "ja" ? "✅ JA" : "❌ NEI"}</span></div>`).join("");
+      panel(`<div class="gt"><span class="glbl">🗳️ ${esc(g.tittel)}</span>
+        <p><b>Saken:</b> ${esc(g.sak)}</p><p>${esc(A.humor && st.h ? st.h : st.tekst)}</p>
+        <div class="stem">${kol}</div><div class="gq">${esc(st.sporsmal)}</div>
+        <div class="alts">${this.alts.map((a, i) => `<button class="alt" data-act="p:${i}">${esc(a.t)}</button>`).join("")}</div><div id="gfb"></div></div>`);
+    },
+    klikk(i, el) {
+      const a = this.alts[+i], g = this.g, st = g.steg[this.steg]; if (el.disabled || this.ferdig) return;
+      if (!a.ok) { this.feil++; el.classList.add("bad", "shake"); el.disabled = true; const fb = $("#gfb"); fb.className = "fbk feil"; fb.innerHTML = `<b>Ikke helt.</b> ${esc(st.hint || "Tell stemmene en gang til!")}`; return; }
+      el.classList.add("good"); document.querySelectorAll(".alt").forEach(b => b.disabled = true);
+      if (++this.steg < g.steg.length) {
+        const fb = $("#gfb"); fb.className = "fbk ok"; fb.innerHTML = `<b>Riktig!</b> ${esc(st.etter || "")}`;
+        const b = document.createElement("button"); b.className = "btn pri"; b.textContent = "Videre ▸"; b.style.marginTop = "8px";
+        b.addEventListener("click", () => this.tegn()); fb.appendChild(b); b.focus({ preventScroll: true }); return;
+      }
+      this.ferdig = true; gaateFerdig(this.feil === 0, g.forklaring);
     },
   },
   avling: {
