@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<title>Dobbeltrøbbel</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Øv på dobbel konsonant: katt eller kat, tak eller takk? Regler, velg riktig, feiljakt, skriv ordet og lynrunde">
+<meta name="theme-color" content="#5b3fa8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%235b3fa8'/><text x='50' y='68' font-size='50' text-anchor='middle' font-family='Arial' font-weight='700' fill='%23ffa463'>tt</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
+<script>
+/* ======================================================================
+   ORDENE – legg til nye her.
+   [ord, emoji, setning, regel, nivå, ekstra]
+   ord      konsonanten(e) det handler om står i [klammer]: "ka[tt]", "ta[k]"
+            (feilstavingen lages automatisk: tt ↔ t, k ↔ kk)
+   setning  ___ der ordet skal stå
+   regel    d = kort vokal → dobbel      l = lang vokal → én
+            m = aldri mm på slutten      s = små ord med én konsonant
+            k = to ulike konsonanter     f = dobbel blir enkel foran konsonant
+   nivå     1 korte ord · 2 lengre ord og ordpar · 3 unntakene
+   ekstra   { b: "grunnform" (regel f), x: "egen forklaring", a: ["andre svar som godtas"] }
+   ====================================================================== */
+const ORD = [
+  // Nivå 1 – korte ord
+  ["ka[tt]",   "🐱", "Vi har en ___ som sier mjau.",              "d", 1],
+  ["ta[kk]",   "🙏", "Si ___ for maten!",                         "d", 1],
+  ["ba[ll]",   "⚽", "Vi sparker ___ i friminuttet.",             "d", 1],
+  ["e[gg]",    "🥚", "Til frokost spiste jeg et kokt ___.",       "d", 1],
+  ["so[pp]",   "🍄", "Vi plukket ___ i skogen.",                  "d", 1],
+  ["ve[nn]",   "🤝", "Hun er min beste ___.",                     "d", 1],
+  ["sti[ll]",  "🤫", "Sitt ___ på stolen!",                       "d", 1],
+  ["fu[ll]",   "🥛", "Glasset er helt ___.",                      "d", 1],
+  ["pe[nn]",   "🖊️", "Jeg skriver med blyant eller ___.",         "d", 1],
+  ["tro[ll]",  "🧌", "Under brua bodde et stort ___.",            "d", 1],
+  ["trø[tt]",  "😴", "Jeg er så ___ i dag.",                      "d", 1],
+  ["li[tt]",   "🤏", "Kan jeg få ___ mer saft?",                  "d", 1],
+  ["ny[tt]",   "🎁", "Jeg har fått et ___ spill.",                "d", 1],
+  ["ma[nn]",   "🧔", "En ___ med skjegg kom inn.",                "d", 1],
+  ["ha[tt]",   "🎩", "Han har en høy ___ på hodet.",              "d", 1],
+  ["bi[l]",    "🚗", "Pappa kjører ___ til jobben.",              "l", 1],
+  ["ta[k]",    "🏠", "Huset har et rødt ___.",                    "l", 1],
+  ["ma[t]",    "🍝", "Vi spiser ___ ved bordet.",                 "l", 1],
+  ["so[l]a",   "☀️", "___ er en stjerne.",                        "l", 1, { a: ["solen"] }],
+  ["fi[n]",    "🖼️", "For en ___ tegning!",                       "l", 1],
+  ["pe[n]",    "👕", "Du har en ___ genser.",                     "l", 1],
+  ["hvi[t]",   "❄️", "Snøen er ___.",                             "l", 1],
+  ["sko[l]e",  "🏫", "Vi går på ___ fem dager i uka.",            "l", 1],
+  ["ka[k]e",   "🎂", "Vi spiser ___ på bursdagen.",               "l", 1],
+
+  // Nivå 2 – lengre ord og ordpar
+  ["ho[pp]e",  "🐸", "Frosken kan ___ langt.",                    "d", 2],
+  ["lø[p]e",   "🏃", "Hvor fort kan du ___?",                     "l", 2],
+  ["ba[k]e",   "🧁", "Vi skal ___ boller.",                       "l", 2],
+  ["ba[kk]e",  "⛷️", "Vi aker ned en bratt ___.",                 "d", 2],
+  ["ma[t]e",   "🐟", "Husk å ___ fiskene!",                       "l", 2],
+  ["ma[tt]e",  "➗", "Vi har ___ i første time.",                 "d", 2],
+  ["hy[l]e",   "🐺", "Ulven begynte å ___ mot månen.",            "l", 2],
+  ["hy[ll]e",  "📚", "Vi setter bøkene på en ___.",               "d", 2],
+  ["le[t]e",   "🔍", "Vi må ___ etter nøkkelen.",                 "l", 2],
+  ["le[tt]",   "🎒", "Sekken er ___ å bære.",                     "d", 2],
+  ["sy[kk]el", "🚲", "Jeg fikk ny ___ til bursdagen.",            "d", 2],
+  ["gu[tt]en", "👦", "___ løper fort.",                           "d", 2],
+  ["bo[ll]e",  "🥯", "Jeg vil ha en ___ med rosiner.",            "d", 2],
+  ["ka[ss]e",  "📦", "Lekene ligger i en ___.",                   "d", 2],
+  ["vi[nn]e",  "🏆", "Vi skal ___ kampen!",                       "d", 2],
+  ["fi[nn]e",  "👟", "Jeg kan ikke ___ skoene mine.",             "d", 2],
+  ["sa[mm]en", "🧑‍🤝‍🧑", "Vi leker ___ i friminuttet.",          "d", 2],
+  ["fje[ll]",  "🏔️", "Galdhøpiggen er Norges høyeste ___.",       "d", 2],
+  ["ka[nn]e",  "🫖", "Hent en ___ med vann.",                     "d", 2],
+  ["ska[ll]",  "🍌", "Bananen har et gult ___.",                  "d", 2],
+  ["me[nn]",   "👨‍👨‍👦", "Det var tre ___ og to damer.",           "d", 2],
+  ["vi[ll]",   "🐺", "Ulven er ___.",                             "d", 2],
+  ["hvi[tt]",  "📄", "Papiret er ___.",                           "d", 2],
+  ["lu[kk]e",  "🚪", "Kan du ___ døra?",                          "d", 2],
+  ["skje[ll]", "🐚", "Vi fant et ___ på stranden.",               "d", 2],
+  ["sta[ll]",  "🐴", "Hesten bor i en ___.",                      "d", 2],
+  ["ve[gg]",   "🎨", "Vi malte en ___ blå.",                      "d", 2],
+  ["li[t]en",  "🐭", "Musa er ___.",                              "l", 2],
+  ["å[p]en",   "🚪", "Døra står ___.",                            "l", 2],
+  ["så[p]e",   "🧼", "Vask hendene med ___.",                     "l", 2],
+  ["ro[p]e",   "📣", "Ikke ___ så høyt!",                         "l", 2],
+  ["le[s]e",   "📖", "Jeg liker å ___ bøker.",                    "l", 2],
+  ["spi[s]e",  "🍽️", "Vi skal ___ middag.",                       "l", 2],
+  ["ga[t]e",   "🏘️", "Vi bor i samme ___.",                       "l", 2],
+
+  // Nivå 3 – unntakene
+  ["ro[m]",      "🛏️", "Jeg har mitt eget ___.",                  "m", 3],
+  ["la[m]",      "🐑", "Sauen fikk et lite ___.",                 "m", 3],
+  ["fra[m]",     "👩‍🏫", "Kom ___ til tavla!",                     "m", 3],
+  ["so[m]",      "🐕", "Hunden ___ bjeffer, heter Fido.",         "m", 3],
+  ["ko[m]",      "🌙", "Han ___ hjem sent i går.",                "m", 3],
+  ["hje[m]",     "🏡", "Vi går ___ etter skolen.",                "m", 3],
+  ["du[m]",      "🐶", "Hunden er ikke ___, den er smart!",       "m", 3],
+  ["ro[mm]et",   "🧹", "Jeg rydder ___ mitt.",                    "m", 3],
+  ["ko[mm]er",   "🚌", "Bussen ___ snart.",                       "m", 3],
+  ["hje[mm]e",   "🛋️", "Jeg er ___ i dag.",                       "m", 3],
+  ["da[mm]en",   "🦆", "Endene svømmer i ___.",                   "m", 3],
+  ["su[mm]en",   "➕", "Hva blir ___ av 4 og 5?",                 "m", 3],
+  ["ha[n]",      "🙋‍♂️", "___ heter Per.",                         "s", 3],
+  ["hu[n]",      "🙋‍♀️", "Mamma sier at ___ er sliten.",           "s", 3],
+  ["de[n]",      "🐕", "Hunden er stor, men ___ er snill.",       "s", 3],
+  ["me[n]",      "🍞", "Jeg er sulten, ___ ikke tørst.",          "s", 3],
+  ["ka[n]",      "🙏", "___ du hjelpe meg?",                      "s", 3],
+  ["ska[l]",     "🎬", "Vi ___ på kino i kveld.",                 "s", 3],
+  ["vi[l]",      "🍦", "Jeg ___ ha is!",                          "s", 3],
+  ["ti[l]",      "🏫", "Vi går ___ skolen.",                      "s", 3],
+  ["a[t]",       "💡", "Jeg vet ___ du klarer det.",              "s", 3],
+  ["fo[r]",      "🍽️", "Takk ___ maten!",                         "s", 3],
+  ["e[tt]",      "1️⃣", "Jeg har to katter, men bare ___ akvarium.", "s", 3,
+     { x: "<b>ett</b> med to t er tallet 1 (ett eple, to epler). Det lille ordet <b>et</b> (en, ei, et) har bare én t." }],
+  ["he[s]t",     "🐴", "Hun rir på en ___.",                      "k", 3],
+  ["ste[r]k",    "💪", "Bjørnen er veldig ___.",                  "k", 3],
+  ["ka[l]d",     "🥶", "Vinteren er ___.",                        "k", 3],
+  ["la[n]d",     "🗺️", "Norge er et ___ i Europa.",               "k", 3],
+  ["vi[n]d",     "🌬️", "Det blåser sterk ___ i dag.",             "k", 3],
+  ["fi[s]k",     "🐟", "Vi fikk en stor ___ på kroken.",          "k", 3],
+  ["lu[k]t",     "👃", "Det kommer en god ___ fra kjøkkenet.",    "k", 3],
+  ["me[l]k",     "🥛", "Jeg drikker et glass ___.",               "k", 3],
+  ["ha[l]sen",   "🤒", "Jeg har vondt i ___.",                    "k", 3],
+  ["je[n]te",    "👧", "Ei ___ og en gutt leker i parken.",       "k", 3],
+  ["ku[n]st",    "🖼️", "På museet henger det mye ___.",           "k", 3],
+  ["hje[l]pe",   "🤝", "Kan du ___ meg?",                         "k", 3],
+  ["se[n]g",     "🛏️", "Jeg har en myk ___.",                     "k", 3],
+  ["ti[n]g",     "🎒", "Jeg har mange ___ i sekken.",             "k", 3],
+  ["grø[n]t",    "🌱", "Gresset er ___.",                         "f", 3, { b: "grønn" }],
+  ["grø[nn]e",   "👀", "Han har ___ øyne.",                       "f", 3, { b: "grønn" }],
+  ["ty[k]t",     "🛌", "Vi sover under et ___ teppe.",            "f", 3, { b: "tykk" }],
+  ["sa[n]t",     "🤥", "Det er ikke ___!",                        "f", 3, { b: "sann" }],
+  ["kje[n]te",   "😓", "Jeg ___ meg sliten i går.",               "f", 3, { b: "kjenne" }],
+  ["gle[m]te",   "🩳", "Jeg ___ gymtøyet hjemme i går.",          "f", 3, { b: "glemme" }],
+  ["spi[l]te",   "⚽", "Vi ___ fotball i går.",                   "f", 3, { b: "spille" }],
+  ["begy[n]te",  "🎞️", "Filmen ___ klokka sju.",                  "f", 3, { b: "begynne" }],
+  ["try[g]t",    "⛑️", "Det er ___ å sykle med hjelm.",           "f", 3, { b: "trygg" }],
+];
+
+/* Ordpar til regelsiden: lang vokal – kort vokal */
+const PAR = [["ta[k]", "ta[kk]"], ["ma[t]e", "ma[tt]e"], ["ba[k]e", "ba[kk]e"], ["hy[l]e", "hy[ll]e"],
+             ["pe[n]", "pe[nn]"], ["hvi[t]", "hvi[tt]"], ["le[t]e", "le[tt]e"], ["vi[l]", "vi[ll]"]];
+</script>
+<style>
+/* Fiolett med oransje «tvillinger». Feil vises i varm korall, aldri knallrødt. */
+:root{
+  --bg:#f6f4fb; --dot:#e7e1f3; --card:#ffffff; --card2:#f1edf8; --line:#e2dcef;
+  --ink:#221d33; --muted:#655e78;
+  --pri:#5b3fa8; --pri-ink:#ffffff; --pri-soft:#ebe5f8;
+  --acc:#e2661b; --acc-soft:#ffe6d3; --acc-ink:#6b2e00;
+  --coral:#b9532e; --coral-soft:#fbe3d8;
+  --ok:#23804e; --ok-soft:#dcf2e4;
+  --lv0:#ebe6f3; --lv1:#ddd3f5; --lv2:#a994e3; --lv3:#5b3fa8; --lv3-ink:#ffffff;
+  --fd:"Fredoka","Segoe UI",system-ui,sans-serif;
+  --fb:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#15121e; --dot:#1f1a2b; --card:#211c2f; --card2:#2a2439; --line:#3a3350;
+  --ink:#efecf6; --muted:#aaa3bd;
+  --pri:#b39cf0; --pri-ink:#1a1030; --pri-soft:#2c2445;
+  --acc:#ffa463; --acc-soft:#3b2616; --acc-ink:#ffd9bd;
+  --coral:#f0a07f; --coral-soft:#3d261d;
+  --ok:#62d394; --ok-soft:#15331f;
+  --lv0:#2b2638; --lv1:#3a2f5c; --lv2:#5c4a99; --lv3:#b39cf0; --lv3-ink:#1a1030;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#15121e; --dot:#1f1a2b; --card:#211c2f; --card2:#2a2439; --line:#3a3350;
+    --ink:#efecf6; --muted:#aaa3bd;
+    --pri:#b39cf0; --pri-ink:#1a1030; --pri-soft:#2c2445;
+    --acc:#ffa463; --acc-soft:#3b2616; --acc-ink:#ffd9bd;
+    --coral:#f0a07f; --coral-soft:#3d261d;
+    --ok:#62d394; --ok-soft:#15331f;
+    --lv0:#2b2638; --lv1:#3a2f5c; --lv2:#5c4a99; --lv3:#b39cf0; --lv3-ink:#1a1030;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg)}
+body{color:var(--ink);font-family:var(--fb);font-size:1.1rem;line-height:1.5;min-height:100vh;
+  background-image:radial-gradient(var(--dot) 1.6px,transparent 1.6px);background-size:22px 22px}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+h1,h2,h3{font-family:var(--fd);font-weight:600;margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:2rem} h2{font-size:1.45rem} h3{font-size:1.1rem}
+p{margin:0}
+.muted{color:var(--muted)} .small{font-size:.92rem}
+[hidden]{display:none!important}
+
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topin{max-width:720px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{background:none;border:0;padding:4px 0;font-family:var(--fd);font-weight:700;font-size:1.3rem;display:flex;align-items:center;gap:8px;color:var(--pri)}
+.badge{width:36px;height:32px;border-radius:9px;background:var(--pri);color:#ffa463;display:grid;place-items:center;font-size:1.05rem;line-height:1}
+.stats{display:flex;gap:6px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-weight:700;font-size:.95rem;font-variant-numeric:tabular-nums}
+.iconbtn{background:var(--card);border:1px solid var(--line);border-radius:999px;width:40px;height:40px;display:inline-grid;place-items:center;padding:0;font-size:1.1rem}
+
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 64px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px}
+.btn{border:1px solid var(--line);background:var(--card2);border-radius:14px;padding:12px 18px;font-weight:700;min-height:50px;transition:transform .08s;text-align:center}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.pri{background:var(--pri);color:var(--pri-ink);border-color:transparent}
+.btn.big{font-size:1.2rem;padding:14px 22px;min-height:58px}
+.back{align-self:flex-start;background:none;border:0;color:var(--pri);font-weight:700;padding:6px 0}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>.btn{flex:1 1 160px}
+
+/* tvillingene */
+.tw{background:var(--acc-soft);color:var(--acc-ink);border-radius:6px;padding:0 2px}
+.twbad{background:var(--coral-soft);color:var(--coral);border-radius:6px;padding:0 2px}
+.slot{display:inline-block;min-width:1.5em;border-bottom:4px solid var(--acc);color:var(--acc);text-align:center;line-height:1.1}
+.strike{text-decoration:line-through;text-decoration-thickness:3px;text-decoration-color:var(--coral);color:var(--muted);margin-right:6px}
+
+/* forside */
+.hero{display:flex;gap:16px;align-items:center}
+.hero .txt{display:flex;flex-direction:column;gap:6px}
+.twins{flex:none;display:flex;gap:4px}
+.twins span{width:46px;height:58px;border-radius:14px;background:var(--acc);color:#fff;display:grid;place-items:center;font-family:var(--fd);font-weight:700;font-size:2.1rem;line-height:1;transform:rotate(-6deg)}
+.twins span+span{transform:rotate(6deg);background:var(--pri);color:var(--pri-ink)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-weight:700;font-size:.95rem}
+.chip[aria-pressed="true"]{background:var(--pri);color:var(--pri-ink);border-color:transparent}
+.step{display:flex;flex-direction:column;gap:10px}
+.stephead{display:flex;align-items:center;gap:10px}
+.num{flex:none;width:30px;height:30px;border-radius:50%;background:var(--pri);color:var(--pri-ink);display:grid;place-items:center;font-weight:700;font-family:var(--fd)}
+.modes{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.mode{display:flex;gap:12px;align-items:center;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px 14px;transition:transform .1s,border-color .1s;min-height:76px}
+.mode:hover{border-color:var(--pri);transform:translateY(-1px)}
+.mode .ic{flex:none;width:46px;height:46px;border-radius:14px;background:var(--pri-soft);display:grid;place-items:center;font-size:1.5rem}
+.mode b{font-family:var(--fd);font-weight:600;font-size:1.08rem;display:block;line-height:1.2}
+.mode small{display:block;color:var(--muted);font-size:.88rem;line-height:1.3}
+.rec{display:inline-block;font-size:.75rem;font-weight:700;color:var(--acc-ink);background:var(--acc-soft);border-radius:999px;padding:1px 8px;margin-top:3px}
+.prog{display:flex;flex-direction:column;gap:10px}
+.progtop{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tiles{display:flex;flex-wrap:wrap;gap:6px}
+.tile{border:0;border-radius:10px;padding:5px 10px;font-weight:700;font-size:.95rem;background:var(--lv0)}
+.lv1{background:var(--lv1)} .lv2{background:var(--lv2)} .lv3{background:var(--lv3);color:var(--lv3-ink)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:14px;height:14px;border-radius:4px;display:inline-block;background:var(--lv0)}
+
+/* oppgaver */
+.qhead{display:flex;align-items:center;gap:12px}
+.qhead .x{flex:none}
+.bar{flex:1;height:12px;border-radius:999px;background:var(--lv0);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--pri);border-radius:999px;transition:width .3s}
+.bar.time i{background:var(--acc);transition:width .1s linear}
+.qcount{font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted);font-size:.95rem}
+.qcard{display:flex;flex-direction:column;gap:14px;padding:22px 18px}
+.qlabel{font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:.82rem;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.emo{font-size:3rem;line-height:1;text-align:center}
+.sent{font-family:var(--fd);font-weight:500;font-size:1.55rem;line-height:1.45;text-align:center;text-wrap:balance}
+.qw{font-weight:700;color:var(--ink);white-space:nowrap}
+.lw{font-weight:700;background:var(--pri-soft);border-radius:8px;padding:0 6px;white-space:nowrap}
+.gap{display:inline-block;min-width:3.5em;border-bottom:3px solid var(--acc);vertical-align:baseline}
+.hint{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:.98rem;flex-wrap:wrap}
+.say{border:1px solid var(--line);background:var(--card2);border-radius:999px;width:42px;height:42px;padding:0;display:inline-grid;place-items:center;font-size:1.1rem;flex:none;vertical-align:middle}
+.say.sm{width:32px;height:32px;font-size:.9rem}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{position:relative;border:2px solid var(--line);background:var(--card);border-radius:16px;padding:14px 14px 14px 38px;font-family:var(--fd);font-weight:600;font-size:1.65rem;min-height:70px;transition:border-color .1s,background .1s}
+.opt:hover{border-color:var(--pri)}
+.opt kbd{position:absolute;left:12px;top:50%;transform:translateY(-50%);font:700 .8rem var(--fb);color:var(--muted);background:var(--card2);border-radius:6px;padding:1px 6px}
+.opt.good{border-color:var(--ok);background:var(--ok-soft)}
+.opt.bad{border-color:var(--coral);background:var(--coral-soft)}
+.opt[disabled]{cursor:default}
+.toks{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;font-family:var(--fd);font-size:1.45rem;line-height:1.3}
+.tok{border:2px solid var(--line);background:var(--card2);border-radius:12px;padding:5px 10px;font-weight:500}
+button.tok:hover{border-color:var(--pri)}
+span.tok{border-color:transparent}
+.tok.fixed{background:var(--ok-soft);border-color:var(--ok);font-weight:700}
+.tok.wrongpick{background:var(--coral-soft);border-color:var(--coral)}
+.wform{display:flex;gap:10px}
+.wform input{flex:1;min-width:0;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:12px 14px;font-size:1.4rem;font-weight:700}
+.wform input:focus{outline:none;border-color:var(--pri)}
+.wform input.good{border-color:var(--ok);background:var(--ok-soft)}
+.wform input.bad{border-color:var(--coral);background:var(--coral-soft)}
+.fb{border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.fb.ok{background:var(--ok-soft)}
+.fb.wrong{background:var(--coral-soft)}
+.fb .head{font-family:var(--fd);font-weight:600;font-size:1.25rem}
+.fb.ok .head{color:var(--ok)} .fb.wrong .head{color:var(--coral)}
+.fb .ord{font-family:var(--fd);font-weight:600;font-size:1.6rem;display:flex;align-items:center;gap:8px}
+.tag{align-self:flex-start;font-size:.78rem;font-weight:700;background:var(--card);border-radius:999px;padding:2px 10px;color:var(--muted)}
+@keyframes pop{0%{transform:scale(.96)}60%{transform:scale(1.02)}100%{transform:scale(1)}}
+.pop{animation:pop .25s ease-out}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.shake{animation:shake .25s}
+
+/* lynrunde */
+.lynscore{display:flex;justify-content:space-between;font-weight:700;font-variant-numeric:tabular-nums}
+.combo{color:var(--acc)}
+.lynq{border-radius:16px;padding:6px;transition:background .15s}
+.lynq.ok{background:var(--ok-soft)} .lynq.bad{background:var(--coral-soft)}
+.lynbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lynbtns .btn{font-size:1.25rem;min-height:70px}
+.lynbtns .no{background:var(--coral-soft);border-color:var(--coral)}
+.lynbtns .yes{background:var(--ok-soft);border-color:var(--ok)}
+.lynfasit{text-align:center;font-weight:700;min-height:1.6em}
+
+/* regler */
+.rules{display:flex;flex-direction:column;gap:12px}
+.rule{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.rule h2{display:flex;gap:10px;align-items:center;font-size:1.3rem}
+.rule h2 .ri{flex:none;width:42px;height:42px;border-radius:12px;background:var(--pri-soft);display:grid;place-items:center;font-size:1.4rem}
+.exs{display:flex;gap:6px;flex-wrap:wrap}
+.ex{border:1px solid var(--line);background:var(--card2);border-radius:10px;padding:4px 10px;font-family:var(--fd);font-weight:600;font-size:1.2rem}
+.tips{background:var(--acc-soft);color:var(--acc-ink);border-radius:12px;padding:8px 12px;font-size:.98rem}
+.pairs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.pair{display:flex;gap:4px;align-items:center;background:var(--card2);border-radius:12px;padding:4px 8px}
+.pair .ex{background:var(--card);flex:1}
+.pair i{color:var(--muted);font-style:normal}
+.arrow{color:var(--muted);font-weight:700}
+
+/* resultat */
+.res{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.res .big{font-size:3.6rem;line-height:1}
+.res .score{font-family:var(--fd);font-weight:700;font-size:2.4rem;color:var(--pri)}
+.misslist{text-align:left;width:100%;display:flex;flex-direction:column;gap:6px}
+.misslist div{background:var(--card2);border-radius:12px;padding:8px 12px;display:flex;flex-direction:column;gap:2px}
+.misslist b{font-family:var(--fd);font-size:1.25rem}
+
+@media (max-width:480px){
+  h1{font-size:1.65rem}
+  .sent{font-size:1.3rem}
+  .opt{font-size:1.4rem}
+  .toks{font-size:1.2rem}
+  .twins span{width:38px;height:48px;font-size:1.7rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<script src="felles/gull.js"></script>
+</head>
+<body>
+<header class="top"><div class="topin">
+  <button class="logo" data-act="home"><span class="badge">tt</span>Dobbeltrøbbel</button>
+  <div class="stats">
+    <span class="pill" id="pillKan" title="Ord du kan">⭐ 0/0</span>
+    <button class="iconbtn" data-act="theme" id="themeBtn" aria-label="Bytt lys/mørk">☾</button>
+  </div>
+</div></header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+/* ---------- hjelpere ---------- */
+const $ = s => document.querySelector(s);
+const app = $("#app");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const pick = a => a[Math.random() * a.length | 0];
+const VOK = "aeiouyæøå";
+
+/* ---------- ordene ---------- */
+function del(raw) { const m = raw.match(/^(.*)\[(.+)\](.*)$/); return { pre: m[1], X: m[2], post: m[3] }; }
+const W = ORD.map(([raw, e, s, r, n, x = {}]) => {
+  const { pre, X, post } = del(raw);
+  const dbl = X.length === 2 && X[0] === X[1];
+  const alt = dbl ? X[0] : X + X;
+  return { id: pre + X + post, pre, X, post, alt, wrong: pre + alt + post, e, s, r, n, b: x.b, x: x.x, a: x.a || [] };
+});
+const REGEL = { d: "Kort vokal → dobbel", l: "Lang vokal → én", m: "Aldri mm på slutten", s: "Små ord", k: "To ulike konsonanter", f: "Dobbel blir enkel" };
+
+function vokal(w) { for (let i = w.pre.length - 1; i >= 0; i--) if (VOK.includes(w.pre[i])) return w.pre[i]; return ""; }
+function forklar(w) {
+  if (w.x) return w.x;
+  const v = vokal(w), ord = `«${esc(w.id)}»`;
+  switch (w.r) {
+    case "d": return `Kort ${v}-lyd og bare én konsonantlyd etter → dobbel <b>${w.X}</b>: ${ord}.`;
+    case "l": return `Lang ${v}-lyd → bare én <b>${w.X}</b>: ${ord}.`;
+    case "m": return w.post === "" ? `Ingen ord slutter på <b>mm</b>, selv om vokalen er kort. Derfor: ${ord}.`
+                                   : `Ingen ord slutter på mm – men får ordet en endelse, blir det <b>mm</b>: ${ord}.`;
+    case "s": return `${ord} er et lite ord som skrives med én <b>${w.X}</b>, selv om vokalen er kort. Det må du bare kunne!`;
+    case "k": return w.X === "n" && w.post[0] === "g"
+      ? `<b>ng</b> er én lyd, men skrives med to bokstaver – den dobles aldri: ${ord}.`
+      : `Etter vokalen kommer to forskjellige konsonanter (<b>${w.X}${w.post[0]}</b>), da dobler vi ikke: ${ord}.`;
+    case "f": return w.X.length === 1
+      ? `Dobbel konsonant blir enkel når det kommer en ny konsonant etter: «${w.b}» → ${ord}.`
+      : `Kommer det en vokal etter, beholder vi dobbelkonsonanten: «${w.b}» → ${ord}.`;
+  }
+  return "";
+}
+/* ordet som HTML med konsonantene markert */
+function ordHTML(w, X, start, cls = "tw") {
+  let pre = w.pre;
+  if (start) { if (pre) pre = cap(pre); else X = cap(X); }
+  return `${esc(pre)}<span class="${cls}">${esc(X)}</span>${esc(w.post)}`;
+}
+const txt = (w, X, start) => { const t = w.pre + X + w.post; return start ? cap(t) : t; };
+const starter = w => w.s.startsWith("___");
+function exHTML(raw) { const { pre, X, post } = del(raw); return `${esc(pre)}<span class="tw">${esc(X)}</span>${esc(post)}`; }
+const exBtn = raw => { const { pre, X, post } = del(raw); return `<button class="ex" data-act="si" data-t="${esc(pre + X + post)}">${exHTML(raw)}</button>`; };
+
+/* ---------- lagring ---------- */
+const KEY = "dobbeltrobbel-v1";
+const fresh = () => ({ v: 1, theme: "auto", lvl: "alle", m: {}, best: 0 });
+function load() { try { const x = JSON.parse(localStorage.getItem(KEY)); if (x && x.v === 1) return Object.assign(fresh(), x); } catch (e) {} return fresh(); }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+let S = load();
+const lv = w => S.m[w.id] || 0;
+
+/* ---------- tale (norsk stemme hvis enheten har en) ---------- */
+const TTS = "speechSynthesis" in window;
+let noVoice = null;
+function pickVoice() { const v = speechSynthesis.getVoices(); noVoice = v.find(x => /^(nb|no)[-_]/i.test(x.lang)) || v.find(x => /^(nb|no|nn)/i.test(x.lang)) || null; }
+const harTale = () => TTS && !!noVoice;
+if (TTS) { pickVoice(); speechSynthesis.onvoiceschanged = () => { const had = !!noVoice; pickVoice(); if (!had && noVoice && (view === "home" || view === "regler")) (view === "home" ? home : regler)(); }; }
+function si(t) {
+  if (!harTale()) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(t); u.voice = noVoice; u.lang = noVoice.lang; u.rate = .85;
+  speechSynthesis.speak(u);
+}
+const sayBtn = (t, sm) => harTale() ? `<button class="say${sm ? " sm" : ""}" data-act="si" data-t="${esc(t)}" aria-label="Hør ordet">🔊</button>` : "";
+
+/* ---------- tema og toppfelt ---------- */
+function applyTheme() { const r = document.documentElement; if (S.theme === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", S.theme); updTop(); }
+function erMork() { const t = document.documentElement.getAttribute("data-theme"); return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; }
+function updTop() {
+  $("#themeBtn").textContent = erMork() ? "☀" : "☾";
+  $("#pillKan").textContent = `⭐ ${W.filter(w => lv(w) >= 2).length}/${W.length}`;
+}
+
+/* ---------- navigasjon ---------- */
+let view = "home", R = null, L = null, autoTimer = null, lynTimer = null;
+function stopAll() { clearTimeout(autoTimer); clearInterval(lynTimer); if (TTS) speechSynthesis.cancel(); if (L) L.ferdig = true; }
+const NIVA = [
+  { k: "alle", t: "Alle ord", d: "Alt blandet" },
+  { k: "1", t: "Nivå 1", d: "Korte ord: katt, tak, ball, bil" },
+  { k: "2", t: "Nivå 2", d: "Lengre ord og ordpar: hoppe, bake – bakke" },
+  { k: "3", t: "Nivå 3", d: "Unntakene: rom, han, hest, grønt" },
+];
+const pool = () => S.lvl === "alle" ? W : W.filter(w => String(w.n) === S.lvl);
+
+/* ---------- forside ---------- */
+function home() {
+  view = "home"; stopAll();
+  const P = pool(), kan = P.filter(w => lv(w) >= 2).length;
+  const fersk = !W.some(w => lv(w) > 0);
+  const MODES = [
+    { m: "regler", ic: "📖", t: "Regelen", d: "Når skal det være dobbel? Seks korte regler", rec: fersk ? "Start her" : "" },
+    { m: "velg", ic: "✌️", t: "Én eller to?", d: "Velg riktig skrivemåte – 10 ord" },
+    { m: "feil", ic: "🔎", t: "Feiljakt", d: "Finn ordet som er skrevet feil" },
+    { m: "skriv", ic: "✍️", t: "Skriv ordet", d: "Skriv selv – gir dobbelt gull" },
+    { m: "lyn", ic: "⚡", t: "Lynrunde", d: S.best ? `60 sekunder – rekorden din er ${S.best}` : "Hvor mange klarer du på 60 sekunder?" },
+    { m: "prove", ic: "📝", t: "Prøveprøve", d: "20 blandede oppgaver med resultat" },
+  ];
+  app.innerHTML = `
+  <section class="hero">
+    <div class="twins" aria-hidden="true"><span>t</span><span>t</span></div>
+    <div class="txt">
+      <h1>Dobbeltrøbbel</h1>
+      <p class="muted">Katt eller kat? Tak eller takk? Her øver du på når det skal være <b>dobbel konsonant</b>.</p>
+    </div>
+  </section>
+  <div class="card step">
+    <div class="stephead"><span class="num">1</span><h2>Velg nivå</h2></div>
+    <div class="chips">${NIVA.map(n => `<button class="chip" data-act="lvl" data-l="${n.k}" aria-pressed="${S.lvl === n.k}">${n.t}</button>`).join("")}</div>
+    <p class="muted small">${NIVA.find(n => n.k === S.lvl).d} · ${P.length} ord</p>
+  </div>
+  <div class="card step">
+    <div class="stephead"><span class="num">2</span><h2>Velg øving</h2></div>
+    <div class="modes">${MODES.map(o => `<button class="mode" data-act="mode" data-m="${o.m}"><span class="ic">${o.ic}</span><span><b>${o.t}</b><small>${o.d}</small>${o.rec ? `<span class="rec">${o.rec}</span>` : ""}</span></button>`).join("")}</div>
+  </div>
+  <div class="card prog">
+    <div class="progtop"><h3>Ordene dine</h3><span class="muted small">${kan} av ${P.length} kan du</span></div>
+    <div class="tiles">${P.map(w => `<button class="tile lv${lv(w)}" data-act="si" data-t="${esc(w.id)}" title="${esc(REGEL[w.r])}">${ordHTML(w, w.X, false, "")}</button>`).join("")}</div>
+    <div class="legend"><span><i></i>Ny</span><span><i class="lv1"></i>Litt</span><span><i class="lv2"></i>Nesten</span><span><i class="lv3"></i>Kan</span></div>
+    <p class="muted small">Riktig på første forsøk gjør ruta mørkere. Feil gjør den lysere igjen.${harTale() ? " Trykk på et ord for å høre det." : ""}</p>
+  </div>`;
+  updTop(); scrollTo(0, 0);
+}
+
+/* ---------- regelsiden ---------- */
+function regler() {
+  view = "regler"; stopAll();
+  const R6 = [
+    { ic: "🐱", t: "1. Kort vokal → dobbel konsonant",
+      p: `Når vokalen er <b>kort</b>, og det bare kommer <b>én konsonantlyd</b> etter, skriver vi <b>dobbel konsonant</b>.`,
+      ex: ["ka[tt]", "ta[kk]", "ba[ll]", "ho[pp]e", "sy[kk]el", "tro[ll]"],
+      tips: `Si ordet høyt. Klippes vokalen kort av – «katt!» – er det som regel dobbel.` },
+    { ic: "🎂", t: "2. Lang vokal → én konsonant",
+      p: `Når vokalen er <b>lang</b>, skriver vi bare <b>én</b> konsonant. Hør hvor lenge a-en varer i «kaaake».`,
+      ex: ["ka[k]e", "ta[k]", "bi[l]", "sko[l]e", "li[t]en", "å[p]en"],
+      par: true },
+    { ic: "🐑", t: "3. Aldri mm på slutten",
+      p: `Ingen ord slutter på <b>mm</b> – selv om vokalen er kort.`,
+      ex: ["la[m]", "ro[m]", "fra[m]", "ko[m]", "hje[m]", "so[m]", "du[m]"],
+      p2: `Men når ordet får en endelse, kommer <b>mm</b> tilbake:`,
+      ex2: ["ro[mm]et", "ko[mm]er", "hje[mm]e", "da[mm]en"] },
+    { ic: "👋", t: "4. De små ordene",
+      p: `Noen små ord bruker vi hele tiden. De har bare <b>én</b> konsonant selv om vokalen er kort. Dem må du bare kunne:`,
+      ex: ["ha[n]", "hu[n]", "de[n]", "me[n]", "ka[n]", "ska[l]", "vi[l]", "ti[l]", "a[t]", "fo[r]", "e[t]"],
+      tips: `Pass på: <b>ett</b> med to t er tallet 1 – «ett eple, to epler». Og <b>menn</b>, <b>vill</b>, <b>skall</b> og <b>kanne</b> er andre ord enn men, vil, skal og kan.` },
+    { ic: "🐴", t: "5. To forskjellige konsonanter → ikke dobbel",
+      p: `Kommer det <b>to forskjellige</b> konsonanter etter vokalen, dobler vi ikke.`,
+      ex: ["he[s]t", "ste[r]k", "ka[l]d", "me[l]k", "fi[s]k", "je[n]te"],
+      tips: `<b>ng</b> er én lyd, men to bokstaver – den dobles aldri: seng, ting, lang.` },
+    { ic: "🌱", t: "6. Dobbel blir enkel foran en ny konsonant",
+      p: `Får et ord med dobbel konsonant en endelse som begynner med en <b>konsonant</b>, blir det som regel <b>enkel</b>:`,
+      steg: [["grønn", "grø[n]t"], ["tykk", "ty[k]t"], ["kjenne", "kje[n]te"], ["glemme", "gle[m]te"], ["spille", "spi[l]te"]],
+      p2: `Begynner endelsen med en <b>vokal</b>, beholder vi dobbel:`,
+      ex2: ["grø[nn]e", "ka[tt]en", "ho[pp]et"],
+      tips: `Noen få ord er unntak, for eksempel <b>fullt</b>.` },
+  ];
+  app.innerHTML = `
+  <button class="back" data-act="home">← Tilbake</button>
+  <h1>Regelen for dobbel konsonant</h1>
+  <p class="muted">Kortversjonen: <b>kort vokal → dobbel</b>, <b>lang vokal → én</b>. Så finnes det noen unntak.${harTale() ? " Trykk på ordene for å høre dem." : ""}</p>
+  <div class="rules">${R6.map(r => `
+    <section class="rule">
+      <h2><span class="ri">${r.ic}</span>${r.t}</h2>
+      <p>${r.p}</p>
+      ${r.ex ? `<div class="exs">${r.ex.map(exBtn).join("")}</div>` : ""}
+      ${r.steg ? `<div class="exs">${r.steg.map(([a, b]) => `<span class="pair"><button class="ex" data-act="si" data-t="${a}">${a}</button><span class="arrow">→</span>${exBtn(b)}</span>`).join("")}</div>` : ""}
+      ${r.p2 ? `<p>${r.p2}</p><div class="exs">${r.ex2.map(exBtn).join("")}</div>` : ""}
+      ${r.par ? `<p><b>Ordpar</b> – lang vokal til venstre, kort vokal til høyre:</p>
+        <div class="pairs">${PAR.map(([a, b]) => `<span class="pair">${exBtn(a)}<i>–</i>${exBtn(b)}</span>`).join("")}</div>` : ""}
+      ${r.tips ? `<div class="tips">💡 ${r.tips}</div>` : ""}
+    </section>`).join("")}
+  </div>
+  <div class="row"><button class="btn pri big" data-act="mode" data-m="velg">Prøv deg: Én eller to? →</button></div>`;
+  scrollTo(0, 0);
+}
+
+/* ---------- runder (velg, feiljakt, skriv, prøve) ---------- */
+function trekk(P, n) {
+  const pool = P.map(w => ({ w, k: Math.random() * (4 - lv(w)) + Math.random() }));
+  return pool.sort((a, b) => b.k - a.k).slice(0, n).map(x => x.w);
+}
+function startRunde(kind) {
+  stopAll(); view = "q";
+  let P = pool(), n = kind === "prove" ? 20 : 10;
+  if (P.length < n) P = W;
+  const ws = shuffle(trekk(P, n));
+  const kinds = kind === "prove" ? shuffle([...Array(8).fill("velg"), ...Array(6).fill("feil"), ...Array(6).fill("skriv")]) : null;
+  R = { kind, items: ws.map((w, i) => ({ w, kind: kinds ? kinds[i] : kind, retry: false })), i: 0, total: ws.length, right: 0, miss: [], ans: null };
+  visQ();
+}
+const LABEL = { velg: "Én eller to?", feil: "Finn ordet som er skrevet feil", skriv: "Skriv ordet som mangler" };
+function visQ() {
+  const it = R.items[R.i], w = it.w, A = R.ans, st = starter(w);
+  const pct = Math.round(100 * R.i / R.items.length);
+  let body = "";
+  if (it.kind === "velg") {
+    it.opts = it.opts || shuffle([w.X, w.alt]);
+    const pre = st ? cap(w.pre) : w.pre;
+    const slot = A ? `<span class="tw">${esc(w.X)}</span>` : `<span class="slot">?</span>`;
+    const [a, b] = w.s.split("___");
+    body = `<div class="sent">${esc(a)}<span class="qw">${esc(pre)}${slot}${esc(w.post)}</span>${esc(b)}</div>
+      <div class="opts">${it.opts.map((x, i) => {
+        let cls = ""; if (A) { if (x === w.X) cls = "good"; else if (x === A.valg) cls = "bad"; }
+        return `<button class="opt ${cls}" data-act="velg" data-x="${esc(x)}" ${A ? "disabled" : ""}><kbd>${i + 1}</kbd>${ordHTML(w, x, st)}</button>`;
+      }).join("")}</div>`;
+  } else if (it.kind === "feil") {
+    const toks = w.s.split(" "), idx = toks.findIndex(t => t.includes("___"));
+    body = `<div class="toks">${toks.map((t, i) => {
+      if (i === idx) {
+        const s0 = i === 0 && t.startsWith("___"), [a, b] = t.split("___");
+        if (A) return `<span class="tok fixed">${esc(a)}<span class="strike">${esc(txt(w, w.alt, s0))}</span>${ordHTML(w, w.X, s0)}${esc(b)}</span>`;
+        return `<button class="tok" data-act="tok" data-i="${i}">${esc(a)}${esc(txt(w, w.alt, s0))}${esc(b)}</button>`;
+      }
+      if (A) return `<span class="tok${A.valg === i ? " wrongpick" : ""}">${esc(t)}</span>`;
+      return `<button class="tok" data-act="tok" data-i="${i}">${esc(t)}</button>`;
+    }).join("")}</div>`;
+  } else {
+    const [a, b] = w.s.split("___");
+    const first = st ? cap(w.id[0]) : w.id[0];
+    body = `<div class="sent">${esc(a)}${A ? `<span class="qw">${ordHTML(w, w.X, st)}</span>` : `<span class="gap"></span>`}${esc(b)}</div>
+      <div class="hint">Ordet begynner på «${esc(first)}» ${sayBtn(w.id)}</div>
+      <div class="wform"><input id="inp" class="${A ? (A.ok ? "good" : "bad") : ""}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Skriv ordet" value="${A ? esc(A.svar) : ""}" ${A ? "disabled" : ""}>
+        ${A ? "" : `<button class="btn pri" data-act="sjekk">Sjekk</button>`}</div>`;
+  }
+  let fb = "";
+  if (A) {
+    const ekstra = it.kind === "skriv" && !A.ok ? `<p>Du skrev «${esc(A.svar)}».</p>`
+      : it.kind === "feil" && !A.ok ? `<p>Det ordet var riktig skrevet. Feilen var «${esc(txt(w, w.alt, false))}».</p>`
+      : it.kind === "velg" && !A.ok ? `<p>Det heter ikke «${esc(w.wrong)}».</p>` : "";
+    fb = `<div class="fb ${A.ok ? "ok" : "wrong"} pop" role="status">
+        <div class="head">${A.ok ? pick(["Riktig!", "Supert!", "Helt rett!", "Bra!", "Ja!"]) : "Ikke helt!"}</div>
+        ${ekstra}
+        <div class="ord"><span>${ordHTML(w, w.X, false)}</span>${sayBtn(w.id, true)}</div>
+        <p class="small">${forklar(w)}</p>
+        <span class="tag">${REGEL[w.r]}</span>
+      </div>
+      <button class="btn pri big" data-act="next" id="nextBtn">${R.i + 1 < R.items.length ? "Neste →" : "Se resultatet →"}</button>`;
+  }
+  app.innerHTML = `
+  <div class="qhead"><button class="back x" data-act="home" aria-label="Avslutt">✕</button>
+    <div class="bar"><i style="width:${pct}%"></i></div><span class="qcount">${Math.min(R.i + 1, R.items.length)}/${R.items.length}</span></div>
+  <div class="card qcard${A && !A.ok ? " shake" : ""}">
+    <div class="qlabel"><span>${LABEL[it.kind]}${it.retry ? " · nytt forsøk" : ""}</span>${it.kind === "velg" ? sayBtn(w.id, true) : ""}</div>
+    <div class="emo" aria-hidden="true">${w.e}</div>
+    ${body}
+    ${fb}
+  </div>`;
+  if (it.kind === "skriv" && !A) setTimeout(() => { const i = $("#inp"); if (i) i.focus(); }, 30);
+  if (A) { const nb = $("#nextBtn"); if (nb) nb.focus({ preventScroll: true }); }
+}
+function svar(ok, extra) {
+  const it = R.items[R.i], w = it.w;
+  if (R.ans) return;
+  R.ans = Object.assign({ ok }, extra);
+  if (!it.retry) {
+    if (ok) { R.right++; S.m[w.id] = Math.min(3, lv(w) + 1); window.Gull && Gull.tjen(it.kind === "skriv" ? 2 : 1); }
+    else { S.m[w.id] = Math.max(0, lv(w) - 1); R.miss.push(w); }
+    save(); updTop();
+  }
+  if (!ok && !it.retry && R.kind !== "prove") R.items.push({ w, kind: it.kind, retry: true });
+  visQ();
+  if (ok) autoTimer = setTimeout(neste, 1800);
+}
+function neste() {
+  clearTimeout(autoTimer);
+  if (!R || view !== "q" || !R.ans) return;
+  R.i++; R.ans = null;
+  if (R.i >= R.items.length) slutt(); else visQ();
+}
+const norm = s => s.toLowerCase().replace(/[.!?,«»"]/g, "").replace(/\s+/g, " ").trim();
+function sjekk() {
+  const inp = $("#inp"); if (!inp || R.ans) return;
+  const v = inp.value; if (!norm(v)) { inp.focus(); return; }
+  const w = R.items[R.i].w;
+  svar([w.id, ...w.a].map(norm).includes(norm(v)), { svar: v.trim() });
+}
+function slutt() {
+  view = "slutt";
+  const pct = Math.round(100 * R.right / R.total);
+  const b = pct >= 90 ? 5 : pct >= 75 ? 3 : pct >= 50 ? 1 : 0;
+  if (b) window.Gull && Gull.bonus(b, pct === 100 ? "Alt riktig!" : "Runde ferdig!");
+  const [ic, t] = pct === 100 ? ["🏆", "Alt riktig!"] : pct >= 80 ? ["🌟", "Kjempebra!"] : pct >= 60 ? ["👍", "Godt jobba!"] : ["💪", "Øvelse gjør mester!"];
+  const miss = [...new Map(R.miss.map(w => [w.id, w])).values()];
+  app.innerHTML = `
+  <div class="card res pop">
+    <div class="big">${ic}</div>
+    <h2>${t}</h2>
+    ${R.kind === "prove" ? `<div class="score">${pct} %</div>` : ""}
+    <p>Du fikk <b>${R.right} av ${R.total}</b> riktig på første forsøk.</p>
+    ${miss.length ? `<div class="misslist"><h3>Øv mer på disse:</h3>${miss.map(w => `<div><b>${ordHTML(w, w.X, false)}</b><span class="small">${forklar(w)}</span></div>`).join("")}</div>` : ""}
+    <div class="row" style="width:100%">
+      <button class="btn pri big" data-act="mode" data-m="${R.kind}">Ny runde</button>
+      <button class="btn big" data-act="home">Til menyen</button>
+    </div>
+  </div>`;
+  scrollTo(0, 0);
+}
+
+/* ---------- lynrunde ---------- */
+const LYN_TID = 60000;
+function lynIntro() {
+  stopAll(); view = "lyn"; L = null;
+  app.innerHTML = `
+  <button class="back" data-act="home">← Tilbake</button>
+  <div class="card res">
+    <div class="big">⚡</div>
+    <h2>Lynrunde</h2>
+    <p>Du får <b>60 sekunder</b>. Er ordet i setningen <b>riktig</b> eller <b>feil</b> skrevet? Svar så fort du kan!</p>
+    <p class="muted small">På tastatur: ← feil · → riktig</p>
+    ${S.best ? `<p>Rekorden din: <b>${S.best}</b></p>` : ""}
+    <button class="btn pri big" data-act="lynstart">Start!</button>
+  </div>`;
+}
+function lynGo() {
+  stopAll(); view = "lyn";
+  L = { slutt: Date.now() + LYN_TID, score: 0, combo: 0, maks: 0, lock: false, cur: null, feil: [], ferdig: false };
+  app.innerHTML = `
+  <div class="qhead"><button class="back x" data-act="home" aria-label="Avslutt">✕</button>
+    <div class="bar time"><i id="lynbar" style="width:100%"></i></div><span class="qcount" id="lyntid">60</span></div>
+  <div class="card qcard">
+    <div class="lynscore"><span>Poeng: <span id="lynpoeng">0</span></span><span class="combo" id="lyncombo"></span></div>
+    <div class="lynq" id="lynq"></div>
+    <div class="lynfasit" id="lynfasit"></div>
+    <div class="lynbtns">
+      <button class="btn no" data-act="lyn" data-v="0">✗ Feil</button>
+      <button class="btn yes" data-act="lyn" data-v="1">✓ Riktig</button>
+    </div>
+  </div>`;
+  lynNy();
+  lynTimer = setInterval(lynTick, 100);
+}
+function lynNy() {
+  if (!L || L.ferdig) return;
+  const P = pool(); let w;
+  do { w = pick(P); } while (P.length > 1 && L.cur && w === L.cur.w);
+  const riktig = Math.random() < .5, st = starter(w), [a, b] = w.s.split("___");
+  L.cur = { w, riktig }; L.lock = false;
+  const q = $("#lynq"); q.className = "lynq";
+  q.innerHTML = `<div class="emo" aria-hidden="true">${w.e}</div><div class="sent">${esc(a)}<span class="lw">${esc(txt(w, riktig ? w.X : w.alt, st))}</span>${esc(b)}</div>`;
+  $("#lynfasit").innerHTML = "";
+}
+function lynSvar(v) {
+  if (!L || L.ferdig || L.lock) return;
+  const { w, riktig } = L.cur, ok = v === riktig;
+  L.lock = true;
+  $("#lynq").className = "lynq " + (ok ? "ok" : "bad");
+  if (ok) {
+    L.score++; L.combo++; L.maks = Math.max(L.maks, L.combo);
+    setTimeout(lynNy, 220);
+  } else {
+    L.combo = 0; L.feil.push(w);
+    $("#lynfasit").innerHTML = riktig ? `Det var riktig skrevet: ${ordHTML(w, w.X, false)}` : `Riktig er: ${ordHTML(w, w.X, false)}`;
+    setTimeout(lynNy, 1300);
+  }
+  $("#lynpoeng").textContent = L.score;
+  $("#lyncombo").textContent = L.combo >= 3 ? `🔥 ${L.combo} på rad` : "";
+}
+function lynTick() {
+  if (!L || L.ferdig) return;
+  const left = L.slutt - Date.now();
+  if (left <= 0) return lynSlutt();
+  $("#lynbar").style.width = (100 * left / LYN_TID) + "%";
+  $("#lyntid").textContent = Math.ceil(left / 1000);
+}
+function lynSlutt() {
+  clearInterval(lynTimer); L.ferdig = true; view = "lynslutt";
+  const rekord = L.score > S.best; if (rekord) S.best = L.score; save();
+  const b = Math.min(15, Math.floor(L.score / 2));
+  if (b) window.Gull && Gull.bonus(b, rekord ? "Ny rekord!" : "Lynrunde ferdig!");
+  const miss = [...new Map(L.feil.map(w => [w.id, w])).values()];
+  app.innerHTML = `
+  <div class="card res pop">
+    <div class="big">${rekord ? "🏆" : "⚡"}</div>
+    <h2>${rekord ? "Ny rekord!" : "Tiden er ute!"}</h2>
+    <div class="score">${L.score} poeng</div>
+    <p>${L.maks >= 3 ? `Lengste rekke: <b>${L.maks}</b> på rad. ` : ""}Rekorden din er <b>${S.best}</b>.</p>
+    ${miss.length ? `<div class="misslist"><h3>Disse bommet du på:</h3>${miss.map(w => `<div><b>${ordHTML(w, w.X, false)}</b><span class="small">${forklar(w)}</span></div>`).join("")}</div>` : ""}
+    <div class="row" style="width:100%">
+      <button class="btn pri big" data-act="lynstart">Prøv igjen</button>
+      <button class="btn big" data-act="home">Til menyen</button>
+    </div>
+  </div>`;
+  scrollTo(0, 0);
+}
+
+/* ---------- hendelser ---------- */
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const d = b.dataset;
+  switch (d.act) {
+    case "home": home(); break;
+    case "theme": S.theme = erMork() ? "light" : "dark"; save(); applyTheme(); break;
+    case "lvl": S.lvl = d.l; save(); home(); break;
+    case "mode": d.m === "regler" ? regler() : d.m === "lyn" ? lynIntro() : startRunde(d.m); break;
+    case "si": si(d.t); break;
+    case "velg": { const w = R.items[R.i].w; svar(d.x === w.X, { valg: d.x }); break; }
+    case "tok": { const i = +d.i, toks = R.items[R.i].w.s.split(" "); const idx = toks.findIndex(t => t.includes("___")); svar(i === idx, { valg: i }); break; }
+    case "sjekk": sjekk(); break;
+    case "next": neste(); break;
+    case "lynstart": lynGo(); break;
+    case "lyn": lynSvar(d.v === "1"); break;
+  }
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") { home(); return; }
+  if (view === "q" && R) {
+    const it = R.items[R.i];
+    if (e.key === "Enter") {
+      if (e.target.tagName === "BUTTON" && e.target.id !== "nextBtn") return;
+      e.preventDefault();
+      if (R.ans) neste(); else if (it.kind === "skriv") sjekk();
+      return;
+    }
+    if (!R.ans && it.kind === "velg" && (e.key === "1" || e.key === "2")) { const x = it.opts[+e.key - 1]; svar(x === it.w.X, { valg: x }); }
+  }
+  if (view === "lyn" && L && !L.ferdig) {
+    const k = e.key.toLowerCase();
+    if (k === "arrowleft" || k === "f") { e.preventDefault(); lynSvar(false); }
+    if (k === "arrowright" || k === "j") { e.preventDefault(); lynSvar(true); }
+  }
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", updTop);
+
+applyTheme();
+home();
+</script>
+</body>
+</html>
