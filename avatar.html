@@ -76,6 +76,19 @@ main{max-width:1040px;margin:0 auto;padding:0 16px 48px}
 .valg{display:flex;flex-wrap:wrap;gap:8px}
 .prikk{width:44px;height:44px;border-radius:50%;border:3px solid var(--kant);padding:0}
 .prikk[aria-pressed="true"]{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-myk)}
+.trinnknapp{background:var(--kort2);font-family:var(--fd);font-weight:700;font-size:1.05rem}
+.trinnknapp[aria-pressed="true"]{background:var(--pri);color:var(--pri-tekst)}
+.merker{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.merke{display:flex;gap:12px;align-items:center;background:var(--kort);border:2px solid var(--kant);border-radius:16px;padding:10px;text-align:left}
+.merke .ikon{width:54px;height:54px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:1.8rem;background:var(--kort2);border:3px solid var(--kant)}
+.merke.har{border-color:#f2c230}
+.merke.har .ikon{background:radial-gradient(circle at 35% 30%,#fff3c4,#f2c230 70%);border-color:#c98a00}
+.merke:not(.har) .ikon{filter:grayscale(1);opacity:.55}
+.merke .mt{font-weight:800;font-family:var(--fd);font-size:1.02rem;line-height:1.2}
+.merke .mk{font-size:.82rem;color:var(--dempet);line-height:1.3;margin-top:2px}
+.merke .belonning{width:46px;height:46px;flex:none;margin-left:auto;border-radius:10px;overflow:hidden;background:var(--kort2)}
+.merke .belonning svg{width:100%;height:100%;display:block}
+.merke:not(.har) .belonning{opacity:.45}
 .hodeknapp{width:84px;border:2px solid var(--kant);background:var(--kort2);border-radius:14px;padding:4px;display:flex;flex-direction:column;align-items:center;font-size:.8rem;font-weight:600}
 .hodeknapp svg{width:72px;height:72px;display:block}
 .hodeknapp[aria-pressed="true"]{border-color:var(--pri);background:var(--pri-myk)}
@@ -155,7 +168,11 @@ function S() { return G.tilstand(); }
 function oppdaterSaldo() { $("#saldo").textContent = S().gull; }
 
 /* ---------- små byggeklosser ---------- */
-function nivaaTag(pris) { const n = G.nivaa(pris); return `<span class="niv" style="background:${n.farge}">${n.navn}</span>`; }
+function nivaaTag(it) { const n = G.nivaaTing(it); return `<span class="niv" style="background:${n.farge}">${n.navn}</span>`; }
+function trinnHTML(valgt) {
+  return `<div class="valg">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(t => `<button class="prikk trinnknapp" data-velgtrinn="${t}" aria-pressed="${+valgt === t}" aria-label="${t}. trinn">${t}.</button>`).join("")}</div>`;
+}
+function merkeFor(it) { return it && it.merke ? G.MERKE_ID[it.merke] : null; }
 function hodeVB() { return "40 10 160 160"; }
 function konfetti() {
   const k = document.createElement("div"); k.className = "konfetti";
@@ -214,17 +231,19 @@ function visLag() {
     <div class="oppsett">
       <div class="side"><div class="stor-ava">${forh}</div></div>
       <div>
-        <div class="kort"><h2>2. Hva heter du?</h2>
+        <div class="kort"><h2>2. Hvilket trinn går du på?</h2>
+          <p class="small muted" style="margin:0 0 8px">Da viser vi spillene og prøvene som passer for deg.</p>${trinnHTML(u.trinn)}</div>
+        <div class="kort"><h2>3. Hva heter du?</h2>
           <input type="text" id="navn" maxlength="20" placeholder="Kallenavn" value="${esc(u.navn)}" autocomplete="off">
           <p class="small muted" style="margin:6px 0 0">Navnet lagres bare på denne enheten. Bruk gjerne et kallenavn.</p></div>
-        <div class="kort"><h2>3. Slik ser du ut</h2>${utseendeHTML(u)}</div>
+        <div class="kort"><h2>4. Slik ser du ut</h2>${utseendeHTML(u)}</div>
         <button class="knapp pri stor" id="ferdig">Lag avataren min →</button>
       </div>
     </div>` : ""}
   </div>`;
   const n = $("#navn"); if (n) n.oninput = () => { u.navn = n.value; };
   const f = $("#ferdig"); if (f) f.onclick = () => {
-    G.lagBruker({ navn: u.navn, kjonn: u.kjonn, ut: u.ut });
+    G.lagBruker({ navn: u.navn, kjonn: u.kjonn, ut: u.ut, trinn: u.trinn || null });
     utkast = null; fane = "butikk";
     visHoved(); konfetti();
     G.melding(`Velkommen! Du fikk ${G.STARTGAVE} gull i startgave.`, true);
@@ -239,7 +258,7 @@ function visHoved() {
   oppdaterSaldo();
   const ting = s.eid.length;
   const maal = nesteMaal(s);
-  const faner = [["butikk", "🛍️ Butikk"], ["garderobe", "👕 Garderobe"], ["utseende", "🙂 Utseende"], ["gull", `${mynt} Gullet mitt`]];
+  const faner = [["butikk", "🛍️ Butikk"], ["garderobe", "👕 Garderobe"], ["merker", "🏅 Merker"], ["utseende", "🙂 Meg"], ["gull", `${mynt} Gullet mitt`]];
   app.innerHTML = `<div class="oppsett">
     <aside class="side" id="side">${sideHTML(s, maal, ting)}</aside>
     <section>
@@ -252,7 +271,7 @@ function sideHTML(s, maal, ting) {
   return `<div class="stor-ava">${G.tegn(s)}</div>
     <div><h1>${esc(s.navn || "Avataren min")}</h1>
     <div class="saldo">${mynt} ${s.gull} gull</div>
-    <div class="small muted">Tjent totalt: ${s.totalt} · ${ting} ${ting === 1 ? "ting" : "ting"} kjøpt</div>
+    <div class="small muted">${s.trinn ? s.trinn + ". trinn · " : ""}Tjent totalt: ${s.totalt} · ${Object.keys(s.merker || {}).length} av ${G.MERKER.length} merker</div>
     ${maal ? `<div class="maal">Neste mål: <b>${esc(maal.navn)}</b> (${maal.pris})<div class="bar"><i style="width:${Math.min(100, Math.round(100 * s.gull / maal.pris))}%"></i></div></div>` : ""}</div>`;
 }
 function oppdaterSide() { const s = S(); const e = $("#side"); if (e) e.innerHTML = sideHTML(s, nesteMaal(s), s.eid.length); oppdaterSaldo(); }
@@ -262,7 +281,9 @@ function tegnFane() {
   document.querySelectorAll("[data-fane]").forEach(b => b.setAttribute("aria-selected", b.dataset.fane === fane));
   if (fane === "butikk") el.innerHTML = butikkHTML();
   if (fane === "garderobe") el.innerHTML = garderobeHTML();
+  if (fane === "merker") el.innerHTML = merkerHTML();
   if (fane === "utseende") el.innerHTML = `<div class="kort"><h2>Gutt eller jente</h2>${kjonnHTML(S())}</div>
+    <div class="kort"><h2>Trinn</h2><p class="small muted" style="margin:0 0 8px">Bestemmer hvilke spill, prøver og oppdrag du ser på forsiden.</p>${trinnHTML(S().trinn)}</div>
     <div class="kort"><h2>Navn</h2><input type="text" id="navn" maxlength="20" placeholder="Kallenavn" value="${esc(S().navn)}" autocomplete="off">
       <p class="small muted" style="margin:6px 0 0">Lagres bare på denne enheten.</p></div>
     <div class="kort"><h2>Utseende</h2><p class="small muted" style="margin:0">Det er gratis å endre utseendet så mye du vil.</p>${utseendeHTML(S())}</div>`;
@@ -273,12 +294,12 @@ function tegnFane() {
 
 function vareHTML(it, s, iGarderobe) {
   const eid = G.eier(it.id, s), paa = paaNa(s)[it.slot] === it.id;
-  const dyr = !eid && it.pris > s.gull;
+  const laast = !!it.merke && !eid, dyr = laast || (!eid && it.pris > s.gull);
   return `<button class="vare${dyr ? " dyr" : ""}${paa ? " paa" : ""}" data-vare="${it.id}">
     ${paa ? '<span class="merkelapp">På</span>' : (eid && !iGarderobe ? '<span class="merkelapp">Har</span>' : "")}
     <span class="bilde">${G.tegnTing(it.id, s)}</span>
     <span class="navn">${esc(it.navn)}</span>
-    <span class="rad">${eid ? (iGarderobe ? `<span class="small muted">${paa ? "Trykk for å ta av" : "Trykk for å ta på"}</span>` : '<span class="small muted">Din</span>') : `<span class="pris">${mynt}${it.pris}</span>`}${it.pris ? nivaaTag(it.pris) : ""}</span>
+    <span class="rad">${eid ? (iGarderobe ? `<span class="small muted">${paa ? "Trykk for å ta av" : "Trykk for å ta på"}</span>` : '<span class="small muted">Din</span>') : (laast ? `<span class="pris">🔒 ${merkeFor(it).ikon}</span>` : `<span class="pris">${mynt}${it.pris}</span>`)}${it.pris || it.merke ? nivaaTag(it) : ""}</span>
   </button>`;
 }
 function standard(s) { return { overdel: s.kjonn === "jente" ? "ts-rosa" : "ts-bla", underdel: "bukse-jeans", sko: "sko-hvit" }; }
@@ -286,11 +307,12 @@ function paaNa(s) { return Object.assign(standard(s), s.paa); }
 
 function butikkHTML() {
   const s = S();
-  let varer = G.KATALOG.filter(it => it.pris > 0 && (kat === "alle" || it.slot === kat));
-  if (raad) varer = varer.filter(it => G.eier(it.id, s) || it.pris <= s.gull);
-  varer.sort((a, b) => a.pris - b.pris);
+  let varer = G.KATALOG.filter(it => (it.pris > 0 || it.merke) && (kat === "alle" || it.slot === kat || (kat === "merke" && it.merke)));
+  if (raad) varer = varer.filter(it => G.eier(it.id, s) || (!it.merke && it.pris <= s.gull));
+  varer.sort((a, b) => (a.merke ? 1e6 : a.pris) - (b.merke ? 1e6 : b.pris));
   return `<div class="chips">
       <button class="chip" data-kat="alle" aria-pressed="${kat === "alle"}">Alle</button>
+      <button class="chip" data-kat="merke" aria-pressed="${kat === "merke"}">🏅 Merke-ting</button>
       ${G.PLASSER.map(([k, t]) => `<button class="chip" data-kat="${k}" aria-pressed="${kat === k}">${t}</button>`).join("")}
     </div>
     <div class="chips" style="margin-top:-6px"><button class="chip" data-raad aria-pressed="${raad}">${raad ? "✓ " : ""}Bare det jeg har råd til</button></div>
@@ -305,6 +327,27 @@ function garderobeHTML() {
     return `<div class="kort"><h2>${t}</h2><div class="rutenett">${mine.map(it => vareHTML(it, s, true)).join("")}</div></div>`;
   }).join("") + `<p class="small muted">Du kan ha på én ting av hver sort. Overdel, bukse og sko må du alltid ha på.</p>`;
 }
+function merkerHTML() {
+  const s = S(), har = s.merker || {};
+  const passer = m => !m.spill || (window.SPILL || []).some(sp => m.spill.includes(G.filKey(sp.fil)) && G.passer(sp, Object.assign({}, s, { visAlle: false })));
+  const kort = m => {
+    const it = G.ITEM[m.ting], dato = har[m.id];
+    const sp = m.spill && (window.SPILL || []).find(x => m.spill.includes(G.filKey(x.fil)));
+    return `<button class="merke${dato ? " har" : ""}" data-vare="${m.ting}"><span class="ikon">${m.ikon}</span>
+      <span style="min-width:0"><span class="mt">${esc(m.navn)}</span><span class="mk" style="display:block">${dato ? `Tatt ${new Date(dato).toLocaleDateString("no", { day: "numeric", month: "long" })}` : esc(m.krav)}${sp && !dato ? `<br>${sp.ikon} ${esc(sp.tittel)}` : ""}</span>
+      <span class="mk" style="display:block">${dato ? "Låste opp: " : "Gir: "}${esc(it ? it.navn : "")}</span></span>
+      <span class="belonning">${it ? G.tegnTing(it.id, s) : ""}</span></button>`;
+  };
+  const spillmerker = G.MERKER.filter(m => m.spill && (har[m.id] || passer(m)));
+  const andre = G.MERKER.filter(m => m.spill && !har[m.id] && !passer(m));
+  const tvers = G.MERKER.filter(m => !m.spill);
+  const antall = Object.keys(har).length;
+  return `<div class="kort"><h2>Mestringsmerker</h2><p style="margin:0">Merkene får du når du virkelig kan noe – ikke bare når du har spilt mye. Hvert merke låser opp en ting som ikke kan kjøpes for gull.
+      Du har <b>${antall} av ${G.MERKER.length}</b>.</p></div>
+    <div class="kort"><h2>I spillene</h2><div class="merker">${spillmerker.map(kort).join("")}</div></div>
+    <div class="kort"><h2>På tvers av spillene</h2><div class="merker">${tvers.map(kort).join("")}</div></div>
+    ${andre.length ? `<details class="kort"><summary><b>Merker for andre trinn (${andre.length})</b></summary><div class="merker" style="margin-top:10px">${andre.map(kort).join("")}</div></details>` : ""}`;
+}
 function gullHTML() {
   const s = S();
   const dag = s.dag && s.dag.d === G.idag() ? s.dag.n : {};
@@ -314,9 +357,12 @@ function gullHTML() {
   const spillMedGull = (window.SPILL || []).filter(sp => sp.gull !== false);
   return `<div class="kort"><h2>Slik tjener du gull</h2>
       <ul class="regler">
-        <li>Hvert riktige svar gir gull – vanskelige oppgaver gir litt mer.</li>
+        <li>Hvert riktige svar på første forsøk gir gull – vanskelige oppgaver gir litt mer.</li>
         <li>Du får bonusgull når du fullfører en runde, og ekstra når den går bra.</li>
         <li>Du kan tjene opptil <b>${G.DAGSTAK} gull per spill hver dag</b>. Øv på flere fag, så samler du mer!</li>
+        <li>Bommer du, havner oppgaven i <a href="feilsamler.html">Feilsamleren</a>. Klarer du den etter en pause, får du 3 comeback-gull.</li>
+        <li>Dagens oppdrag på forsiden gir 5 gull hver, og 10 ekstra når alle er klare.</li>
+        <li>De tre siste dagene før en prøve gir spillet dobbelt gull.</li>
         <li>Gullet er det samme i alle spillene.</li>
       </ul></div>
     <div class="kort"><h2>Her har du tjent gullet</h2>
@@ -343,9 +389,10 @@ function gullHTML() {
 function apneVare(id) {
   const s = S(), it = G.ITEM[id]; if (!it) return;
   const eid = G.eier(id, s), paa = paaNa(s)[it.slot] === id;
-  const mangler = it.pris - s.gull;
+  const mangler = it.pris - s.gull, m = merkeFor(it);
   let knapper;
-  if (!eid) knapper = mangler > 0
+  if (!eid && m) knapper = `<button class="knapp pri" data-fane-ga="merker">Se merkene</button>`;
+  else if (!eid) knapper = mangler > 0
     ? `<button class="knapp pri" disabled>Du trenger ${mangler} gull til</button>`
     : `<button class="knapp pri" data-kjop="${id}">Kjøp for ${it.pris} gull</button>`;
   else if (paa) knapper = G.PAKREVD.includes(it.slot) ? `<button class="knapp" disabled>Du har den på</button>` : `<button class="knapp" data-av="${it.slot}">Ta av</button>`;
@@ -353,8 +400,8 @@ function apneVare(id) {
   dlg.innerHTML = `<div class="dlg">
     <div class="stor-ava">${G.tegn(s, { prov: id })}</div>
     <h2>${esc(it.navn)}</h2>
-    <div style="margin-top:6px">${nivaaTag(it.pris)}</div>
-    ${eid ? `<p class="muted" style="margin:8px 0 0">Denne er din.</p>` : `<p class="pris">${mynt} ${it.pris} gull</p>
+    <div style="margin-top:6px">${nivaaTag(it)}</div>
+    ${!eid && m ? `<p style="margin:10px 0 0">🔒 Låses opp med merket <b>${m.ikon} ${esc(m.navn)}</b>.</p><p class="small muted" style="margin:4px 0 0">${esc(m.krav)}</p>` : eid ? `<p class="muted" style="margin:8px 0 0">${m ? `Du fikk den for merket ${m.ikon} ${esc(m.navn)}.` : "Denne er din."}</p>` : `<p class="pris">${mynt} ${it.pris} gull</p>
       ${mangler > 0 ? `<p class="small muted" style="margin:0">Du har ${s.gull}. Svar riktig i spillene for å tjene mer!</p>` : `<p class="small muted" style="margin:0">Du har ${s.gull} gull.</p>`}`}
     <div class="knapper">${knapper}<button class="knapp" data-lukk>Lukk</button></div>
   </div>`;
@@ -379,6 +426,12 @@ document.addEventListener("click", e => {
     return;
   }
   if (d.fane) { fane = t.dataset.fane; tegnFane(); return; }
+  if (d.faneGa) { lukk(); fane = d.faneGa; tegnFane(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+  if (d.velgtrinn) {
+    if (utkast) { utkast.trinn = +d.velgtrinn; visLag(); }
+    else { G.settTrinn(+d.velgtrinn); oppdaterSide(); tegnFane(); }
+    return;
+  }
   if (d.kat) { kat = d.kat; tegnFane(); return; }
   if ("raad" in d) { raad = !raad; tegnFane(); return; }
   if (d.vare) {

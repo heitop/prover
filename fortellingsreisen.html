@@ -545,11 +545,14 @@ function visKort(id) {
 }
 
 /* ---------- kapittel ferdig ---------- */
+/* Mestringsmerke */
+function sjekkMerke() { if (T.KAPITLER.filter(spillbar).every(k => S.ferdig[k.id]) || Object.keys(T.KORT).every(id => S.kort.includes(id))) window.Gull && Gull.merke && Gull.merke("fortellingsreisen"); }
 function kapittelFerdig() {
   const k = kapBy(A.kap), forste = !S.ferdig[k.id], humor = A.humor, forsteHumor = humor && !S.humorFerdig[k.id];
   S.ferdig[k.id] = true; if (humor) S.humorFerdig[k.id] = true;
   A = null; S.aktiv = null; save();
   gen++; opptatt = false; venter = null;
+  sjekkMerke();
   const kNavn = k.nr === 0 ? "Prologen" : k.id === "epilog" ? "Epilogen" : "Kapittel " + k.nr;
   if (window.Gull) Gull.bonus(forste ? 10 : forsteHumor ? 6 : 2, `${kNavn} er ferdig!`);
   const i = T.KAPITLER.indexOf(k), neste = T.KAPITLER[i + 1];
@@ -588,7 +591,7 @@ function dagbok() {
 let P = null;   // aktiv gåte
 function kjorGaate(id) {
   const g = kapBy(A.kap).gaater[id];
-  return new Promise(res => { P = Object.assign({ g, res, feil: 0 }, GAATER[g.type]); P.start(); });
+  return new Promise(res => { P = Object.assign({ g, res, feil: 0, nk: "fr:" + A.kap + ":" + id }, GAATER[g.type]); P.start(); });
 }
 function gaateFerdig(ok, forklaring) {
   const f = forklaring ? `<p class="small">${esc(forklaring)}</p>` : "";
@@ -598,6 +601,13 @@ function gaateFerdig(ok, forklaring) {
   b.addEventListener("click", () => { const p = P; P = null; p.res(ok); });
   fb.appendChild(b); b.focus({ preventScroll: true });
 }
+/* Feilsamleren: feil/riktig sendes bare første gang en oppgave i en gåte besvares */
+function fsSvar(nokkel, ok, oppg) {
+  if (!window.Gull) return;
+  if (ok) { if (Gull.riktig) Gull.riktig(nokkel); }
+  else if (Gull.feil) Gull.feil(nokkel, Object.assign({ emne: fsEmne() }, oppg));
+}
+function fsEmne() { const k = A && kapBy(A.kap); return "Fortellingsreisen" + (k ? ": " + ((T.KORT[k.id] && T.KORT[k.id].navn) || k.tittel) : ""); }
 const GAATER = {
   velg: {
     start() {
@@ -608,6 +618,7 @@ const GAATER = {
     },
     klikk(i, el) {
       const a = this.alts[+i]; if (this.ferdig || el.disabled) return;
+      if (!this.svart) { this.svart = true; const g = this.g; fsSvar(this.nk, !!a.ok, { q: g.sporsmal, a: g.riktig, alt: g.feil.map(f => typeof f === "string" ? f : f.t), forkl: g.forklaring }); }
       if (a.ok) { this.ferdig = true; el.classList.add("good"); document.querySelectorAll(".alt").forEach(b => b.disabled = true); gaateFerdig(this.feil === 0, this.g.forklaring); }
       else { this.feil++; el.classList.add("bad", "shake"); el.disabled = true; const fb = $("#gfb"); fb.className = "fbk feil"; fb.innerHTML = `<b>Ikke helt.</b> ${esc(a.f || "Prøv igjen!")}`; }
     },
@@ -649,6 +660,10 @@ const GAATER = {
     },
     klikk(kid) {
       const neste = this.ko[0]; if (!neste) return;
+      if (this.svart !== neste && this.g.kurver.length >= 3) {
+        this.svart = neste; const g = this.g, kurv = g.kurver.find(k => k.id === neste[1]);
+        fsSvar(this.nk + ":" + neste[0], neste[1] === kid, { q: `${g.tittel} «${neste[0]}»`, a: kurv.navn, alt: g.kurver.filter(k => k !== kurv).map(k => k.navn), forkl: g.forklaring });
+      }
       if (neste[1] === kid) { this.lagt[kid].push(neste[0]); this.ko.shift(); this.tegn(); if (!this.ko.length) gaateFerdig(this.feil <= Math.floor(this.g.ting.length / 6), this.g.forklaring); }
       else { this.feil++; const k = $("#kurv-" + kid); k.classList.remove("shake"); void k.offsetWidth; k.classList.add("shake"); const fb = $("#gfb"); fb.className = "fbk feil"; fb.innerHTML = `<b>Ikke der.</b> Prøv en annen!`; }
     },
@@ -688,6 +703,12 @@ const GAATER = {
       const fb = $("#gfb");
       if (this.valgtV === null) { fb.className = "fbk feil"; fb.innerHTML = `<b>Velg fra venstre først.</b> Trykk på noe i venstre kolonne, så på det som passer til høyre.`; return; }
       const v = this.v[this.valgtV], hEl = el, vEl = document.querySelector(`[data-act="p:v${this.valgtV}"]`);
+      this.svart = this.svart || new Set();
+      if (!this.svart.has(v.i)) {
+        this.svart.add(v.i); const g = this.g, fasit = g.par[v.i][1];
+        fsSvar(this.nk + ":" + v.t, this.h[n].i === v.i, { q: `${g.tittel || "Koble sammen"}: Hva hører sammen med «${v.t}»?`, a: fasit,
+          alt: shuffle(g.par.filter((p, j) => j !== v.i).map(p => p[1])).slice(0, 3), forkl: g.forklaring });
+      }
       if (this.h[n].i === v.i) {
         this.ok.add(v.i); const nr = this.ok.size;
         [vEl, hEl].forEach(b => { b.classList.remove("bad"); b.classList.add("good"); b.setAttribute("aria-pressed", "false"); b.insertAdjacentHTML("afterbegin", `<span class="par">${nr}</span>`); });
@@ -757,6 +778,7 @@ document.addEventListener("pointermove", e => {
 
 applyTheme();
 kart();
+sjekkMerke();
 </script>
 </body>
 </html>

@@ -613,6 +613,32 @@ function rTekst(){
   return h+(P.done?nesteBtn():padHTML()+(P.hint||P.must?'':`<div class="row"><button class="btn" data-act="hint">💡 Hjelp</button></div>`));
 }
 
+/* ---------- Feilsamleren og mestringsmerke ---------- */
+const nokkel=p=>`${p.a}${p.op}${p.b}`;
+const tekstNokkel=p=>`tekst${p.op}${TPL[p.op].indexOf(p.tpl)}:${nokkel(p)}`;
+const renTekst=s=>String(s).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+function oppgTekst(p){
+  const rg=regroups(p.a,p.b,p.op),sjekk=` Sjekk: ${p.ans} + ${p.b} = ${p.a}.`;
+  const forkl=p.op==='+'?(rg?'Start med enerne. Blir summen 10 eller mer, skriver du eneren og setter 1 i mente over neste kolonne.':'Legg sammen enere med enere, tiere med tiere og hundrere med hundrere.')
+    :(rg?'Start med enerne. Er sifferet øverst for lite, låner du 1 fra naboen til venstre.'+sjekk:'Trekk fra enere for seg, tiere for seg og hundrere for seg.'+sjekk);
+  return{q:`Hva er ${fmt(p)}?`,a:String(p.ans),forkl,emne:(p.op==='+'?'Pluss':'Minus')+(rg?(p.op==='+'?' med mente':' med lån'):'')};
+}
+const tekstOppg=p=>({q:p.tpl[1](p.a,p.b),a:String(p.ans),forkl:`${p.tpl[2]} ${fmt(p)} = ${p.ans}.`,emne:'Tekstoppgaver'});
+function feilOppg(p,fs,forkl){
+  const n=cols(p),W=padN(fs.val,n),R=padN(p.ans,n);
+  const plasser=W.map((d,i)=>d!=null||R[i]!=null?i:-1).filter(i=>i>=0);
+  const bad=plasser.filter(i=>W[i]!==R[i]),navn=i=>`Feil i ${plassAv(i,n)}`;
+  const a=fs.type==='riktig'?'Alt er riktig':navn(bad[bad.length-1]);
+  const alt=plasser.filter(i=>!bad.includes(i)).map(navn);
+  if(fs.type!=='riktig')alt.push('Alt er riktig');
+  return{q:`Noen har regnet ut ${fmt(p)} = ${fs.val}. Er alt riktig, eller hvor er feilen?`,a,alt:alt.slice(0,4),
+    forkl:renTekst(forkl)+(fs.type==='riktig'?'':` Riktig svar er ${p.ans}.`),emne:'Finn feilen'};
+}
+function sjekkMerke(){
+  const b=op=>S.best[bkey('opp','3m',op)]||0;
+  if((b('+')>=3&&b('-')>=3)||b('±')>=3)window.Gull&&Gull.merke&&Gull.merke('regne-mester');
+}
+
 /* ---------- svar ---------- */
 function gullFor(p){return (P.mode==='opp'&&Math.max(p.a,p.b)>=100)||P.mode==='tekst'?2:1}
 function riktig(first,gull){
@@ -641,8 +667,10 @@ function sjekkOpp(){
     P.marks={};a.forEach((v,i)=>{if(v!=null)P.marks[i]='ok'});
     riktig(P.tries===0,gullFor(p));
     if(P.tries===0)P.msg+=p.op==='-'?` Sjekk: ${p.ans} + ${p.b} = ${p.a}.`:'';
+    if(P.tries===0)window.Gull&&Gull.riktig&&Gull.riktig(nokkel(p));
     return render();
   }
+  if(P.tries===0)window.Gull&&Gull.feil&&Gull.feil(nokkel(p),oppgTekst(p));
   P.tries++;P.res[P.i]='miss';beep('soft');
   if(P.tries>=2){visLosning('Ikke helt. Vi går gjennom det sammen – trykk «Neste steg».');return}
   P.msg='Nesten! '+feilTekst();P.cls='oops';render();
@@ -664,8 +692,10 @@ function sjekkTall(){
     const g=P.mode==='tekst'?(P.opTries===0?2:1):1;
     riktig(first,g);
     if(P.mode==='tekst'&&first&&P.opTries>0){P.res[P.i]='half';P.right--}
+    if(first&&!(P.mode==='tekst'&&P.opTries>0))window.Gull&&Gull.riktig&&Gull.riktig(P.mode==='tekst'?tekstNokkel(p):nokkel(p));
     return render();
   }
+  if(P.tries===0&&!(P.mode==='tekst'&&P.opTries>0))window.Gull&&Gull.feil&&Gull.feil(P.mode==='tekst'?tekstNokkel(p):nokkel(p),P.mode==='tekst'?tekstOppg(p):oppgTekst(p));
   P.tries++;P.res[P.i]='miss';beep('soft');P.typed='';
   if(P.tries>=2){P.must=true;P.msg=`Svaret er ${p.ans}. Se hvordan under, og skriv svaret selv.`;P.cls='info';return render()}
   P.msg=v>p.ans?'Ikke helt – svaret ditt er for stort. Prøv igjen!':'Ikke helt – svaret ditt er for lite. Prøv igjen!';P.cls='oops';
@@ -686,15 +716,18 @@ function velgFeil(i){
     slurv:`En liten <b>regnefeil</b> i ${pl}: det skal stå ${R[first]}, ikke ${W[first]}.`,
   }[fs.type];
   P.done=true;
-  if(ok){P.right++;P.res[P.i]='ok';window.Gull&&Gull.tjen(1);P.msg=(fs.type==='riktig'?'Riktig, det er ingen feil! ':'Godt sett! ')+forkl;P.cls='good';beep('ok')}
+  const fk=`feil:${nokkel(p)}=${fs.val}`;
+  if(ok){P.right++;P.res[P.i]='ok';window.Gull&&Gull.tjen(1);window.Gull&&Gull.riktig&&Gull.riktig(fk);P.msg=(fs.type==='riktig'?'Riktig, det er ingen feil! ':'Godt sett! ')+forkl;P.cls='good';beep('ok')}
   else{P.res[P.i]='miss';beep('soft');P.cls='oops';
+    const fo=feilOppg(p,fs,forkl);if(fo.alt.length>=2)window.Gull&&Gull.feil&&Gull.feil(fk,fo);
     P.msg=(fs.type==='riktig'?'Se en gang til – her var alt riktig. ':i==null?`Det er en feil i ${pl}. `:`Den ruta stemmer. Feilen er i ${pl}. `)+forkl}
   S.right+=ok?1:0;save();render();
 }
 function velgRegneart(op){
   const p=P.p;
   if(op===p.op){P.stage='num';P.msg=P.opTries?'':'Riktig regneart! Regn ut.';P.cls=P.opTries?'':'good';beep('tap')}
-  else{P.opTries++;beep('soft');P.msg='Tenk en gang til: '+p.tpl[2];P.cls='oops';
+  else{if(P.opTries===0)window.Gull&&Gull.feil&&Gull.feil(tekstNokkel(p),tekstOppg(p));
+    P.opTries++;beep('soft');P.msg='Tenk en gang til: '+p.tpl[2];P.cls='oops';
     if(P.opTries>=2){P.stage='num';P.msg=p.tpl[2]}}
   render();
 }
@@ -729,6 +762,7 @@ function resultat(){
   V='res';const m=MD(P.mode),n=P.list.length,st=stjerner(P.right/n),k=bkey(P.mode,P.lv,P.op);
   const ny=st>(S.best[k]||0);if(ny)S.best[k]=st;S.rounds++;save();updTop();
   if(st>0)window.Gull&&Gull.bonus(st,'Runde ferdig!');
+  sjekkMerke();
   const idx=LEVELS.findIndex(l=>l.id===P.lv),neste=LEVELS[idx+1];
   const tittel=st===3?'Kjempebra! 🏆':st===2?'Godt jobbet! 💪':st===1?'Bra innsats! 👍':'Fint at du øvde! 🌱';
   app.innerHTML=`<section class="card res">
@@ -813,7 +847,7 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-applyTheme();updTop();home();
+applyTheme();updTop();home();sjekkMerke();
 </script>
 </body>
 </html>

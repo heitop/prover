@@ -570,6 +570,31 @@ function stegHjelp(p,full){
   return `<div class="strat"><div class="ln">${t} + ${u} = <b>${p.q}</b></div></div>`;
 }
 
+/* ---------- Feilsamleren og mestringsmerke ---------- */
+function delForkl(p){
+  const {a,d,q}=p;
+  if(q>10&&q%10&&d!==10){const {t,u,c,r}=delOpp(p);return `Del opp: ${a} = ${c} + ${r}. ${c} : ${d} = ${t} og ${r} : ${d} = ${u}. ${t} + ${u} = ${q}. Sjekk: ${q} · ${d} = ${a}.`}
+  return `${a} : ${d} = ${q}, fordi ${q} · ${d} = ${a}.`;
+}
+function oppgNokkel(p){
+  if(P.mode==='mangler')return{del:`${p.a}:${p.d}`,divisor:`${p.a}:?=${p.q}`,dividend:`?:${p.d}=${p.q}`,gange:`?·${p.d}=${p.a}`}[p.form];
+  if(P.mode==='tekst')return `tekst:${p.kind}${TPL[p.kind].indexOf(p.tpl)}:${p.a}:${p.d}`;
+  return `${p.a}:${p.d}`;
+}
+function oppgTekst(p){
+  const f=String(fasit(p));
+  if(P.mode==='tekst')return{q:p.tpl[1](p),a:f,forkl:`${FORKL[p.kind](p)} Svaret er ${f}.`,emne:'Tekstoppgaver: dele eller gange'};
+  if(P.mode==='mangler'&&p.form!=='del')return{q:`Hvilket tall mangler? ${uttrykk(p,'?')}`,a:f,
+    forkl:`Gange og dele hører sammen: ${p.q} · ${p.d} = ${p.a}, ${p.a} : ${p.d} = ${p.q} og ${p.a} : ${p.q} = ${p.d}.`,emne:'Gange og dele hører sammen'};
+  return{q:`Hva er ${p.a} : ${p.d}?`,a:f,forkl:delForkl(p),emne:p.a>=100?'Deling med store tall':'Deling'};
+}
+const feilet=p=>window.Gull&&Gull.feil&&Gull.feil(oppgNokkel(p),oppgTekst(p));
+const riktigForst=p=>window.Gull&&Gull.riktig&&Gull.riktig(oppgNokkel(p));
+function sjekkMerke(){
+  const b=omr=>S.best[bkey('hode','mix',omr)]||0;
+  if((b('sma')>=3&&b('store')>=3)||b('begge')>=3)window.Gull&&Gull.merke&&Gull.merke('dele-mester');
+}
+
 /* ---------- svar ---------- */
 function gullFor(p){return P.mode==='tekst'||P.mode==='delopp'||p.a>=100?2:1}
 function riktig(first,gull){
@@ -591,8 +616,10 @@ function sjekkTall(){
     const first=P.tries===0&&P.opTries===0;
     riktig(first,gullFor(p));
     if(first&&!(P.mode==='tekst'&&p.op==='·'))P.msg+=` Sjekk: ${p.q} · ${p.d} = ${p.a}.`;
+    if(first)riktigForst(p);
     return render();
   }
+  if(P.tries===0&&P.opTries===0)feilet(p);
   P.tries++;P.res[P.i]='miss';beep('soft');P.typed='';
   if(P.tries>=2){P.must=true;P.msg=`Svaret er ${f}. Se hvordan under, og skriv svaret selv.`;P.cls='info';return render()}
   let m=v>f?'Ikke helt – svaret ditt er for stort. Prøv igjen!':'Ikke helt – svaret ditt er for lite. Prøv igjen!';
@@ -608,13 +635,14 @@ function sjekkSteg(){
     P.vals[P.st-1]=v;P.typed='';P.hint=false;P.must=false;P.tries=0;
     if(P.st===3){
       P.done=true;
-      if(!P.err){P.right++;P.res[P.i]='ok';window.Gull&&Gull.tjen(2);P.msg=pick(ROS)+` Sjekk: ${p.q} · ${p.d} = ${p.a}.`}
+      if(!P.err){P.right++;P.res[P.i]='ok';window.Gull&&Gull.tjen(2);riktigForst(p);P.msg=pick(ROS)+` Sjekk: ${p.q} · ${p.d} = ${p.a}.`}
       else{P.res[P.i]='half';P.msg=pick(ROS2)}
       P.cls='good';beep('ok');S.right++;save();
     }else{P.st++;P.msg=P.st===2?'Bra! Nå den andre biten.':'Bra! Legg sammen svarene.';P.cls='good';beep('tap')}
     return render();
   }
   if(P.must){P.typed='';P.msg=`Det er ${f}. Skriv det inn.`;P.cls='info';return render()}
+  if(!P.err)feilet(p);
   P.err=true;P.tries++;P.res[P.i]='miss';beep('soft');P.typed='';
   if(P.tries>=2){P.must=true;P.msg=`Det er ${f}. Skriv det inn, så går vi videre.`;P.cls='info';return render()}
   P.msg=v>f?'Ikke helt – for stort. Prøv igjen!':'Ikke helt – for lite. Prøv igjen!';P.cls='oops';render();
@@ -622,6 +650,7 @@ function sjekkSteg(){
 function velgSplit(i){
   const p=P.p,o=P.valg[i],d=p.d;
   if(o.ok){P.st=1;P.tries=0;P.hint=false;P.msg=`Riktig! Både ${o.x} og ${o.y} går opp i ${d}-gangen.`;P.cls='good';beep('tap');return render()}
+  if(!P.err)feilet(p);
   P.err=true;P.tries++;P.res[P.i]='miss';beep('soft');o.dis=true;
   const bad=o.x%d?o.x:o.y;
   if(P.tries>=2){const k=P.valg.find(v=>v.ok);P.st=1;P.tries=0;P.hint=false;
@@ -631,7 +660,8 @@ function velgSplit(i){
 function velgRegneart(op){
   const p=P.p;
   if(op===p.op){P.stage='num';P.msg=P.opTries?FORKL[p.kind](p):'Riktig! Regn ut.';P.cls=P.opTries?'info':'good';beep('tap')}
-  else{P.opTries++;beep('soft');P.res[P.i]='miss';
+  else{if(P.opTries===0)feilet(p);
+    P.opTries++;beep('soft');P.res[P.i]='miss';
     if(P.opTries>=2){P.stage='num';P.msg=FORKL[p.kind](p);P.cls='info'}
     else{P.msg='Tenk en gang til: '+TENK[p.kind](p);P.cls='oops'}}
   render();
@@ -653,6 +683,7 @@ function resultat(){
   V='res';const m=MD(P.mode),n=P.list.length,st=stjerner(P.right/n),k=bkey(P.mode,P.lv,P.omr);
   const ny=st>(S.best[k]||0);if(ny)S.best[k]=st;S.rounds++;save();updTop();
   if(st>0)window.Gull&&Gull.bonus(st,'Runde ferdig!');
+  sjekkMerke();
   const idx=LEVELS.findIndex(l=>l.id===P.lv),neste=LEVELS[idx+1];
   const tilStore=!neste&&P.omr==='sma';
   const tittel=st===3?'Kjempebra! 🏆':st===2?'Godt jobbet! 💪':st===1?'Bra innsats! 👍':'Fint at du øvde! 🌱';
@@ -751,7 +782,7 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-applyTheme();updTop();home();
+applyTheme();updTop();home();sjekkMerke();
 </script>
 </body>
 </html>

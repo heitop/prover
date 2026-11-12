@@ -505,27 +505,40 @@ function andre(g, n, felt) {
   return [...same, ...rest].slice(0, n);
 }
 const lang = opts => opts.some(o => o.length > 30);
-function itDef(g) { const options = [g.d, ...andre(g, 3, "d").map(x => x.d)]; return { kind: "choice", g, label: "Hva betyr omgrepet?", big: g.o, options, wide: true, answer: g.d, line: `${g.o}: ${g.d}`, info: g.ex }; }
-function itOmg(g) { const options = [g.o, ...andre(g, 3, "o").map(x => x.o)]; return { kind: "choice", g, label: "Hvilket omgrep passer?", big: g.d, sent: true, options, answer: g.o, line: `${g.o}: ${g.d}`, info: g.ex }; }
+/* Feilsamleren: fast nøkkel + oppgaven som ren tekst (fk) */
+const fk = (nokkel, q, a, alt, ekstra) => ({ nokkel: "rev:" + nokkel, o: Object.assign({ q, a }, alt ? { alt } : {}, ekstra) });
+const delEmne = x => ((R.DELER.find(d => d.id === x.del) || {}).navn || "Revolusjonen");
+const utenom = (liste, a) => liste.filter(x => x !== a);
+function itDef(g) { const options = [g.d, ...andre(g, 3, "d").map(x => x.d)]; return { kind: "choice", g, label: "Hva betyr omgrepet?", big: g.o, options, wide: true, answer: g.d, line: `${g.o}: ${g.d}`, info: g.ex,
+  fk: fk("def:" + g.o, `Hva betyr omgrepet «${g.o}»?`, g.d, utenom(options, g.d), { forkl: g.ex, emne: delEmne(g) + ": omgrep" }) }; }
+function itOmg(g) { const options = [g.o, ...andre(g, 3, "o").map(x => x.o)]; return { kind: "choice", g, label: "Hvilket omgrep passer?", big: g.d, sent: true, options, answer: g.o, line: `${g.o}: ${g.d}`, info: g.ex,
+  fk: fk("omg:" + g.o, `Hvilket omgrep passer? «${g.d}»`, g.o, utenom(options, g.o), { forkl: g.ex, emne: delEmne(g) + ": omgrep" }) }; }
 function itSkriv(g) {
-  return { kind: "write", g, label: "Skriv omgrepet", big: g.d, sent: true, sub: `Begynner på «${g.o[0]}» · ${g.o.length} tegn`, fasit: g.o, check: v => checkOmg(v, g), line: `${g.o}: ${g.d}`, info: g.ex };
+  return { kind: "write", g, label: "Skriv omgrepet", big: g.d, sent: true, sub: `Begynner på «${g.o[0]}» · ${g.o.length} tegn`, fasit: g.o, check: v => checkOmg(v, g), line: `${g.o}: ${g.d}`, info: g.ex,
+    fk: fk("skriv:" + g.o, `Skriv omgrepet (begynner på «${g.o[0]}»): ${g.d}`, g.o, null, { godta: g.alt || [], forkl: g.ex, emne: delEmne(g) + ": omgrep" }) };
 }
-function itFakta(f) { const options = [f.a, ...f.feil]; return { kind: "choice", label: "Faktaspørsmål", big: f.q, sent: true, options, wide: lang(options), answer: f.a, line: `${f.q} → ${f.a}`, info: f.f }; }
+function itFakta(f) { const options = [f.a, ...f.feil]; return { kind: "choice", label: "Faktaspørsmål", big: f.q, sent: true, options, wide: lang(options), answer: f.a, line: `${f.q} → ${f.a}`, info: f.f,
+  fk: fk("fakta:" + f.q, f.q, f.a, f.feil.slice(), { forkl: f.f, emne: delEmne(f) }) }; }
 function itMente(txt, fil) {
   return { kind: "choice", label: "Hvem mente dette?", big: `«${txt}»`, sent: true, fixed: true, three: true,
-    options: R.FILOSOFER.map(x => `${x.ikon} ${x.kort}`), answer: `${fil.ikon} ${fil.kort}`, line: `${fil.kort}: «${txt}»`, info: `${fil.kort}s store idé: ${fil.ide}` };
+    options: R.FILOSOFER.map(x => `${x.ikon} ${x.kort}`), answer: `${fil.ikon} ${fil.kort}`, line: `${fil.kort}: «${txt}»`, info: `${fil.kort}s store idé: ${fil.ide}`,
+    fk: fk("mente:" + txt, `Hvilken filosof mente dette? «${txt}»`, fil.kort, shuffle(utenom(R.FILOSOFER, fil)).slice(0, 3).map(x => x.kort), { forkl: `${fil.kort}s store idé: ${fil.ide}`, emne: "Filosofene" }) };
 }
 function itStand(t, st) {
-  return { kind: "choice", label: "Hvor hører dette hjemme?", big: t, fixed: true, options: R.STENDER.map(x => `${x.ikon} ${x.navn}`), answer: `${st.ikon} ${st.navn}`, line: `${t} → ${st.navn}`, info: st.om };
+  return { kind: "choice", label: "Hvor hører dette hjemme?", big: t, fixed: true, options: R.STENDER.map(x => `${x.ikon} ${x.navn}`), answer: `${st.ikon} ${st.navn}`, line: `${t} → ${st.navn}`, info: st.om,
+    fk: fk("stand:" + t, `Hvor hører dette hjemme i standssamfunnet? «${t}»`, st.navn, utenom(R.STENDER, st).map(x => x.navn), { forkl: st.om, emne: "Standssamfunnet" }) };
 }
 function itMakt(t, m) {
+  const mtxt = x => `${x.navn} (${x.hvem})`;
   return { kind: "choice", label: "Hvilken makt er dette?", big: t, fixed: true, wide: true, options: R.MAKT.map(x => `${x.ikon} ${x.navn} (${x.hvem})`), answer: `${m.ikon} ${m.navn} (${m.hvem})`, line: `${t} → ${m.navn}`,
-    info: "Montesquieu: Makten må deles, så ingen kan bestemme alt." };
+    info: "Montesquieu: Makten må deles, så ingen kan bestemme alt.",
+    fk: fk("makt:" + t, `Hvilken makt er dette? «${t}»`, mtxt(m), utenom(R.MAKT, m).map(mtxt), { forkl: "Montesquieu: Makten må deles, så ingen kan bestemme alt.", emne: "Maktfordeling" }) };
 }
 function itAar(e) {
   const yrs = [...new Set(R.TIDSLINJE.map(x => x.aar))].filter(y => y !== e.aar).sort((a, b) => Math.abs(a - e.aar) - Math.abs(b - e.aar));
   const options = [e.aar, ...shuffle(yrs.slice(0, 6)).slice(0, 3)].map(String);
-  return { kind: "choice", label: "Når skjedde dette?", big: `${e.ikon || ""} ${e.t}`, sent: true, options, answer: String(e.aar), line: `${tidTxt(e)}: ${e.t}` };
+  return { kind: "choice", label: "Når skjedde dette?", big: `${e.ikon || ""} ${e.t}`, sent: true, options, answer: String(e.aar), line: `${tidTxt(e)}: ${e.t}`,
+    fk: fk("aar:" + e.t, `Hvilket år skjedde dette? ${e.t}`, String(e.aar), options.slice(1), { forkl: `${tidTxt(e)}: ${e.t}`, emne: "Tidslinja" }) };
 }
 const allStand = () => R.STENDER.flatMap(st => st.ting.map(t => [t, st]));
 const allMente = () => R.FILOSOFER.flatMap(f => f.mente.map(t => [t, f]));
@@ -579,6 +592,7 @@ function qAnswer(r, given) {
     Q.first[it.id] = ok;
     if (it.g) updLv(it.g, it.kind, ok);
     if (ok) window.Gull && Gull.tjen(it.kind === "write" ? 2 : 1);
+    if (it.fk) { if (ok) window.Gull && Gull.riktig && Gull.riktig(it.fk.nokkel); else window.Gull && Gull.feil && Gull.feil(it.fk.nokkel, it.fk.o); }
   }
   if (ok || !Q.requeue) Q.done++;
   else Q.queue.splice(Math.min(Q.queue.length, 4), 0, it);
@@ -609,6 +623,7 @@ function resultat({ right, total, bestKey, missHtml, missTitle, again }) {
   if (total >= 5) window.Gull && Gull.bonus(pct >= 90 ? 5 : pct >= 75 ? 3 : pct >= 50 ? 1 : 0, "Runde ferdig!");
   let rekord = false;
   if (bestKey) { const b = S.best; if (b[bestKey] == null || pct > b[bestKey]) { b[bestKey] = pct; rekord = true; } save(); }
+  sjekkMerke();
   const [ico, msg] = pct >= 90 ? ["🌟", "Magnifique!"] : pct >= 75 ? ["👏", "Très bien!"] : pct >= 50 ? ["💪", "Bra! Litt til, så sitter det."] : ["🌱", "Godt jobba – ta en runde til!"];
   show(`
   <div class="card res pop">
@@ -622,6 +637,11 @@ function resultat({ right, total, bestKey, missHtml, missTitle, again }) {
       <button class="btn big" data-act="home">Til menyen</button>
     </div>
   </div>`);
+}
+/* Mestringsmerke: minst 90 % på prøveprøven i «Alt sammen» eller i hver av delene */
+function sjekkMerke() {
+  const b = S.best, ok = k => (b["prove-" + k] || 0) >= 90;
+  if (ok("alle") || R.DELER.every(d => ok(d.id))) window.Gull && Gull.merke && Gull.merke("revolusjon");
 }
 function qEnd() {
   const right = Object.values(Q.first).filter(Boolean).length;
@@ -840,6 +860,7 @@ document.addEventListener("keydown", e => {
 
 applyTheme();
 home();
+sjekkMerke();
 </script>
 </body>
 </html>

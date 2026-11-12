@@ -587,23 +587,28 @@ function accFor(s, v, p, oEs) {
 }
 
 function distract(g, n = 3) { return shuffle(VERB.filter(x => x !== g)).slice(0, n); }
-function itVelgEsNo(g) { return { kind: "choice", g, label: "Hva betyr verbet?", big: g.es, say: g.es, options: [g.no, ...distract(g).map(x => x.no)], answer: g.no, line: `${g.es} = ${g.no}`, sayF: g.es }; }
-function itVelgNoEs(g) { return { kind: "choice", g, label: "Hva heter det på spansk?", big: g.no, options: [g.es, ...distract(g).map(x => x.es)], answer: g.es, line: `${g.no} = ${g.es}`, sayF: g.es }; }
-function itSkrivVerb(g) { return { kind: "write", g, label: "Skriv verbet på spansk", big: g.no, sub: "i infinitiv – slik det står i ordlista", fasit: g.es, check: v => checkWord(v, g.es), line: `${g.no} = ${g.es}`, sayF: g.es }; }
+function itVelgEsNo(g) { return { kind: "choice", g, label: "Hva betyr verbet?", big: g.es, say: g.es, options: [g.no, ...distract(g).map(x => x.no)], answer: g.no, line: `${g.es} = ${g.no}`, sayF: g.es,
+  fe: { k: `${g.es}:es-no`, q: `Hva betyr det spanske verbet «${g.es}»?`, emne: "Spansk: -ar-verb" } }; }
+function itVelgNoEs(g) { return { kind: "choice", g, label: "Hva heter det på spansk?", big: g.no, options: [g.es, ...distract(g).map(x => x.es)], answer: g.es, line: `${g.no} = ${g.es}`, sayF: g.es,
+  fe: { k: `${g.es}:no-es`, q: `Hva heter «${g.no}» på spansk?`, emne: "Spansk: -ar-verb" } }; }
+function itSkrivVerb(g) { return { kind: "write", g, label: "Skriv verbet på spansk", big: g.no, sub: "i infinitiv – slik det står i ordlista", fasit: g.es, check: v => checkWord(v, g.es), line: `${g.no} = ${g.es}`, sayF: g.es,
+  fe: { k: `${g.es}:skriv`, q: `Skriv verbet på spansk (i infinitiv): «${g.no}»`, emne: "Spansk: -ar-verb" } }; }
 
 /* Velg riktig form: Tú ___ (cantar) bien. */
 function itVelgForm(v, p) {
   const s = subjFor(p), o = objFor(v), f = form(v, p);
   const opts = [f, ...shuffle([0, 1, 2, 3, 4, 5].filter(x => x !== p)).slice(0, 3).map(x => form(v, x))];
   return { kind: "choice", sent: true, p, label: "Velg riktig form", bigHtml: `${esc(s.es)} <span class="gap">___</span> <span class="paren">(${esc(v.es)})</span> ${esc(o.es)}.`, sub: esc(sentNo(s.no, v, o.no)),
-    options: opts, answer: f, forkl: forklP(s, v, p), line: sentEs(s.es, v, p, o.es), sayF: sentEs(s.es, v, p, o.es) };
+    options: opts, answer: f, forkl: forklP(s, v, p), line: sentEs(s.es, v, p, o.es), sayF: sentEs(s.es, v, p, o.es),
+    fe: { k: `${v.es}:${p}:velg`, q: `Velg riktig form av ${v.es}: «${s.es} ___ ${o.es}.» (${sentNo(s.no, v, o.no)})` } };
 }
 /* Oppgåve A: skriv formen. */
 function itBoyA(v, p, s, o, noTxt) {
   s = s || subjFor(p); o = o || objFor(v);
   const full = sentEs(s.es, v, p, o.es);
   return { kind: "write", sent: true, p, label: "Bøy verbet i parentes", bigHtml: `${esc(s.es)} <span class="gap">___</span> <span class="paren">(${esc(v.es)})</span> ${esc(o.es)}.`,
-    sub: esc(noTxt || sentNo(s.no, v, o.no)), fasit: form(v, p), check: x => checkForm(x, v, p, s.es), forkl: forklP(s, v, p), line: full, sayF: full, after: `${sayBtn(full, 1)} ${esc(full)}` };
+    sub: esc(noTxt || sentNo(s.no, v, o.no)), fasit: form(v, p), check: x => checkForm(x, v, p, s.es), forkl: forklP(s, v, p), line: full, sayF: full, after: `${sayBtn(full, 1)} ${esc(full)}`,
+    fe: { k: `${v.es}:${p}:boy`, q: `Bøy verbet ${v.es}: «${s.es} ___ ${o.es}.» (${noTxt || sentNo(s.no, v, o.no)})`, godta: [`${s.es} ${form(v, p)}`] } };
 }
 /* Oppgåve B: finn personen ut fra endingen. */
 function itFinnB(v, p, oEs) {
@@ -611,21 +616,24 @@ function itFinnB(v, p, oEs) {
   const f = form(v, p), s = SUBJ.find(x => x.p === p && x.pron);
   const full = sentEs(PERS_B[p].split(" / ")[0], v, p, oEs);
   return { kind: "choice", fixed: true, pron: true, sent: true, p, label: "Hvem? Se på endingen", bigHtml: `<span class="gap">___</span> ${esc(f)} ${esc(oEs)}.`,
-    options: PERS_B.slice(), answer: PERS_B[p], forkl: `Endingen <b>-${END[p]}</b> (${formHtml(v, p)}) hører til <b>${PERS[p]}</b>.`, line: full, sayF: full };
+    options: PERS_B.slice(), answer: PERS_B[p], forkl: `Endingen <b>-${END[p]}</b> (${formHtml(v, p)}) hører til <b>${PERS[p]}</b>.`, line: full, sayF: full,
+    fe: { k: `${v.es}:${p}:hvem`, q: `Hvem passer? Se på endingen: «___ ${f} ${oEs}.»`.replace(/ \./, ".") } };
 }
 /* Hvem er det? María y yo → Nosotros */
 function itHvem() {
   const s = pick(SUBJ.filter(x => !x.pron));
   return { kind: "choice", fixed: true, pron: true, p: s.p, label: "Hvilket pronomen passer?", big: s.es, sub: esc(cap(s.no)),
     options: PERS_B.slice(), answer: PERS_B[s.p], forkl: s.p === 3 ? "Jeg (yo) er med → <b>nosotros</b>." : s.p === 4 ? "Du (tú) er med, men ikke jeg → <b>vosotros</b>." : s.p === 5 ? "To andre enn deg og meg → <b>ellos</b>." : "Én annen person → <b>él / ella</b>.",
-    line: `${s.es} = ${PERS[s.p]}` };
+    line: `${s.es} = ${PERS[s.p]}`,
+    fe: { k: `pronomen:${s.es}`, q: `Hvilket pronomen passer til «${s.es}» (${s.no})?` } };
 }
 /* Oppgåve C: oversett til spansk. */
 function itOmsetC(v, p, s, o, noTxt) {
   s = s || subjFor(p); o = o || objFor(v);
   const fasit = sentEs(s.es, v, p, o.es);
   return { kind: "write", sent: true, wide: true, p, v, label: "Oversett til spansk", big: noTxt || sentNo(s.no, v, o.no), sub: `Verbet: <b>${esc(v.es)}</b>`,
-    fasit, acc: accFor(s, v, p, o.es), check(x) { return checkSetn(x, this); }, forkl: forklP(s, v, p), line: fasit, sayF: fasit, after: `${sayBtn(fasit, 1)} ${esc(fasit)}` };
+    fasit, acc: accFor(s, v, p, o.es), check(x) { return checkSetn(x, this); }, forkl: forklP(s, v, p), line: fasit, sayF: fasit, after: `${sayBtn(fasit, 1)} ${esc(fasit)}`,
+    fe: { k: `${v.es}:${p}:omset`, q: `Oversett til spansk: «${noTxt || sentNo(s.no, v, o.no)}» (verbet: ${v.es})`, godta: [...new Set(accFor(s, v, p, o.es).flatMap(x => [x, x.replace(/\.$/, "")]))].filter(x => x !== fasit) } };
 }
 /* Hva betyr setningen? Alternativene har samme verb, men ulik person. */
 function itBetyr(v, p) {
@@ -633,7 +641,8 @@ function itBetyr(v, p) {
   const es = cap(sentEs(dropp ? "" : s.es, v, p, o.es));
   const andre = shuffle([0, 1, 2, 3, 4, 5].filter(x => x !== p)).slice(0, 3).map(x => sentNo(subjFor(x, true).no, v, o.no));
   return { kind: "choice", wide: true, sent: true, p, label: "Hva betyr setningen?", big: es, say: es, sub: dropp ? "Pronomenet er sløyfet – se på endingen!" : "",
-    options: [sentNo(s.no, v, o.no), ...andre], answer: sentNo(s.no, v, o.no), forkl: forklP(dropp ? Object.assign({}, s, { pron: true }) : s, v, p), line: `${es} = ${sentNo(s.no, v, o.no)}`, sayF: es };
+    options: [sentNo(s.no, v, o.no), ...andre], answer: sentNo(s.no, v, o.no), forkl: forklP(dropp ? Object.assign({}, s, { pron: true }) : s, v, p), line: `${es} = ${sentNo(s.no, v, o.no)}`, sayF: es,
+    fe: { k: `${v.es}:${p}:betyr`, q: `Hva betyr «${es}»?` } };
 }
 const persRekke = n => { const out = []; while (out.length < n) out.push(...shuffle([0, 1, 2, 3, 4, 5])); return out.slice(0, n); };
 const verbRekke = n => { const out = []; while (out.length < n) out.push(...shuffle(VERB.slice())); return out.slice(0, n); };
@@ -681,6 +690,7 @@ function qAnswer(r, given) {
     if (it.g) updLv(it.g, it.kind, ok);
     if (it.p != null) updP(it.p, it.kind, ok);
     if (ok) window.Gull && Gull.tjen(it.kind === "write" ? 2 : 1);
+    fMeld(it, ok);
   }
   if (ok || !Q.requeue) Q.done++;
   else Q.queue.splice(Math.min(Q.queue.length, 4), 0, it);
@@ -717,6 +727,7 @@ function resultat({ right, total, bestKey, missHtml, missTitle, again }) {
   if (total >= 5) window.Gull && Gull.bonus(pct >= 90 ? 5 : pct >= 75 ? 3 : pct >= 50 ? 1 : 0, "Runde ferdig!");
   let rekord = false;
   if (bestKey) { const b = S.best; if (b[bestKey] == null || pct > b[bestKey]) { b[bestKey] = pct; rekord = true; } save(); }
+  sjekkMerke();
   const [ico, msg] = pct >= 90 ? ["🌟", "¡Fantástico!"] : pct >= 75 ? ["👏", "¡Muy bien!"] : pct >= 50 ? ["💪", "¡Bien! Litt til, så sitter det."] : ["🌱", "Godt jobba – ta en runde til!"];
   show(`
   <div class="card res pop">
@@ -737,6 +748,31 @@ function qEnd() {
   resultat({ right, total: Q.total, bestKey: Q.bestKey, again: Q.again,
     missTitle: Q.requeue ? "Disse måtte du ta flere ganger" : "Disse bør du øve mer på",
     missHtml: items.map(it => `<div><span>${esc(it.line)}</span>${it.sayF ? sayBtn(it.sayF, 1) : ""}</div>`).join("") });
+}
+
+/* ---------- feilsamler og mestringsmerke (felles/gull.js) ---------- */
+const txt = s => String(s == null ? "" : s).replace(/<br\s*\/?>/gi, " ").replace(/<\/span><span[^>]*>/g, "").replace(/<[^>]*>/g, " ")
+  .replace(/&(amp|lt|gt|quot|#39);/g, (_, e) => ({ amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'" }[e])).replace(/\s+/g, " ").replace(/ ([.,:;!?)])/g, "$1").replace(/\( /g, "(").trim();
+/* Nøkkel: «<verb>:<person 0–5>:<oppgavetype>» (eller «pronomen:<subjekt>») – stabil på tvers av økter. */
+function fMeld(it, ok, f) {
+  f = f || it.fe; if (!f || !window.Gull) return;
+  try {
+    const k = `ar-verb:${f.k}`;
+    if (ok) { if (Gull.riktig) Gull.riktig(k); return; }
+    if (!Gull.feil) return;
+    const o = { q: txt(f.q), a: txt(f.a || it.fasit || it.answer), emne: f.emne || "Spansk: bøying av -ar-verb" };
+    const alt = it.kind === "choice" && it.options ? shuffle(it.options.filter(x => x !== it.answer)).slice(0, 3) : [];
+    if (alt.length >= 2) o.alt = alt;
+    if (f.godta && f.godta.length) o.godta = f.godta;
+    const fk = f.forkl || it.forkl; if (fk) o.forkl = txt(fk).slice(0, 250);
+    Gull.feil(k, o);
+  } catch (e) {}
+}
+/* Merke: minst 90 % på prøveprøven, eller alle 15 verbene og alle 6 endingene sitter (nivå 3). */
+function sjekkMerke() {
+  if (!window.Gull || !Gull.merke) return;
+  const alle = VERB.every(g => lv(g) >= 3) && [0, 1, 2, 3, 4, 5].every(p => lvP(p) >= 3);
+  if ((S.best.prove != null && S.best.prove >= 90) || alle) try { Gull.merke("spansk-verb"); } catch (e) {}
 }
 
 /* ---------- moduser ---------- */
@@ -810,6 +846,7 @@ function tCheck() {
     inp.readOnly = true; inp.classList.add(ok ? "good" : "bad");
     if (!ok || r.st === "accent") $("#tf" + p).innerHTML = `${ok ? "Husk aksenten: " : "→ "}${formHtml(v, p)}`;
     if (ok) { n++; window.Gull && Gull.tjen(1); } else T.miss.push(`${PERS[p]} ${form(v, p)}`);
+    if (ok || inp.value.trim()) fMeld({ kind: "write", fasit: form(v, p) }, ok, { k: `${v.es}:${p}:tabell`, q: `Bøy ${v.es} (${v.no}) for ${PERS[p]}.`, forkl: `Ta bort -ar og legg til -${END[p]}: ${form(v, p)}.` });
     updP(p, "write", ok);
   });
   T.right += n; T.total += 6;
@@ -961,6 +998,7 @@ document.addEventListener("keydown", e => {
 
 applyTheme();
 home();
+sjekkMerke();
 </script>
 </body>
 </html>

@@ -632,6 +632,7 @@ var LINKS=[
 var KEY='blaa-tonar-v1';
 var S=(function(){var d={};try{d=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){d={}}d.m=d.m||{};d.wrong=d.wrong||[];d.best=d.best||{};return d})();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function sjekkMerke(){if(S.best.mester&&window.Gull&&Gull.merke)Gull.merke('bla-mester')}
 function record(topic,ok){var m=S.m[topic]||(S.m[topic]={r:0,n:0});m.n++;if(ok)m.r++;save()}
 
 /* ---------- NAVIGASJON ---------- */
@@ -680,14 +681,14 @@ function renderSetup(){
 }
 $('#all-t').onclick=function(){selTopics=TKEYS.slice();renderSetup()};
 $('#none-t').onclick=function(){selTopics=[];renderSetup()};
-$('#start-quiz').onclick=function(){startQuiz(Q.map(function(_,i){return i}).filter(function(i){return selTopics.indexOf(Q[i][0])>=0}),selCount)};
+$('#start-quiz').onclick=function(){startQuiz(Q.map(function(_,i){return i}).filter(function(i){return selTopics.indexOf(Q[i][0])>=0}),selCount,selTopics.length===TKEYS.length)};
 $('#start-wrong').onclick=function(){startQuiz(S.wrong.slice(),0)};
 
 var QZ=null;
-function startQuiz(ids,count){
+function startQuiz(ids,count,alle){
   ids=shuffle(ids); if(count)ids=ids.slice(0,count);
   if(!ids.length)return;
-  QZ={ids:ids,i:0,score:0,streak:0,best:0,log:[],answered:false};
+  QZ={ids:ids,i:0,score:0,streak:0,best:0,log:[],answered:false,alle:!!alle};
   show('quiz');renderQ();
 }
 function renderQ(){
@@ -711,6 +712,7 @@ function answer(i){
   if(ok){window.Gull&&Gull.tjen(1);QZ.score++;QZ.streak++;QZ.best=Math.max(QZ.best,QZ.streak);var w=S.wrong.indexOf(id);if(w>=0)S.wrong.splice(w,1)}
   else{QZ.streak=0;if(S.wrong.indexOf(id)<0)S.wrong.push(id)}
   record(q[0],ok);
+  if(window.Gull){if(ok)Gull.riktig&&Gull.riktig('quiz:'+q[1]);else Gull.feil&&Gull.feil('quiz:'+q[1],{q:q[1],a:q[2][0],alt:q[2].slice(1),forkl:q[3],emne:TOPICS[q[0]]})}
   QZ.log.push({id:id,ok:ok});
   $('#q-score').textContent=QZ.score;$('#q-streak').textContent=QZ.streak;
   var v=$('#q-verdict');v.className='verdict '+(ok?'ok':'no');
@@ -727,6 +729,7 @@ document.addEventListener('keydown',function(e){
 });
 function showResult(){
   var n=QZ.ids.length,s=QZ.score,p=s/n;if(n>=5)window.Gull&&Gull.bonus(p>=.9?5:p>=.7?3:p>=.5?1:0,'Runde ferdig!');
+  if(QZ.alle&&n>=20&&p>=.9&&!S.best.mester){S.best.mester=1;save()}sjekkMerke();
   $('#r-score').textContent=s+' / '+n;
   $('#r-msg').textContent=p>=.9?'Strålande! Du er klar for prøva.':p>=.7?'Godt jobba! Sjå over dei du bomma på.':p>=.5?'Bra start. Les repetisjonsarket og prøv igjen.':'Øv litt meir. Du klarer det!';
   var by={};QZ.log.forEach(function(l){var t=Q[l.id][0];by[t]=by[t]||{r:0,n:0};by[t].n++;if(l.ok)by[t].r++});
@@ -819,6 +822,7 @@ function sortAnswer(g){
   $$('#s-genres .genre').forEach(function(b){var k=b.getAttribute('data-g');b.disabled=true;if(k===c[1])b.classList.add('right');else if(k===g)b.classList.add('wrong')});
   if(ok){SD.score++;window.Gull&&Gull.tjen(1)}
   record(c[1],ok);
+  if(window.Gull){if(ok)Gull.riktig&&Gull.riktig('sjanger:'+c[0]);else Gull.feil&&Gull.feil('sjanger:'+c[0],{q:'Kva sjanger høyrer dette til? '+c[0],a:GNAME[c[1]],alt:shuffle(GENRES.filter(function(g){return g[0]!==c[1]})).slice(0,3).map(function(g){return g[1]}),forkl:c[2],emne:'Sjangerdetektiven'})}
   $('#s-score').textContent=SD.score;
   var v=$('#s-verdict');v.className='verdict '+(ok?'ok':'no');v.textContent=ok?'Rett!':'Nei, det høyrer til '+GNAME[c[1]]+'.';
   $('#s-why').textContent=c[2];$('#s-expl').hidden=false;
@@ -1040,5 +1044,6 @@ function renderRep(){
 }
 
 renderDemos();renderLq();renderLinks();renderRep();renderMastery();
+sjekkMerke();
 })();
 </script>

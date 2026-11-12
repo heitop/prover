@@ -330,7 +330,7 @@ function genLes(L){
       diagnose:(v,r)=>(r.n===d&&r.d===n)?D('byttet'):null}}
   if(L===5){const d=pick([2,3,4,6,8]),cnt=d<=3?3:2,filled=R(d+1,cnt*d-1),t=F(filled,d);
     return{key:`lp${filled}/${d}`,prompt:'Hver pizza er delt i like store biter. Hvor mange pizzaer er fargelagt til sammen? Skriv som brøk eller blandet tall.',
-      visual:pies(filled,d,cnt),input:{type:'frac',mixed:true,target:t,require:null},
+      visual:pies(filled,d,cnt),fsq:`Noen pizzaer er delt i ${d} like store biter hver, og ${filled} biter er fargelagt til sammen. Hvor mange pizzaer er fargelagt? Skriv som brøk eller blandet tall.`,input:{type:'frac',mixed:true,target:t,require:null},
       hints:[`Hver pizza er delt i ${d} biter. Da er nevneren ${d}.`,'Tell alle fargelagte biter i alle pizzaene. Det er telleren.',`Det er ${filled} biter, altså ${fr(filled,d)}. Hvor mange hele pizzaer er det?`],
       solution:`${filled} fargelagte biter, og ${d} biter i hver pizza:`+ex(fr(filled,d),tail(F(filled,d))===''&&filled>d?op('=')+mixedHtml(t):tail(F(filled,d))),
       diagnose:v=>eqv(v,F(filled,d*cnt))?D('alle-biter'):null}}
@@ -340,7 +340,7 @@ function genLes(L){
   else{const[r,c]=pick([[2,3],[2,4],[3,4],[2,5],[4,4],[3,6],[4,5]]);total=r*c;const o=[];for(let k=1;k<total;k++)if(gcd(k,total)>1)o.push(k);filled=pick(o);visual=grid(r,c,filled);require='simplest';prompt+=' Skriv brøken så enkel som mulig.'}
   const t=F(filled,total),hints=['Tell hvor mange like store deler figuren er delt i. Det blir <b>nevneren</b>.','Tell de fargelagte delene. Det blir <b>telleren</b>.'];
   if(require)hints.push(`Du har ${fr(filled,total)}. Finn et tall som går opp i både ${filled} og ${total}, og del begge på det.`);
-  return{key:`lf${L}-${filled}/${total}`,prompt,visual,input:{type:'frac',target:t,require},hints,
+  return{key:`lf${L}-${filled}/${total}`,prompt,visual,fsq:`En figur er delt i ${total} like store deler, og ${filled} av dem er fargelagt. Hvor stor del av figuren er fargelagt?${require?' Skriv brøken så enkel som mulig.':''}`,input:{type:'frac',target:t,require},hints,
     solution:`Figuren har ${total} like deler, og ${filled} er fargelagt:`+ex(fr(filled,total),require?op('=')+ff(simp(t)):''),
     diagnose:(v,r)=>{if(r.n===total&&r.d===filled)return D('byttet');if(eqv(v,F(total-filled,total)))return D('hvite');return null}}
 }
@@ -438,7 +438,7 @@ function genUekte(L){
     diagnose:(v,x)=>{if(x.n===w*d&&x.d===d)return D('glemte-rest',`Du gjorde om de hele riktig (${w*d} biter), men glemte å legge til de ${r} bitene.`);if(x.n===w+r&&x.d===d)return D('w+r',`Du la sammen ${w} og ${r}. Men hver hel er ${fr(d,d)}, så ${w} hele er ${w*d} biter.`);return null}}};
   const coprimeR=d=>{let r;do{r=R(1,d-1)}while(gcd(r,d)!==1);return r};
   if(L===1){const d=pick([2,3,4]),n=R(d+1,2*d-1);
-    return{key:`ue1${n}/${d}`,prompt:`Figuren viser ${fr(n,d)} pizza. Skriv det som blandet tall.`,visual:pies(n,d,2),input:{type:'frac',mixed:true,target:F(n,d),require:'mixed'},
+    return{key:`ue1${n}/${d}`,prompt:`Figuren viser ${fr(n,d)} pizza. Skriv det som blandet tall.`,visual:pies(n,d,2),fsq:`Skriv ${n}/${d} pizza som blandet tall.`,input:{type:'frac',mixed:true,target:F(n,d),require:'mixed'},
       hints:[`Én hel pizza er ${fr(d,d)}. Hvor mange hele pizzaer er fargelagt?`,`Det er 1 hel pizza og ${n-d} ${n-d===1?'bit':'biter'} til. Bitene skrives som ${fr(n-d,d)}.`],
       solution:ex(fr(n,d),op('='),fr(d,d),op('+'),fr(n-d,d),op('='),mx(1,n-d,d))}}
   if(L===2){const d=R(2,6);return toMixed(R(1,3),coprimeR(d),d)}
@@ -612,7 +612,7 @@ function genDesimal(L){
       hints:[asDec?`Les desimaltallet: ${txt} er ${pc} hundredeler.`:`Prosent betyr hundredeler: ${pc} % = ${fr(pc,100)}.`,`Skriv det som ${fr(pc,100)} og forkort. Hva går opp i både ${pc} og 100?`],
       solution:ex(num(txt),op('='),fr(pc,100),op('='),fr(target.n,target.d)),diagnose:v=>null}}
   if(Math.random()<0.35){const[r,c]=pick([[4,5],[2,5],[5,5],[2,10]]),t=r*c,k=R(1,t-1),p=Math.round(k/t*1e4)/100;
-    return{key:`fig${k}/${t}`,prompt:'Hvor mange prosent av figuren er fargelagt?',visual:grid(r,c,k),input:{type:'pct',target:p},
+    return{key:`fig${k}/${t}`,prompt:'Hvor mange prosent av figuren er fargelagt?',visual:grid(r,c,k),fsq:`En figur har ${t} like store ruter, og ${k} av dem er fargelagt. Hvor mange prosent av figuren er fargelagt?`,input:{type:'pct',target:p},
       hints:[`Skriv det først som brøk: ${k} av ${t} ruter.`,`${fr(k,t)}: utvid så nevneren blir 100. Gang med ${100/t}.`],
       solution:ex(fr(k,t),op('='),fr(k*100/t,100),op('='),num(fmt(p)+' %')),diagnose:v=>near(v,k/t)?D('skrev-desimal'):(v===k?D('byttet','Det er antall fargelagte ruter. Gjør det om til hundredeler.'):null)}}
   const[n,d]=pick(S5);return b2(n,d,Math.random()<0.5?'d':'p')
@@ -835,7 +835,7 @@ function confetti(n=90){if(reduced())return;const c=document.getElementById('fx'
   let f=0;(function step(){x.clearRect(0,0,c.width,c.height);ps.forEach(p=>{p.vy+=0.35;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});
     if(++f<110)requestAnimationFrame(step);else x.clearRect(0,0,c.width,c.height)})()}
 function toast(msg){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.innerHTML=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
-function checkBadges(){BADGES.forEach(b=>{if(!S.badges.includes(b.id)&&b.test(S)){S.badges.push(b.id);setTimeout(()=>{toast('Nytt merke: '+b.name);beep('up');confetti(60)},900)}})}
+function checkBadges(){BADGES.forEach(b=>{if(!S.badges.includes(b.id)&&b.test(S)){S.badges.push(b.id);setTimeout(()=>{toast('Nytt merke: '+b.name);beep('up');confetti(60)},900)}});fsMerke()}
 
 // ================= ikoner =================
 const STAR='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="var(--rav)" d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg>';
@@ -988,10 +988,43 @@ function shake(){const c=document.getElementById('tcard');if(!c||reduced())retur
 
 function mistake(code){if(!code||code==='exact')return;const m=S.mist[code]||(S.mist[code]={n:0,topic:cur.topic});m.n++;m.topic=cur.topic}
 
+// ----- Feilsamleren og mestringsmerket (felles i gull.js) -----
+function fsTxt(h){return String(h||'').replace(/<svg[\s\S]*?<\/svg>/g,'').replace(/<div class="list">(?:<div class="row"[^>]*>[\s\S]*?<\/div>)*<\/div>/g,'').replace(/<input[^>]*>/g,'?')
+  .replace(/<span class="fr"><span>([^<]*)<\/span><span>([^<]*)<\/span><\/span>/g,(_,n,d)=>`${/\s/.test(n)?'('+n+')':n}/${/\s/.test(d)?'('+d+')':d}`)
+  .replace(/<span class="(?:wn|op)">([^<]*)<\/span>/g,' $1 ').replace(/<br\s*\/?>|<\/?(?:p|div|li)\b[^>]*>/g,'\u0001').replace(/<[^>]+>/g,'')
+  .replace(/&nbsp;/g,' ').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/\s+/g,' ').replace(/ ([.,!])/g,'$1')
+  .replace(/^[\s\u0001]+|[\s\u0001]+$/g,'').replace(/([.!?:])?\s*(?:\u0001\s*)+/g,(_,p)=>p?p+' ':'. ').trim()}
+const fsKort=(t,n)=>t.length>n?t.slice(0,n-1).trimEnd()+'…':t;
+function fsOppg(t,id){
+  if(t.visual&&!t.fsq)return null;
+  const i=t.input,o={q:fsKort(t.fsq||(fsTxt(t.prompt)+(t.expr?' '+fsTxt(t.expr):'')),220),emne:'Brøk: '+TOPIC[id].name,forkl:fsKort(fsTxt(t.solution),250)};
+  let g=[];
+  if(i.type==='choice'){const r=i.options.find(x=>x.correct);if(!r)return null;o.a=fsTxt(r.html);o.alt=i.options.filter(x=>!x.correct).map(x=>fsTxt(x.html))}
+  else if(i.type==='frac'){const s=simp(i.target),m=mixedParts(s),imp=s.d===1?`${s.n}`:`${s.n}/${s.d}`,mix=m.r?(m.w?`${m.w} ${m.r}/${m.d}`:`${m.r}/${m.d}`):`${m.w}`;
+    if(i.require==='exact')o.a=`${i.exact.n}/${i.exact.d}`;
+    else if(i.require==='mixed'||i.require==='mixedSimplest')o.a=mix;
+    else if(i.require==='improper')o.a=imp;
+    else if(i.require==='simplest'){o.a=imp;g=[mix]}
+    else{o.a=`${i.target.n}/${i.target.d}`;g=[imp,mix]}}
+  else if(i.type==='int'){o.a=`${i.target}`;if(i.unit)g=[`${i.target} ${i.unit}`]}
+  else if(i.type==='dec'){o.a=fmt(i.target);g=[o.a.replace(',','.')]}
+  else{const v=fmt(i.target);o.a=v+' %';g=[v+'%',v,v.replace(',','.')+' %',v.replace(',','.')]}
+  g=[...new Set(g)].filter(x=>x&&x!==o.a);if(g.length)o.godta=g;
+  return o.a?o:null}
+// kalles én gang per oppgave, på første svar: riktig (uten tips) eller feil
+function fsMeld(res){if(cur.fs||!window.Gull)return;cur.fs=1;
+  const t=cur.task,nk='brok:'+cur.topic+':'+fsTxt(t.key).replace(/\s+/g,''),rask=round.mode==='test'||round.mode==='lyn';
+  if(res.st==='ok'||(rask&&res.st==='nudge')){if(!cur.paid&&Gull.riktig)Gull.riktig(nk);return}
+  if(res.st!=='wrong'||!Gull.feil)return;
+  const o=fsOppg(t,cur.topic);if(o)Gull.feil(nk,o)}
+// mestringsmerket: nivå 4 eller høyere i alle brøktemaene
+function fsMerke(){if(window.Gull&&Gull.merke&&TOPICS.every(t=>Math.floor(S.skills[t.id].s)>=4))Gull.merke('brok-mester')}
+
 function submit(raw,btn){
   if(cur.done)return;
   const res=check(cur.task,raw);
   if(res.st==='invalid'){showFb('info','',res.msg);return}
+  fsMeld(res);
   if(round.mode==='test')return recordTest(res,raw);
   if(round.mode==='lyn')return recordLyn(res);
   if(res.st==='ok'){if(btn)btn.classList.add('good');return finish(true)}
@@ -1130,7 +1163,7 @@ function bindReset(id,label){const b=document.getElementById(id);if(!b)return;le
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&cur&&cur.done&&round&&round.mode!=='lyn'&&!['TEXTAREA','BUTTON'].includes(document.activeElement.tagName)){e.preventDefault();goNext()}});
 
 // ----- oppstart -----
-function boot(data){if(data&&data.S&&data.S.skills)S=data.S;home()}
+function boot(data){if(data&&data.S&&data.S.skills)S=data.S;home();fsMerke()}
 try{window.claude?.hot?.snapshot?.(()=>({S}))}catch(e){}
 window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
 </script>

@@ -378,7 +378,8 @@ const PROVEDATO = new Date(2026, 10, 9);
 const LAGER = 'eventyrproven-v1';
 let S = {gull:0, fremdrift:{}};
 try { const r = localStorage.getItem(LAGER); if (r) S = Object.assign(S, JSON.parse(r)); } catch(e) {}
-function lagre(){ try { localStorage.setItem(LAGER, JSON.stringify(S)); } catch(e) {} }
+function lagre(){ try { localStorage.setItem(LAGER, JSON.stringify(S)); } catch(e) {} sjekkMerke(); }
+function sjekkMerke(){ if (window.Gull && Gull.merke && EVENTYR.every(e=>antallFerdig(e.id)===STASJONER.length)) Gull.merke('eventyr-mester'); }
 function fr(id){ if(!S.fremdrift[id]) S.fremdrift[id] = {handling:false, jakt:0, hvorfor:0, muntlig:false}; return S.fremdrift[id]; }
 function stasjonFerdig(id, st){
   const f = fr(id);
@@ -644,11 +645,17 @@ function visHandling(id){
 }
 
 /* ---------- Quizmotor ---------- */
-function jaktSporsmal(item, kilde){
+function renTekst(q){ return q.replace(/<[^>]*>/g,''); }
+function jaktSporsmal(item, kilde, tittel){
   const T = TREKK[item.a];
   const ut = Object.keys(TREKK).filter(k=>k!==item.a && !(item.not||[]).includes(k));
   const alts = stokk([{t:T.navn, ok:true}, ...stokk(ut).slice(0,3).map(k=>({t:TREKK[k].navn, ok:false}))]);
+  const merket = (item.q.match(/<mark>(.*?)<\/mark>/g)||[]).map(renTekst).join(' … ');
+  const vist = merket.includes('«') ? merket : '«'+merket+'»';
+  const ren = renTekst(item.q), spm = merket.length >= ren.length*0.5 ? 'Hvilket sjangertrekk er dette?' : `Hvilket sjangertrekk ser du i ${vist}?`;
   return {q:item.q, kilde, hjelp:'Hvilket sjangertrekk ser du i det uthevede?', alts,
+    nokkel:'jakt:'+ren,
+    feil:{q:`${spm} ${tittel ? tittel+': ' : ''}${ren}`, a:T.navn, forkl:`${T.hva} ${T.hvorfor}`, emne:'Eventyr: sjangertrekk'},
     forkl:`<b>${T.navn}.</b> ${T.hva}<br><b>Hvorfor virker det?</b> ${T.hvorfor}`};
 }
 function visQuiz(cfg){
@@ -667,12 +674,14 @@ function visQuiz(cfg){
       if (besvart) return; besvart = true; stopp();
       [...alts.children].forEach((b,k)=>{ b.disabled = true; if (it.alts[k].ok) b.classList.add('ok'); });
       if (alt && alt.ok){
+        if (it.nokkel) window.Gull&&Gull.riktig&&Gull.riktig(it.nokkel);
         riktige++; rekke++;
         let p = cfg.poeng; if (cfg.tid && rekke>0 && rekke%3===0) p++;
         opptjent += giGull(p) || 0;
         fb.replaceChildren(h('p',{class:'fb-tittel ok'}, tilfeldig(ROS) + (cfg.tid && rekke%3===0 ? ` ${rekke} på rad – bonusgull!` : '')), h('p',{html:it.forkl}));
       } else {
         rekke = 0; if (btn) btn.classList.add('feil');
+        if (alt && it.nokkel) window.Gull&&Gull.feil&&Gull.feil(it.nokkel, Object.assign({alt: it.alts.filter(a=>!a.ok).map(a=>a.t)}, it.feil));
         fb.replaceChildren(h('p',{class:'fb-tittel feil'}, alt ? 'Ikke helt.' : 'Tiden er ute!'), h('p',{html:it.forkl}));
       }
       neste.hidden = false; neste.focus({preventScroll:true});
@@ -717,19 +726,21 @@ function visQuiz(cfg){
 function visJakt(id){
   const e = finn(id);
   visQuiz({eyebrow:e.tittel, tittel:'Sjangerjakt', poeng:1, tilbake:()=>visEventyr(id),
-    items: stokk(e.jakt).map(it=>jaktSporsmal(it)),
+    items: stokk(e.jakt).map(it=>jaktSporsmal(it, null, e.tittel)),
     onSlutt: a => { const f = fr(id); f.jakt = Math.max(f.jakt, a); lagre(); },
     igjen: ()=>visJakt(id), videre:['Videre: Hvorfor virker det?', ()=>visHvorfor(id)]});
 }
 function visHvorfor(id){
   const e = finn(id);
   visQuiz({eyebrow:e.tittel, tittel:'Hvorfor virker det?', poeng:2, tilbake:()=>visEventyr(id),
-    items: stokk(e.hvorfor).map(it=>({q:it.q, alts: stokk(it.svar.map((t,k)=>({t, ok:k===0}))), forkl:`<b>Riktig svar:</b> ${it.svar[0]}<br>${it.f}`})),
+    items: stokk(e.hvorfor).map(it=>({q:it.q, alts: stokk(it.svar.map((t,k)=>({t, ok:k===0}))),
+      nokkel:'hvorfor:'+e.id+':'+it.q, feil:{q:e.tittel+': '+it.q, a:it.svar[0], forkl:it.f, emne:'Eventyr: hvorfor virker det'},
+      forkl:`<b>Riktig svar:</b> ${it.svar[0]}<br>${it.f}`})),
     onSlutt: a => { const f = fr(id); f.hvorfor = Math.max(f.hvorfor, a); lagre(); },
     igjen: ()=>visHvorfor(id), videre:['Videre: Generalprøve', ()=>visMuntlig(id)]});
 }
 function visLynrunde(){
-  const alle = EVENTYR.flatMap(e=>e.jakt.map(it=>jaktSporsmal(it, e.tittel)));
+  const alle = EVENTYR.flatMap(e=>e.jakt.map(it=>jaktSporsmal(it, e.tittel, e.tittel)));
   visQuiz({eyebrow:'Alle eventyrene', tittel:'Lynrunde', poeng:1, tid:20, tilbake:visHjem,
     items: stokk(alle).slice(0,10), igjen: visLynrunde});
 }
@@ -827,5 +838,6 @@ function visKort(){
 /* ---------- Start ---------- */
 document.getElementById('hjemknapp').addEventListener('click', visHjem);
 oppdaterGull();
+sjekkMerke();
 visHjem();
 </script>

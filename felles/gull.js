@@ -21,9 +21,10 @@
 
   /* ---------------- tilstand ---------------- */
   function tom() {
-    return { v: 1, laget: null, navn: "", kjonn: "gutt",
+    return { v: 1, laget: null, navn: "", kjonn: "gutt", trinn: null,
       ut: { hud: 1, har: "kort", harfarge: 1, oyne: 0 },
-      gull: 0, totalt: 0, eid: [], paa: {}, spill: {}, dag: { d: "", n: {} }, importert: {} };
+      gull: 0, totalt: 0, eid: [], paa: {}, spill: {}, dag: { d: "", n: {}, comeback: 0, runder: 0 }, importert: {},
+      feil: {}, sitter: 0, merker: {}, oppdrag: null, oppdragDager: 0, prover: [], visAlle: false };
   }
   function les() {
     try { const x = JSON.parse(localStorage.getItem(KEY)); if (x && x.v === 1) return Object.assign(tom(), x); } catch (e) {}
@@ -38,8 +39,16 @@
     const d = new Date();
     return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   }
-  function dagN() { if (!S.dag || S.dag.d !== idag()) S.dag = { d: idag(), n: {} }; return S.dag.n; }
+  function dagen() {
+    if (!S.dag || S.dag.d !== idag()) S.dag = { d: idag(), n: {}, comeback: 0, runder: 0 };
+    S.dag.comeback = S.dag.comeback || 0; S.dag.runder = S.dag.runder || 0;
+    return S.dag;
+  }
+  function dagN() { return dagen().n; }
   function leggTil(spill, n) { S.spill[spill] = (S.spill[spill] || 0) + n; }
+  /* legger gull på S uten å lese på nytt – kalleren har lest og lagrer selv */
+  function leggGull(n, spill) { const d = dagN(); S.gull += n; S.totalt += n; d[spill] = (d[spill] || 0) + n; leggTil(spill, n); }
+  const tilfeldig = a => a[Math.floor(Math.random() * a.length)];
 
   /* Eventyrprøven hadde sitt eget trollgull før dette. Det flyttes inn én gang. */
   (function importer() {
@@ -51,8 +60,46 @@
     try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
   })();
 
+  /* ---------------- spilliste, trinn og prøver ---------------- */
+  const spillListe = () => window.SPILL || [];
+  const filKey = fil => String(fil || "").replace(/\.html?$/, "");
+  function passer(sp, s) { s = s || S; return s.visAlle || !s.trinn || !sp.trinn || sp.trinn.includes(+s.trinn); }
+  function dagerTil(dato) { return Math.round((new Date(dato + "T00:00:00") - new Date(idag() + "T00:00:00")) / 864e5); }
+  function prover(s) {
+    s = s || S; const ut = [];
+    spillListe().forEach(sp => (sp.prover || []).forEach(p => ut.push({ spill: filKey(sp.fil), fil: sp.fil, tittel: sp.tittel, ikon: sp.ikon,
+      fag: sp.fag, trinn: sp.trinn, dato: p.dato, navn: p.navn || sp.tittel })));
+    (s.prover || []).forEach((p, i) => {
+      const sp = spillListe().find(x => filKey(x.fil) === p.spill) || {};
+      ut.push({ spill: p.spill, fil: sp.fil || p.spill + ".html", tittel: sp.tittel || p.spill, ikon: sp.ikon || "📝", fag: sp.fag,
+        trinn: sp.trinn, dato: p.dato, navn: p.navn || sp.tittel || "Prøve", egen: i });
+    });
+    return ut.map(p => Object.assign(p, { dager: dagerTil(p.dato) }))
+      .filter(p => p.dager >= 0 && passer(p, Object.assign({}, s, { visAlle: false })))
+      .sort((a, b) => a.dager - b.dager);
+  }
+  function provebonus(spill) { return prover().find(p => p.spill === spill && p.dager <= 3) || null; }
+  /* Oppdragene lages på nytt når trinn/prøver endres – men bare hvis ingen er fullført i dag (ellers kunne man tjent oppdragsgull flere ganger). */
+  function nyeOppdrag() { if (!(S.oppdrag && S.oppdrag.d === idag() && S.oppdrag.liste.some(o => o.ferdig))) S.oppdrag = null; }
+  function leggTilProve(p) { S = les(); S.prover.push({ spill: filKey(p.spill), dato: p.dato, navn: String(p.navn || "").slice(0, 60) }); nyeOppdrag(); lagre(); sikreOppdrag(); varsle(); }
+  function fjernProve(i) { S = les(); S.prover.splice(i, 1); nyeOppdrag(); lagre(); sikreOppdrag(); varsle(); }
+  function lastSpillListe() {
+    if (window.SPILL) { sikreOppdrag(); return; }
+    try {
+      const sc = document.createElement("script"); sc.src = ROT + "felles/spill.js";
+      sc.onload = () => { sikreOppdrag(); varsle(); };
+      (document.head || document.documentElement).appendChild(sc);
+    } catch (e) {}
+  }
+
   /* ---------------- tjene gull ---------------- */
-  let takVarslet = false;
+  let takVarslet = false, proveVarslet = false, riktigeNa = 0;
+  const JUBEL = {
+    runde: ["Runde ferdig! Så bra jobba!", "Yes! Den runden satt!", "Du blir bedre for hver runde!", "Heia deg!", "Sterkt jobba!", "Sånn skal det gjøres!"],
+    tung: ["Godt kjempet! Neste runde går bedre.", "Bra at du øver – det er sånn man lærer!", "Øving gjør mester. Prøv en runde til?"],
+    ti: ["Ti riktige! Du er i flytsonen!", "Wow, du er på rulle!", "Stå på – dette går strålende!", "Hjernen din vokser nå!", "Du er skikkelig god på dette!"],
+  };
+  function medNavn(t) { return S.navn && Math.random() < .4 ? S.navn + "! " + t : t; }
   function tjen(n, o) {
     o = o || {};
     n = Math.floor(+n || 0);
@@ -63,24 +110,163 @@
       if (!takVarslet) { takVarslet = true; melding("Du har tjent dagens gull i dette spillet. Prøv et annet spill, eller kom tilbake i morgen!"); }
       return 0;
     }
+    const pb = !o.intern && provebonus(spill);
+    if (pb) {
+      n *= 2;
+      if (!proveVarslet) { proveVarslet = true; melding(`Prøve ${pb.dager === 0 ? "i dag" : pb.dager === 1 ? "i morgen" : "om " + pb.dager + " dager"} – dobbelt gull i dette spillet!`, true); }
+    }
     n = Math.min(n, igjen);
-    S.gull += n; S.totalt += n; d[spill] = (d[spill] || 0) + n; leggTil(spill, n);
+    leggGull(n, spill);
     lagre();
     if (!o.stille) pop(n);
+    if (!o.intern) {
+      riktigeNa++;
+      if (riktigeNa % 10 === 0) jubel(medNavn(tilfeldig(JUBEL.ti)));
+      etterHendelse();
+    }
     return n;
   }
   function bonus(n, tekst) {
-    const f = tjen(n, { stille: true });
+    S = les(); dagen().runder++; lagre();
+    const f = tjen(n, { stille: true, intern: true });
     if (f) { melding((tekst ? tekst + " " : "") + "+" + f + " gull", true); dunk(); }
+    jubel(medNavn(tilfeldig(f >= 2 ? JUBEL.runde : JUBEL.tung)));
+    etterHendelse();
     return f;
+  }
+
+  /* ---------------- Feilsamleren og comeback-gull ----------------
+     boks 0: nylig feil – klar igjen etter 30 min. Riktig da → boks 1 (+3 gull), klar igjen i morgen.
+     boks 1: riktig når den er klar → «sitter» og fjernes (+3 gull). Feil når som helst → tilbake til boks 0. */
+  const VENT = 30 * 60e3, MAKS_FEIL = 200, COMEBACK = 3;
+  function nesteMidnatt() { const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime(); }
+  function iKveld() { const d = new Date(); d.setHours(23, 59, 59, 999); return d.getTime(); }
+  function rens(t, max) { return String(t == null ? "" : t).replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim().slice(0, max || 240); }
+  function feil(nokkel, opg, o) {
+    o = o || {};
+    if (!opg || opg.q == null || opg.a == null || nokkel == null) return;
+    S = les();
+    const spill = o.spill || FIL, k = spill + ":" + nokkel, na = Date.now();
+    const e = S.feil[k] || { spill, forst: na, n: 0 };
+    Object.assign(e, { q: rens(opg.q), a: rens(opg.a, 120),
+      alt: Array.isArray(opg.alt) ? opg.alt.map(x => rens(x, 120)).filter(x => x && x !== rens(opg.a, 120)).slice(0, 5) : null,
+      godta: Array.isArray(opg.godta) ? opg.godta.map(x => rens(x, 120)).filter(Boolean) : null,
+      forkl: rens(opg.forkl, 300), emne: rens(opg.emne, 60), boks: 0, sist: na, neste: na + VENT });
+    if (e.alt && !e.alt.length) e.alt = null;
+    e.n++;
+    S.feil[k] = e;
+    const alle = Object.keys(S.feil);
+    if (alle.length > MAKS_FEIL) alle.sort((a, b) => S.feil[a].sist - S.feil[b].sist).slice(0, alle.length - MAKS_FEIL).forEach(x => delete S.feil[x]);
+    lagre();
+  }
+  function riktig(nokkel, o) { o = o || {}; return nokkel == null ? 0 : repeter((o.spill || FIL) + ":" + nokkel, true); }
+  function repeter(k, ok) {
+    S = les(); const e = S.feil[k]; if (!e) return 0;
+    const na = Date.now();
+    if (!ok) { e.boks = 0; e.n++; e.sist = na; e.neste = na + VENT; lagre(); return 0; }
+    if (na < e.neste) return 0;
+    let tekst;
+    if (!e.boks) { e.boks = 1; e.sist = na; e.neste = nesteMidnatt(); tekst = "Comeback! Den husket du nå. Klarer du den i morgen også, sitter den."; }
+    else { delete S.feil[k]; S.sitter = (S.sitter || 0) + 1; tekst = "Den sitter! Du har lært noe du ikke kunne før. 💪"; }
+    dagen().comeback++;
+    leggGull(COMEBACK, "comeback");
+    lagre();
+    pop(COMEBACK); jubel(tekst);
+    etterHendelse();
+    return COMEBACK;
+  }
+  function feilListe(s) {
+    s = s || S; const na = Date.now();
+    return Object.entries(s.feil || {}).map(([k, e]) => Object.assign({ k, klar: e.neste <= na, idag: e.neste <= iKveld() }, e))
+      .sort((a, b) => a.neste - b.neste);
+  }
+
+  /* ---------------- mestringsmerker ---------------- */
+  function merke(id) {
+    const m = MERKE_ID[id]; if (!m) return false;
+    S = les(); if (S.merker[id]) return false;
+    S.merker[id] = idag(); lagre();
+    const it = ITEM[m.ting];
+    melding(`Nytt merke: ${m.ikon} ${m.navn}!`, true);
+    jubel(`Nytt merke: ${m.ikon} ${m.navn}! Du låste opp ${it ? it.navn.toLowerCase() : "en ny ting"} – se på avatarsiden.`, { lang: true });
+    return true;
+  }
+  const GLOBALE = {
+    allsidig: s => Object.keys(s.spill).filter(k => !["startgave", "oppdrag", "comeback"].includes(k)).length >= 5,
+    comeback: s => (s.sitter || 0) >= 10,
+    oppdrag: s => (s.oppdragDager || 0) >= 5,
+    gullgraver: s => s.totalt >= 1000,
+  };
+  function sjekkMerker() { S = les(); Object.keys(GLOBALE).forEach(id => { if (!S.merker[id] && GLOBALE[id](S)) merke(id); }); }
+
+  /* ---------------- dagens oppdrag ---------------- */
+  function frø(t) { let x = 7; for (let i = 0; i < t.length; i++) x = (x * 31 + t.charCodeAt(i)) % 2147483647; return () => (x = (x * 48271) % 2147483647) / 2147483647; }
+  function sikreOppdrag() {
+    const liste = spillListe(); if (!liste.length) return;
+    S = les();
+    if (S.oppdrag && S.oppdrag.d === idag()) return;
+    const r = frø(idag() + ":" + (S.trinn || ""));
+    const mine = liste.filter(sp => sp.gull !== false && passer(sp, Object.assign({}, S, { visAlle: false })));
+    if (!mine.length) return;
+    const navn = sp => sp.ikon + " " + sp.tittel;
+    const opp = [];
+    const pr = prover().find(p => p.dager <= 7 && mine.some(sp => filKey(sp.fil) === p.spill));
+    let forste = pr && mine.find(sp => filKey(sp.fil) === pr.spill);
+    if (forste) {
+      const naar = pr.dager === 0 ? "i dag" : pr.dager === 1 ? "i morgen" : "om " + pr.dager + " dager";
+      opp.push({ id: "prove", type: "gull", spill: [filKey(forste.fil)], n: 20, fil: forste.fil, tekst: `Prøve ${naar}! Tjen 20 gull i ${navn(forste)}` });
+    } else {
+      const sortert = mine.slice().sort((a, b) => (S.spill[filKey(a.fil)] || 0) - (S.spill[filKey(b.fil)] || 0));
+      forste = sortert[Math.floor(r() * Math.min(3, sortert.length))];
+      opp.push({ id: "spill", type: "gull", spill: [filKey(forste.fil)], n: 20, fil: forste.fil, tekst: `Tjen 20 gull i ${navn(forste)}` });
+    }
+    const klare = feilListe(S).filter(e => e.idag).length;
+    if (klare >= 2) opp.push({ id: "feil", type: "comeback", n: Math.min(3, klare), fil: "feilsamler.html", tekst: `Få ${Math.min(3, klare)} feil til å sitte i Feilsamleren` });
+    else opp.push({ id: "runder", type: "runder", n: 2, tekst: "Fullfør 2 runder i hvilket som helst spill" });
+    const fag = [...new Set(mine.map(sp => sp.fag))].filter(f => f !== forste.fag);
+    if (fag.length) {
+      const f = fag[Math.floor(r() * fag.length)], fs = mine.filter(sp => sp.fag === f);
+      opp.push({ id: "fag", type: "gull", spill: fs.map(sp => filKey(sp.fil)), n: 15, fil: fs.length === 1 ? fs[0].fil : null, fag: f, tekst: `Tjen 15 gull i ${f}` });
+    } else opp.push({ id: "runder3", type: "runder", n: 3, tekst: "Fullfør 3 runder" });
+    S.oppdrag = { d: idag(), liste: opp.map(o => Object.assign(o, { ferdig: false })), alle: false };
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+  }
+  function framdrift(o, s) {
+    s = s || S;
+    const d = s.dag && s.dag.d === idag() ? s.dag : { n: {}, comeback: 0, runder: 0 };
+    if (o.type === "gull") return o.spill.reduce((a, k) => a + (d.n[k] || 0), 0);
+    if (o.type === "comeback") return d.comeback || 0;
+    if (o.type === "runder") return d.runder || 0;
+    return 0;
+  }
+  function sjekkOppdrag() {
+    S = les(); const op = S.oppdrag; if (!op || op.d !== idag()) return;
+    const nye = op.liste.filter(o => !o.ferdig && framdrift(o, S) >= o.n);
+    if (!nye.length) return;
+    nye.forEach(o => { o.ferdig = true; leggGull(5, "oppdrag"); });
+    let alle = false;
+    if (!op.alle && op.liste.every(o => o.ferdig)) { op.alle = alle = true; leggGull(10, "oppdrag"); S.oppdragDager = (S.oppdragDager || 0) + 1; }
+    lagre();
+    if (alle) { melding("Alle dagens oppdrag er klare! +" + (5 * nye.length + 10) + " gull", true); jubel("Alle dagens oppdrag er klare! Du er en ekte oppdragsjeger! 🎯", { lang: true }); }
+    else { melding("Oppdrag klart: " + nye[0].tekst + " +" + 5 * nye.length + " gull", true); jubel("Oppdrag klart! 🎯 Sjekk forsiden for resten."); }
+    dunk();
+  }
+  let iHendelse = false;
+  function etterHendelse() {
+    if (iHendelse) return; iHendelse = true;
+    try { sjekkOppdrag(); sjekkMerker(); } finally { iHendelse = false; }
   }
 
   /* ---------------- butikk ---------------- */
   const PAKREVD = ["overdel", "underdel", "sko"];
-  function eier(id, s) { const it = ITEM[id]; s = s || S; return !!it && (it.pris === 0 || s.eid.includes(id)); }
+  function eier(id, s) {
+    const it = ITEM[id]; s = s || S; if (!it) return false;
+    if (it.merke) return !!(s.merker || {})[it.merke];
+    return it.pris === 0 || s.eid.includes(id);
+  }
   function kjop(id) {
     S = les(); const it = ITEM[id];
-    if (!it || eier(id)) return false;
+    if (!it || it.merke || eier(id)) return false;
     if (S.gull < it.pris) return false;
     S.gull -= it.pris; S.eid.push(id); S.paa[it.slot] = id; lagre();
     return true;
@@ -95,22 +281,27 @@
     const ny = !S.laget;
     S.navn = String(d.navn || "").trim().slice(0, 20);
     S.kjonn = d.kjonn === "jente" ? "jente" : "gutt";
+    if (d.trinn !== undefined) S.trinn = d.trinn ? +d.trinn : null;
     if (d.ut) S.ut = Object.assign({}, S.ut, d.ut);
     if (ny) {
       S.laget = idag();
       S.paa = Object.assign(standardPaa(S.kjonn), S.paa);
       S.gull += STARTGAVE; S.totalt += STARTGAVE; leggTil("startgave", STARTGAVE);
     }
+    nyeOppdrag();
     lagre();
+    sikreOppdrag();
     return ny;
   }
   function endre(f) { S = les(); f(S); lagre(); }
+  function settTrinn(t) { S = les(); S.trinn = t ? +t : null; nyeOppdrag(); lagre(); sikreOppdrag(); varsle(); }
 
   /* ---------------- flytte til ny enhet ---------------- */
   function sum(t) { let h = 5381; for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) >>> 0; return h.toString(36).slice(-5); }
   function eksport() {
     const s = les();
-    const j = JSON.stringify({ n: s.navn, k: s.kjonn, u: s.ut, g: s.gull, t: s.totalt, e: s.eid, p: s.paa, s: s.spill, l: s.laget });
+    const j = JSON.stringify({ n: s.navn, k: s.kjonn, u: s.ut, g: s.gull, t: s.totalt, e: s.eid, p: s.paa, s: s.spill, l: s.laget,
+      tr: s.trinn, m: s.merker, f: s.feil, si: s.sitter, od: s.oppdragDager, pr: s.prover });
     const b = btoa(unescape(encodeURIComponent(j)));
     return b + "-" + sum(b);
   }
@@ -124,7 +315,8 @@
     const n = tom();
     Object.assign(n, { navn: j.n || "", kjonn: j.k === "jente" ? "jente" : "gutt", ut: Object.assign(n.ut, j.u || {}),
       gull: Math.max(0, +j.g || 0), totalt: Math.max(0, +j.t || 0), eid: Array.isArray(j.e) ? j.e.filter(x => ITEM[x]) : [],
-      paa: j.p || {}, spill: j.s || {}, laget: j.l || idag(), importert: { eventyr: 1 } });
+      paa: j.p || {}, spill: j.s || {}, laget: j.l || idag(), importert: { eventyr: 1 },
+      trinn: j.tr || null, merker: j.m || {}, feil: j.f || {}, sitter: +j.si || 0, oppdragDager: +j.od || 0, prover: Array.isArray(j.pr) ? j.pr : [] });
     S = n; lagre();
     return true;
   }
@@ -160,7 +352,8 @@
 
   /* faste punkter på kroppen */
   const TORSO = "M95 124Q120 115 145 124L150 182Q120 189 90 182Z";
-  const A1 = [97, 130], B1 = [80, 178], A2 = [143, 130], B2 = [160, 178];
+  const A1 = [97, 130], A2 = [143, 130], HENDER = [[80, 178], [160, 178]], JUBELHENDER = [[74, 88], [166, 88]];
+  let B1 = HENDER[0], B2 = HENDER[1];   /* settes om i tegn() når avataren jubler */
   function langs(A, B, t) { return [A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t]; }
   function erme(f, t, w) {
     w = w || 17;
@@ -181,6 +374,7 @@
       case "smil": return `<circle cx="120" cy="152" r="12" fill="#ffd23f"/><circle cx="116" cy="149" r="1.8" fill="#333"/><circle cx="124" cy="149" r="1.8" fill="#333"/><path d="M114 155Q120 161 126 155" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>`;
       case "fjell": return `<path d="M104 164L114 146L120 154L126 144L138 164Z" fill="${lys}"/><path d="M114 146L117 151L111 151Z M126 144L130 151L122 151Z" fill="#fff"/>`;
       case "striper": return klipp(c, `<rect x="80" y="136" width="80" height="7" fill="${mork}"/><rect x="80" y="152" width="80" height="7" fill="${mork}"/><rect x="80" y="168" width="80" height="7" fill="${mork}"/>`);
+      case "comeback": return `<path d="M129 146A10 10 0 1 0 131 155" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M124 140L132 146L123 150Z" fill="#fff"/>`;
       default: return "";
     }
   }
@@ -318,6 +512,13 @@
       return s;
     },
     pannebaand: it => `<path d="M81 62Q120 48 159 62L160 71Q120 57 80 71Z" fill="${it.f}"/><path d="M81 66Q120 52 159 66" stroke="#fff" stroke-width="1.6" fill="none"/>`,
+    narr: () => `<path d="M88 58Q70 30 50 34Q74 42 104 50Z" fill="#d32f2f"/><path d="M152 58Q170 30 190 34Q166 42 136 50Z" fill="#fbc02d"/>` +
+      `<path d="M81 64C81 34 100 30 120 30V64Z" fill="#d32f2f"/><path d="M120 30C140 30 159 34 159 64H120Z" fill="#fbc02d"/><path d="M79 60Q120 51 161 60L162 70Q120 61 78 70Z" fill="#7b1fa2"/>` +
+      `<circle cx="50" cy="34" r="5.5" fill="#f2c230" stroke="#b8860b"/><circle cx="190" cy="34" r="5.5" fill="#f2c230" stroke="#b8860b"/>`,
+    floss: () => `<rect x="93" y="6" width="54" height="48" rx="4" fill="#212121"/><rect x="93" y="40" width="54" height="8" fill="#c62828"/><ellipse cx="120" cy="54" rx="46" ry="7" fill="#212121"/><path d="M98 11V37" stroke="#555" stroke-width="2"/>`,
+    napoleon: () => `<path d="M62 60Q120 4 178 60Q120 46 62 60Z" fill="#1c1c1c" stroke="#c9a227" stroke-width="2.5" stroke-linejoin="round"/><circle cx="120" cy="40" r="9" fill="#1f3f99"/><circle cx="120" cy="40" r="6" fill="#fff"/><circle cx="120" cy="40" r="3" fill="#d32f2f"/>`,
+    regnbuecaps: (it, c) => `<defs><linearGradient id="${c.id}rc" x1="0" x2="1"><stop offset="0" stop-color="#e53935"/><stop offset=".2" stop-color="#fb8c00"/><stop offset=".4" stop-color="#fdd835"/><stop offset=".6" stop-color="#43a047"/><stop offset=".8" stop-color="#1e88e5"/><stop offset="1" stop-color="#8e24aa"/></linearGradient></defs>` +
+      `<path d="M80 64C80 28 160 28 160 64Z" fill="url(#${c.id}rc)"/><path d="M76 64Q120 52 164 64L166 71Q120 61 74 71Z" fill="#37474f"/><circle cx="120" cy="34" r="3" fill="#fff"/>`,
     party: () => `<path d="M106 46L124 2L140 44Z" fill="#29b6f6"/><path d="M110 37L130 31M114 27L133 23M118 17L128 13" stroke="#ffeb3b" stroke-width="4"/><circle cx="124" cy="3" r="6" fill="#ff4081"/>`,
   };
 
@@ -349,6 +550,21 @@
       `<line x1="164" y1="171" x2="159" y2="185" stroke="#5d4037" stroke-width="5" stroke-linecap="round"/><circle cx="158" cy="188" r="3.5" fill="#c9a227"/>`,
     lys: it => `<line x1="165" y1="168" x2="190" y2="98" stroke="${it.f}" stroke-width="16" stroke-linecap="round" opacity=".3"/><line x1="165" y1="168" x2="190" y2="98" stroke="${it.f}" stroke-width="8" stroke-linecap="round"/>` +
       `<line x1="165" y1="168" x2="190" y2="98" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line x1="157" y1="190" x2="166" y2="166" stroke="#555" stroke-width="7" stroke-linecap="round"/>`,
+    sax: () => `<path d="M170 112L166 121" stroke="#333" stroke-width="4" stroke-linecap="round"/><path d="M166 121L162 176Q160 198 176 198Q190 198 190 182L188 167" stroke="#e8b923" stroke-width="8" fill="none" stroke-linecap="round"/>` +
+      `<ellipse cx="188" cy="164" rx="8" ry="4.5" fill="#c9971c" stroke="#8a6410" stroke-width="1"/>` + [134, 146, 158, 170].map(y => `<circle cx="${(166 - (y - 120) * .07).toFixed(1)}" cy="${y}" r="2.2" fill="#fff3c4" stroke="#8a6410" stroke-width=".8"/>`).join(""),
+    pizza: () => `<path d="M150 150L188 150L169 196Z" fill="#f6c453" stroke="#d58b3a" stroke-width="1.5" stroke-linejoin="round"/><path d="M149 147Q169 139 189 147L188 155Q169 147 150 155Z" fill="#d58b3a"/>` +
+      `<circle cx="162" cy="161" r="4" fill="#d32f2f"/><circle cx="176" cy="162" r="4" fill="#d32f2f"/><circle cx="169" cy="177" r="3.5" fill="#d32f2f"/><path d="M158 171L161 168M178 156L181 158" stroke="#4caf50" stroke-width="2"/>`,
+    hammer: () => `<line x1="158" y1="190" x2="178" y2="128" stroke="#a1662f" stroke-width="6" stroke-linecap="round"/><g transform="rotate(18 179 124)"><rect x="164" y="116" width="30" height="13" rx="2" fill="#78909c" stroke="#455a64" stroke-width="1.5"/><path d="M164 116L158 112V133L164 129Z" fill="#607d8b"/></g>`,
+    kjeks: () => `<circle cx="174" cy="164" r="17" fill="#d9a066" stroke="#a8743f" stroke-width="2"/>` + [[168, 156], [180, 160], [172, 170], [183, 172], [164, 166], [176, 151]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.6" fill="#4e2a10"/>`).join(""),
+    vifte: () => {
+      let s = `<path d="M162 176L132 136A50 50 0 0 1 192 136Z" fill="#d32f2f" stroke="#8e1515" stroke-width="1.5"/>`;
+      for (let i = 0; i <= 8; i++) {
+        const a = (-126.9 + i * 73.8 / 8) * Math.PI / 180;
+        s += `<line x1="162" y1="176" x2="${(162 + 50 * Math.cos(a)).toFixed(1)}" y2="${(176 + 50 * Math.sin(a)).toFixed(1)}" stroke="#ffcdd2" stroke-width="1"/>`;
+        s += `<circle cx="${(162 + 45 * Math.cos(a)).toFixed(1)}" cy="${(176 + 45 * Math.sin(a)).toFixed(1)}" r="2.2" fill="#fff"/>`;
+      }
+      return s;
+    },
     pokal: () => `<path d="M154 140H186Q186 164 170 168Q154 164 154 140Z" fill="#f2c230" stroke="#b8860b" stroke-width="1.5"/><path d="M154 146Q144 146 146 156Q148 162 156 160M186 146Q196 146 194 156Q192 162 184 160" stroke="#f2c230" stroke-width="3" fill="none"/>` +
       `<rect x="166" y="167" width="8" height="8" fill="#d4a017"/><rect x="158" y="175" width="24" height="7" rx="2" fill="#b8860b"/><path d="${stjerneD(170, 152, 6)}" fill="#fff8d0"/>`,
   };
@@ -358,7 +574,8 @@
     sekk: it => ({ bak: `<rect x="82" y="128" width="76" height="62" rx="14" fill="${it.f}"/>`,
       fram: `<path d="M102 126L105 176M138 126L135 176" stroke="${mix(it.f, -.25)}" stroke-width="6" stroke-linecap="round"/>` }),
     kappe: it => ({ bak: `<path d="M96 122Q62 172 48 224Q70 214 86 222Q102 212 120 218Q138 212 154 222Q170 214 192 224Q178 172 144 122Z" fill="${mix(it.f, -.3)}"/>` +
-        `<path d="M96 122Q62 172 48 224Q60 219 70 220Q76 170 100 130ZM144 122Q178 172 192 224Q180 219 170 220Q164 170 140 130Z" fill="${it.f}"/>`,
+        `<path d="M96 122Q62 172 48 224Q60 219 70 220Q76 170 100 130ZM144 122Q178 172 192 224Q180 219 170 220Q164 170 140 130Z" fill="${it.f}"/>` +
+        (it.m === "stjerner" ? `<path d="${[[62, 196, 4], [74, 212, 3], [178, 196, 4], [166, 212, 3], [56, 216, 2.5], [184, 216, 2.5], [84, 168, 2.5], [156, 168, 2.5]].map(([x, y, r]) => stjerneD(x, y, r)).join("")}" fill="#ffd54f"/>` : ""),
       fram: `<circle cx="104" cy="126" r="4.5" fill="#f2c230"/><circle cx="136" cy="126" r="4.5" fill="#f2c230"/><path d="M104 126Q120 134 136 126" stroke="#f2c230" stroke-width="2" fill="none"/>` }),
     engel: () => ({ bak: par(`<path d="M100 140C70 96 30 104 34 134C36 150 50 156 60 156C50 164 56 176 72 172C66 182 80 188 100 168Z" fill="#fbfbff" stroke="#cfd6e0" stroke-width="2"/><path d="M90 146C74 128 58 126 46 134M88 156C76 150 66 152 60 156M92 164C84 166 78 170 72 172" stroke="#cfd6e0" stroke-width="1.5" fill="none"/>`) }),
     sommerfugl: () => ({ bak: par(`<path d="M102 140C80 94 36 96 42 130C46 150 80 154 102 150Z" fill="#ff8a65" stroke="#6d4c41" stroke-width="2"/><path d="M102 154C84 160 58 178 72 196C86 206 100 178 102 162Z" fill="#ba68c8" stroke="#6d4c41" stroke-width="2"/><circle cx="64" cy="126" r="7" fill="#fff59d"/><circle cx="80" cy="180" r="5" fill="#fff59d"/>`) }),
@@ -389,6 +606,20 @@
     drage: () => `<path d="M58 224Q80 222 74 204L80 208L76 198" stroke="#43a047" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M48 208L62 188L64 204Z" fill="#2e7d32"/><ellipse cx="44" cy="222" rx="19" ry="14" fill="#43a047"/><ellipse cx="44" cy="226" rx="11" ry="8" fill="#fff176"/>` +
       `<circle cx="32" cy="200" r="13" fill="#43a047"/><path d="M24 190L20 180L28 188ZM38 189L40 178L42 190Z" fill="#fff59d"/><circle cx="28" cy="198" r="2.5" fill="#fff"/><circle cx="28" cy="198" r="1.3" fill="#222"/><circle cx="37" cy="198" r="2.5" fill="#fff"/><circle cx="37" cy="198" r="1.3" fill="#222"/>` +
       `<ellipse cx="25" cy="206" rx="6" ry="4" fill="#66bb6a"/><circle cx="23" cy="205" r="1" fill="#1b5e20"/><path d="M18 206Q10 204 8 198Q12 206 6 208Z" fill="#ff7043"/>`,
+    frosk: () => `<ellipse cx="42" cy="226" rx="21" ry="12" fill="#5cb85c"/><ellipse cx="42" cy="230" rx="13" ry="7" fill="#c5e1a5"/><ellipse cx="40" cy="208" rx="17" ry="12" fill="#5cb85c"/>` +
+      `<circle cx="31" cy="198" r="7" fill="#5cb85c"/><circle cx="49" cy="198" r="7" fill="#5cb85c"/><circle cx="31" cy="198" r="4" fill="#fff"/><circle cx="49" cy="198" r="4" fill="#fff"/><circle cx="32" cy="198" r="2" fill="#222"/><circle cx="50" cy="198" r="2" fill="#222"/>` +
+      `<path d="M30 212Q40 219 50 212" stroke="#2e7d32" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="24" cy="236" rx="8" ry="3.5" fill="#4caf50"/><ellipse cx="60" cy="236" rx="8" ry="3.5" fill="#4caf50"/>` +
+      `<circle cx="33" cy="210" r="2" fill="#ff8a80" opacity=".6"/><circle cx="47" cy="210" r="2" fill="#ff8a80" opacity=".6"/>`,
+    troll: () => `<path d="M58 226Q74 222 72 206" stroke="#7d8a55" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="72" cy="203" r="5" fill="#5d4037"/><ellipse cx="42" cy="224" rx="17" ry="14" fill="#7d8a55"/><ellipse cx="42" cy="227" rx="10" ry="8" fill="#a1887f"/>` +
+      `<ellipse cx="22" cy="198" rx="5" ry="8" fill="#7d8a55" transform="rotate(-25 22 198)"/><ellipse cx="50" cy="198" rx="5" ry="8" fill="#7d8a55" transform="rotate(25 50 198)"/><circle cx="36" cy="200" r="14" fill="#8d9b62"/>` +
+      `<path d="M28 189Q30 176 36 186Q40 174 44 189Z" fill="#5d4037"/><circle cx="31" cy="198" r="2.4" fill="#222"/><circle cx="41" cy="198" r="2.4" fill="#222"/><ellipse cx="36" cy="206" rx="6" ry="5" fill="#a5b07a"/>` +
+      `<path d="M30 211Q36 215 42 211" stroke="#3e2723" stroke-width="1.6" fill="none"/><path d="M33 212L34 215L35 212Z" fill="#fff"/>`,
+    rev: () => `<path d="M58 226C82 224 84 200 70 192C76 206 68 216 56 218Z" fill="#ef6c00"/><path d="M70 192C76 196 78 202 76 207L72 200Z" fill="#fff"/><ellipse cx="44" cy="224" rx="18" ry="12" fill="#ef6c00"/><ellipse cx="42" cy="228" rx="9" ry="7" fill="#fff3e0"/>` +
+      `<path d="M22 196L24 178L34 190ZM46 196L44 178L34 190Z" fill="#ef6c00"/><path d="M25 192L26 183L31 189ZM43 192L42 183L37 189Z" fill="#4e342e"/><path d="M20 196Q34 186 48 196Q46 210 34 214Q22 210 20 196Z" fill="#ef6c00"/>` +
+      `<path d="M26 204Q34 200 42 204Q40 213 34 214Q28 213 26 204Z" fill="#fff"/><circle cx="29" cy="199" r="2" fill="#222"/><circle cx="39" cy="199" r="2" fill="#222"/><circle cx="34" cy="210" r="2.3" fill="#222"/>`,
+    gullfisk: () => `<ellipse cx="40" cy="238" rx="16" ry="4" fill="#90a4ae"/><circle cx="40" cy="214" r="22" fill="#b3e5fc" fill-opacity=".55" stroke="#81d4fa" stroke-width="2"/><path d="M19 208H61" stroke="#4fc3f7" stroke-width="1.5"/>` +
+      `<ellipse cx="38" cy="220" rx="9" ry="6" fill="#ff9800"/><path d="M46 220L55 214V226Z" fill="#ffb74d"/><circle cx="34" cy="219" r="1.5" fill="#222"/><circle cx="30" cy="203" r="2" fill="none" stroke="#fff"/><circle cx="34" cy="197" r="1.4" fill="none" stroke="#fff"/>` +
+      `<path d="M26 234Q28 228 24 222M54 234Q52 230 56 224" stroke="#43a047" stroke-width="2.5" fill="none"/>`,
     enhjorning: () => `<path d="M62 214Q76 214 72 232" stroke="#f48fb1" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M62 216Q74 222 70 236" stroke="#90caf9" stroke-width="4" fill="none" stroke-linecap="round"/>` +
       `<rect x="32" y="222" width="6" height="16" rx="2" fill="#fafafa"/><rect x="52" y="222" width="6" height="16" rx="2" fill="#fafafa"/><ellipse cx="46" cy="218" rx="20" ry="12" fill="#fafafa" stroke="#e0e0e0"/>` +
       `<path d="M28 214L24 196L36 192L40 212Z" fill="#fafafa"/><ellipse cx="25" cy="194" rx="11" ry="8" fill="#fafafa" stroke="#e0e0e0"/><path d="M22 186L20 170L27 185Z" fill="#f2c230"/>` +
@@ -433,6 +664,14 @@
     regnbue: c => grad(c, "g", "#a3dcff", "#ffffff") + `<rect width="240" height="260" fill="url(#${c.id}g)"/>` +
       ["#e53935", "#fb8c00", "#fdd835", "#43a047", "#1e88e5", "#8e24aa"].map((f, i) => `<path d="M${-10 + i * 9} 230A${130 - i * 9} ${130 - i * 9} 0 0 1 ${250 - i * 9} 230" stroke="${f}" stroke-width="9" fill="none"/>`).join("") +
       sky(14, 222, 1.2) + sky(226, 222, 1.2) + `<rect y="232" width="240" height="28" fill="#9ccc65"/>`,
+    solnedgang: c => grad(c, "g", "#ff7043", "#ffd54f") + `<rect width="240" height="260" fill="url(#${c.id}g)"/><circle cx="120" cy="176" r="50" fill="#fff3c4" opacity=".85"/>` +
+      `<path d="M168 230V118H176V104L180 92L184 104V118H192V230Z" fill="#6d2c18"/><rect x="172" y="124" width="4" height="8" fill="#ffd54f"/><rect x="184" y="124" width="4" height="8" fill="#ffd54f"/>` +
+      `<path d="M44 230Q50 184 44 142" stroke="#4e2a10" stroke-width="6" fill="none"/><path d="M44 142Q24 130 8 144Q26 136 44 146ZM44 142Q64 128 82 140Q62 136 44 146ZM44 142Q36 120 22 116Q38 126 44 146ZM44 142Q54 120 70 118Q54 128 44 146Z" fill="#2e5a1c"/>` +
+      `<path d="M0 230H240V260H0Z" fill="#7a3a1e"/><path d="M96 230V206Q108 194 120 206V230ZM126 230V212Q134 204 142 212V230Z" fill="#8d4a26"/>`,
+    portal: c => `<rect width="240" height="260" fill="#1a0f3a"/>` + prikker("#fff", 22) +
+      [104, 86, 68, 50, 32].map((r, i) => `<circle cx="120" cy="128" r="${r}" fill="none" stroke="${["#7c4dff", "#b388ff", "#40c4ff", "#e040fb", "#fff"][i]}" stroke-width="${6 - i}" stroke-dasharray="${18 - i * 2} ${8 + i}" opacity="${.5 + i * .1}"/>`).join("") +
+      [[36, 46, 12], [206, 70, 9]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff8e1" stroke="#c9a227" stroke-width="2.5"/><path d="M${x} ${y}V${y - r * .65}M${x} ${y}L${x + r * .5} ${y + r * .3}" stroke="#333" stroke-width="1.8" stroke-linecap="round"/>`).join("") +
+      `<ellipse cx="120" cy="244" rx="90" ry="10" fill="#7c4dff" opacity=".35"/>`,
     skatt: c => grad(c, "g", "#3b2a1a", "#1f150c") + `<rect width="240" height="260" fill="url(#${c.id}g)"/>` + prikker("#ffd54f", 14) +
       `<path d="M0 260V226Q30 200 60 222Q90 196 120 220Q150 198 180 220Q210 200 240 224V260Z" fill="#f2c230"/>` +
       [[20, 232], [46, 220], [70, 236], [150, 232], [176, 222], [204, 236], [226, 228], [100, 240]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="9" ry="4" fill="#ffe082" stroke="#b8860b" stroke-width="1"/>`).join("") +
@@ -578,16 +817,61 @@
     ["har-solv", "Sølvhår", "harfarge", 200, "farge", { f: "#cfd6dd" }],
     ["har-gull", "Gullhår", "harfarge", 1000, "farge", { f: "#f2c230" }],
     ["har-regnbue", "Regnbuehår", "harfarge", 1500, "farge", { f: "regnbue" }],
+
+    /* Eksklusive ting: kan ikke kjøpes, låses opp med mestringsmerker (se MERKER under) */
+    ["saksofon", "Gullsaksofon", "hand", 0, "sax", { merke: "bla-mester" }],
+    ["pizza", "Pizzastykke", "hand", 0, "pizza", { merke: "brok-mester" }],
+    ["frosk", "Gangefrosken", "venn", 0, "frosk", { merke: "gange-lille" }],
+    ["hammer", "Snekkerhammer", "hand", 0, "hammer", { merke: "regne-mester" }],
+    ["kjeks", "Kjempekjeks", "hand", 0, "kjeks", { merke: "dele-mester" }],
+    ["narrelue", "Dobbel narrelue", "hode", 0, "narr", { merke: "dobbel-mester" }],
+    ["troll", "Snilt troll", "venn", 0, "troll", { merke: "eventyr-mester" }],
+    ["vifte", "Spansk vifte", "hand", 0, "vifte", { merke: "spansk-gloser" }],
+    ["bg-solnedgang", "Spansk solnedgang", "bakgrunn", 0, "solnedgang", { merke: "spansk-verb" }],
+    ["flosshatt", "Flosshatt", "hode", 0, "floss", { merke: "engelsk-gloser" }],
+    ["napoleonshatt", "Napoleonshatt", "hode", 0, "napoleon", { merke: "revolusjon" }],
+    ["bg-tidsportal", "Tidsportalen", "bakgrunn", 0, "portal", { merke: "tidsreisen" }],
+    ["stjernekappe", "Stjernekappe", "rygg", 0, "kappe", { f: "#1a237e", m: "stjerner", merke: "fortellingsreisen" }],
+    ["regnbuecaps", "Regnbuecaps", "hode", 0, "regnbuecaps", { merke: "allsidig" }],
+    ["comebackgenser", "Comeback-genser", "overdel", 0, "genser", { f: "#00897b", m: "comeback", merke: "comeback" }],
+    ["rev", "Oppdragsreven", "venn", 0, "rev", { merke: "oppdrag" }],
+    ["gullfisk", "Gullfisken", "venn", 0, "gullfisk", { merke: "gullgraver" }],
   ];
+  /* MERKER: [id, navn, ikon, spill (filnavn uten .html, null = på tvers), krav (vises for barnet), ting] */
+  const MERKER = [
+    ["bla-mester", "Blåtonemester", "🎷", ["blaa-tonar", "blaa-tonar-nynorsk"], "Minst 90 % riktig på en quiz med minst 20 spørsmål fra alle temaene", "saksofon"],
+    ["brok-mester", "Brøkmester", "🍕", ["brokmester"], "Nå nivå 4 eller høyere i alle de 12 brøktemaene", "pizza"],
+    ["gange-lille", "Gangemester", "🐸", ["gangestien"], "Mestre alle stykkene i den lille gangetabellen, så hele gangekartet blir fylt", "frosk"],
+    ["regne-mester", "Verkstedmester", "🧮", ["regneverkstedet"], "Få tre stjerner i Oppstilling på 3-sifret med mente og lån, både i pluss og minus", "hammer"],
+    ["dele-mester", "Delemester", "🍪", ["delefabrikken"], "Få tre stjerner i hoderegning på Blanding, med både små og store tall", "kjeks"],
+    ["dobbel-mester", "Dobbeltmester", "✌️", ["dobbel-konsonant"], "Få stjerne på minst 8 av 10 ord, eller minst 90 % på prøveprøven", "narrelue"],
+    ["eventyr-mester", "Eventyrmester", "🏰", ["eventyrproven"], "Fullfør alle fire stasjonene i alle tre eventyrene", "troll"],
+    ["spansk-gloser", "Glosemester på spansk", "💃", ["spansk-gloser"], "Minst 90 % på prøveprøven, eller få alle glosene i én gloseprøve til å sitte", "vifte"],
+    ["spansk-verb", "Verbmester", "🗣️", ["spansk-ar-verb"], "Minst 90 % på prøveprøven, eller få alle 15 verbene og alle 6 endingene til å sitte", "bg-solnedgang"],
+    ["engelsk-gloser", "Glosemester på engelsk", "🌍", ["engelsk-gloser"], "Minst 90 % på prøveprøven, eller få alle glosene i én gloseprøve til å sitte", "flosshatt"],
+    ["revolusjon", "Revolusjonsekspert", "⚖️", ["revolusjon"], "Minst 90 % på prøveprøven, enten i «Alt sammen» eller i hver av de tre delene", "napoleonshatt"],
+    ["tidsreisen", "Tidsreisende", "🦉", ["tidsreisen"], "Fullfør alle kapitlene i Tidsreisen", "bg-tidsportal"],
+    ["fortellingsreisen", "Fortellingsvokter", "📖", ["fortellingsreisen"], "Fullfør alle fem fortellingene og epilogen, eller samle alle symbolkortene", "stjernekappe"],
+    ["allsidig", "Allsidig", "🌈", null, "Tjen gull i fem ulike spill", "regnbuecaps"],
+    ["comeback", "Comeback-helt", "🔁", null, "Få 10 feil til å sitte i Feilsamleren", "comebackgenser"],
+    ["oppdrag", "Oppdragsjeger", "🎯", null, "Fullfør alle dagens oppdrag på fem forskjellige dager", "rev"],
+    ["gullgraver", "Gullgraver", "💰", null, "Tjen 1000 gull til sammen", "gullfisk"],
+  ].map(([id, navn, ikon, spill, krav, ting]) => ({ id, navn, ikon, spill, krav, ting }));
+  const MERKE_ID = {}; MERKER.forEach(m => { MERKE_ID[m.id] = m; });
   const KATALOG = K.map(([id, navn, slot, pris, t, e]) => Object.assign({ id, navn, slot, pris, t }, e));
   const ITEM = {}; KATALOG.forEach(it => { ITEM[it.id] = it; });
   const NIVAER = [[0, "Gratis", "#78909c"], [1, "Vanlig", "#607d8b"], [50, "Fin", "#2e7d32"], [200, "Sjelden", "#1565c0"], [600, "Episk", "#7b1fa2"], [1200, "Legendarisk", "#e65100"]];
+  function nivaaTing(it) { return it && it.merke ? { navn: "Merke", farge: "#ad1457" } : nivaa(it ? it.pris : 0); }
   function nivaa(pris) { let n = NIVAER[0]; NIVAER.forEach(x => { if (pris >= x[0]) n = x; }); return { navn: n[1], farge: n[2] }; }
 
   /* ---------- tegn hele avataren ---------- */
   let uid = 0;
   function tegn(st, o) {
     o = Object.assign({ bakgrunn: true, venn: true, vb: "0 0 240 260", prov: null, klasse: "" }, o || {});
+    [B1, B2] = o.jubel ? JUBELHENDER : HENDER;
+    try { return tegnKropp(st, o); } finally { [B1, B2] = HENDER; }
+  }
+  function tegnKropp(st, o) {
     st = st || S;
     const p = Object.assign(standardPaa(st.kjonn), st.paa || {});
     if (o.prov) { const it = ITEM[o.prov]; if (it) p[it.slot] = it.id; }
@@ -617,7 +901,7 @@
     L.push(`<rect x="100" y="176" width="16" height="52" rx="5" fill="${hud}"/><rect x="124" y="176" width="16" height="52" rx="5" fill="${hud}"/>`);
     L.push(g("underdel", UNDERDEL));
     L.push(g("sko", SKO));
-    L.push(`<rect x="113" y="106" width="14" height="22" fill="${hudM}"/>` + erme(hud, 1, 14) + `<circle cx="80" cy="178" r="8" fill="${hud}"/><circle cx="160" cy="178" r="8" fill="${hud}"/>`);
+    L.push(`<rect x="113" y="106" width="14" height="22" fill="${hudM}"/>` + erme(hud, 1, 14) + `<circle cx="${B1[0]}" cy="${B1[1]}" r="8" fill="${hud}"/><circle cx="${B2[0]}" cy="${B2[1]}" r="8" fill="${hud}"/>`);
     L.push(g("overdel", OVERDEL));
     L.push(rygg.fram || "");
     L.push(`<circle cx="83" cy="86" r="7" fill="${hud}"/><circle cx="157" cy="86" r="7" fill="${hud}"/><ellipse cx="120" cy="78" rx="38" ry="39" fill="${hud}"/>`);
@@ -625,13 +909,14 @@
     if (st.kjonn === "jente") L.push(`<path d="M100 79L95.5 76M101.5 77L98.5 73M140 79L144.5 76M138.5 77L141.5 73" stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round"/>`);
     L.push(`<path d="M98 73Q106 69 113 73M127 73Q134 69 142 73" stroke="${harKant}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`);
     L.push(`<path d="M118 92Q120 95 122 92" stroke="${mix(hud, -.3)}" stroke-width="2" fill="none" stroke-linecap="round"/>`);
-    L.push(`<path d="M110 100Q120 109 130 100" stroke="#7a3b2e" stroke-width="3" fill="none" stroke-linecap="round"/>`);
+    L.push(o.jubel ? `<path d="M108 98Q120 116 132 98Z" fill="#8a3b30"/><path d="M113 104Q120 110 127 104" fill="#ff8a8a"/>`
+      : `<path d="M110 100Q120 109 130 100" stroke="#7a3b2e" stroke-width="3" fill="none" stroke-linecap="round"/>`);
     L.push(`<circle cx="96" cy="97" r="6" fill="#ff7a7a" opacity=".28"/><circle cx="144" cy="97" r="6" fill="#ff7a7a" opacity=".28"/>`);
     L.push(harG(har.fram));
     L.push(g("ansikt", ANSIKT));
     L.push(g("hode", HODE));
     const h = g("hand", HAND);
-    if (h) L.push(h + `<circle cx="160" cy="178" r="8" fill="${hud}"/>`);
+    if (h) L.push(`<g transform="translate(${B2[0] - 160} ${B2[1] - 178})">${h}<circle cx="160" cy="178" r="8" fill="${hud}"/></g>`);
     if (o.venn) L.push(g("venn", VENN));
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${o.vb}" class="${o.klasse}" role="img" aria-label="Avatar"><defs>${defs}</defs>${L.join("")}</svg>`;
   }
@@ -667,34 +952,47 @@
 .gm-melding{position:fixed;z-index:9002;left:50%;top:max(14px,env(safe-area-inset-top,0px));transform:translate(-50%,-140%);max-width:min(92vw,440px);
   padding:12px 18px;border-radius:14px;background:#1f1a12;color:#fff5d6;border:2px solid #e6b44a;box-shadow:0 6px 24px rgba(0,0,0,.3);
   font:700 16px/1.35 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:center;transition:transform .35s ease}
-.gm-melding.vis{transform:translate(-50%,0)}
+.gm-melding.gm-vis{transform:translate(-50%,0)}
 .gm-melding.stor{font-size:18px;color:#ffd75e}
-@media (prefers-reduced-motion:reduce){.gm-pop,.gm-dunk{animation:none}.gm-melding{transition:none}}
-@media print{.gm-merke,.gm-pop,.gm-melding{display:none!important}}`;
+.gm-jubel{position:fixed;z-index:9003;left:max(8px,env(safe-area-inset-left,0px));bottom:calc(max(12px,env(safe-area-inset-bottom,0px)) + 46px);
+  display:flex;align-items:flex-end;gap:2px;cursor:pointer;transform:translateY(170%);opacity:0;pointer-events:none;
+  transition:transform .5s cubic-bezier(.2,1.35,.4,1),opacity .3s}
+.gm-jubel.uten-merke{bottom:max(10px,env(safe-area-inset-bottom,0px))}
+.gm-jubel.gm-vis{transform:translateY(0);opacity:1;pointer-events:auto}
+.gm-jubel-ava{width:96px;height:124px;flex:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
+.gm-jubel-ava svg{width:100%;height:100%;display:block;overflow:visible}
+.gm-jubel.gm-vis .gm-jubel-ava{animation:gm-hopp .55s .4s 2 ease-in-out}
+@keyframes gm-hopp{0%,100%{transform:translateY(0)}45%{transform:translateY(-16px)}}
+.gm-boble{position:relative;margin:0 0 74px 8px;max-width:min(64vw,250px);background:#fffdf5;color:#1f1a12;border:2.5px solid #e6b44a;border-radius:16px;
+  padding:9px 13px;font:700 15px/1.3 system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.22)}
+.gm-boble::before{content:"";position:absolute;left:-12px;bottom:14px;border:9px solid transparent;border-right-color:#e6b44a;border-left:0}
+.gm-boble::after{content:"";position:absolute;left:-8px;bottom:16px;border:7px solid transparent;border-right-color:#fffdf5;border-left:0}
+@media (prefers-reduced-motion:reduce){.gm-pop,.gm-dunk,.gm-jubel.gm-vis .gm-jubel-ava{animation:none}.gm-melding,.gm-jubel{transition:none}}
+@media print{.gm-merke,.gm-pop,.gm-melding,.gm-jubel{display:none!important}}`;
   try { const st = document.createElement("style"); st.textContent = CSS; (document.head || document.documentElement).appendChild(st); } catch (e) {}
 
-  let merke = null;
+  let merkeEl = null;
   function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
   function lagMerke() {
-    if (!MERKE || merke || !document.body) return;
-    merke = document.createElement("a");
-    merke.className = "gm-merke";
-    merke.href = ROT + "avatar.html";
-    document.body.appendChild(merke);
+    if (!MERKE || merkeEl || !document.body) return;
+    merkeEl = document.createElement("a");
+    merkeEl.className = "gm-merke";
+    merkeEl.href = ROT + "avatar.html";
+    document.body.appendChild(merkeEl);
     const luft = document.createElement("div"); luft.style.height = "64px"; luft.setAttribute("aria-hidden", "true");
     document.body.appendChild(luft);
     oppdaterMerke();
   }
   function oppdaterMerke() {
-    if (!merke) return;
+    if (!merkeEl) return;
     const hode = S.laget ? tegn(S, { bakgrunn: false, venn: false, vb: "72 30 96 96" }) : "✨";
-    merke.innerHTML = `<span class="gm-ava">${hode}</span><span class="gm-mynt" aria-hidden="true"></span><span>${S.gull}</span>${S.laget ? "" : '<span class="gm-lag">Lag avatar</span>'}`;
-    merke.setAttribute("aria-label", `Du har ${S.gull} gull. ${S.laget ? "Gå til avataren din" : "Lag avataren din"}`);
+    merkeEl.innerHTML = `<span class="gm-ava">${hode}</span><span class="gm-mynt" aria-hidden="true"></span><span>${S.gull}</span>${S.laget ? "" : '<span class="gm-lag">Lag avatar</span>'}`;
+    merkeEl.setAttribute("aria-label", `Du har ${S.gull} gull. ${S.laget ? "Gå til avataren din" : "Lag avataren din"}`);
   }
-  function dunk() { const m = merke || document.querySelector("[data-gull-pung]"); if (!m) return; m.classList.remove("gm-dunk"); void m.offsetWidth; m.classList.add("gm-dunk"); }
+  function dunk() { const m = merkeEl || document.querySelector("[data-gull-pung]"); if (!m) return; m.classList.remove("gm-dunk"); void m.offsetWidth; m.classList.add("gm-dunk"); }
   function pop(n) {
     dunk();
-    const anker = merke || document.querySelector("[data-gull-pung]");
+    const anker = merkeEl || document.querySelector("[data-gull-pung]");
     const e = document.createElement("div");
     e.className = "gm-pop"; e.textContent = "+" + n;
     if (anker) { const r = anker.getBoundingClientRect(); e.style.left = (r.left + r.width / 2 + 6) + "px"; e.style.top = (r.top - 18) + "px"; }
@@ -707,11 +1005,29 @@
     if (!meldEl) { meldEl = document.createElement("div"); meldEl.className = "gm-melding"; meldEl.setAttribute("role", "status"); document.body.appendChild(meldEl); }
     meldEl.innerHTML = (stor ? '<span class="gm-mynt" aria-hidden="true"></span> ' : "") + esc(tekst);
     meldEl.classList.toggle("stor", !!stor);
-    requestAnimationFrame(() => meldEl.classList.add("vis"));
-    clearTimeout(meldT); meldT = setTimeout(() => meldEl.classList.remove("vis"), 3200);
+    requestAnimationFrame(() => meldEl.classList.add("gm-vis"));
+    clearTimeout(meldT); meldT = setTimeout(() => meldEl.classList.remove("gm-vis"), 3200);
   }
 
-  if (document.body) lagMerke(); else document.addEventListener("DOMContentLoaded", lagMerke);
+  /* ---------- avataren jubler ---------- */
+  let jubelEl = null, jubelT = null;
+  function jubel(tekst, o) {
+    o = o || {};
+    if (!document.body || !S.laget) return;
+    if (!jubelEl) {
+      jubelEl = document.createElement("div");
+      jubelEl.className = "gm-jubel" + (merkeEl ? "" : " uten-merke");
+      jubelEl.setAttribute("role", "status"); jubelEl.setAttribute("aria-live", "polite");
+      jubelEl.addEventListener("click", () => jubelEl.classList.remove("gm-vis"));
+      document.body.appendChild(jubelEl);
+    }
+    jubelEl.innerHTML = `<div class="gm-jubel-ava">${tegn(S, { bakgrunn: false, venn: false, jubel: true, vb: "40 20 160 230" })}</div><div class="gm-boble">${esc(tekst)}</div>`;
+    jubelEl.classList.remove("gm-vis"); void jubelEl.offsetWidth; jubelEl.classList.add("gm-vis");
+    clearTimeout(jubelT); jubelT = setTimeout(() => jubelEl.classList.remove("gm-vis"), o.lang ? 5500 : 3600);
+  }
+
+  function start() { lagMerke(); lastSpillListe(); }
+  if (document.readyState !== "loading") start(); else document.addEventListener("DOMContentLoaded", start);
   window.addEventListener("storage", e => { if (e.key === KEY) { S = les(); varsle(); } });
   window.addEventListener("pageshow", () => { S = les(); varsle(); });
 
@@ -720,5 +1036,8 @@
     kjop, taPaa, taAv, eier, lagBruker, endre, eksport, importKode, slett, onEndring: f => lyttere.push(f),
     tegn, tegnTing, mix, esc, nivaa, melding,
     KATALOG, ITEM, PLASSER, PAKREVD, HAR, HUD, HARFARGE, OYNE, DAGSTAK, STARTGAVE, ROT, idag,
+    feil, riktig, repeter, feilListe, merke, MERKER, MERKE_ID, nivaaTing, jubel,
+    prover, provebonus, leggTilProve, fjernProve, settTrinn, passer, filKey, dagerTil,
+    oppdrag: () => { sikreOppdrag(); S = les(); return S.oppdrag && S.oppdrag.d === idag() ? S.oppdrag : null; }, framdrift,
   };
 })();

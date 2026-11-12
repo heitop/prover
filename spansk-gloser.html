@@ -451,14 +451,17 @@ function distract(g, n = 3) {
   return others.slice(0, n);
 }
 function itVelgEsNo(g) {
-  return { kind: "choice", g, label: "Hva betyr ordet?", big: g.es, say: g.es, options: [g.no, ...distract(g).map(x => x.no)], answer: g.no, line: `${g.es} = ${g.no}`, sayF: g.es };
+  return { kind: "choice", g, label: "Hva betyr ordet?", big: g.es, say: g.es, options: [g.no, ...distract(g).map(x => x.no)], answer: g.no, line: `${g.es} = ${g.no}`, sayF: g.es,
+    fe: { k: `${g.es}:es-no`, q: `Hva betyr det spanske ordet «${g.es}»?` } };
 }
 function itVelgNoEs(g) {
-  return { kind: "choice", g, label: "Hva heter det på spansk?", big: g.no, options: [g.es, ...distract(g).map(x => x.es)], answer: g.es, line: `${g.no} = ${g.es}`, sayF: g.es };
+  return { kind: "choice", g, label: "Hva heter det på spansk?", big: g.no, options: [g.es, ...distract(g).map(x => x.es)], answer: g.es, line: `${g.no} = ${g.es}`, sayF: g.es,
+    fe: { k: `${g.es}:no-es`, q: `Hva heter «${g.no}» på spansk?` } };
 }
 function itSkrivEs(g) {
   return {
     kind: "write", lang: "es", g, label: "Skriv på spansk", big: g.no, fasit: g.es, line: `${g.no} = ${g.es}`, sayF: `${artOf(g)} ${g.es}`,
+    fe: { k: `${g.es}:skriv-es`, q: `Skriv på spansk: «${g.no}»`, godta: [`${artOf(g)} ${g.es}`], forkl: `Det heter ${artOf(g)} ${g.es}.` },
     check: v => {
       const r = checkEs(v, g.es);
       if ((r.st === "ok" || r.st === "accent") && (r.art === "el" || r.art === "la") && r.art !== artOf(g)) r.note = `Obs: det heter <b>${artOf(g)} ${esc(g.es)}</b>.`;
@@ -467,7 +470,8 @@ function itSkrivEs(g) {
   };
 }
 function itSkrivNo(g) {
-  return { kind: "write", lang: "no", g, label: "Skriv på norsk", big: g.es, say: g.es, fasit: g.no, line: `${g.es} = ${g.no}`, check: v => checkNo(v, g) };
+  return { kind: "write", lang: "no", g, label: "Skriv på norsk", big: g.es, say: g.es, fasit: g.no, line: `${g.es} = ${g.no}`, check: v => checkNo(v, g),
+    fe: { k: `${g.es}:skriv-no`, q: `Skriv på norsk: «${g.es}»`, godta: [g.no.replace(/\(.*?\)/g, "").trim(), ...(g.alt || [])].filter(x => x && x !== g.no) } };
 }
 const ART_RE = /^(el|la|los|las|un|una|mi|mis) /;
 function checkEs(input, fasit) {
@@ -530,7 +534,7 @@ function qRender() {
 function qAnswer(r, given) {
   const it = Q.queue[0]; Q.answered = true;
   const ok = ["ok", "accent", "typo"].includes(r.st);
-  if (!(it.id in Q.first)) { Q.first[it.id] = ok; if (it.g && !Q.noLv) updLv(it.g, it.kind, ok); if (ok) window.Gull&&Gull.tjen(it.kind === "write" ? 2 : 1); }
+  if (!(it.id in Q.first)) { Q.first[it.id] = ok; if (it.g && !Q.noLv) updLv(it.g, it.kind, ok); if (ok) window.Gull&&Gull.tjen(it.kind === "write" ? 2 : 1); fMeld(it, ok); }
   if (ok || !Q.requeue) Q.done++;
   else Q.queue.splice(Math.min(Q.queue.length, 4), 0, it);
   $("#qbar").style.width = (Q.done / Q.total * 100) + "%";
@@ -567,6 +571,7 @@ function qEnd() {
   if (Q.total >= 5) window.Gull&&Gull.bonus(pct >= 90 ? 5 : pct >= 75 ? 3 : pct >= 50 ? 1 : 0, "Runde ferdig!");
   const items = Q.items.filter(it => Q.first[it.id] === false);
   if (Q.bestKey) { const b = PS().best; if (b[Q.bestKey] == null || pct > b[Q.bestKey]) { b[Q.bestKey] = pct; Q.rekord = true; } save(); }
+  sjekkMerke();
   const [ico, msg] = pct >= 90 ? ["🌟", "¡Fantástico!"] : pct >= 75 ? ["👏", "¡Muy bien!"] : pct >= 50 ? ["💪", "¡Bien! Litt til, så sitter det."] : ["🌱", "Godt jobba – ta en runde til!"];
   const again = Q.again;
   show(`
@@ -582,6 +587,34 @@ function qEnd() {
       <button class="btn big" data-act="home">Til menyen</button>
     </div>
   </div>`);
+}
+
+/* ---------- feilsamler og mestringsmerke (felles/gull.js) ---------- */
+const txt = s => String(s == null ? "" : s).replace(/<br\s*\/?>/gi, " ").replace(/<[^>]*>/g, " ")
+  .replace(/&(amp|lt|gt|quot|#39);/g, (_, e) => ({ amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'" }[e])).replace(/\s+/g, " ").replace(/ ([.,:;!?)])/g, "$1").replace(/\( /g, "(").trim();
+/* Nøkkel: «es:<prøve-id>:<glose/setning>:<type>» – stabil på tvers av økter. Feil og riktig bare på første forsøk. */
+function fMeld(it, ok) {
+  const f = it.fe; if (!f || !window.Gull) return;
+  try {
+    const k = `es:${P().id}:${f.k}`;
+    if (ok) { if (Gull.riktig) Gull.riktig(k); return; }
+    if (!Gull.feil) return;
+    const o = { q: txt(f.q), a: txt(f.a || it.fasit || it.answer), emne: f.emne || `Spansk: ${P().tittel}` };
+    const alt = it.kind === "choice" && it.options ? shuffle(it.options.filter(x => x !== it.answer)).slice(0, 3) : [];
+    if (alt.length >= 2) o.alt = alt;
+    if (f.godta && f.godta.length) o.godta = f.godta;
+    const fk = f.forkl || it.forkl; if (fk) o.forkl = txt(fk).slice(0, 250);
+    Gull.feil(k, o);
+  } catch (e) {}
+}
+/* Merke: minst 90 % på prøveprøven, eller alle glosene i én prøve sitter (nivå 3). */
+function sjekkMerke() {
+  if (!window.Gull || !Gull.merke) return;
+  const nadd = PROVER.some(p => {
+    const st = S.prover[p.id]; if (!st) return false;
+    return (st.best && st.best.prove >= 90) || (p.gloser.length > 0 && p.gloser.every(g => ((st.lv && st.lv[g.es]) || 0) >= 3));
+  });
+  if (nadd) try { Gull.merke("spansk-gloser"); } catch (e) {}
 }
 
 /* ---------- moduser ---------- */
@@ -623,13 +656,16 @@ function lagSetninger() {
     if (kind === 0) {
       const near = shuffle(naerForm(s.ord)).slice(0, 1);
       const rest = shuffle(ords.filter(o => o !== s.ord && !near.includes(o))).slice(0, 3 - near.length);
-      return { kind: "choice", sent: true, label: "Hvilket ord mangler?", bigHtml: gapHtml, sub: esc(s.no), options: [s.ord, ...near, ...rest], answer: s.ord, line: s.es, sayF: s.es, after };
+      return { kind: "choice", sent: true, label: "Hvilket ord mangler?", bigHtml: gapHtml, sub: esc(s.no), options: [s.ord, ...near, ...rest], answer: s.ord, line: s.es, sayF: s.es, after,
+        fe: { k: `setn:${s.es}:hull`, q: `Hvilket ord mangler? «${a}___${b}» (${s.no})`, emne: `Spansk: ${P().tittel} – setninger` } };
     }
     if (kind === 1) {
-      return { kind: "write", lang: "es", sent: true, label: "Skriv ordet som mangler", bigHtml: gapHtml, sub: esc(s.no), fasit: s.ord, check: v => checkEs(v, s.ord), line: s.es, sayF: s.es, after };
+      return { kind: "write", lang: "es", sent: true, label: "Skriv ordet som mangler", bigHtml: gapHtml, sub: esc(s.no), fasit: s.ord, check: v => checkEs(v, s.ord), line: s.es, sayF: s.es, after,
+        fe: { k: `setn:${s.es}:skriv`, q: `Skriv ordet som mangler: «${a}___${b}» (${s.no})`, emne: `Spansk: ${P().tittel} – setninger` } };
     }
     const others = shuffle(P().setninger.filter(x => x !== s)).slice(0, 3).map(x => x.no);
-    return { kind: "choice", sent: true, wide: true, label: "Hva betyr setningen?", big: s.es, say: s.es, options: [s.no, ...others], answer: s.no, line: `${s.es} = ${s.no}`, sayF: s.es };
+    return { kind: "choice", sent: true, wide: true, label: "Hva betyr setningen?", big: s.es, say: s.es, options: [s.no, ...others], answer: s.no, line: `${s.es} = ${s.no}`, sayF: s.es,
+      fe: { k: `setn:${s.es}:betyr`, q: `Hva betyr «${s.es}»?`, emne: `Spansk: ${P().tittel} – setninger` } };
   }));
 }
 
@@ -652,25 +688,30 @@ function checkFrase(v, art, ord) {
   return r;
 }
 const BOY = {
-  artikkel: g => ({ kind: "choice", fixed: true, label: "el eller la?", bigHtml: `<span class="gap">___</span> ${esc(g.es)}`, sub: esc(g.no), options: ["el", "la"], answer: artOf(g), forkl: artRegel(g), line: `${artOf(g)} ${g.es}`, sayF: `${artOf(g)} ${g.es}` }),
+  artikkel: g => ({ kind: "choice", fixed: true, label: "el eller la?", bigHtml: `<span class="gap">___</span> ${esc(g.es)}`, sub: esc(g.no), options: ["el", "la"], answer: artOf(g), forkl: artRegel(g), line: `${artOf(g)} ${g.es}`, sayF: `${artOf(g)} ${g.es}`,
+    fe: { k: `art:${g.es}`, q: `el eller la? «___ ${g.es}» (${g.no})`, emne: "Spansk: el eller la" } }),
   flertall: g => {
     const f = `${plArt(g)} ${plOf(g)}`;
-    return { kind: "write", lang: "es", label: "Skriv i flertall", big: `${artOf(g)} ${g.es}`, say: `${artOf(g)} ${g.es}`, sub: `${esc(g.no)} → flere`, fasit: f, check: v => checkFrase(v, plArt(g), plOf(g)), forkl: `Legg til <b>-s</b>, og <b>${artOf(g)}</b> blir <b>${plArt(g)}</b>.`, line: `${artOf(g)} ${g.es} → ${f}`, sayF: f };
+    return { kind: "write", lang: "es", label: "Skriv i flertall", big: `${artOf(g)} ${g.es}`, say: `${artOf(g)} ${g.es}`, sub: `${esc(g.no)} → flere`, fasit: f, check: v => checkFrase(v, plArt(g), plOf(g)), forkl: `Legg til <b>-s</b>, og <b>${artOf(g)}</b> blir <b>${plArt(g)}</b>.`, line: `${artOf(g)} ${g.es} → ${f}`, sayF: f,
+      fe: { k: `flertall:${g.es}`, q: `Skriv i flertall: «${artOf(g)} ${g.es}» (${g.no} → flere)`, emne: "Spansk: flertall" } };
   },
   kjonn: g => {
     const t = byEs(g.par); if (!t) return null;
     const regel = /o$/.test(g.es) && /a$/.test(t.es) ? "Bytt <b>-o</b> med <b>-a</b>." : /a$/.test(g.es) && /o$/.test(t.es) ? "Bytt <b>-a</b> med <b>-o</b>." : `${esc(g.es)} og ${esc(t.es)} er ulike ord – de må pugges.`;
-    return { kind: "write", lang: "es", label: t.kj === "f" ? "Gjør om til hunkjønn" : "Gjør om til hankjønn", bigHtml: `${artOf(g)} ${esc(g.es)} → ${artOf(t)} <span class="gap">___</span>`, sub: `${esc(g.no)} → ${esc(t.no)}`, fasit: t.es, check: v => checkEs(v, t.es), forkl: regel, line: `${g.es} → ${t.es}`, sayF: `${artOf(t)} ${t.es}` };
+    return { kind: "write", lang: "es", label: t.kj === "f" ? "Gjør om til hunkjønn" : "Gjør om til hankjønn", bigHtml: `${artOf(g)} ${esc(g.es)} → ${artOf(t)} <span class="gap">___</span>`, sub: `${esc(g.no)} → ${esc(t.no)}`, fasit: t.es, check: v => checkEs(v, t.es), forkl: regel, line: `${g.es} → ${t.es}`, sayF: `${artOf(t)} ${t.es}`,
+      fe: { k: `kjonn:${g.es}`, q: `${t.kj === "f" ? "Gjør om til hunkjønn" : "Gjør om til hankjønn"}: ${artOf(g)} ${g.es} → ${artOf(t)} ___ (${g.no} → ${t.no})`, godta: [`${artOf(t)} ${t.es}`], emne: "Spansk: han eller hun" } };
   },
   mi: g => {
     const fl = Math.random() < .5, w = fl ? plOf(g) : g.es;
-    return { kind: "choice", fixed: true, label: "mi eller mis?", bigHtml: `<span class="gap">___</span> ${esc(w)}`, options: ["mi", "mis"], answer: fl ? "mis" : "mi", forkl: `<b>mi</b> når det er én, <b>mis</b> når det er flere (ordet ender på -s).`, line: `${fl ? "mis" : "mi"} ${w}`, sayF: `${fl ? "mis" : "mi"} ${w}` };
+    return { kind: "choice", fixed: true, label: "mi eller mis?", bigHtml: `<span class="gap">___</span> ${esc(w)}`, options: ["mi", "mis"], answer: fl ? "mis" : "mi", forkl: `<b>mi</b> når det er én, <b>mis</b> når det er flere (ordet ender på -s).`, line: `${fl ? "mis" : "mi"} ${w}`, sayF: `${fl ? "mis" : "mi"} ${w}`,
+      fe: { k: `mi:${w}`, q: `mi eller mis? «___ ${w}»`, emne: "Spansk: mi eller mis" } };
   },
   tener: g => {
     const [su, form, no] = pick(TENER), fl = Math.random() < .4;
     const obj = fl ? `dos ${plOf(g)}` : `${unUna(g)} ${g.es}`;
     const opts = [form, ...shuffle(TENER_FORMS.filter(x => x !== form)).slice(0, 3)];
-    return { kind: "choice", label: "Hvilken form av tener?", sent: true, bigHtml: `${esc(su)} <span class="gap">___</span> ${esc(obj)}.`, sub: `tener = å ha · ${esc(su.toLowerCase())} = ${no}`, options: opts, answer: form, forkl: tenerTabell, line: `${su} ${form} ${obj}.`, sayF: `${su} ${form} ${obj}.` };
+    return { kind: "choice", label: "Hvilken form av tener?", sent: true, bigHtml: `${esc(su)} <span class="gap">___</span> ${esc(obj)}.`, sub: `tener = å ha · ${esc(su.toLowerCase())} = ${no}`, options: opts, answer: form, forkl: tenerTabell, line: `${su} ${form} ${obj}.`, sayF: `${su} ${form} ${obj}.`,
+      fe: { k: `tener:${su.toLowerCase()}`, q: `Hvilken form av tener (å ha) passer? «${su} ___ ${obj}.» (${su.toLowerCase()} = ${no})`, forkl: "tener: yo tengo, tú tienes, él/ella tiene, nosotros tenemos, vosotros tenéis, ellos/ellas tienen.", emne: "Spansk: tener" } };
   },
 };
 const BOY_ANTALL = { artikkel: 3, flertall: 3, kjonn: 2, mi: 3, tener: 4 };
@@ -820,6 +861,7 @@ document.addEventListener("keydown", e => {
 
 applyTheme();
 home();
+sjekkMerke();
 </script>
 </body>
 </html>

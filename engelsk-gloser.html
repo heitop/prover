@@ -476,25 +476,29 @@ function distract(g, n = 3) {
 }
 const enForms = g => [g.en, ...(g.enAlt || [])];
 function itVelgEnNo(g) {
-  return { kind: "choice", g, label: "Hva betyr ordet?", big: g.en, say: g.en, options: [g.no, ...distract(g).map(x => x.no)], answer: g.no, line: `${g.en} = ${g.no}`, sayF: g.en };
+  return { kind: "choice", g, label: "Hva betyr ordet?", big: g.en, say: g.en, options: [g.no, ...distract(g).map(x => x.no)], answer: g.no, line: `${g.en} = ${g.no}`, sayF: g.en,
+    fe: { k: `${g.en}:en-no`, q: `Hva betyr det engelske ordet «${g.en}»?` } };
 }
 function itVelgNoEn(g) {
-  return { kind: "choice", g, label: "Hva heter det på engelsk?", big: g.no, options: [g.en, ...distract(g).map(x => x.en)], answer: g.en, line: `${g.no} = ${g.en}`, sayF: g.en };
+  return { kind: "choice", g, label: "Hva heter det på engelsk?", big: g.no, options: [g.en, ...distract(g).map(x => x.en)], answer: g.en, line: `${g.no} = ${g.en}`, sayF: g.en,
+    fe: { k: `${g.en}:no-en`, q: `Hva heter «${g.no}» på engelsk?` } };
 }
 function itSkrivEn(g) {
-  return { kind: "write", lang: "en", g, label: "Skriv på engelsk", big: g.no, fasit: g.en, line: `${g.no} = ${g.en}`, sayF: g.en, check: v => checkEn(v, enForms(g)) };
+  return { kind: "write", lang: "en", g, label: "Skriv på engelsk", big: g.no, fasit: g.en, line: `${g.no} = ${g.en}`, sayF: g.en, check: v => checkEn(v, enForms(g)), fe: feSkrivEn(g) };
 }
 function itSkrivNo(g) {
-  return { kind: "write", lang: "no", g, label: "Skriv på norsk", big: g.en, say: g.en, fasit: g.no, line: `${g.en} = ${g.no}`, check: v => checkNo(v, g) };
+  return { kind: "write", lang: "no", g, label: "Skriv på norsk", big: g.en, say: g.en, fasit: g.no, line: `${g.en} = ${g.no}`, check: v => checkNo(v, g),
+    fe: { k: `${g.en}:skriv-no`, q: `Skriv på norsk: «${g.en}»`, godta: [...new Set([g.no.replace(/\(.*?\)/g, "").trim(), ...g.no.split("/").map(x => x.trim()), ...(g.alt || [])])].filter(x => x && x !== g.no) } };
 }
 function itLytt(g) {
   return {
     kind: "write", lang: "en", g, label: "Hør ordet og skriv det på engelsk",
     bigHtml: `<button class="say huge" data-say="${esc(g.en)}" aria-label="Spill av ordet igjen" title="Spill av igjen">🔊</button><span class="muted small" style="font-family:var(--fb);font-weight:400">Trykk for å høre igjen</span>`,
     autoSay: g.en, fasit: g.en, line: `${g.en} = ${g.no}`, sayF: g.en, check: v => checkEn(v, enForms(g)),
-    after: `${sayBtn(g.en, 1)} ${esc(g.en)} = ${esc(g.no)}`
+    after: `${sayBtn(g.en, 1)} ${esc(g.en)} = ${esc(g.no)}`, fe: feSkrivEn(g)
   };
 }
+const feSkrivEn = g => ({ k: `${g.en}:skriv-en`, q: `Skriv på engelsk: «${g.no}»`, godta: g.enAlt || [] });
 const EN_ART = /^(the|a|an|to) /;
 const cleanEn = s => clean(s).replace(/-/g, "").replace(EN_ART, "");
 function checkEn(input, forms) {
@@ -566,6 +570,7 @@ function qAnswer(r, given) {
     Q.first[it.id] = ok && !it.hinted;
     if (it.g && !Q.noLv) updLv(it.g, it.hinted ? "choice" : it.kind, ok);
     if (Q.first[it.id]) window.Gull&&Gull.tjen(it.kind === "write" ? 2 : 1);
+    if (Q.first[it.id] || !ok) fMeld(it, Q.first[it.id]);
   }
   if (ok || !Q.requeue) Q.done++;
   else Q.queue.splice(Math.min(Q.queue.length, 4), 0, it);
@@ -603,6 +608,7 @@ function qEnd() {
   if (Q.total >= 5) window.Gull&&Gull.bonus(pct >= 90 ? 5 : pct >= 75 ? 3 : pct >= 50 ? 1 : 0, "Runde ferdig!");
   const items = Q.items.filter(it => Q.first[it.id] === false);
   if (Q.bestKey) { const b = PS().best; if (b[Q.bestKey] == null || pct > b[Q.bestKey]) { b[Q.bestKey] = pct; Q.rekord = true; } save(); }
+  sjekkMerke();
   const [ico, msg] = pct >= 90 ? ["🌟", "Fantastic!"] : pct >= 75 ? ["👏", "Well done!"] : pct >= 50 ? ["💪", "Good! Litt til, så sitter det."] : ["🌱", "Godt jobba – ta en runde til!"];
   const again = Q.again;
   show(`
@@ -618,6 +624,34 @@ function qEnd() {
       <button class="btn big" data-act="home">Til menyen</button>
     </div>
   </div>`);
+}
+
+/* ---------- feilsamler og mestringsmerke (felles/gull.js) ---------- */
+const txt = s => String(s == null ? "" : s).replace(/<br\s*\/?>/gi, " ").replace(/<[^>]*>/g, " ")
+  .replace(/&(amp|lt|gt|quot|#39);/g, (_, e) => ({ amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'" }[e])).replace(/\s+/g, " ").replace(/ ([.,:;!?)])/g, "$1").replace(/\( /g, "(").trim();
+/* Nøkkel: «en:<prøve-id>:<glose/setning>:<type>» – stabil på tvers av økter. Feil og riktig bare på første forsøk. */
+function fMeld(it, ok) {
+  const f = it.fe; if (!f || !window.Gull) return;
+  try {
+    const k = `en:${P().id}:${f.k}`;
+    if (ok) { if (Gull.riktig) Gull.riktig(k); return; }
+    if (!Gull.feil) return;
+    const o = { q: txt(f.q), a: txt(f.a || it.fasit || it.answer), emne: f.emne || `Engelsk: ${P().tittel}` };
+    const alt = it.kind === "choice" && it.options ? shuffle(it.options.filter(x => x !== it.answer)).slice(0, 3) : [];
+    if (alt.length >= 2) o.alt = alt;
+    if (f.godta && f.godta.length) o.godta = f.godta;
+    const fk = f.forkl || it.forkl; if (fk) o.forkl = txt(fk).slice(0, 250);
+    Gull.feil(k, o);
+  } catch (e) {}
+}
+/* Merke: minst 90 % på prøveprøven, eller alle glosene i én prøve sitter (nivå 3). */
+function sjekkMerke() {
+  if (!window.Gull || !Gull.merke) return;
+  const nadd = PROVER.some(p => {
+    const st = S.prover[p.id]; if (!st) return false;
+    return (st.best && st.best.prove >= 90) || (p.gloser.length > 0 && p.gloser.every(g => ((st.lv && st.lv[g.en]) || 0) >= 3));
+  });
+  if (nadd) try { Gull.merke("engelsk-gloser"); } catch (e) {}
 }
 
 /* ---------- moduser ---------- */
@@ -658,13 +692,16 @@ function lagSetninger() {
       const g = byEn(s.ord.toLowerCase()), par = g && g.par;
       let rest = shuffle(ords.filter(o => o.toLowerCase() !== s.ord.toLowerCase()));
       if (par) { rest = rest.filter(o => o.toLowerCase() !== par); rest.unshift(par); }
-      return { kind: "choice", sent: true, label: "Hvilket ord mangler?", bigHtml: gapHtml, sub: esc(s.no), options: [s.ord, ...rest.slice(0, 3)], answer: s.ord, line: s.en, sayF: s.en, after };
+      return { kind: "choice", sent: true, label: "Hvilket ord mangler?", bigHtml: gapHtml, sub: esc(s.no), options: [s.ord, ...rest.slice(0, 3)], answer: s.ord, line: s.en, sayF: s.en, after,
+        fe: { k: `setn:${s.en}:hull`, q: `Hvilket ord mangler? «${a}___${b}» (${s.no})`, emne: `Engelsk: ${P().tittel} – setninger` } };
     }
     if (kind === 1) {
-      return { kind: "write", lang: "en", sent: true, label: "Skriv ordet som mangler", bigHtml: gapHtml, sub: esc(s.no), fasit: s.ord, check: v => checkEn(v, [s.ord]), line: s.en, sayF: s.en, after };
+      return { kind: "write", lang: "en", sent: true, label: "Skriv ordet som mangler", bigHtml: gapHtml, sub: esc(s.no), fasit: s.ord, check: v => checkEn(v, [s.ord]), line: s.en, sayF: s.en, after,
+        fe: { k: `setn:${s.en}:skriv`, q: `Skriv ordet som mangler: «${a}___${b}» (${s.no})`, emne: `Engelsk: ${P().tittel} – setninger` } };
     }
     const others = shuffle(P().setninger.filter(x => x !== s && x.ord !== s.ord)).slice(0, 3).map(x => x.no);
-    return { kind: "choice", sent: true, wide: true, label: "Hva betyr setningen?", big: s.en, say: s.en, options: [s.no, ...others], answer: s.no, line: `${s.en} = ${s.no}`, sayF: s.en };
+    return { kind: "choice", sent: true, wide: true, label: "Hva betyr setningen?", big: s.en, say: s.en, options: [s.no, ...others], answer: s.no, line: `${s.en} = ${s.no}`, sayF: s.en,
+      fe: { k: `setn:${s.en}:betyr`, q: `Hva betyr «${s.en}»?`, emne: `Engelsk: ${P().tittel} – setninger` } };
   }));
 }
 
@@ -673,7 +710,8 @@ function lagDef() {
   return shuffle(P().gloser.filter(g => g.def).map(g => ({
     kind: "choice", g, sent: true, label: "Hvilket ord forklares?", big: `«${g.def}»`, say: g.def,
     options: [g.en, ...distract(g).map(x => x.en)], answer: g.en, line: `${g.en} – ${g.def}`, sayF: g.en,
-    forkl: `<b>${esc(g.en)}</b> = ${esc(g.no)}`
+    forkl: `<b>${esc(g.en)}</b> = ${esc(g.no)}`,
+    fe: { k: `${g.en}:def`, q: `Hvilket engelsk ord passer til forklaringen «${g.def}»?` }
   })));
 }
 
@@ -683,7 +721,8 @@ function lagOrdformer() {
     const [a, b] = o.en.split("___"), full = a + o.svar + b;
     return {
       kind: "choice", sent: true, label: "Hvilket ord passer?", bigHtml: `${esc(a)}<span class="gap">____</span>${esc(b)}`, sub: esc(o.no),
-      options: [o.svar, ...o.feil], answer: o.svar, forkl: o.forkl, line: full, sayF: full, after: `${sayBtn(full, 1)} ${esc(full)}`
+      options: [o.svar, ...o.feil], answer: o.svar, forkl: o.forkl, line: full, sayF: full, after: `${sayBtn(full, 1)} ${esc(full)}`,
+      fe: { k: `form:${o.en}`, q: `Hvilket ord passer? «${a}___${b}» (${o.no})`, emne: `Engelsk: ${P().tittel} – ordformer` }
     };
   }));
 }
@@ -810,6 +849,7 @@ document.addEventListener("keydown", e => {
 
 applyTheme();
 home();
+sjekkMerke();
 </script>
 </body>
 </html>

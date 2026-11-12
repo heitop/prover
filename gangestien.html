@@ -402,7 +402,7 @@ const STICK=[
   {id:'stor',i:'🏔️',n:'Den store',h:'Fullfør en runde i den store gangetabellen',t:s=>STORE.some(t=>(s.rounds[t]||0)>0)},
   {id:'lille',i:'👑',n:'Lille-mester',h:'Minst to stjerner på alle i den lille',t:()=>LILLE.every(t=>starsOf(t)>=2)},
 ];
-function checkStickers(){const nw=STICK.filter(s=>!S.stickers.includes(s.id)&&s.t(S));nw.forEach(s=>S.stickers.push(s.id));if(nw.length)save();return nw}
+function checkStickers(){const nw=STICK.filter(s=>!S.stickers.includes(s.id)&&s.t(S));nw.forEach(s=>S.stickers.push(s.id));if(nw.length)save();fsMerke();return nw}
 
 /* ---------- strategier ---------- */
 // k · m (k grupper med m), der k er den «letteste» faktoren
@@ -687,10 +687,28 @@ document.addEventListener('keydown',e=>{if(SCREEN!=='play'||!Q)return;
   if(Q.mode!=='pad'||Q.done)return;
   if(/^[0-9]$/.test(e.key))ACT.key(e.key);else if(e.key==='Backspace')ACT.key('del');else if(e.key==='Enter')ACT.key('ok')});
 
+/* ---------- Feilsamleren og mestringsmerket (felles i gull.js) ---------- */
+// nøkkel: «3x7» (lille, samme for 3 · 7 og 7 · 3), «6x14» (store), «?x7=56» (hva mangler)
+function fsKey(q){if(q.type==='L')return q.missing?`?x${q.b}=${q.c}`:`${Math.min(q.a,q.b)}x${Math.max(q.a,q.b)}`;return `${q.n}x${q.T}`}
+function fsRiktig(q){window.Gull&&Gull.riktig&&Gull.riktig(fsKey(q))}
+// kalles ved første bom på stykket (mc = stykket ble vist som flervalg)
+function fsFeil(q,mc){if(!window.Gull||!Gull.feil)return;const g=SG();let o;
+  const alt=(ans,x,y)=>mc?makeOpts(ans,x,y).filter(v=>v!==ans).map(String):undefined;
+  if(q.type==='L'&&q.missing)o={q:`Hvilket tall mangler? ? ${g} ${q.b} = ${q.c}`,a:String(q.a),alt:alt(q.a,1,1),
+    forkl:`${q.a} ${g} ${q.b} = ${q.c}. Tell i ${q.b}-ere til du kommer til ${q.c}, og tell hoppene.`,emne:'Den lille gangetabellen'};
+  else if(q.type==='L'){const k=RANK(q.a)<=RANK(q.b)?q.a:q.b,m=k===q.a?q.b:q.a;
+    o={q:`Hva er ${f2(q.a,q.b)}?`,a:String(q.c),alt:alt(q.c,q.a,q.b),forkl:`${strat(k,m).tip} ${f2(q.a,q.b)} = ${q.c}.`,emne:'Den lille gangetabellen'}}
+  else o={q:`Hva er ${q.swap?f2(q.T,q.n):f2(q.n,q.T)}?`,a:String(q.ans),alt:alt(q.ans,10,q.n),
+    forkl:`Del opp: ${q.T} = 10 + ${q.k}. ${f2(q.n,10)} = ${10*q.n} og ${f2(q.n,q.k)} = ${q.n*q.k}. ${10*q.n} + ${q.n*q.k} = ${q.ans}.`,emne:'Den store gangetabellen'};
+  if(!o.alt)delete o.alt;
+  Gull.feil(fsKey(q),o)}
+// mestringsmerket: alle stykkene i den lille gangetabellen på «Mestrer» (hele gangekartet fylt)
+function fsMerke(){if(window.Gull&&Gull.merke&&mapCount()===100)Gull.merke('gange-lille')}
+
 function requeue(){const q=Q,f=P.queue[P.i];if(P.retried.has(q.key)||P.queue.length>=S.len+4)return;P.retried.add(q.key);
   P.queue.splice(Math.min(P.i+3,P.queue.length),0,{n:f.n,t:f.t})}
 function correct(clean){const q=Q;q.done=true;q.input='';
-  if(clean){window.Gull&&Gull.tjen(1);setBox(q.key,boxOf(q.key)+1);fact(q.key).r++;S.totalRight++;P.streak++;if(P.streak>S.bestStreak)S.bestStreak=P.streak;
+  if(clean){window.Gull&&Gull.tjen(1);fsRiktig(q);setBox(q.key,boxOf(q.key)+1);fact(q.key).r++;S.totalRight++;P.streak++;if(P.streak>S.bestStreak)S.bestStreak=P.streak;
     q.msg={kind:'ok',text:pick(PRAISE)};q.anim='bounce';beep('ok');
     if(P.streak===5||P.streak===10){toast(`${P.streak} på rad! 🔥`);confetti(50)}}
   else{setBox(q.key,Math.max(1,boxOf(q.key)));if(q.attempt>0||q.errors>0)S.comebacks++;P.streak=0;
@@ -704,7 +722,7 @@ function submit(v){const q=Q;if(!q||q.done)return;if(q.type==='L')return submitL
 function submitL(v){const q=Q;
   if(v===q.ans)return correct(q.attempt===0&&!q.helped);
   q.attempt++;P.streak=0;beep('soft');q.anim='tilt';q.input='';
-  if(q.attempt===1){setBox(q.key,boxOf(q.key)-1);fact(q.key).w++;requeue();
+  if(q.attempt===1){fsFeil(q,q.mode==='mc');setBox(q.key,boxOf(q.key)-1);fact(q.key).w++;requeue();
     q.mode='mc';q.opts=q.missing?makeOpts(q.a,1,1):makeOpts(q.c,q.a,q.b);q.showVis=true;q.hint=Math.max(q.hint,1);q.msg={kind:'nesten',text:pick(NESTEN)}}
   else{q.reveal=true;q.mode='mc';q.opts=[q.ans];q.hint=Math.max(q.hint,1);
     q.msg={kind:'show',text:q.missing?`Det er ${q.a}: ${f2(q.a,q.b)} = ${q.c}. Trykk på ${q.a}.`:`Svaret er ${q.c}. Trykk på det.`};
@@ -712,14 +730,14 @@ function submitL(v){const q=Q;
   renderPlay()}
 function submitS(v){const q=Q;
   if(!q.guided){if(v===q.ans)return correct(q.errors===0&&!q.helped);
-    q.errors++;P.streak=0;beep('soft');q.anim='tilt';setBox(q.key,boxOf(q.key)-1);fact(q.key).w++;requeue();
+    q.errors++;P.streak=0;beep('soft');q.anim='tilt';fsFeil(q,q.mode==='mc');setBox(q.key,boxOf(q.key)-1);fact(q.key).w++;requeue();
     q.guided=true;q.step=0;q.stepAtt=0;q.input='';q.mode='mc';q.opts=stepOpts(q,0);q.msg={kind:'nesten',text:`Nesten! La oss dele opp: ${q.T} = 10 + ${q.k}.`};return renderPlay()}
   const st=q.steps[q.step];
   if(v===st.a){st.done=true;q.step++;q.stepAtt=0;q.hint=0;q.input='';q.reveal=false;
     if(q.step>=3){q.step=2;return correct(q.errors===0&&!q.helped)}
     q.mode=q.baseMode;q.opts=q.mode==='mc'?stepOpts(q,q.step):[];q.msg={kind:'ok',text:pick(STEP_OK)};beep('tap');return renderPlay()}
   q.errors++;q.stepAtt++;P.streak=0;beep('soft');q.anim='tilt';q.input='';
-  if(q.errors===1){setBox(q.key,boxOf(q.key)-1);fact(q.key).w++;requeue()}
+  if(q.errors===1){fsFeil(q,q.baseMode==='mc');setBox(q.key,boxOf(q.key)-1);fact(q.key).w++;requeue()}
   if(q.stepAtt===1){q.hint=Math.max(q.hint,1);q.mode='mc';q.opts=stepOpts(q,q.step);q.msg={kind:'nesten',text:pick(NESTEN)}}
   else{q.reveal=true;q.mode='mc';q.opts=[st.a];q.hint=Math.max(q.hint,1);q.msg={kind:'show',text:`${st.q} = ${st.a}. Trykk på ${st.a}.`};say(`${st.q} = ${st.a}`)}
   renderPlay()}
@@ -842,7 +860,7 @@ function adult(){SCREEN='adult';
     <p class="muted small">Fremgangen lagres bare i nettleseren på denne enheten. Ingen data sendes noe sted.</p>
   </section>`}
 
-applyTheme();updTop();home();
+applyTheme();updTop();home();fsMerke();
 </script>
 </body>
 </html>

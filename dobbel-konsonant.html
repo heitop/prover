@@ -525,6 +525,21 @@ function regler() {
   scrollTo(0, 0);
 }
 
+/* ---------- Feilsamleren og mestringsmerke ---------- */
+const nokkel = w => "dobbel:" + w.id;
+const renTekst = h => String(h).replace(/<[^>]+>/g, "").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
+function oppgave(w) {
+  const st = starter(w), forst = st ? cap(w.id[0]) : w.id[0];
+  return { q: `Skriv ordet som mangler (${w.e}): «${w.s}» Ordet begynner på «${forst}».`, a: st ? cap(w.id) : w.id,
+    godta: [w.id, ...w.a], forkl: renTekst(forklar(w)), emne: "Dobbel konsonant: " + REGEL[w.r] };
+}
+const feilet = w => window.Gull && Gull.feil && Gull.feil(nokkel(w), oppgave(w));
+const riktigForst = w => window.Gull && Gull.riktig && Gull.riktig(nokkel(w));
+function sjekkMerke(provePct) {
+  const kan = W.filter(w => lv(w) >= 2).length;
+  if (kan >= Math.ceil(W.length * 0.8) || provePct >= 90) window.Gull && Gull.merke && Gull.merke("dobbel-mester");
+}
+
 /* ---------- runder (velg, feiljakt, skriv, prøve) ---------- */
 function trekk(P, n) {
   const pool = P.map(w => ({ w, k: Math.random() * (4 - lv(w)) + Math.random() }));
@@ -604,9 +619,9 @@ function svar(ok, extra) {
   if (R.ans) return;
   R.ans = Object.assign({ ok }, extra);
   if (!it.retry) {
-    if (ok) { R.right++; S.m[w.id] = Math.min(3, lv(w) + 1); window.Gull && Gull.tjen(it.kind === "skriv" ? 2 : 1); }
-    else { S.m[w.id] = Math.max(0, lv(w) - 1); R.miss.push(w); }
-    save(); updTop();
+    if (ok) { R.right++; S.m[w.id] = Math.min(3, lv(w) + 1); window.Gull && Gull.tjen(it.kind === "skriv" ? 2 : 1); riktigForst(w); }
+    else { S.m[w.id] = Math.max(0, lv(w) - 1); R.miss.push(w); feilet(w); }
+    save(); updTop(); sjekkMerke();
   }
   if (!ok && !it.retry && R.kind !== "prove") R.items.push({ w, kind: it.kind, retry: true });
   visQ();
@@ -630,6 +645,7 @@ function slutt() {
   const pct = Math.round(100 * R.right / R.total);
   const b = pct >= 90 ? 5 : pct >= 75 ? 3 : pct >= 50 ? 1 : 0;
   if (b) window.Gull && Gull.bonus(b, pct === 100 ? "Alt riktig!" : "Runde ferdig!");
+  sjekkMerke(R.kind === "prove" ? pct : 0);
   const [ic, t] = pct === 100 ? ["🏆", "Alt riktig!"] : pct >= 80 ? ["🌟", "Kjempebra!"] : pct >= 60 ? ["👍", "Godt jobba!"] : ["💪", "Øvelse gjør mester!"];
   const miss = [...new Map(R.miss.map(w => [w.id, w])).values()];
   app.innerHTML = `
@@ -696,10 +712,10 @@ function lynSvar(v) {
   L.lock = true;
   $("#lynq").className = "lynq " + (ok ? "ok" : "bad");
   if (ok) {
-    L.score++; L.combo++; L.maks = Math.max(L.maks, L.combo);
+    L.score++; L.combo++; L.maks = Math.max(L.maks, L.combo); riktigForst(w);
     setTimeout(lynNy, 220);
   } else {
-    L.combo = 0; L.feil.push(w);
+    L.combo = 0; L.feil.push(w); feilet(w);
     $("#lynfasit").innerHTML = riktig ? `Det var riktig skrevet: ${ordHTML(w, w.X, false)}` : `Riktig er: ${ordHTML(w, w.X, false)}`;
     setTimeout(lynNy, 1300);
   }
@@ -774,6 +790,7 @@ matchMedia("(prefers-color-scheme: dark)").addEventListener("change", updTop);
 
 applyTheme();
 home();
+sjekkMerke();
 </script>
 </body>
 </html>
