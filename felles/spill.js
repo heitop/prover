@@ -16,6 +16,8 @@ window.SPILL = [
     beskrivelse: "Den lille og den store gangetabellen – i ditt eget tempo" },
   { fag: "Matte",  ikon: "🧮", tittel: "Regneverkstedet", fil: "regneverkstedet.html", lagt: "2026-11-12",
     beskrivelse: "Pluss og minus med 2- og 3-sifrede tall: oppstilling med mente og lån, hoderegning, finn feilen og tekstoppgaver" },
+  { fag: "Matte",  ikon: "🧮", tittel: "Regneverkstedet", fil: "regneverkstedet.html", lagt: "2026-11-12",
+    beskrivelse: "Pluss og minus med 2- og 3-sifrede tall: oppstilling med mente og lån, hoderegning, finn feilen og tekstoppgaver" },
   { fag: "Norsk",  ikon: "🏰", tittel: "Eventyrprøven", fil: "eventyrproven.html",      lagt: "2026-11-05",
     beskrivelse: "Sjangeren eventyr" },
   { fag: "Norsk",  ikon: "📜", tittel: "Eventyr-juksearket", fil: "eventyr-jukseark.html", lagt: "2026-11-08", gull: false,

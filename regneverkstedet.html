@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<title>Regneverkstedet</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Pluss og minus med 2- og 3-sifrede tall: oppstilling med mente og lån, hoderegning, finn feilen og tekstoppgaver">
+<meta name="theme-color" content="#2b5fb4">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600;700&family=Patrick+Hand&display=swap">
+<style>
+/* Regneverkstedet: ruteark fra mattebøkene. Tall i Atkinson Hyperlegible (lettleste sifre),
+   mente og lån skrevet «for hånd» i oransje. Feil er varm korall, aldri rødt. */
+:root{
+  --bg:#f7f9fc; --gl:#dbe5f0; --card:#ffffff; --card2:#eef3f9; --line:#d3deea;
+  --ink:#1d2a3a; --muted:#5f6d7d;
+  --pri:#2b5fb4; --pri-ink:#ffffff; --pri-soft:#dfe9f8;
+  --mente:#d9690f; --mente-soft:#fdebd9;
+  --gold:#e3a200; --gold-soft:#fff2c2;
+  --coral:#c4573a; --coral-soft:#fbe3da;
+  --ok:#22804a; --ok-soft:#dcf2e4;
+  --hl:#fff4c7;
+  --blk:#7aa7e6; --blk2:#2b5fb4;
+  --fd:"Fredoka","Segoe UI",system-ui,sans-serif;
+  --fb:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --fh:"Patrick Hand","Comic Sans MS",cursive;
+  --cs:clamp(46px,13.5vw,62px);
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#12171e; --gl:#1f2833; --card:#1b222b; --card2:#242d38; --line:#323e4c;
+  --ink:#eef2f6; --muted:#a3afbd;
+  --pri:#7fb0ff; --pri-ink:#0b1a33; --pri-soft:#1c2c47;
+  --mente:#ffad5c; --mente-soft:#3b2814;
+  --gold:#ffcd38; --gold-soft:#3a3214;
+  --coral:#f29d80; --coral-soft:#3f2620;
+  --ok:#63d697; --ok-soft:#153424;
+  --hl:#3a3418;
+  --blk:#4f7fc4; --blk2:#9cc2ff;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#12171e; --gl:#1f2833; --card:#1b222b; --card2:#242d38; --line:#323e4c;
+    --ink:#eef2f6; --muted:#a3afbd;
+    --pri:#7fb0ff; --pri-ink:#0b1a33; --pri-soft:#1c2c47;
+    --mente:#ffad5c; --mente-soft:#3b2814;
+    --gold:#ffcd38; --gold-soft:#3a3214;
+    --coral:#f29d80; --coral-soft:#3f2620;
+    --ok:#63d697; --ok-soft:#153424;
+    --hl:#3a3418;
+    --blk:#4f7fc4; --blk2:#9cc2ff;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg)}
+body{color:var(--ink);font-family:var(--fb);font-size:1.1rem;line-height:1.5;min-height:100vh;
+  background-image:linear-gradient(var(--gl) 1px,transparent 1px),linear-gradient(90deg,var(--gl) 1px,transparent 1px);background-size:24px 24px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+h1,h2,h3{font-family:var(--fd);font-weight:600;margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:1.8rem} h2{font-size:1.35rem} h3{font-size:1.15rem}
+p{margin:0}
+.muted{color:var(--muted)} .small{font-size:.92rem}
+.nowrap{white-space:nowrap}
+
+/* topp */
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topin{max-width:720px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{white-space:nowrap;background:none;border:0;padding:4px 0;font-family:var(--fd);font-weight:700;font-size:1.3rem;display:flex;align-items:center;gap:8px;color:var(--pri)}
+.tools{display:flex;gap:6px;align-items:center}
+.pill{white-space:nowrap;display:inline-flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-weight:700;font-size:.95rem;font-variant-numeric:tabular-nums}
+.iconbtn{background:var(--card);border:1px solid var(--line);border-radius:999px;width:40px;height:40px;display:inline-grid;place-items:center;padding:0;font-size:1.1rem}
+
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 90px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px}
+.btn{border:1px solid var(--line);background:var(--card2);border-radius:14px;padding:12px 18px;font-weight:700;min-height:50px;transition:transform .08s;text-align:center}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.pri{background:var(--pri);color:var(--pri-ink);border-color:transparent}
+.btn.big{font-size:1.2rem;min-height:58px}
+.btn.ghost{background:var(--card)}
+.btn[disabled]{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>.btn{flex:1 1 150px}
+.back{background:none;border:0;color:var(--pri);font-weight:700;padding:6px 0}
+.sec{font-size:1.15rem;margin:4px 2px 0;color:var(--muted);font-family:var(--fd)}
+
+/* forside */
+.hero{display:flex;flex-direction:column;gap:12px}
+.seg3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--card2);padding:6px;border-radius:18px;border:1px solid var(--line)}
+.seg3 button{border:0;background:transparent;border-radius:14px;padding:8px 4px;font-family:var(--fd);font-weight:600;font-size:1.05rem;line-height:1.15}
+.seg3 .sym{display:block;font-size:1.7rem;line-height:1.1}
+.seg3 small{display:block;font-family:var(--fb);font-weight:400;font-size:.8rem;color:var(--muted)}
+.seg3 button[aria-pressed="true"]{background:var(--card);box-shadow:0 2px 6px rgb(0 0 0/.1);color:var(--pri)}
+.levels{display:flex;flex-direction:column;gap:8px}
+.lvl{display:flex;align-items:center;gap:12px;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:10px 14px;text-align:left;transition:border-color .1s}
+.lvl:hover{border-color:var(--pri)}
+.lvl[aria-pressed="true"]{border-color:var(--pri);box-shadow:0 0 0 4px var(--pri-soft)}
+.lvl .li{font-size:1.8rem;flex:none;width:44px;text-align:center}
+.lvl .lt{display:flex;flex-direction:column;flex:1;min-width:0;line-height:1.25}
+.lvl .lt b{font-family:var(--fd);font-weight:600;font-size:1.1rem}
+.lvl .lt small{color:var(--muted);font-size:.9rem}
+.lvl .ex{font-family:var(--fh);font-size:1.15rem;color:var(--pri)}
+.lvl .ls{flex:none;font-size:.9rem;font-weight:700;color:var(--muted);text-align:right}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mode{display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px 14px;text-align:left;min-height:118px;transition:border-color .1s,transform .1s}
+.mode:hover{border-color:var(--pri);transform:translateY(-1px)}
+.mode .mi{font-size:1.8rem;line-height:1}
+.mode b{font-family:var(--fd);font-weight:600;font-size:1.15rem}
+.mode small{color:var(--muted);font-size:.88rem;line-height:1.3}
+.stars{color:var(--line);letter-spacing:2px;font-size:1.05rem;line-height:1;margin-top:auto;padding-top:4px}
+.stars .on{color:var(--gold)}
+.stars.big{font-size:2.6rem;letter-spacing:6px}
+.alle{align-self:center;color:var(--pri);font-weight:700;text-decoration:none;padding:8px}
+
+/* spill */
+.phead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.prog{display:flex;gap:5px;flex-wrap:wrap}
+.prog i{width:14px;height:14px;border-radius:50%;background:var(--card2);border:2px solid var(--line)}
+.prog i.ok{background:var(--ok);border-color:var(--ok)}
+.prog i.half{background:var(--gold);border-color:var(--gold)}
+.prog i.miss{background:var(--coral-soft);border-color:var(--coral)}
+.prog i.now{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-soft)}
+.play{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+.ask{font-size:1.15rem}
+.fb{min-height:1.6em;font-weight:700;text-align:center;border-radius:12px;padding:8px 12px;background:var(--card2)}
+.fb.good{background:var(--ok-soft);color:var(--ok)}
+.fb.oops{background:var(--coral-soft);color:var(--coral)}
+.fb.info{background:var(--pri-soft);color:var(--ink)}
+
+/* oppstilling (rutearket) */
+.oppwrap{display:flex;justify-content:center;overflow-x:auto;padding:4px 0}
+.opp{--n:3;display:inline-flex;flex-direction:column;padding:0;border-radius:6px;
+  background-image:linear-gradient(var(--gl) 1px,transparent 1px),linear-gradient(90deg,var(--gl) 1px,transparent 1px);
+  background-size:var(--cs) var(--cs);background-color:var(--card);border:1px solid var(--gl)}
+.r{display:grid;grid-template-columns:repeat(calc(var(--n) + 1),var(--cs))}
+.r.lab{background:var(--card)}
+.r.lab span{height:22px;font-size:.75rem;font-weight:700;color:var(--muted);text-align:center;line-height:22px}
+.c{width:var(--cs);height:var(--cs);display:grid;place-items:center;font-size:calc(var(--cs)*.62);font-weight:700;font-variant-numeric:tabular-nums;
+  border:0;background:transparent;padding:0;position:relative;line-height:1;border-radius:0}
+button.c{cursor:pointer}
+.c.op{color:var(--pri)}
+.r.b{border-bottom:3px solid var(--ink)}
+.r.help .c{place-items:end center;padding-bottom:4px;font-family:var(--fh);font-weight:400;font-size:calc(var(--cs)*.5);color:var(--mente)}
+.r.help button.c:hover{background:var(--mente-soft)}
+.r.help button.c:empty::after{content:"";width:40%;height:3px;border-radius:2px;background:var(--line);margin-bottom:6px;opacity:.7}
+.c.x{color:var(--muted)}
+.c.x::after{content:"";position:absolute;left:18%;right:18%;top:50%;height:3px;background:var(--mente);transform:rotate(-38deg);border-radius:2px}
+.r.a button.c:hover{background:var(--mente-soft)}
+.r.ans .c{color:var(--pri)}
+.r.ans button.c{box-shadow:inset 0 0 0 2px var(--line);border-radius:8px;margin:0}
+.r.ans button.c.act{box-shadow:inset 0 0 0 3px var(--pri);background:var(--pri-soft);animation:blink 1.4s infinite}
+@keyframes blink{50%{box-shadow:inset 0 0 0 3px transparent}}
+.c.bad{background:var(--coral-soft)!important;color:var(--coral)!important;box-shadow:inset 0 0 0 3px var(--coral)!important;border-radius:8px}
+.c.okc{background:var(--ok-soft);color:var(--ok)!important;border-radius:8px}
+.c.hl{background:var(--hl)}
+.r.ans .c.hl{background:var(--hl)}
+
+/* tastatur */
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:330px;width:100%;margin:0 auto}
+.pad button{min-height:56px;border-radius:14px;border:1px solid var(--line);background:var(--card2);font-size:1.5rem;font-weight:700}
+.pad button:active{transform:scale(.97)}
+.pad .okk{background:var(--pri);color:var(--pri-ink);border-color:transparent;font-size:1.15rem}
+
+/* hoderegning */
+.bigq{font-size:clamp(2rem,9vw,3rem);font-weight:700;text-align:center;font-variant-numeric:tabular-nums;line-height:1.2}
+.ansbox{display:inline-block;min-width:2.6ch;border-bottom:4px solid var(--gold);color:var(--pri);padding:0 .1em}
+.ansbox.ok{border-color:var(--ok);color:var(--ok)}
+.strat{background:var(--card2);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.strat .ln{font-size:1.25rem;font-variant-numeric:tabular-nums}
+.strat .ln b{color:var(--mente)}
+
+/* klosser */
+.blocks{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:center}
+.bset{display:flex;flex-direction:column;align-items:center;gap:6px}
+.bset .bl{font-weight:700}
+.bgrp{display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap;justify-content:center;max-width:300px}
+.bh{width:40px;height:40px;background-color:var(--blk);border:1.5px solid var(--blk2);border-radius:3px;
+  background-image:linear-gradient(var(--blk2) 1px,transparent 1px),linear-gradient(90deg,var(--blk2) 1px,transparent 1px);background-size:4px 4px;opacity:.95}
+.bt{width:6px;height:40px;background:var(--blk);border:1.5px solid var(--blk2);border-radius:2px}
+.bo{width:7px;height:7px;background:var(--mente);border-radius:2px}
+.bos{display:grid;grid-template-columns:repeat(3,7px);gap:2px}
+
+/* tekstoppgaver */
+.story{display:flex;gap:14px;align-items:flex-start}
+.story .si{font-size:2.6rem;line-height:1;flex:none}
+.story p{font-size:1.2rem;line-height:1.55}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.choice .btn{font-size:1.15rem;min-height:64px}
+.choice .btn .s{display:block;font-size:1.8rem;line-height:1}
+
+/* løsning steg for steg */
+.sol{display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.soltxt{background:var(--card2);border-radius:14px;padding:12px 14px;min-height:3.4em;font-size:1.08rem}
+.soltxt b{color:var(--mente)}
+.solnav{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.solnav .cnt{font-size:.9rem;color:var(--muted);font-weight:700}
+
+/* lær */
+.tips{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.res{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.res .row{width:100%}
+
+#toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,160%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:14px;font-weight:700;z-index:50;transition:transform .25s;max-width:min(92vw,440px);text-align:center}
+#toast.on{transform:translate(-50%,0)}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:40}
+
+@media (max-width:480px){
+  h1{font-size:1.5rem}
+  .modes{grid-template-columns:1fr 1fr}
+  .mode{min-height:110px;padding:10px 12px}
+  .story .si{font-size:2rem}
+  .logo{font-size:1.08rem;gap:5px}
+  .iconbtn{width:36px;height:36px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<script src="felles/gull.js"></script>
+</head>
+<body>
+<header class="top"><div class="topin">
+  <button class="logo" data-act="home" aria-label="Til forsiden av Regneverkstedet">🧮 Regneverkstedet</button>
+  <div class="tools">
+    <span class="pill" id="pStars" title="Stjerner">⭐ 0</span>
+    <button class="iconbtn" data-act="sound" id="bSound" aria-label="Lyd av eller på">🔊</button>
+    <button class="iconbtn" data-act="theme" id="bTheme" aria-label="Bytt lys eller mørk modus">◐</button>
+  </div>
+</div></header>
+<main class="wrap" id="app"></main>
+<div id="toast" role="status" aria-live="polite"></div>
+<canvas id="fx"></canvas>
+
+<script>
+/* =====================================================================
+   REGNEVERKSTEDET – addisjon og subtraksjon med 2- og 3-sifrede tall
+   - Nivåer: 2-sifret uten/med mente og lån, 3-sifret uten/med, blanding.
+   - Oppstilling: rutene skrives fra høyre (enerne først). Mente: trykk over kolonnen.
+     Lån: trykk på sifferet øverst som er for lite – det låner fra naboen til venstre.
+   - Hoderegning med strategi-hjelp og klosser, «Finn feilen» med typiske feil,
+     tekstoppgaver der man først velger regneart.
+   - Gull bare for riktig på første forsøk. Etter to bom vises løsningen steg for steg.
+   - Fremgang lagres kun lokalt (localStorage).
+   ===================================================================== */
+const KEY='regneverkstedet-v1';
+const LEVELS=[
+  {id:'2u',ikon:'🌱',navn:'2-sifret',sub:'uten mente og lån',da:2,db:2,rg:'nei',ex:['23 + 45','68 − 25']},
+  {id:'2m',ikon:'🌿',navn:'2-sifret',sub:'med mente og lån',da:2,db:2,rg:'ja',ex:['47 + 38','82 − 37']},
+  {id:'3u',ikon:'🌳',navn:'3-sifret',sub:'uten mente og lån',da:3,db:3,rg:'nei',ex:['324 + 152','786 − 453']},
+  {id:'3m',ikon:'🏔️',navn:'3-sifret',sub:'med mente og lån',da:3,db:3,rg:'ja',ex:['468 + 275','503 − 178']},
+  {id:'mix',ikon:'🎲',navn:'Blanding',sub:'2- og 3-sifret, alt mulig',mix:true,ex:['356 + 87','420 − 65']},
+];
+const MODES=[
+  {id:'opp',ikon:'✏️',navn:'Oppstilling',sub:'Regn under hverandre, med mente og lån',n:8},
+  {id:'hode',ikon:'🧠',navn:'Hoderegning',sub:'Regn i hodet – hjelp hvis du vil',n:10},
+  {id:'feil',ikon:'🔍',navn:'Finn feilen',sub:'Noen har regnet. Stemmer det?',n:8},
+  {id:'tekst',ikon:'📚',navn:'Tekstoppgaver',sub:'Pluss eller minus? Regn ut',n:6},
+];
+const PLASS=['enerne','tierne','hundrerne','tusenerne'];
+const PL1=['eneren','tieren','hundreren','tuseneren'];
+const LAB=['E','T','H','Tu'];
+const ROS=['Riktig! 🎉','Ja, det stemmer!','Kjempebra!','Der satt den!','Supert regnet!','Helt riktig! ⭐','Du har kontroll!','Sånn skal det gjøres!'];
+const ROS2=['Riktig nå! Bra at du ga deg ikke.','Ja! Du fant feilen selv.','Riktig! Sånn lærer man.'];
+
+/* ---------- lagring ---------- */
+function fresh(){return{v:1,op:'+',lv:'2u',best:{},rounds:0,right:0,sound:true,theme:'auto'}}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(x&&x.v===1)return Object.assign(fresh(),x)}catch(e){}return fresh()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let S=load();
+
+/* ---------- små hjelpere ---------- */
+const $=s=>document.querySelector(s);
+const app=$('#app');
+const rnd=(lo,hi)=>lo+Math.floor(Math.random()*(hi-lo+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const sym=op=>op==='-'?'−':'+';
+const fmt=p=>`${p.a} ${sym(p.op)} ${p.b}`;
+const dig=x=>String(x).split('').map(Number);
+const LV=id=>LEVELS.find(l=>l.id===id)||LEVELS[0];
+const MD=id=>MODES.find(m=>m.id===id);
+function cols(p){return Math.max(String(p.a).length,String(p.b).length)+(p.op==='+'?1:0)}
+function padN(x,n){const s=String(x),r=Array(n).fill(null);for(let i=0;i<s.length;i++)r[n-s.length+i]=+s[i];return r}
+const plassAv=(i,n)=>PLASS[n-1-i];
+
+/* ---------- lyd, toast, konfetti, tema ---------- */
+let AC;
+function beep(kind){if(!S.sound)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime;
+  const seq={ok:[[660,0],[880,.09]],up:[[523,0],[659,.1],[784,.2],[1047,.3]],soft:[[392,0]],tap:[[740,0]]}[kind]||[[600,0]];
+  seq.forEach(([f,d])=>{const o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=f;
+    g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(kind==='soft'?.07:kind==='tap'?.05:.12,t+d+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d+.25);
+    o.connect(g).connect(AC.destination);o.start(t+d);o.stop(t+d+.28)})}catch(e){}}
+let toastT;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2800)}
+const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+function confetti(n=90){if(reduced())return;const c=$('#fx'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+  const cl=['#e3a200','#2b5fb4','#d9690f','#22804a','#7aa7e6','#c4573a'];
+  const ps=Array.from({length:n},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.3,vx:(Math.random()-.5)*3,vy:2+Math.random()*3,r:Math.random()*6.28,s:6+Math.random()*6,c:pick(cl)}));
+  let f=0;(function tick(){x.clearRect(0,0,c.width,c.height);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.05;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});
+    if(++f<170)requestAnimationFrame(tick);else x.clearRect(0,0,c.width,c.height)})()}
+function applyTheme(){const r=document.documentElement;if(S.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',S.theme);
+  $('#bTheme').textContent={auto:'◐',light:'☀️',dark:'🌙'}[S.theme]}
+function updTop(){let t=0;for(const k in S.best)t+=S.best[k];$('#pStars').textContent='⭐ '+t;$('#bSound').textContent=S.sound?'🔊':'🔇'}
+
+/* =====================================================================
+   OPPGAVER
+   ===================================================================== */
+/* antall mente/lån i et stykke */
+function regroups(a,b,op){const A=dig(a).reverse(),B=dig(b).reverse();let c=0,n=0;
+  for(let i=0;i<Math.max(A.length,B.length);i++){const x=A[i]||0,y=B[i]||0;
+    if(op==='+'){c=(x+y+c)>=10?1:0;n+=c}else{if(x-c<y){c=1;n++}else c=0}}
+  return n}
+function lag(lv,op,brukt){
+  for(let t=0;t<800;t++){
+    let da=lv.da,db=lv.db,rg=lv.rg;
+    if(lv.mix){da=Math.random()<.7?3:2;db=da===2?2:(Math.random()<.5?2:3);rg='alt'}
+    let a=rnd(10**(da-1),10**da-1),b=rnd(10**(db-1),10**db-1);
+    if(op==='-'){
+      if((lv.id==='3m'||lv.mix)&&da===3&&Math.random()<.3)a=rnd(1,9)*100+rnd(0,9); // null på tierplass: lån over null
+      if(a<b)[a,b]=[b,a];
+      if(a===b)continue;
+      if(a-b<10&&Math.random()<.8)continue;
+    }
+    const r=regroups(a,b,op);
+    if(rg==='nei'&&r>0)continue;
+    if(rg==='ja'&&r===0)continue;
+    if(lv.id==='3m'&&r<2&&Math.random()<.4)continue; // gjerne to mente/lån på 3-sifret
+    if(b%10===0&&Math.random()<.7)continue;
+    const k=a+op+b;if(brukt&&brukt.has(k)&&t<700)continue;
+    brukt&&brukt.add(k);
+    return {a,b,op,ans:op==='+'?a+b:a-b};
+  }
+  return op==='+'?{a:23,b:45,op,ans:68}:{a:68,b:25,op,ans:43};
+}
+const tilfOp=()=>S.op==='±'?(Math.random()<.5?'+':'-'):S.op;
+
+/* ---------- løsning steg for steg ---------- */
+function losning(p){
+  const n=cols(p),A=padN(p.a,n),B=padN(p.b,n);
+  const help=Array(n).fill(null),top=[...A],res=Array(n).fill(null),info=Array(n).fill(null).map(()=>({}));
+  const steps=[{col:-1,txt:`Still opp tallene under hverandre: <b>enere under enere</b>, tiere under tiere${String(p.a).length>2?', hundrere under hundrere':''}. Vi begynner alltid til høyre, med enerne.`,help:[...help],top:[...top],res:[...res]}];
+  const snap=(col,txt)=>steps.push({col,txt,help:[...help],top:[...top],res:[...res]});
+  if(p.op==='+'){
+    let c=0;
+    for(let i=n-1;i>=0;i--){
+      const x=A[i],y=B[i],pl=cap(plassAv(i,n));
+      if(x==null&&y==null){
+        if(c){res[i]=1;info[i].carryIn=true;snap(i,`${pl}: Her står bare menten. Skriv <b>1</b>.`)}
+        break;
+      }
+      const ledd=[];if(c)ledd.push(`<b>1</b>`);if(x!=null)ledd.push(x);if(y!=null)ledd.push(y);
+      if(c)info[i].carryIn=true;
+      const s=(x||0)+(y||0)+c;
+      res[i]=s%10;
+      let txt=`${pl}: ${ledd.join(' + ')} = ${s}.`;
+      if(s>=10){c=1;help[i-1]=1;txt+=` Skriv ${s%10}, og <b>1 i mente</b> over ${plassAv(i-1,n)}.`}
+      else{c=0;txt+=` Skriv ${s}.`}
+      if(ledd.length===1&&!c)txt=`${pl}: Bare ${x??y} her. Skriv ${s}.`;
+      snap(i,txt);
+    }
+  }else{
+    for(let i=n-1;i>=0;i--){
+      if(top[i]==null)break;
+      const y=B[i]||0,pl=cap(plassAv(i,n));
+      let txt='';
+      if(top[i]<y){
+        info[i].needBorrow=true;
+        let k=i-1;while(k>=0&&top[k]===0)k--;
+        const fra=top[i];
+        if(k===i-1){
+          top[k]-=1;top[i]+=10;
+          txt=`${pl}: ${fra} − ${y} går ikke. <b>Lån 1</b> fra ${plassAv(k,n)}: ${top[k]+1} blir <b>${top[k]}</b>, og ${fra} blir <b>${top[i]}</b>. `;
+        }else{
+          const lang=[];
+          for(let m=k;m<i;m++){top[m]-=1;top[m+1]+=10}
+          txt=`${pl}: ${fra} − ${y} går ikke, og ${plassAv(i-1,n)} har 0 å låne bort. Da låner vi fra ${plassAv(k,n)} først: ${A[k]} blir <b>${top[k]}</b> og ${plassAv(k+1,n)} får 10. Så låner ${plassAv(i,n)} 1 derfra: 10 blir <b>${top[i-1]}</b>, og ${fra} blir <b>${top[i]}</b>. `;
+        }
+      }else if(top[i]!==A[i]){
+        txt=A[i]===0?`${pl}: 0 fikk 10 og lånte bort 1, så nå er det <b>${top[i]}</b>. `:`${pl}: ${A[i]} har lånt bort og er blitt <b>${top[i]}</b>. `;
+      }else if(B[i]==null){res[i]=top[i];snap(i,`${pl}: Ingenting å trekke fra. Skriv ${top[i]}.`);continue}
+      else txt=`${pl}: `;
+      const d=top[i]-y;
+      let leading=true;for(let j=0;j<i;j++)if((top[j]||0)-(B[j]||0)!==0)leading=false;
+      const foran=d===0&&leading&&res.slice(i+1).some(v=>v!=null);
+      if(foran){txt+=B[i]==null?`Det blir 0, og en null foran tallet skriver vi ikke.`:`${top[i]} − ${y} = 0. En null foran tallet skriver vi ikke.`}
+      else if(B[i]==null){res[i]=d;txt+=`Ingenting å trekke fra. Skriv ${d}.`}
+      else{res[i]=d;txt+=`${top[i]} − ${y} = ${d}. Skriv ${d}.`}
+      snap(i,txt);
+      if(foran)break;
+    }
+    // hvis tall foran er tomme etter lån (f.eks. 105 − 98)
+  }
+  const last=steps[steps.length-1];
+  last.txt+=`<br>Svaret er <b>${p.ans}</b>.`+(p.op==='-'?` Sjekk: ${p.ans} + ${p.b} = ${p.a} ✔`:'');
+  return {steps,info,res:padN(p.ans,n)};
+}
+
+/* ---------- tegne oppstilling ---------- */
+function grid(p,o={}){
+  const n=cols(p),A=padN(p.a,n),B=padN(p.b,n);
+  const top=o.top||A,help=o.help||Array(n).fill(null),ans=o.ans||Array(n).fill(null),marks=o.marks||{};
+  const I=!!o.interactive,hl=o.hl??-1,add=p.op==='+';
+  const H=i=>i===hl?' hl':'';
+  let h=`<div class="opp" style="--n:${n}" role="group" aria-label="Oppstilling av ${fmt(p)}">`;
+  h+=`<div class="r lab"><span></span>${Array.from({length:n},(_,i)=>`<span>${LAB[n-1-i]}</span>`).join('')}</div>`;
+  // hjelperad: mente (pluss) eller nye verdier etter lån (minus)
+  h+=`<div class="r help"><span class="c"></span>`;
+  for(let i=0;i<n;i++){
+    if(add){
+      const v=help[i]?'1':'';
+      if(I&&i<n-1)h+=`<button class="c${H(i)}" data-h="${i}" aria-label="Mente over ${plassAv(i,n)}${v?': 1':''}">${v}</button>`;
+      else h+=`<span class="c${H(i)}">${v}</span>`;
+    }else{
+      const v=(top[i]!=null&&top[i]!==A[i])?top[i]:'';
+      h+=`<span class="c${H(i)}">${v}</span>`;
+    }
+  }
+  h+=`</div><div class="r a"><span class="c"></span>`;
+  for(let i=0;i<n;i++){
+    const v=A[i]??'',x=(!add&&top[i]!=null&&top[i]!==A[i])?' x':'';
+    if(I&&!add&&A[i]!=null&&i>0&&A[i-1]!=null)h+=`<button class="c${x}${H(i)}" data-b="${i}" aria-label="${v} – trykk for å låne">${v}</button>`;
+    else h+=`<span class="c${x}${H(i)}">${v}</span>`;
+  }
+  h+=`</div><div class="r b"><span class="c op">${sym(p.op)}</span>`;
+  for(let i=0;i<n;i++)h+=`<span class="c${H(i)}">${B[i]??''}</span>`;
+  h+=`</div><div class="r ans"><span class="c op"></span>`;
+  for(let i=0;i<n;i++){
+    const m=marks[i]==='bad'?' bad':marks[i]==='ok'?' okc':'';
+    const v=ans[i]??'';
+    if(I)h+=`<button class="c${i===o.act?' act':''}${m}${H(i)}" data-a="${i}" aria-label="Svar, ${plassAv(i,n)}${v!==''?': '+v:''}">${v}</button>`;
+    else if(o.pick)h+=`<button class="c${m}${H(i)}" data-f="${i}" aria-label="Svar, ${plassAv(i,n)}${v!==''?': '+v:''}">${v}</button>`;
+    else h+=`<span class="c${m}${H(i)}">${v}</span>`;
+  }
+  return h+`</div></div>`;
+}
+function solPlayer(p,steps,k,id){
+  const s=steps[k];
+  return `<div class="sol">
+    <div class="oppwrap">${grid(p,{help:s.help,top:s.top,ans:s.res,hl:s.col})}</div>
+    <div class="soltxt" aria-live="polite">${s.txt}</div>
+    <div class="solnav"><button class="btn" data-sol="${id}" data-dir="-1" ${k===0?'disabled':''}>◀ Forrige</button>
+      <span class="cnt">Steg ${k+1} av ${steps.length}</span>
+      <button class="btn pri" data-sol="${id}" data-dir="1" ${k===steps.length-1?'disabled':''}>Neste steg ▶</button></div>
+  </div>`;
+}
+
+/* ---------- klosser ---------- */
+function blocks(x){const h=Math.floor(x/100),t=Math.floor(x/10)%10,o=x%10;
+  return `<div class="bgrp" aria-hidden="true">${'<i class="bh"></i>'.repeat(h)}${'<i class="bt"></i>'.repeat(t)}<span class="bos">${'<i class="bo"></i>'.repeat(o)}</span></div>`}
+function blocksHTML(p){
+  const cap1=p.op==='+'?'Legg klossene sammen. Har du 10 enere, bytter du dem til 1 tier. 10 tiere blir 1 hundrer.':`Start med ${p.a}. Skal du ta bort flere enere enn du har, bytter du 1 tier til 10 enere.`;
+  return `<div class="strat"><div class="blocks"><div class="bset">${blocks(p.a)}<span class="bl">${p.a}</span></div><div class="bset"><span class="bl" style="font-size:1.6rem">${sym(p.op)}</span></div><div class="bset">${blocks(p.b)}<span class="bl">${p.b}</span></div></div>
+    <p class="small muted" style="text-align:center">🟦 stor rute = 100 · stav = 10 · 🟧 liten kloss = 1. ${cap1}</p></div>`;
+}
+
+/* ---------- hoderegning: strategi ---------- */
+function strategi(p){
+  const b=p.b,h=Math.floor(b/100)*100,t=Math.floor(b/10)%10*10,o=b%10,s=sym(p.op),f=p.op==='+'?(x,y)=>x+y:(x,y)=>x-y;
+  const lines=[];let cur=p.a;
+  [h,t,o].forEach(part=>{if(part){const nx=f(cur,part);lines.push(`${cur} ${s} <b>${part}</b> = ${nx}`);cur=nx}});
+  let h2=`<div class="strat"><p class="small muted">Del opp ${b} i ${[h,t,o].filter(Boolean).join(' + ')}, og ta én del om gangen:</p>${lines.map(l=>`<div class="ln">${l}</div>`).join('')}`;
+  if(o>=8){const opp=b+(10-o);h2+=`<p class="small muted" style="margin-top:6px">Eller: ${s} ${b} er det samme som ${s} ${opp} ${p.op==='+'?'−':'+'} ${10-o}.</p><div class="ln">${p.a} ${s} ${opp} = ${f(p.a,opp)}, så ${p.op==='+'?'−':'+'} ${10-o} = <b>${p.ans}</b></div>`}
+  return h2+`</div>`;
+}
+
+/* ---------- finn feilen: lag et galt svar ---------- */
+function feilSvar(p){
+  const n=cols(p),A=padN(p.a,n),B=padN(p.b,n),rg=regroups(p.a,p.b,p.op);
+  if(Math.random()<.28)return{type:'riktig',val:p.ans};
+  const typer=['slurv'];
+  if(p.op==='+'&&rg)typer.push('mente','mente');
+  if(p.op==='-'&&rg)typer.push('snudd','glemtlaan','snudd');
+  const t=pick(typer);let v=null;
+  const lm=A.findIndex((x,i)=>x!=null||B[i]!=null);
+  if(t==='mente'){let s='';for(let i=n-1;i>=lm;i--){const q=(A[i]||0)+(B[i]||0);s=(i===lm?String(q):String(q%10))+s}v=+s}
+  if(t==='snudd'){let s='';for(let i=n-1;i>=0;i--){if(A[i]==null)break;s=Math.abs(A[i]-(B[i]||0))+s}v=+s}
+  if(t==='glemtlaan'){let s='';for(let i=n-1;i>=0;i--){if(A[i]==null)break;const x=A[i],y=B[i]||0;s=(x<y?x+10-y:x-y)+s}v=+s}
+  if(v==null||v===p.ans||String(v).length>n){
+    const R=padN(p.ans,n),idx=R.map((d,i)=>d!=null?i:-1).filter(i=>i>=0),i=pick(idx);
+    let d=R[i]+(Math.random()<.5?1:-1);if(d<0)d=1;if(d>9)d=8;if(i===idx[0]&&d===0)d=R[i]+1>9?R[i]-1:R[i]+1;
+    R[i]=d;return{type:'slurv',val:+R.filter(x=>x!=null).join('')};
+  }
+  return{type:t,val:v};
+}
+
+/* ---------- tekstoppgaver ---------- */
+const TPL={
+  '+':[
+    ['📚',(a,b)=>`I biblioteket står det ${a} bøker i én hylle og ${b} bøker i en annen. Hvor mange bøker er det til sammen?`,'«Til sammen» betyr at vi legger sammen.'],
+    ['🎟️',(a,b)=>`Skolekorpset solgte ${a} lodd på lørdag og ${b} lodd på søndag. Hvor mange lodd solgte de i alt?`,'Vi slår sammen to mengder: lørdag og søndag. Det er pluss.'],
+    ['🚆',(a,b)=>`Det sitter ${a} passasjerer på toget. På neste stasjon går ${b} personer på, og ingen går av. Hvor mange er det på toget nå?`,'Det kommer flere til, så det blir mer. Det er pluss.'],
+    ['🐑',(a,b)=>`En bonde har ${a} sauer og kjøper ${b} til. Hvor mange sauer har bonden nå?`,'Bonden får flere sauer. Det er pluss.'],
+    ['🪙',(a,b)=>`Du betalte ${b} kr for en gave og har ${a} kr igjen. Hvor mye penger hadde du før du kjøpte gaven?`,'Før kjøpet hadde du både det som er igjen og det du betalte. Det er pluss – selv om det står «igjen».'],
+    ['🥾',(a,b)=>`Dere går ${a} meter opp til en utsiktsplass og så ${b} meter videre til toppen. Hvor mange meter går dere til sammen?`,'To strekninger etter hverandre legges sammen.'],
+  ],
+  '-':[
+    ['🎵',(a,b)=>`En konsertsal har ${a} plasser. ${b} billetter er solgt. Hvor mange billetter er det igjen?`,'«Igjen» – vi tar bort det som er solgt. Det er minus.'],
+    ['🛒',(a,b)=>`Du har ${a} kr og kjøper noe som koster ${b} kr. Hvor mye har du igjen?`,'Pengene blir færre når du betaler. Det er minus.'],
+    ['📖',(a,b)=>`En bok har ${a} sider. Du har lest ${b} sider. Hvor mange sider har du igjen?`,'Vi tar bort sidene du har lest. Det er minus.'],
+    ['🚗',(a,b)=>`Det er ${a} km til hytta. Dere har kjørt ${b} km. Hvor langt er det igjen?`,'Vi trekker fra det dere har kjørt. Det er minus.'],
+    ['🌲',(a,b)=>`Et grantre er ${a} cm høyt, og et bjørketre er ${b} cm høyt. Hvor mye høyere er grantreet?`,'Vi finner forskjellen mellom to tall. Det er minus – selv om det står «høyere».'],
+    ['⚽',(a,b)=>`Det var ${a} tilskuere på fotballkampen. ${b} av dem gikk hjem i pausen. Hvor mange var igjen?`,'Noen går hjem, så det blir færre. Det er minus.'],
+  ],
+};
+
+/* =====================================================================
+   TILSTAND OG VISNINGER
+   ===================================================================== */
+let V='home',P=null,L=null;
+function stjerner(ratio){return ratio>=.9?3:ratio>=.7?2:ratio>=.4?1:0}
+function starsHTML(n,big){return `<span class="stars${big?' big':''}" aria-label="${n} av 3 stjerner">${[0,1,2].map(i=>`<span class="${i<n?'on':''}">★</span>`).join('')}</span>`}
+const bkey=(m,lv,op)=>`${m}|${lv}|${op}`;
+
+function home(){
+  V='home';P=null;
+  const opTxt=S.op==='-'?1:S.op==='±'?2:0;
+  app.innerHTML=`
+  <section class="card hero">
+    <h1>Pluss og minus med store tall</h1>
+    <p class="muted">Velg regneart og nivå – og så hva du vil øve på.</p>
+    <div class="seg3">${[['+','Pluss','addisjon'],['-','Minus','subtraksjon'],['±','Begge','litt av hvert']].map(([k,t,s])=>`<button aria-pressed="${S.op===k}" data-op="${k}"><span class="sym">${k==='-'?'−':k}</span>${t}<small>${s}</small></button>`).join('')}</div>
+  </section>
+  <h2 class="sec">Nivå</h2>
+  <div class="levels">${LEVELS.map(l=>{let tot=0;MODES.forEach(m=>tot+=S.best[bkey(m.id,l.id,S.op)]||0);
+    return `<button class="lvl" aria-pressed="${S.lv===l.id}" data-lv="${l.id}"><span class="li">${l.ikon}</span><span class="lt"><b>${l.navn}</b><small>${l.sub}</small><span class="ex">${S.op==='±'?l.ex.join(' · '):l.ex[opTxt]}</span></span><span class="ls">⭐ ${tot}/12</span></button>`}).join('')}</div>
+  <h2 class="sec">Øv</h2>
+  <div class="modes">${MODES.map(m=>`<button class="mode" data-mode="${m.id}"><span class="mi">${m.ikon}</span><b>${m.navn}</b><small>${m.sub}</small>${starsHTML(S.best[bkey(m.id,S.lv,S.op)]||0)}</button>`).join('')}</div>
+  <button class="btn ghost big" data-act="laer">📖 Slik regner du – mente og lån, steg for steg</button>
+  <a class="alle" href="forside/">← Alle spillene</a>`;
+  updTop();scrollTo(0,0);
+}
+
+/* ---------- runde ---------- */
+function start(mode){
+  const lv=LV(S.lv),m=MD(mode),brukt=new Set();
+  const deck={'+':[...TPL['+']].sort(()=>Math.random()-.5),'-':[...TPL['-']].sort(()=>Math.random()-.5)};
+  const list=[];
+  for(let i=0;i<m.n;i++){
+    const op=mode==='tekst'?(S.op==='±'?(i%2?'-':'+'):S.op):tilfOp();
+    const p=lag(lv,op,brukt);
+    if(mode==='tekst'){p.tpl=deck[op][0];deck[op].push(deck[op].shift())}
+    list.push(p);
+  }
+  P={mode,lv:lv.id,op:S.op,list,i:0,res:[],right:0};
+  nyOppgave();
+}
+function nyOppgave(){
+  const p=P.list[P.i],n=cols(p);
+  Object.assign(P,{p,tries:0,done:false,msg:'',cls:'',marks:{},sol:null,hint:false,blk:false,
+    help:Array(n).fill(null),top:padN(p.a,n),ans:Array(n).fill(null),act:n-1,typed:'',must:false,
+    stage:'op',opTries:0,picked:null,fs:P.mode==='feil'?feilSvar(p):null});
+  render();
+}
+function hdr(){
+  const m=MD(P.mode),lv=LV(P.lv);
+  return `<div class="phead"><button class="back" data-act="home">← Avslutt</button>
+    <span class="small muted">${m.ikon} ${m.navn} · ${lv.navn} ${lv.mix?'':lv.sub}</span></div>
+    <div class="prog" aria-label="Oppgave ${P.i+1} av ${P.list.length}">${P.list.map((_,i)=>`<i class="${P.res[i]||''}${i===P.i?' now':''}"></i>`).join('')}</div>`;
+}
+const padHTML=()=>`<div class="pad" role="group" aria-label="Tallknapper">${[7,8,9,4,5,6,1,2,3].map(d=>`<button data-k="${d}">${d}</button>`).join('')}<button data-k="del" aria-label="Slett">⌫</button><button data-k="0">0</button><button class="okk" data-k="ok">Sjekk</button></div>`;
+const fbHTML=()=>`<p class="fb ${P.cls}" aria-live="polite">${P.msg||'&nbsp;'}</p>`;
+const nesteBtn=()=>`<button class="btn pri big" data-act="next">${P.i===P.list.length-1?'Se resultatet':'Neste oppgave'} →</button>`;
+
+function render(){
+  if(V!=='play')V='play';
+  const f={opp:rOpp,hode:rHode,feil:rFeil,tekst:rTekst}[P.mode];
+  app.innerHTML=hdr()+`<section class="card play">${f()}</section>`;
+}
+function rOpp(){
+  const p=P.p;
+  if(P.sol)return `<p class="ask">Slik regner du <b class="nowrap">${fmt(p)}</b>:</p>${solPlayer(p,P.sol.steps,P.sol.k,'p')}${fbHTML()}${nesteBtn()}`;
+  const tip=p.op==='+'?'Start med enerne. Trykk på ruta over en kolonne for å skrive mente.':'Start med enerne. Er sifferet øverst for lite? Trykk på det for å låne.';
+  return `<p class="ask">Regn ut: <b class="nowrap">${fmt(p)}</b></p>
+    <div class="oppwrap">${grid(p,{help:P.help,top:P.top,ans:P.ans,act:P.act,marks:P.marks,interactive:!P.done})}</div>
+    ${P.msg?fbHTML():`<p class="fb info">${tip}</p>`}
+    ${P.done?nesteBtn():padHTML()+`<div class="row"><button class="btn" data-act="show">💡 Vis meg</button>${p.op==='-'?'<button class="btn" data-act="unborrow">↺ Angre lån</button>':''}</div>`}`;
+}
+function rHode(){
+  const p=P.p;
+  return `<p class="ask">Regn i hodet:</p>
+    <p class="bigq">${fmt(p)} = <span class="ansbox${P.done?' ok':''}">${P.typed||'?'}</span></p>
+    ${fbHTML()}
+    ${P.hint||P.must?strategi(p):''}
+    ${P.blk?blocksHTML(p):''}
+    ${P.done?nesteBtn():padHTML()+`<div class="row">${P.hint||P.must?'':'<button class="btn" data-act="hint">💡 Hjelp</button>'}${P.blk||p.a>999?'':'<button class="btn" data-act="blk">🧱 Vis med klosser</button>'}</div>`}`;
+}
+function rFeil(){
+  const p=P.p,fs=P.fs,n=cols(p);
+  const W=padN(fs.val,n),R=padN(p.ans,n);
+  if(!P.done){
+    return `<p class="ask">Noen har regnet ut <b class="nowrap">${fmt(p)}</b>. Er svaret riktig? Trykk på <b>ruta i svaret</b> der feilen er – eller på «Alt er riktig».</p>
+      <div class="oppwrap">${grid(p,{ans:W,pick:true})}</div>
+      <div class="row"><button class="btn big" data-act="allright">✅ Alt er riktig</button></div>`;
+  }
+  const marks={};W.forEach((d,i)=>{if(d!==R[i])marks[i]='bad'});
+  return `<p class="ask"><b class="nowrap">${fmt(p)}</b></p>
+    <div class="oppwrap">${grid(p,{ans:W,marks})}</div>
+    ${fbHTML()}
+    ${fs.type!=='riktig'?`<p class="ask">Riktig svar er <b>${p.ans}</b>:</p><div class="oppwrap">${grid(p,{ans:R,help:losning(p).steps.at(-1).help,top:losning(p).steps.at(-1).top})}</div>`:''}
+    ${nesteBtn()}`;
+}
+function rTekst(){
+  const p=P.p,[ik,fn]=p.tpl;
+  let h=`<div class="story"><span class="si" aria-hidden="true">${ik}</span><p>${fn(p.a,p.b)}</p></div>`;
+  if(P.stage==='op'){
+    return h+`<p class="ask"><b>Skal du legge sammen eller trekke fra?</b></p>${fbHTML()}
+      <div class="choice"><button class="btn" data-top="+"><span class="s">+</span>Legge sammen</button><button class="btn" data-top="-"><span class="s">−</span>Trekke fra</button></div>`;
+  }
+  h+=`<p class="bigq" style="font-size:clamp(1.7rem,7vw,2.4rem)">${fmt(p)} = <span class="ansbox${P.done?' ok':''}">${P.typed||'?'}</span></p>${fbHTML()}`;
+  if(P.hint||P.must)h+=strategi(p);
+  return h+(P.done?nesteBtn():padHTML()+(P.hint||P.must?'':`<div class="row"><button class="btn" data-act="hint">💡 Hjelp</button></div>`));
+}
+
+/* ---------- svar ---------- */
+function gullFor(p){return (P.mode==='opp'&&Math.max(p.a,p.b)>=100)||P.mode==='tekst'?2:1}
+function riktig(first,gull){
+  P.done=true;
+  if(first){P.right++;P.res[P.i]='ok';window.Gull&&Gull.tjen(gull);P.msg=pick(ROS)}
+  else{P.res[P.i]='half';P.msg=pick(ROS2)}
+  P.cls='good';beep('ok');S.right++;save();
+}
+function feilTekst(){
+  const p=P.p,n=cols(p),R=padN(p.ans,n),{info}=losning(p);
+  P.marks={};let fst=-1;
+  for(let i=n-1;i>=0;i--){if((P.ans[i]??null)!==(R[i]??null)&&!(P.ans[i]===0&&R[i]==null)){P.marks[i]='bad';if(fst<0)fst=i}}
+  if(fst<0)return 'Sjekk svaret ditt en gang til.';
+  let t=`Se på ${plassAv(fst,n)} (den oransje ruta).`;
+  if(p.op==='+'&&info[fst].carryIn&&!P.help[fst])t+=' Husk menten fra kolonnen til høyre!';
+  else if(p.op==='-'&&info[fst].needBorrow&&P.top[fst]===padN(p.a,n)[fst])t+=' Er sifferet øverst mindre enn det under? Da må du låne.';
+  else if(p.op==='-'&&P.top[fst]!==padN(p.a,n)[fst])t+=` Husk at sifferet øverst nå er ${P.top[fst]}.`;
+  return t;
+}
+function sjekkOpp(){
+  const p=P.p,a=P.ans,f=a.findIndex(v=>v!=null);
+  if(f<0){P.msg='Skriv svaret i rutene nederst. Start med enerne til høyre.';P.cls='info';return render()}
+  if(a.slice(f).some(v=>v==null)){P.msg='Det mangler et siffer i svaret.';P.cls='info';return render()}
+  const val=+a.slice(f).join('');
+  if(val===p.ans){
+    P.marks={};a.forEach((v,i)=>{if(v!=null)P.marks[i]='ok'});
+    riktig(P.tries===0,gullFor(p));
+    if(P.tries===0)P.msg+=p.op==='-'?` Sjekk: ${p.ans} + ${p.b} = ${p.a}.`:'';
+    return render();
+  }
+  P.tries++;P.res[P.i]='miss';beep('soft');
+  if(P.tries>=2){visLosning('Ikke helt. Vi går gjennom det sammen – trykk «Neste steg».');return}
+  P.msg='Nesten! '+feilTekst();P.cls='oops';render();
+}
+function visLosning(msg){
+  const p=P.p;P.res[P.i]=P.res[P.i]==='ok'?'ok':'miss';P.done=true;
+  P.sol={steps:losning(p).steps,k:0};P.msg=msg;P.cls='info';render();
+}
+function sjekkTall(){
+  const p=P.p;if(!P.typed){P.msg='Skriv svaret med tallknappene.';P.cls='info';return render()}
+  const v=+P.typed;
+  if(P.must){
+    if(v===p.ans){P.done=true;P.msg='Bra! Nå har du skrevet det riktig selv.';P.cls='good';beep('ok')}
+    else{P.typed='';P.msg=`Svaret er ${p.ans}. Skriv det inn.`;P.cls='info'}
+    return render();
+  }
+  if(v===p.ans){
+    const first=P.tries===0;
+    const g=P.mode==='tekst'?(P.opTries===0?2:1):1;
+    riktig(first,g);
+    if(P.mode==='tekst'&&first&&P.opTries>0){P.res[P.i]='half';P.right--}
+    return render();
+  }
+  P.tries++;P.res[P.i]='miss';beep('soft');P.typed='';
+  if(P.tries>=2){P.must=true;P.msg=`Svaret er ${p.ans}. Se hvordan under, og skriv svaret selv.`;P.cls='info';return render()}
+  P.msg=v>p.ans?'Ikke helt – svaret ditt er for stort. Prøv igjen!':'Ikke helt – svaret ditt er for lite. Prøv igjen!';P.cls='oops';
+  render();
+}
+function velgFeil(i){
+  const p=P.p,fs=P.fs,n=cols(p),W=padN(fs.val,n),R=padN(p.ans,n);
+  const badCols=W.map((d,k)=>d!==R[k]?k:-1).filter(k=>k>=0);
+  const ok=i==null?fs.type==='riktig':badCols.includes(i);
+  const first=badCols.length?badCols[badCols.length-1]:-1;
+  const pl=first>=0?plassAv(first,n):'';
+  const A=padN(p.a,n),B=padN(p.b,n);
+  const forkl={
+    riktig:`Alt stemmer: ${fmt(p)} = ${p.ans}.`,
+    mente:`Her er <b>menten glemt</b>. I ${pl} skulle det vært lagt til 1 i mente fra kolonnen til høyre.`,
+    snudd:`Her er det minste sifferet trukket fra det største i stedet for å <b>låne</b>. Når sifferet øverst er minst, må man låne fra naboen.`,
+    glemtlaan:`Her er det lånt, men sifferet som <b>lånte bort ble ikke 1 mindre</b>.`,
+    slurv:`En liten <b>regnefeil</b> i ${pl}: det skal stå ${R[first]}, ikke ${W[first]}.`,
+  }[fs.type];
+  P.done=true;
+  if(ok){P.right++;P.res[P.i]='ok';window.Gull&&Gull.tjen(1);P.msg=(fs.type==='riktig'?'Riktig, det er ingen feil! ':'Godt sett! ')+forkl;P.cls='good';beep('ok')}
+  else{P.res[P.i]='miss';beep('soft');P.cls='oops';
+    P.msg=(fs.type==='riktig'?'Se en gang til – her var alt riktig. ':i==null?`Det er en feil i ${pl}. `:`Den ruta stemmer. Feilen er i ${pl}. `)+forkl}
+  S.right+=ok?1:0;save();render();
+}
+function velgRegneart(op){
+  const p=P.p;
+  if(op===p.op){P.stage='num';P.msg=P.opTries?'':'Riktig regneart! Regn ut.';P.cls=P.opTries?'':'good';beep('tap')}
+  else{P.opTries++;beep('soft');P.msg='Tenk en gang til: '+p.tpl[2];P.cls='oops';
+    if(P.opTries>=2){P.stage='num';P.msg=p.tpl[2]}}
+  render();
+}
+
+/* ---------- tastatur ---------- */
+function tast(k){
+  if(V!=='play'||!P||P.done||P.sol)return;
+  if(P.mode==='opp'){
+    const n=P.ans.length;
+    if(k==='ok')return sjekkOpp();
+    if(k==='del'){if(P.ans[P.act]!=null)P.ans[P.act]=null;else if(P.act<n-1){P.act++;P.ans[P.act]=null}delete P.marks[P.act];return render()}
+    P.ans[P.act]=+k;delete P.marks[P.act];if(P.act>0)P.act--;beep('tap');P.msg='';return render();
+  }
+  if(P.mode==='hode'||(P.mode==='tekst'&&P.stage==='num')){
+    if(k==='ok')return sjekkTall();
+    if(k==='del'){P.typed=P.typed.slice(0,-1);return render()}
+    if(P.typed.length<4){P.typed+=k;beep('tap')}
+    render();
+  }
+}
+function borrow(j){
+  const p=P.p,n=cols(p),B=padN(p.b,n);
+  if(P.top[j]>=10){toast('Her har du allerede lånt. Regn ut kolonnen nå.');return}
+  if(P.top[j-1]==null){toast('Det er ingen å låne fra til venstre.');return}
+  if(P.top[j]!==0&&P.top[j]>=(B[j]||0)){toast(`Du trenger ikke låne her: ${P.top[j]} er ikke mindre enn ${B[j]||0}.`);return}
+  if(P.top[j-1]===0){toast('Naboen har 0 og kan ikke låne bort. Trykk på nullen først, så låner den fra sin nabo.');return}
+  P.top[j-1]-=1;P.top[j]+=10;beep('tap');P.msg='';render();
+}
+
+/* ---------- resultat ---------- */
+function resultat(){
+  V='res';const m=MD(P.mode),n=P.list.length,st=stjerner(P.right/n),k=bkey(P.mode,P.lv,P.op);
+  const ny=st>(S.best[k]||0);if(ny)S.best[k]=st;S.rounds++;save();updTop();
+  if(st>0)window.Gull&&Gull.bonus(st,'Runde ferdig!');
+  const idx=LEVELS.findIndex(l=>l.id===P.lv),neste=LEVELS[idx+1];
+  const tittel=st===3?'Kjempebra! 🏆':st===2?'Godt jobbet! 💪':st===1?'Bra innsats! 👍':'Fint at du øvde! 🌱';
+  app.innerHTML=`<section class="card res">
+    ${starsHTML(st,true)}
+    <h1>${tittel}</h1>
+    <p>${P.right} av ${n} riktige på første forsøk i ${m.navn.toLowerCase()}.${ny&&st?' Ny rekord på dette nivået!':''}</p>
+    ${st===3&&neste?`<p class="muted">Klar for neste nivå? Prøv <b>${neste.navn} ${neste.mix?'':neste.sub}</b>.</p>`:st<2?'<p class="muted">Tips: Se på «Slik regner du» – der går vi gjennom mente og lån steg for steg.</p>':''}
+    <div class="row"><button class="btn pri big" data-act="again">Én runde til</button>${st===3&&neste?`<button class="btn big" data-act="nextlv">Neste nivå →</button>`:''}<button class="btn big" data-act="home">Til forsiden</button></div>
+  </section>`;
+  if(st>=2){confetti(st===3?140:70);beep('up')}
+  scrollTo(0,0);
+}
+
+/* ---------- lær ---------- */
+function laerEks(op){const lv=LV(S.lv);const base=lv.rg==='nei'?LV(lv.da===3?'3m':'2m'):lv;return lag(base,op)}
+function laer(){
+  V='laer';
+  if(!L)L={'+':{p:laerEks('+'),k:0},'-':{p:laerEks('-'),k:0}};
+  const pl=op=>{const s=L[op];return solPlayer(s.p,losning(s.p).steps,s.k,op)};
+  app.innerHTML=`<button class="back" data-act="home">← Tilbake</button>
+  <section class="card"><h1>Slik regner du</h1>
+    <ul class="tips" style="margin-top:10px">
+      <li>Skriv tallene <b>under hverandre</b>: enere under enere, tiere under tiere, hundrere under hundrere.</li>
+      <li>Start alltid <b>til høyre</b>, med enerne.</li>
+      <li><b>Mente</b> (pluss): Blir summen 10 eller mer, skriver du eneren og tar 1 med over til neste kolonne.</li>
+      <li><b>Lån</b> (minus): Er sifferet øverst for lite, låner du 1 fra naboen til venstre. Naboen blir 1 mindre, og du får 10 ekstra.</li>
+      <li><b>Sjekk</b> minus med pluss: 82 − 37 = 45, fordi 45 + 37 = 82.</li>
+    </ul></section>
+  <section class="card"><h2>Pluss med mente</h2><p class="muted small" style="margin:4px 0 10px">Trykk «Neste steg» og se hva som skjer i hver kolonne.</p>${pl('+')}
+    <div class="row" style="margin-top:10px"><button class="btn" data-act="nyeks" data-op="+">🔄 Nytt eksempel</button></div></section>
+  <section class="card"><h2>Minus med lån</h2><p class="muted small" style="margin:4px 0 10px">Det oransje tallet over er det nye sifferet etter lånet.</p>${pl('-')}
+    <div class="row" style="margin-top:10px"><button class="btn" data-act="nyeks" data-op="-">🔄 Nytt eksempel</button></div></section>
+  <section class="card"><h2>Med klosser</h2><p class="muted small" style="margin:4px 0 10px">10 enere er det samme som 1 tier. 10 tiere er det samme som 1 hundrer. Det er derfor vi kan bytte – det er det mente og lån er.</p>
+    ${blocksHTML({a:47,b:38,op:'+'})}</section>
+  <div class="row"><button class="btn pri big" data-mode="opp">✏️ Prøv oppstilling selv</button></div>`;
+}
+
+/* ---------- klikk ---------- */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button,[data-act]');if(!t)return;
+  const d=t.dataset;
+  if(d.op&&V==='home'){S.op=d.op;save();return home()}
+  if(d.lv){S.lv=d.lv;save();L=null;return home()}
+  if(d.mode){return start(d.mode)}
+  if(d.k){return tast(d.k)}
+  if(d.h!=null&&P&&!P.done){const i=+d.h;P.help[i]=P.help[i]?null:1;beep('tap');return render()}
+  if(d.b!=null&&P&&!P.done){return borrow(+d.b)}
+  if(d.a!=null&&P&&!P.done){P.act=+d.a;return render()}
+  if(d.f!=null&&P&&!P.done){return velgFeil(+d.f)}
+  if(d.top&&P&&!P.done){return velgRegneart(d.top)}
+  if(d.sol){const dir=+d.dir;if(d.sol==='p'){P.sol.k=Math.max(0,Math.min(P.sol.steps.length-1,P.sol.k+dir));return render()}
+    const s=L[d.sol],max=losning(s.p).steps.length-1;s.k=Math.max(0,Math.min(max,s.k+dir));return laer()}
+  switch(d.act){
+    case'home':return home();
+    case'laer':L=null;return laer();
+    case'nyeks':L[d.op]={p:laerEks(d.op),k:0};return laer();
+    case'sound':S.sound=!S.sound;save();return updTop();
+    case'theme':S.theme={auto:'light',light:'dark',dark:'auto'}[S.theme];save();return applyTheme();
+    case'show':P.tries=Math.max(P.tries,1);return visLosning('Her er løsningen steg for steg.');
+    case'unborrow':P.top=padN(P.p.a,P.ans.length);P.msg='';return render();
+    case'hint':P.hint=true;P.tries=Math.max(P.tries,1);P.msg='Følg stegene – og skriv svaret.';P.cls='info';return render();
+    case'blk':P.blk=true;return render();
+    case'allright':return velgFeil(null);
+    case'next':if(P.i<P.list.length-1){P.i++;nyOppgave();scrollTo(0,0)}else resultat();return;
+    case'again':return start(P.mode);
+    case'nextlv':{const idx=LEVELS.findIndex(l=>l.id===P.lv);S.lv=LEVELS[idx+1].id;save();return start(P.mode)}
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(V==='play'&&P){
+    if(/^[0-9]$/.test(e.key)){e.preventDefault();return tast(e.key)}
+    if(e.key==='Backspace'){e.preventDefault();return tast('del')}
+    if(e.key==='Enter'){
+      if(P.done&&!e.target.closest('button')){e.preventDefault();return document.querySelector('[data-act="next"]')?.click()}
+      if(!P.done&&!e.target.closest('button')){e.preventDefault();return tast('ok')}
+    }
+    if(P.mode==='opp'&&!P.done){
+      if(e.key==='ArrowLeft'&&P.act>0){P.act--;render()}
+      if(e.key==='ArrowRight'&&P.act<P.ans.length-1){P.act++;render()}
+    }
+  }
+});
+
+applyTheme();updTop();home();
+</script>
+</body>
+</html>
