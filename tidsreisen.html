@@ -162,6 +162,17 @@ p{margin:0}
 .stem .bar i{display:block;height:100%;background:var(--pri)}
 .stem .tall{font-family:var(--fd);font-weight:700}
 .stem .sv{font-weight:700;font-size:.9rem}
+.perg{background:#fbf3dc;color:#3a2a06;border:2px solid #c9a227;border-radius:12px;padding:12px 14px;font-family:Georgia,serif;display:flex;flex-direction:column;gap:6px}
+.perg .ptit{font-family:var(--fd);font-size:1.05rem;text-align:center}
+.perg .part{font-size:.98rem}
+.perg .part.ok{opacity:.85}
+.perg .part.naa{background:#f3e3b0;border-radius:8px;padding:6px 8px;font-weight:700;animation:fade .4s}
+.perg .anr{font-weight:700;color:#8a6a1a}
+.perg .aik{float:right}
+.kortvalg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kv{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.kv .ki{font-size:1.6rem;line-height:1.1}
+.kv.good{border-color:var(--ok);background:var(--ok-soft)} .kv.bad{border-color:var(--coral);background:var(--coral-soft)}
 .shake{animation:shake .3s}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
@@ -202,6 +213,7 @@ p{margin:0}
   .kurver{grid-template-columns:1fr}
   .avl{grid-template-columns:1fr}
   .stem{gap:5px} .stem .sk{padding:6px 4px;font-size:.85rem}
+  .kortvalg{grid-template-columns:repeat(2,1fr)}
   .stagewrap{margin:0 -8px;border-radius:12px}
   .hidesm,.hchip .t{display:none}
   .topin{gap:6px;padding:8px 10px}
@@ -253,6 +265,7 @@ function toast(t) { const e = $("#toast"); e.textContent = t; e.classList.add("v
 /* ---------- betingelser ---------- */
 function sant(c) {
   if (!c) return true;
+  if (c.includes("|")) return c.split("|").some(sant);
   return c.split("&").every(p => {
     p = p.trim(); const neg = p[0] === "!"; if (neg) p = p.slice(1).trim();
     let v;
@@ -638,6 +651,30 @@ const GAATER = {
         b.addEventListener("click", () => this.tegn()); fb.appendChild(b); b.focus({ preventScroll: true }); return;
       }
       this.ferdig = true; gaateFerdig(this.feil === 0, g.forklaring);
+    },
+  },
+  erklaering: {
+    start() { this.nr = 0; this.tegn(); },
+    tegn() {
+      const g = this.g, art = g.artikler[this.nr], ferdige = g.artikler.slice(0, this.nr);
+      panel(`<div class="gt"><span class="glbl">📃 ${esc(g.tittel)}</span>
+        <div class="perg"><b class="ptit">${esc(g.overskrift || "Erklæringen")}</b>
+          ${ferdige.map(a => `<p class="part ok"><span class="anr">Art. ${a.nr}</span> ${esc(a.t)} <span class="aik">${T.IDEKORT[this.svar[a.nr]].ikon}</span></p>`).join("")}
+          ${art ? `<p class="part naa"><span class="anr">Art. ${art.nr}</span> ${esc(art.t)}</p>` : ""}</div>
+        ${art ? `<div class="gq">${esc(g.sporsmal || "Hvilket idékort bygger denne artikkelen på?")}</div>
+        <div class="kortvalg">${Object.keys(T.IDEKORT).map(id => { const k = T.IDEKORT[id]; return `<button class="kv" data-act="p:${id}"><span class="ki">${k.ikon}</span><b>${esc(k.navn)}</b><span class="small muted">${esc(k.fra)}</span></button>`; }).join("")}</div>` : ""}
+        <div id="gfb"></div></div>`);
+    },
+    klikk(id, el) {
+      const g = this.g, art = g.artikler[this.nr]; if (!art || this.laast) return;
+      const ok = [].concat(art.kort);
+      if (ok.includes(id)) {
+        this.svar = this.svar || {}; this.svar[art.nr] = id; this.nr++; this.laast = true; el.classList.add("good");
+        setTimeout(() => { this.laast = false; this.tegn(); if (this.nr >= g.artikler.length) gaateFerdig(this.feil <= 1, g.forklaring); }, 550);
+      } else {
+        this.feil++; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("bad", "shake");
+        const fb = $("#gfb"); fb.className = "fbk feil"; fb.innerHTML = `<b>Ikke helt.</b> ${esc(art.hint || "Hvilken filosof snakket om akkurat dette?")}`;
+      }
     },
   },
   avling: {

@@ -8,12 +8,13 @@
      { gi: "ting" }  { ta: "ting" }  { kort: "idékort" }  { omgrep: "Omgrep fra revolusjon-data.js" }
      { sett: "flagg" }  { fjern: "flagg" }  { gull: 2 }  { gaa: "scene" }  { gaate: "gåte-id" }
      { hvis: "betingelse", da: [ ... ], ellers: [ ... ] }  { stopp: true }  { ferdig: true }
-   BETINGELSER: "flagg", "!flagg", "har:ting", "kort:id", "humor" – flere med &
+   BETINGELSER: "flagg", "!flagg", "har:ting", "kort:id", "humor" – flere med & (og) eller | (eller; & binder sterkest)
    PUNKT I EN SCENE:
      { id, navn, x, y (bunnen), w, h (klikkflate), fig | ting, o: {tegne-valg}, skala,
        vis: "betingelse", variant: [{ hvis, o }], klikk: [...], bruk: { ting: [...] }, pynt: true }
    GÅTER: velg, flervalg, sorter, rekkefolge, avling, stemmer – se eksemplene.
-          flervalg/rekkefolge kan ha feilTekst; stemmer viser stemmer per stand og per hode (kap. 4).
+          flervalg/rekkefolge kan ha feilTekst; stemmer viser stemmer per stand og per hode (kap. 4);
+          erklaering bygger et dokument artikkel for artikkel ved å velge riktig idékort (kap. 7).
    Et kapittel med «kommer: true» vises på kartet som «Kommer snart».
    ========================================================================== */
 window.TIDSREISEN = {
@@ -52,6 +53,17 @@ FIGURER: {
   mirabeau: { navn: "Grev Mirabeau", fig: "mirabeau" },
   dauch: { navn: "Martin-Dauch", fig: "dauch" },
   landsprest: { navn: "Landsbypresten", fig: "landsprest" },
+  // kapittel 6–7
+  baker: { navn: "Bakeren", fig: "baker" },
+  desmoulins: { navn: "Camille Desmoulins", fig: "desmoulins" },
+  garde: { navn: "Gardesoldaten", fig: "garde" },
+  fange: { navn: "Fangen", fig: "fange" },
+  liancourt: { navn: "Hertugen av Liancourt", fig: "adelsmann" },
+  noailles: { navn: "Vicomte de Noailles", fig: "noailles" },
+  lafayette: { navn: "Markis de Lafayette", fig: "lafayette" },
+  jefferson: { navn: "Thomas Jefferson", fig: "jefferson" },
+  olympe: { navn: "Olympe de Gouges", fig: "olympe" },
+  fiskekone: { navn: "Fiskeselgeren Margot", fig: "fiskekone" },
 },
 
 /* Ting i sekken. kap = kapitlet tingen hører til (fjernes hvis kapitlet spilles på nytt). */
@@ -64,6 +76,8 @@ TING: {
   side3: { navn: "Side 3", ikon: "📄", om: "En side fra Newtons manuskript – om tyngdekraften.", kap: "k2" },
   skrift: { navn: "Forbudt skrift", ikon: "📰", om: "Voltaires skrift som gjør narr av kongen og kirken. Må ikke bli funnet!", kap: "k3" },
   edsark: { navn: "Underskriftslista", ikon: "🖋️", om: "Lista over alle som har sverget ballhuseden. Få utsendingene til å skrive under!", kap: "k5" },
+  kokarde: { navn: "Grønt blad", ikon: "🌿", om: "Et grønt blad fra trærne ved Palais-Royal. Den som bærer det, står sammen med folket i Paris.", kap: "k6" },
+  nokkel: { navn: "Bastille-nøkkelen", ikon: "🗝️", om: "En stor jernnøkkel fra Bastillen. Den skal til en viktig person." },
 },
 
 /* Idékortene – samlingen spilleren bygger opp gjennom spillet. */
@@ -1028,10 +1042,386 @@ KAPITLER: [
 },
 
 /* =====================================================================
+   KAPITTEL 6 – BASTILLEN
+   ===================================================================== */
+{ id: "k6", nr: 6, tittel: "Bastillen", sted: "Paris", aar: "Juli 1789", ikon: "🔥",
+  om: "Dyrt brød, et grønt blad – og fengselet som var symbolet på kongens makt.",
+  start: "palais",
+  scener: {
+    palais: {
+      tittel: "Paris, 12. juli 1789", bg: "palais", spillerX: 70,
+      hint: "Snakk med Marie i brødkøen. Så har Camille Desmoulins noe å si ved Palais-Royal.",
+      inngang: [
+        ["forteller", "Paris, 12. juli 1789. Gatene er fulle av folk. Utenfor bakeriet står en lang kø.",
+                      "Paris! Byen som lukter av ferskt brød. Problemet er at ingen har råd til å kjøpe det."],
+        ["ugle", "Kongen har nettopp sparket Necker – den eneste ministeren folket stolte på. Og brødet har aldri vært så dyrt.",
+                 "Kongen har sparket Necker. Ja, han med den tre timer lange talen. Folk likte ham faktisk. Rart, men sant."],
+      ],
+      punkter: [
+        { id: "baker", navn: "Bakeren", x: 200, y: 428, w: 66, h: 200, fig: "baker",
+          klikk: [
+            ["baker", "Brødet koster 14 sou i dag. Jeg kan ikke ta mindre – kornet er dyrt etter den elendige avlingen i fjor.",
+                      "14 sou for et brød! Jeg vet, jeg vet. Det var hagl i fjor. Hagl er ikke bra for korn. Eller for bakere. Eller for humøret mitt."],
+            ["baker", "Folk tror vi bakere gjemmer mel. Jeg er redd de knuser vinduene mine.", "Folk tror jeg gjemmer mel. Jeg gjemmer ikke mel. Jeg gjemmer meg selv. Under disken."]] },
+        { id: "marie", navn: "Marie", x: 300, y: 428, w: 70, h: 190, fig: "marie",
+          klikk: [{ hvis: "!brod", da: [
+              ["marie", "Er det deg? Etter at vi mistet gården, flyttet vi til Paris for å finne arbeid. Jacques bærer sekker på havna.",
+                        "Det er deg! Vi flyttet til Paris. Jacques bærer sekker på havna. Grisen fikk bli igjen hos naboen. Den sender hilsen."],
+              ["marie", "Han tjener 20 sou om dagen. Et brød koster 14.", "Jacques tjener 20 sou om dagen. Brødet koster 14. Du er god i matte – regn ut resten."],
+              { gaate: "brod" }, { sett: "brod" },
+              ["marie", "Og vi er fem som skal ha mat. Det går ikke. Folk er sultne – og sinte.", "Og vi er fem. Pluss Louison, som spiser for to. Det går ikke. Folk er sultne. Og sultne folk blir sinte."],
+            ], ellers: [
+              ["marie", "Hør på han unge mannen ved trærne. Alle snakker om ham.", "Hør på han unge mannen ved trærne. Han roper så høyt at duene flytter."],
+            ] }] },
+        { id: "louison", navn: "Louison", x: 355, y: 430, w: 50, h: 125, fig: "louison",
+          klikk: [["louison", "Hei! Jeg husker deg! Har du mer av den brune osten?", "DU! Brunostpersonen! Har du mer? Jeg har drømt om den i et helt år."]] },
+        { id: "trar", navn: "Kastanjetrærne", x: 470, y: 290, w: 120, h: 130,
+          klikk: [["forteller", "Kastanjetrær i hagen ved Palais-Royal. Her samles folk for å diskutere nyheter.", "Kastanjetrærne ved Palais-Royal. Her sladrer hele Paris. Trærne vet alt."]] },
+        { id: "bord", pynt: true, x: 610, y: 428, ting: "bord", skala: 1.2 },
+        { id: "desmoulins", navn: "Camille Desmoulins", x: 610, y: 362, w: 66, h: 190, fig: "desmoulins",
+          klikk: [{ hvis: "!brod", da: [
+              ["desmoulins", "Borgere! Hør her! … Vent, du er ikke fra Paris. Snakk med folk i brødkøen først, så skjønner du hvorfor vi er sinte.",
+                             "BORGERE! … Å, det er bare deg. Gå og snakk med brødkøen først. Jeg øver på talen."],
+            ], ellers: [{ hvis: "!har:kokarde", da: [
+              ["desmoulins", "Borgere! Necker er sparket! Kongen samler soldater rundt byen. Vil han sulte oss ut – eller skyte oss?",
+                             "BORGERE! Necker er sparket! Soldater rundt byen! Brødet koster skjorta! Og jeg har ikke engang en skjorte!"],
+              { gaate: "sinte" },
+              ["desmoulins", "Ta et grønt blad fra trærne og fest det på hatten! Da ser alle at du står sammen med folket!",
+                             "Ta et grønt blad og fest det på hatten! Grønt betyr håp! Og at du står sammen med folket! Og at du har vært i en hage!"],
+              { gi: "kokarde" },
+              ["ugle", "Grønt var dessverre også fargen til kongens bror. Så folk byttet snart til blått og rødt – fargene til Paris. Med kongens hvitt i midten ble det trikoloren.",
+                       "Fun fact: Grønt var fargen til kongens bror. Pinlig. Så de byttet til blått og rødt – Paris-farger. Pluss kongens hvitt = trikoloren. Flagget til Frankrike!"],
+            ], ellers: [
+              ["desmoulins", "Til Bastillen! Der ligger kruttet!", "Til Bastillen! Der ligger kruttet. Og der satt Voltaire. To gode grunner."],
+            ] }] }] },
+        { id: "tilbastillen", navn: "Mot Bastillen", x: 765, y: 330, w: 60, h: 60, ting: "pil",
+          klikk: [{ hvis: "brod & har:kokarde", da: [
+              ["ugle", "To dager senere, 14. juli. Folk har hentet rundt 30 000 geværer fra et våpenlager – men de har nesten ikke krutt. Kruttet ligger i Bastillen.",
+                       "14. juli! Folk har hentet 30 000 geværer. Men ikke krutt. Det er som å ha en mobil uten lader. Laderen – kruttet – er i Bastillen."],
+              { gaa: "bastille" }],
+            ellers: [["ugle", "Vent – snakk med folk her først. Vi må forstå hvorfor de er sinte.", "Ikke ennå! Snakk med folk. Og helst få deg noe grønt på hodet."]] }] },
+      ],
+    },
+    bastille: {
+      tittel: "Bastillen, 14. juli 1789", bg: "bastille", spillerX: 70,
+      hint: "Snakk med Jacques. Gardesoldaten vet ikke hvilken side han står på – kanskje du har noe å gi ham?",
+      inngang: [
+        ["forteller", "Foran deg reiser Bastillen seg: en festning med åtte tårn og murer som er over tjue meter høye. Tusenvis av mennesker står utenfor.",
+                      "Bastillen. Åtte tårn. Murer høyere enn et åtte etasjers hus. Ser ut som et slott som har hatt en veldig dårlig dag."],
+      ],
+      punkter: [
+        { id: "glemsel", navn: "Mannen på muren", x: 400, y: 150, w: 50, h: 100, fig: "glemsel", skala: .45, vis: "!nede",
+          klikk: [["glemsel", "Gå hjem, alle sammen! Glem dette! Kongen bestemmer, og sånn har det alltid vært!",
+                              "GÅ HJEM! Glem hele greia! Se, en sommerfugl! … ATSJO! … Hvorfor er det alltid så mye støv i historien?"],
+                  ["ugle", "Glemsel! Han vil at folk skal gi opp. Men det kommer ikke til å skje i dag.", "Glemsel på muren! Han prøver «se, en sommerfugl»-trikset. Det har aldri virket. Ikke en eneste gang."]] },
+        { id: "jacques", navn: "Jacques", x: 230, y: 428, w: 70, h: 190, fig: "jacques",
+          klikk: [{ hvis: "!hvorfor", da: [
+              ["jacques", "Du her også? Jeg vil ikke sloss. Men kongen har soldater rundt hele byen. Vi må kunne forsvare oss.",
+                          "Du her?! Jeg liker egentlig ikke bråk. Jeg liker korn. Og grisen. Men kongen har soldater over alt."],
+              { gaate: "hvorfor" }, { sett: "hvorfor" }, { omgrep: "Bastillen" },
+              ["jacques", "Kongen kan sette hvem som helst i Bastillen – uten dom, bare med et hemmelig brev. Den festningen er alt vi hater med eneveldet.",
+                          "Kongen kan sende hvem som helst dit med et brev. Ingen rettssak. Ingen advokat. Ikke engang et «unnskyld». Det er eneveldet i stein."],
+            ], ellers: [
+              ["jacques", "Vindebroa er oppe. Vi kommer oss ikke inn.", "Vindebroa er oppe. Jeg har prøvd å rope «Sesam, sesam». Ingenting."],
+            ] }] },
+        { id: "vindebro", navn: "Vindebroa", x: 400, y: 312, w: 120, h: 170, ting: "vindebro", variant: [{ hvis: "nede", o: { nede: true } }],
+          klikk: [{ hvis: "!garde | !hvorfor", da: [
+              ["forteller", "Vindebroa er heist opp. Det er ingen vei inn.", "Vindebroa er oppe. Den er tydeligvis ikke i humør for besøk."],
+              { hvis: "!hvorfor", da: [["ugle", "Snakk med Jacques først. Hvorfor er alle disse folkene her?", "Spør Jacques hva som foregår. Han ser ut som han vet det. Og som han savner grisen."]] },
+            ], ellers: [{ hvis: "!nede", da: [
+              ["forteller", "Gardesoldatene kommer med kanoner. Etter flere timers kamp gir kommandanten, de Launay, opp. Vindebroa senkes.",
+                            "Gardesoldatene ruller fram kanoner. Etter mange timer gir kommandanten opp. Vindebroa går ned med et KLONK."],
+              ["ugle", "Det var en alvorlig dag. Rundt hundre av dem som angrep festningen, døde.", "Dette er ikke tull, så nå er jeg alvorlig et øyeblikk: Rundt hundre mennesker døde den dagen."],
+              { sett: "nede" },
+              ["ugle", "Kom, la oss se hvem som satt fanget der inne.", "Kom. La oss se hvem som satt der inne. Jeg har en mistanke om at svaret overrasker deg."],
+              { gaa: "celle" },
+            ], ellers: [{ gaa: "celle" }] }] }] },
+        { id: "garde", navn: "Gardesoldaten", x: 570, y: 430, w: 66, h: 220, fig: "garde",
+          klikk: [{ hvis: "!garde", da: [
+              ["garde", "Jeg er soldat i kongens garde. Men jeg er også fra Paris. Familien min står i den samme brødkøen som alle andre.",
+                        "Jeg er kongens soldat. Men mamma står i brødkøen. Og hun er skumlere enn kongen."],
+              ["garde", "Jeg vet ikke hvilken side jeg står på.", "Jeg vet ikke hvilken side jeg står på. Jeg står litt på begge. Det gjør vondt i beina."],
+              { hvis: "har:kokarde", da: [["ugle", "Har du ikke noe grønt i sekken? Trykk på det, og så på soldaten.", "Psst! Det grønne bladet! Sekken! Soldaten! Klikk-klikk!"]] },
+            ], ellers: [
+              ["garde", "Vi skyter ikke på folket. Vi er folket!", "Vi skyter ikke på folket! Vi ER folket! Og mamma hadde aldri tilgitt meg."],
+            ] }],
+          bruk: { kokarde: [{ ta: "kokarde" }, { sett: "garde" },
+            ["garde", "Et grønt blad … Du har rett. Vi skyter ikke på folket – vi er folket! Kamerater, hent kanonene!",
+                      "Et grønt blad! Det er et tegn! Eller en salat. Uansett: Vi står med folket! Hent kanonene, gutter!"],
+            ["ugle", "Det skjedde virkelig: Mange av kongens soldater i Paris gikk over til folkets side.", "Det skjedde på ekte: Kongens egne soldater byttet side. Kongen ble ikke glad."],
+            { gull: 2 }] } },
+      ],
+    },
+    celle: {
+      tittel: "Inne i Bastillen", bg: "celle", spillerX: 80,
+      hint: "Les fangeprotokollen på bordet, snakk med fangen og se på veggen. Nøkkelen henger på kroken.",
+      inngang: [
+        ["forteller", "Inne i Bastillen er det kaldt og fuktig. Lyset kommer bare inn gjennom et lite vindu med gitter.",
+                      "Inne i Bastillen lukter det gammel ost og dårlige minner."],
+      ],
+      punkter: [
+        { id: "inskripsjon", navn: "Risset i veggen", x: 200, y: 262, w: 130, h: 50,
+          klikk: [["forteller", "Noen har risset «F.-M. A. 1717» i steinen. François-Marie Arouet satt her i elleve måneder. Da han kom ut, kalte han seg Voltaire!",
+                                "«F.-M. A. 1717.» François-Marie Arouet satt her i elleve måneder. Da han kom ut, byttet han navn til Voltaire. Han trengte visst en ny start. Og et kulere navn."]] },
+        { id: "fange", navn: "Fangen", x: 280, y: 428, w: 70, h: 210, fig: "fange",
+          klikk: [
+            ["fange", "Er det … er døra åpen? Er jeg fri?", "Er døra åpen?! Hvilket år er det? Har de funnet opp noe nytt? Gaffel med fire tagger?"],
+            ["deg", "Ja! Folket i Paris har tatt Bastillen.", "Ja! Du er fri! Og gaffel med fire tagger finnes. Det går bra med verden."],
+            ["fange", "Folket? Ikke kongen? Da har verden forandret seg mens jeg satt her.", "FOLKET? Ikke kongen? Jeg må ha sovet lenger enn jeg trodde."]] },
+        { id: "nokkel", navn: "Nøkkelkroken", x: 480, y: 330, w: 80, h: 110, ting: "nokkel", variant: [{ hvis: "har:nokkel", o: { tatt: true } }],
+          klikk: [{ hvis: "!har:nokkel", da: [
+              { gi: "nokkel" },
+              ["ugle", "Den store nøkkelen til Bastillen. Ta godt vare på den – den skal til en viktig person senere.",
+                       "Bastille-nøkkelen! Ta vare på den. Den skal reise over et helt hav. Og nei, den passer ikke til skapet ditt."],
+            ], ellers: [["forteller", "Kroken er tom.", "Kroken er tom. Den ser litt trist ut."]] }] },
+        { id: "protokoll", navn: "Fangeprotokollen", x: 610, y: 428, w: 110, h: 90, ting: "protokoll",
+          klikk: [{ hvis: "!telt", da: [
+              ["forteller", "En tykk bok med navnene på alle som sitter i fengselet akkurat nå.", "En tykk bok med navnene på alle fangene. Gjett hvor mange det er!"],
+              { gaate: "fanger" }, { sett: "telt" },
+              ["ugle", "Bare sju! Men det handlet ikke om antallet. Bastillen var et symbol på at kongen kunne gjøre hva han ville med folk.",
+                       "SJU! Hele festningen for sju fanger. Men det var symbolet som betydde noe: Kongen kunne sperre inne hvem han ville."],
+            ], ellers: [["forteller", "Sju navn. Det er alt.", "Sju navn. Halve boka er tom. Bastillen var visst ikke så populær som hotell."]] }] },
+        { id: "ut", navn: "Ut av Bastillen", x: 745, y: 330, w: 70, h: 160, ting: "dor", o: { f: "#4a3a2a" }, skala: .9,
+          klikk: [{ hvis: "telt & har:nokkel", da: [
+              ["ugle", "Samme kveld, på Versailles … La oss se hvordan kongen tar nyheten.", "Samme natt på Versailles. La oss se hvordan kongen tar nyheten. Spoiler: Han har sovet hele dagen."],
+              { gaa: "soverom" }],
+            ellers: [["ugle", "Vent! Se i protokollen, og ta med nøkkelen.", "Vent! Protokollen og nøkkelen først. Vi er tidsturister – vi tar med suvenirer."]] }] },
+      ],
+    },
+    soverom: {
+      tittel: "Kongens soverom, natt til 15. juli", bg: "soverom", spillerX: 70,
+      hint: "Se i kongens dagbok, og hør hva hertugen sier til kongen.",
+      inngang: [
+        ["forteller", "Versailles, midt på natta. Kongen har lagt seg. Da kommer en hertug løpende inn med nyheten fra Paris.",
+                      "Versailles, midt på natta. Kongen sover. Han snorker på fransk. Da kommer hertugen løpende."],
+      ],
+      punkter: [
+        { id: "seng", navn: "Himmelsenga", x: 230, y: 428, w: 240, h: 220, ting: "seng",
+          klikk: [["forteller", "En himmelseng med blå silke og gull.", "En seng så stor at kongen trenger kart for å finne puta."]] },
+        { id: "kongen", navn: "Kong Louis 16.", x: 420, y: 428, w: 66, h: 210, fig: "kongen", o: { hatt: null, uttrykk: "overrasket" },
+          klikk: [{ hvis: "!liancourt", da: [
+              ["kongen", "Hva er det? Hvorfor vekker du meg?", "Hæ? Hva? Er det frokost?"],
+            ], ellers: [
+              ["kongen", "En revolusjon … Hva skal jeg gjøre nå?", "En revolusjon? Står det noe om det i jaktboka mi? Nei? Typisk."],
+            ] }] },
+        { id: "dagbok", navn: "Kongens dagbok", x: 560, y: 428, w: 70, h: 80, ting: "dagbok",
+          klikk: [["forteller", "Kongens dagbok. For 14. juli 1789 står det bare ett ord: «Ingenting.»", "Kongens dagbok, 14. juli 1789: «Ingenting.» Mens Bastillen falt. Hmm."],
+                  ["ugle", "Han mente nok at han ikke hadde skutt noe på jakt den dagen. Kongen skrev mest om jakt.", "Han mente at han ikke fikk noe på jakt. Dagboka hans er 90 prosent jakt og 10 prosent «ingenting»."]] },
+        { id: "liancourt", navn: "Hertugen av Liancourt", x: 660, y: 428, w: 66, h: 200, fig: "liancourt",
+          klikk: [{ hvis: "!liancourt", da: [
+              ["liancourt", "Sire! Folket i Paris har stormet Bastillen!", "SIRE! Våkn opp! Folket har tatt Bastillen! Og nei, det er ikke frokost!"],
+              ["kongen", "Er det et opprør?", "Er det … et opprør? Et lite et?"],
+              { gaate: "liancourt" }, { sett: "liancourt" }, { omgrep: "Revolusjon" },
+              ["ugle", "14. juli er i dag Frankrikes nasjonaldag. Og Bastillen? Den ble revet, stein for stein. Noen av steinene ble solgt som suvenirer!",
+                       "14. juli er Frankrikes nasjonaldag i dag – med fyrverkeri! Bastillen ble revet, og steinene ble solgt som suvenirer. Verdens første revolusjonsbutikk."],
+              ["ugle", "Nå har folket vist at de har makt. Neste steg: å skrive ned rettighetene. Ta med nøkkelen!",
+                       "Folket har vist muskler. Nå skal de vise hjerne: Rettighetene skal skrives ned. Ta med nøkkelen. Og idékortene!"],
+              { ferdig: true },
+            ], ellers: [] }] },
+      ],
+    },
+  },
+  gaater: {
+    brod: { type: "velg", sporsmal: "Jacques tjener 20 sou om dagen. Et brød koster 14 sou. Hvor mye har han igjen til alt annet – husleie, ved og klær?", riktig: "6 sou",
+      feil: ["14 sou", "34 sou", "10 sou"],
+      forklaring: "Og familien trenger mer enn ett brød om dagen! I juli 1789 var brødet dyrere enn noen gang det århundret." },
+    sinte: { type: "flervalg", sporsmal: "Hvorfor er folk i Paris så sinte i juli 1789? Velg alle som passer.",
+      riktige: ["Brødet er dyrere enn noen gang", "Kongen har sparket Necker", "Kongen samler soldater rundt Paris"],
+      feil: ["Kongen har senket skattene", "Adelen har begynt å betale skatt"],
+      feilTekst: "Det de røde sier, hadde jo gjort folk glade!",
+      forklaring: "Folk var redde for at kongen ville bruke soldatene mot Nasjonalforsamlingen og mot Paris." },
+    hvorfor: { type: "velg", sporsmal: "Hvorfor angriper folket Bastillen?", riktig: "For å hente krutt – og fordi festningen er et symbol på kongens makt",
+      feil: ["For å finne skatter av gull", "For å befri Voltaire", "Fordi de vil bo der"],
+      forklaring: "Kongen kunne sette folk i Bastillen uten rettssak – bare med et hemmelig brev." },
+    fanger: { type: "velg", sporsmal: "Hvor mange fanger satt i Bastillen 14. juli 1789?", riktig: "7",
+      feil: ["700", "70", "7000"],
+      forklaring: "Bare sju: fire som hadde forfalsket papirer, to som var psykisk syke, og én adelsmann som familien hans hadde fått satt inn." },
+    liancourt: { type: "velg", sporsmal: "Kongen spør: «Er det et opprør?» Hva svarer hertugen?", riktig: "«Nei, Sire. Det er en revolusjon.»",
+      feil: ["«Nei, Sire. Det er bare en fest.»", "«Ja, men det går over til frokost.»", "«Nei, Sire. Det er bare regn.»"],
+      forklaring: "Et opprør kan slås ned. En revolusjon forandrer hele samfunnet." },
+  },
+},
+
+/* =====================================================================
+   KAPITTEL 7 – ERKLÆRINGEN
+   ===================================================================== */
+{ id: "k7", nr: 7, tittel: "Erklæringen", sted: "Versailles og Paris", aar: "August–oktober 1789", ikon: "📃",
+  om: "Privilegiene forsvinner, idékortene blir til menneskerettighetserklæringen – og kvinnene går til Versailles.",
+  start: "nattsal",
+  scener: {
+    nattsal: {
+      tittel: "Nasjonalforsamlingen, natten 4. august 1789", bg: "stendersalNatt", spillerX: 60,
+      hint: "Hør hva vicomte de Noailles foreslår. Duval vil også regne litt med deg.",
+      inngang: [
+        { hvis: "!har:nokkel", da: [{ gi: "nokkel" }] },
+        ["forteller", "Natten 4. august. Lysene brenner ennå i møtesalen. Det kommer skremmende nyheter fra landsbygda.",
+                      "4. august, sent på kvelden. Alle er trøtte. Men ingen går hjem. Noe er på gang."],
+        ["ugle", "Over hele Frankrike er bøndene redde og sinte. Mange steder brenner de papirene som viser hva de skylder godseierne.",
+                 "På landet brenner bøndene papirene som sier hva de skylder adelen. Det er som å brenne leksene. Bare mye mer alvorlig."],
+      ],
+      punkter: [
+        { id: "biskop", navn: "Biskopen", x: 170, y: 428, w: 66, h: 210, fig: "biskop",
+          klikk: [{ hvis: "!privilegier", da: [["biskop", "Hva skal vi gjøre? Bøndene er sinte.", "Bøndene er sinte. Jeg har bedt om hjelp ovenfra. Svaret var: «Gi fra deg tienden.» Det var ikke det jeg håpet på."]],
+                    ellers: [["biskop", "Kirken gir også opp tienden. Det gjør vondt i lommeboka – men det er rettferdig.", "Kirken gir opp tienden. Lommeboka mi gråter. Men sjela mi smiler. Litt."]] }] },
+        { id: "duval", navn: "Duval", x: 300, y: 428, w: 66, h: 190, fig: "duval",
+          klikk: [{ hvis: "!privilegier", da: [["duval", "Hør på Noailles der borte – han skal si noe viktig!", "Følg med på Noailles! Han ser ut som han skal si noe stort. Eller nyse."]],
+                    ellers: [{ hvis: "!sekker", da: [
+              ["duval", "Husker du Jacques' tolv kornsekker? Nå skal vi regne på nytt!", "Husker du Jacques og de tolv sekkene? Nå blir det matte igjen. Gled deg!"],
+              { gaate: "sekker" }, { sett: "sekker" },
+              ["duval", "Mer enn dobbelt så mye mat til familien! Og nå skal alle betale skatt – også adelen og kirken.",
+                        "Sju sekker! Mer enn dobbelt så mye! Grisen kommer til å legge på seg. Og nå betaler ALLE skatt. Til og med hertugen."],
+            ], ellers: [
+              ["duval", "Nå skal rettighetene skrives ned. Lafayette jobber med saken i Paris.", "Lafayette jobber med en erklæring. Han trenger idékortene dine. Han vet det bare ikke ennå."],
+            ] }] }] },
+        { id: "noailles", navn: "Vicomte de Noailles", x: 500, y: 428, w: 66, h: 200, fig: "noailles",
+          klikk: [{ hvis: "!privilegier", da: [
+              ["noailles", "Mine herrer! Skal vi få ro i landet, må vi gi fra oss privilegiene våre. Jeg begynner selv!",
+                           "Mine herrer! Jeg har en idé. Den er skummel. Vi gir bort privilegiene våre! … Hvorfor ser alle på meg sånn?"],
+              ["forteller", "Det blir helt stille. Så reiser den ene adelsmannen etter den andre seg og gir fra seg privilegiene sine.",
+                            "Stille. Så reiser en hertug seg: «Jeg gir opp jaktretten!» En annen: «Jeg gir opp duene mine!» Det blir en konkurranse i å gi bort ting."],
+              { gaate: "privilegier" }, { sett: "privilegier" }, { omgrep: "Privilegium" },
+              ["ugle", "På én natt ble standssamfunnets privilegier avskaffet. Nå skulle alle være like for loven.",
+                       "På én natt: privilegiene borte! Det er som om alle de kule elevene sa: «Vi står i kø som alle andre.» Historisk."],
+            ], ellers: [
+              ["noailles", "Ingen privilegier lenger. Det føles rart – men riktig.", "Jeg har ingen privilegier igjen. Jeg må til og med åpne døra selv. Det er … tungt."],
+            ] }] },
+        { id: "hertug", navn: "Hertugen", x: 640, y: 428, w: 66, h: 200, fig: "hertug",
+          klikk: [{ hvis: "!privilegier", da: [["hertug", "Hva skal han nå si, den Noailles?", "Noailles har det blikket. Det betyr aldri noe godt for adelen."]],
+                    ellers: [["hertug", "Jeg ga fra meg jaktretten. Nå kan bøndene jage harene selv.", "Jeg ga bort jaktretten OG retten til å ha duer. Duene var glade. Jeg er mindre glad."]] }] },
+        { id: "tilparis", navn: "Videre til Paris", x: 765, y: 330, w: 60, h: 60, ting: "pil",
+          klikk: [{ hvis: "privilegier & sekker", da: [{ gaa: "arbeidsrom" }],
+                    ellers: [["ugle", "Følg med på møtet først!", "Ikke gå ennå! Det beste kommer nå. Og så skal vi regne."]] }] },
+      ],
+    },
+    arbeidsrom: {
+      tittel: "Paris, august 1789", bg: "studerkammer", spillerX: 80,
+      hint: "Lafayette trenger idékortene dine. Han vil kanskje også ha noe fra sekken din.",
+      inngang: [
+        ["ugle", "Paris, august 1789. Markis de Lafayette skal skrive en erklæring om rettighetene til alle mennesker. Han kjemper for frihet både i Amerika og i Frankrike.",
+                 "Paris, august. Lafayette er her! Han kjempet for frihet i Amerika, og nå i Frankrike. Han kalles «helten fra to verdener». Han liker det kallenavnet. Veldig godt."],
+      ],
+      punkter: [
+        { id: "bord", pynt: true, x: 420, y: 425, ting: "bord", o: { papir: true } },
+        { id: "olympe", navn: "Olympe de Gouges", x: 230, y: 428, w: 70, h: 190, fig: "olympe", vis: "erkl",
+          klikk: [{ hvis: "!olympe", da: [
+              ["olympe", "Olympe de Gouges, forfatter. Jeg har lest erklæringen deres. Den heter «menneskets og borgerens rettigheter». Men hva med kvinnene?",
+                         "Olympe de Gouges. Forfatter. Jeg har lest erklæringen. «Menneskets og borgerens rettigheter.» Og borgerinnene? Har dere glemt halve befolkningen?"],
+              { gaate: "kvinner" }, { sett: "olympe" },
+              ["olympe", "To år senere skriver jeg min egen: «Erklæringen om kvinnens og borgerinnens rettigheter». Kvinner er også født frie!",
+                         "Jeg skal skrive min egen erklæring om kvinners rettigheter. Jeg har allerede tittelen. Den er lang. Akkurat som listen over ting dere har glemt."],
+              ["ugle", "Erklæringen var et stort steg. Men det skulle ta mange år før den gjaldt for alle.", "Erklæringen var et kjempesteg. Men noen måtte vente veldig lenge på å bli tatt med. Det er viktig å huske."],
+            ], ellers: [
+              ["olympe", "Alle mennesker – også kvinner – er født frie og like.", "Alle mennesker. ALLE. Det står i første linje. Les den igjen, mine herrer."],
+            ] }] },
+        { id: "lafayette", navn: "Markis de Lafayette", x: 540, y: 428, w: 70, h: 210, fig: "lafayette",
+          klikk: [{ hvis: "!erkl", da: [
+              ["lafayette", "Velkommen! Vi skal skrive en erklæring om menneskets og borgerens rettigheter. Men hvilke ideer skal den bygge på?",
+                            "Velkommen! Vi skal skrive verdens viktigste dokument. Jeg har pennen klar. Jeg har blekket klart. Jeg har … ingen ideer."],
+              ["ugle", "Du har jo idékortene! Det er ideene vi reddet fra Grev Glemsel.", "Idékortene! Det er derfor vi har reist gjennom halve historien. Nå er det showtime."],
+              { gaate: "erklaering" }, { sett: "erkl" }, { omgrep: "Menneskerettighetserklæringen" },
+              ["lafayette", "26. august 1789 vedtar Nasjonalforsamlingen erklæringen. Den blir trykket og spredt over hele Frankrike!",
+                            "26. august 1789: VEDTATT! Den trykkes opp og henges på vegger over hele landet. I dag henger den til og med i franske skoler. Som plakat!"],
+              ["ugle", "Ser du? Plakatene i skolebiblioteket ditt begynte et sted. Det var her.", "Plakatene i skolebiblioteket? De har en oldefar. Den står her."],
+              ["forteller", "Døra går opp. En kvinne med fjærpenn kommer inn.", "Døra smeller opp. En dame med fjærpenn og et blikk som kunne skåret brød."],
+            ], ellers: [
+              ["lafayette", "Frihet, likhet – og rettigheter for alle!", "Frihet! Likhet! Og en ny hatt til meg! … Den siste er ikke offisiell."],
+            ] }],
+          bruk: { nokkel: [{ ta: "nokkel" },
+            ["lafayette", "Nøkkelen til Bastillen! Den skal jeg sende til min venn George Washington i Amerika – som et tegn på at friheten har seiret.",
+                          "Bastille-nøkkelen! Jeg sender den til George Washington! Han kommer til å henge den på veggen. Og vise den til alle gjestene. Hver gang."],
+            ["ugle", "Det gjorde han virkelig. Nøkkelen henger fortsatt i huset til Washington i USA.", "Helt sant: Nøkkelen henger fortsatt hjemme hos Washington i USA. Turister tar selfies med den."],
+            { gull: 2 }] } },
+        { id: "jefferson", navn: "Thomas Jefferson", x: 660, y: 428, w: 70, h: 210, fig: "jefferson",
+          klikk: [
+            ["jefferson", "Thomas Jefferson, USAs sendemann i Paris. I 1776 skrev jeg den amerikanske uavhengighetserklæringen: «Alle mennesker er skapt like.»",
+                          "Thomas Jefferson. Amerikaner. Jeg skrev USAs uavhengighetserklæring i 1776. Ja, jeg er litt stolt. Ja, jeg nevner det ofte."],
+            ["jefferson", "Lafayette har vist meg utkastet sitt. Mye av det kommer fra John Locke – akkurat som vårt.", "Lafayette viste meg utkastet. Mye er fra Locke. Vi lånte begge fra Locke. Locke burde tatt betalt."]] },
+        { id: "tilversailles", navn: "Videre", x: 765, y: 330, w: 60, h: 60, ting: "pil",
+          klikk: [{ hvis: "erkl & olympe", da: [
+              ["ugle", "Men rettigheter på papiret gjør ingen mette. Hopp med meg til oktober – kvinnene i Paris har fått nok!",
+                       "Rettigheter på papir er fint. Men man kan ikke spise papir. Det har jeg prøvd. Oktober – kvinnene i Paris har fått nok!"],
+              { gaa: "slottsport" }],
+            ellers: [["ugle", "Vi er ikke ferdige her ennå.", "Ikke ennå! Det kommer mer. Jeg kjenner det i fjærene."]] }] },
+      ],
+    },
+    slottsport: {
+      tittel: "Versailles, 5. oktober 1789", bg: "slottsport", spillerX: 70,
+      hint: "Snakk med fiskeselgeren Margot og med Marie. Så må Lafayette få kongen ut på balkongen.",
+      inngang: [
+        ["forteller", "5. oktober. Det regner. Tusenvis av kvinner har gått fra Paris til Versailles – over 20 kilometer. Noen drar til og med kanoner.",
+                      "5. oktober. Det pøsregner. Igjen. Tusenvis av kvinner har gått over 20 kilometer fra Paris. Med kanoner. I skjørt. Imponerende."],
+      ],
+      punkter: [
+        { id: "margot", navn: "Fiskeselgeren Margot", x: 200, y: 428, w: 70, h: 190, fig: "fiskekone",
+          klikk: [{ hvis: "!krav", da: [
+              ["fiskekone", "Vi har gått i seks timer i regnet! Barna våre er sultne. Nå skal kongen høre på oss!",
+                            "Seks timer i regnet! Jeg selger fisk. Nå lukter JEG fisk. Kongen skal få høre det. Og lukte det."],
+              { gaate: "kvinnetog" }, { sett: "krav" },
+              ["fiskekone", "Kongen skal bo i Paris, blant oss – så han ser hvordan vi har det!", "Kongen skal flytte til Paris! Da ser han brødkøen hver morgen. Og fisken min. Og meg."],
+            ], ellers: [
+              ["fiskekone", "Vi går ikke herfra uten brød – og uten kongen!", "Ikke uten brød! Og ikke uten kongen! I den rekkefølgen. Kanskje."],
+            ] }] },
+        { id: "marie", navn: "Marie", x: 300, y: 428, w: 70, h: 190, fig: "marie",
+          klikk: [["marie", "Jacques passer Louison hjemme. Jeg går for alle mødre som ikke har mat til barna sine.",
+                            "Jacques passer Louison. Jeg går for alle mødre i Paris. Og for grisen, som fortsatt er savnet hos naboen."]] },
+        { id: "garde", navn: "Gardesoldaten", x: 470, y: 430, w: 66, h: 220, fig: "garde",
+          klikk: [["garde", "Porten er stengt. Men ingen av oss skal skyte på disse kvinnene.", "Porten er stengt. Men ingen her skyter på mødre. Vi har alle en mor. De fleste av oss er redde for henne."]] },
+        { id: "lafayette", navn: "Markis de Lafayette", x: 610, y: 428, w: 70, h: 210, fig: "lafayette", vis: "krav",
+          klikk: [{ hvis: "!balkong", da: [
+              ["lafayette", "Jeg har kommet med nasjonalgarden fra Paris. Jeg skal snakke med kongen – han må vise seg for folket.",
+                            "Lafayette her, med nasjonalgarden! Jeg skal få kongen ut på balkongen. Jeg er god på balkonger. Og på hatter."],
+              { sett: "balkong" },
+              ["forteller", "Kongen kommer ut på balkongen. Folkemengden blir stille.", "Kongen kommer ut på balkongen. Han ser ut som en som har glemt leksene."],
+            ], ellers: [
+              ["lafayette", "Hør hva kongen sier!", "Pst! Kongen sier noe. Trykk på ham!"],
+            ] }] },
+        { id: "kongen", navn: "Kongen på balkongen", x: 400, y: 214, w: 44, h: 80, fig: "kongen", skala: .42, vis: "balkong",
+          klikk: [
+            ["kongen", "Jeg kommer med til Paris – sammen med familien min.", "Greit, greit! Jeg blir med til Paris! Kan jeg ta med jaktgeværet? Nei? OK."],
+            ["forteller", "Folk jubler. På vei tilbake til Paris synger de: «Vi har med oss bakeren, bakerkona og bakergutten!» – kongen, dronningen og den lille prinsen.",
+                          "Hele toget synger på vei hjem: «Vi har med bakeren, bakerkona og bakergutten!» Det er kongen, dronningen og prinsen. Folk håper visst at de har med seg brød."],
+            ["ugle", "Kongen hadde mistet makten over Paris – og snart over hele Frankrike. Men ser du skyggen ved porten?",
+                     "Kongen bor nå i Paris, under oppsyn av hele byen. Men se – ved porten! En høy hatt. Atsjo …"],
+            ["glemsel", "Rettigheter på et papir … Hah! Når folk blir redde nok, glemmer de alt. Og frykt kan jeg skaffe!",
+                        "Rettigheter på papir! Søtt! Men når folk blir REDDE, glemmer de alt. Og jeg har en hel sekk med frykt. ATSJO!"],
+            ["ugle", "Det neste kapitlet blir det mørkeste i hele revolusjonen. Men idékortene dine er sterkere enn frykt.",
+                     "Neste kapittel blir mørkt. Ta med lommelykt. Og idékortene. De er sterkere enn frykt. Og enn Glemsels nysing."],
+            { ferdig: true }] },
+      ],
+    },
+  },
+  gaater: {
+    privilegier: { type: "flervalg", sporsmal: "Hva gir adelen og kirken fra seg natten 4. august? Velg alle som passer.",
+      riktige: ["Tienden til kirken", "Retten til å slippe skatt", "Adelens enerett til jakt", "At bare adelen kan få de fineste stillingene"],
+      feil: ["Slottene sine", "Retten til å stemme"],
+      feilTekst: "Så langt gikk de ikke – de beholdt det de røde peker på.",
+      forklaring: "Privilegiene forsvant på én natt. Fra nå skulle alle være like for loven og betale skatt etter evne." },
+    sekker: { type: "velg", sporsmal: "Jacques høstet 12 sekker. Tienden (1) og avgiften til godseieren (3) forsvinner. Skatt (4) og såkorn (1) blir igjen. Hvor mange sekker har familien nå å spise av?",
+      riktig: "7", feil: ["3", "4", "12"],
+      forklaring: "12 − 4 − 1 = 7. Før hadde de bare 3! (Tallene er forenklet, men endringen var stor for bøndene.)" },
+    erklaering: { type: "erklaering", tittel: "Bygg erklæringen med idékortene dine",
+      overskrift: "Erklæringen om menneskets og borgerens rettigheter, 1789",
+      artikler: [
+        { nr: 1, t: "Menneskene blir født og forblir frie og like i rettigheter.", kort: ["naturlov", "rettigheter"], hint: "Hvem sa at de samme lovene gjelder for alle – eller at alle er født med rettigheter?" },
+        { nr: 2, t: "Statens mål er å verne menneskets naturlige rettigheter: frihet, eiendom, sikkerhet og motstand mot undertrykkelse.", kort: "rettigheter", hint: "Liv, frihet og eiendom … hvem sa det?" },
+        { nr: 3, t: "All makt kommer fra nasjonen – fra folket. Ingen kan ha makt som ikke kommer fra folket.", kort: "folk", hint: "Hvem mente at makten tilhører folket?" },
+        { nr: 10, t: "Ingen skal plages for sine meninger – heller ikke om religion.", kort: ["tenk", "ytring"], hint: "Hvem ville at folk skulle tenke og tro fritt?" },
+        { nr: 11, t: "Alle borgere kan fritt si, skrive og trykke det de mener.", kort: "ytring", hint: "Husker du skriftet du gjemte i cembaloet?" },
+        { nr: 16, t: "Et samfunn som ikke sikrer rettighetene og ikke har maktfordeling, har ingen ordentlig grunnlov.", kort: "makt", hint: "Lovgivende, utøvende, dømmende …" },
+      ],
+      forklaring: "Erklæringen ble vedtatt 26. august 1789. Den bygde på ideene fra opplysningstiden – og den lever videre i FNs menneskerettigheter og i Norges grunnlov." },
+    kvinner: { type: "velg", sporsmal: "Hvem fikk IKKE de samme rettighetene i 1789?", riktig: "Kvinnene",
+      feil: ["Adelen", "Advokatene", "Kjøpmennene"],
+      forklaring: "Heller ikke slavene i de franske koloniene. Slaveriet ble avskaffet i 1794, innført igjen av Napoleon og avskaffet for godt i 1848. Franske kvinner fikk stemmerett først i 1944." },
+    kvinnetog: { type: "velg", sporsmal: "Hva krever kvinnene som har gått til Versailles?", riktig: "Brød – og at kongen flytter til Paris",
+      feil: ["At kongen skal bli keiser", "At de selv skal få bo på slottet", "At Bastillen skal bygges opp igjen"],
+      forklaring: "Kongen og familien måtte flytte til Paris. Nå bodde de midt blant folket – og under oppsyn." },
+  },
+},
+
+/* =====================================================================
    KOMMENDE KAPITLER – legg inn scener og gåter, og fjern «kommer: true».
    ===================================================================== */
-{ id: "k6", nr: 6, tittel: "Bastillen", sted: "Paris", aar: "14. juli 1789", ikon: "🔥", kommer: true, om: "Folket stormer fengselet som er symbolet på kongens makt." },
-{ id: "k7", nr: 7, tittel: "Erklæringen", sted: "Paris", aar: "August 1789", ikon: "📃", kommer: true, om: "Bygg menneskerettighetserklæringen av idékortene dine." },
 { id: "k8", nr: 8, tittel: "Terroren", sted: "Paris", aar: "1793–1794", ikon: "⚔️", kommer: true, om: "Når revolusjonen spiser sine egne barn." },
 { id: "k9", nr: 9, tittel: "Keiseren", sted: "Europa", aar: "1799–1815", ikon: "🎖️", kommer: true, om: "Napoleon tar makten – og Europa endres for alltid." },
 { id: "epilog", nr: 10, tittel: "Hjem igjen", sted: "Norge", aar: "1814 og i dag", ikon: "🦁", kommer: true, om: "Ideene finner veien til Eidsvoll – og til plakatene på skolen din." },

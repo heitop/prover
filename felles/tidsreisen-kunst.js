@@ -28,7 +28,7 @@
     o = Object.assign({
       hud: "#f1c7a3", har: "#5b3a1e", harType: "kort", frakk: "#4a6fa5", vest: "#e9dcc0", bukse: "#3b3b46",
       strompe: "#f2efe6", sko: "#2a2420", kjole: false, kjoleF: "#a0526e", forkle: null, uttrykk: "glad",
-      krage: null, hand: null, skala: 1, briller: false, kappe: null, mager: false, skjegg: null, rosett: null,
+      krage: null, hand: null, skala: 1, briller: false, kappe: null, mager: false, skjegg: null, rosett: null, epaulett: false,
     }, o);
     const hudM = mix(o.hud, -.18), L = [];
     const W = o.mager ? 0.86 : 1;
@@ -64,6 +64,7 @@
     L.push(`<path d="M${-26 * W} -138 Q${-38 * W} -110 ${-34 * W} -84" stroke="${arm}" stroke-width="12" stroke-linecap="round" fill="none"/>`);
     L.push(`<path d="M${26 * W} -138 Q${38 * W} -110 ${34 * W} -84" stroke="${arm}" stroke-width="12" stroke-linecap="round" fill="none"/>`);
     L.push(`<circle cx="${-34 * W}" cy="-80" r="6.5" fill="${o.hud}"/><circle cx="${34 * W}" cy="-80" r="6.5" fill="${o.hud}"/>`);
+    if (o.epaulett) L.push(`<g fill="#e3b53a"><ellipse cx="-25" cy="-140" rx="11" ry="5"/><ellipse cx="25" cy="-140" rx="11" ry="5"/></g><path d="M-34 -137 v6 M-29 -136 v7 M-24 -136 v7 M-19 -137 v6 M19 -137 v6 M24 -136 v7 M29 -136 v7 M34 -137 v6" stroke="#e3b53a" stroke-width="2"/>`);
     // hals og krage
     L.push(`<rect x="-6" y="-150" width="12" height="12" fill="${hudM}"/>`);
     if (o.krage === "jabot") L.push(`<path d="M-7 -142 Q0 -120 7 -142 Q4 -128 0 -118 Q-4 -128 -7 -142 Z" fill="#fff" stroke="#ddd" stroke-width=".8"/>`);
@@ -97,6 +98,7 @@
     L.push(munn);
     L.push(`<circle cx="-13" cy="${hy + 7}" r="4" fill="#ff7a7a" opacity=".25"/><circle cx="13" cy="${hy + 7}" r="4" fill="#ff7a7a" opacity=".25"/>`);
     if (o.skjegg === "stubb") L.push(`<path d="M-15 ${hy + 8} Q0 ${hy + 26} 15 ${hy + 8} Q0 ${hy + 20} -15 ${hy + 8} Z" fill="${mix(o.har, .1)}" opacity=".45"/>`);
+    if (o.skjegg === "langt") L.push(`<path d="M-17 ${hy + 6} Q-16 ${hy + 56} 0 ${hy + 72} Q16 ${hy + 56} 17 ${hy + 6} Q8 ${hy + 20} 0 ${hy + 19} Q-8 ${hy + 20} -17 ${hy + 6} Z" fill="${o.har}"/><path d="M-6 ${hy + 13} Q0 ${hy + 10} 6 ${hy + 13}" stroke="${mix(o.har, -.25)}" stroke-width="2" fill="none"/>`);
     if (o.briller) L.push(`<g stroke="#333" stroke-width="1.6" fill="none"><circle cx="-8" cy="${ey}" r="6"/><circle cx="8" cy="${ey}" r="6"/><path d="M-2 ${ey} L2 ${ey}"/></g>`);
     // hår og hodeplagg
     const h = o.har, hk = mix(h, -.18);
@@ -128,6 +130,7 @@
       fjaerpynt: `<path d="M-6 ${hy - 56} Q-28 ${hy - 96} -8 ${hy - 106} Q-4 ${hy - 82} -1 ${hy - 58} Z" fill="#fff" stroke="#ddd" stroke-width=".8"/><path d="M4 ${hy - 56} Q20 ${hy - 102} 32 ${hy - 92} Q16 ${hy - 78} 8 ${hy - 56} Z" fill="#f2a7c0"/><circle cx="0" cy="${hy - 56}" r="4.5" fill="#5aa0d8"/>`,
       prest: `<ellipse cx="0" cy="${hy - 14}" rx="34" ry="7" fill="#1d1d1d"/><path d="M-17 ${hy - 14} Q-16 ${hy - 34} 0 ${hy - 34} Q16 ${hy - 34} 17 ${hy - 14} Z" fill="#1d1d1d"/>`,
       kappe: `<path d="M-24 ${hy + 2} Q-26 ${hy - 30} 0 ${hy - 32} Q26 ${hy - 30} 24 ${hy + 2} Q18 ${hy - 18} 0 ${hy - 18} Q-18 ${hy - 18} -24 ${hy + 2} Z" fill="${o.kappe || "#1b1b22"}"/>`,
+      bakerlue: `<path d="M-20 ${hy - 14} Q-30 ${hy - 44} -10 ${hy - 46} Q0 ${hy - 58} 10 ${hy - 46} Q30 ${hy - 44} 20 ${hy - 14} Z" fill="#fbfaf5" stroke="#ddd"/>`,
       topphatt: `<rect x="-17" y="${hy - 58}" width="34" height="40" rx="3" fill="#1b1b22"/><ellipse cx="0" cy="${hy - 18}" rx="30" ry="6" fill="#1b1b22"/><rect x="-17" y="${hy - 28}" width="34" height="5" fill="#6a1f2b"/>`,
     };
     if (o.hatt) L.push(HATT[o.hatt] || "");
@@ -144,6 +147,7 @@
       gevaer: `<path d="M41 -36 L41 -196" stroke="#5a3a1a" stroke-width="5" stroke-linecap="round"/><path d="M41 -150 L41 -200" stroke="#888" stroke-width="2.5"/><path d="M39 -200 l2 -18 l2 18 Z" fill="#bbb"/>`,
       stav: `<path d="M40 -2 L37 -200" stroke="#1b1b22" stroke-width="4" stroke-linecap="round"/><circle cx="37" cy="-203" r="7" fill="#c9a227"/>`,
       sverd: `<path d="M-30 -70 L-50 -14" stroke="#c8c8c8" stroke-width="3.5" stroke-linecap="round"/><path d="M-37 -78 L-23 -64" stroke="#c9a227" stroke-width="4" stroke-linecap="round"/>`,
+      brod: `<ellipse cx="42" cy="-84" rx="18" ry="8" fill="#c98a3a" transform="rotate(-20 42 -84)"/><path d="M32 -84 l4 -6 M40 -88 l4 -6 M48 -92 l4 -6" stroke="#8a5a1a" stroke-width="2"/>`,
       pung: `<path d="M28 -86 Q24 -64 40 -62 Q56 -64 52 -86 Q40 -92 28 -86 Z" fill="#8a6a2a"/><path d="M30 -88 Q40 -94 50 -88" stroke="#5a4316" stroke-width="2" fill="none"/>`,
     };
     if (o.hand) L.push(HAND[o.hand] || "");
@@ -210,6 +214,16 @@
     mirabeau: o => person(Object.assign({ hud: "#e2b090", har: "#e8e4da", harType: "parykk", frakk: "#24242a", vest: "#7a1f2b", bukse: "#24242a", strompe: "#2a2a30", krage: "jabot", uttrykk: "sint", skala: 1.1 }, o)),
     dauch: o => person(Object.assign({ hud: "#f1c7a3", har: "#6a4a2a", harType: "kort", frakk: "#24242a", vest: "#2e2e34", bukse: "#24242a", strompe: "#2a2a30", krage: "hvit", hand: "penn", uttrykk: "lei" }, o)),
     landsprest: o => person(Object.assign({ hud: "#e8bc96", har: "#7a5a3a", harType: "kort", frakk: "#1d1d1d", vest: "#1d1d1d", bukse: "#1d1d1d", strompe: "#1d1d1d", krage: "prest", hand: "kors", uttrykk: "glad", mager: true }, o)),
+    // kapittel 6–7: Bastillen og Erklæringen
+    desmoulins: o => person(Object.assign({ hud: "#f1c7a3", har: "#2a1a10", harType: "rufsete", frakk: "#6a4a2a", vest: "#c9b48a", bukse: "#3a2a20", krage: "hvit", uttrykk: "sint", mager: true }, o)),
+    baker: o => person(Object.assign({ hud: "#f3cfae", har: "#6a4a2a", harType: "kort", frakk: "#f4f1ea", vest: "#e8e4da", bukse: "#d8d0c0", strompe: "#e8e4da", hatt: "bakerlue", hand: "brod", uttrykk: "lei" }, o)),
+    garde: o => person(Object.assign({ hud: "#e8bc96", har: "#3a2a1a", harType: "kort", frakk: "#1f3d7a", vest: "#c0392b", bukse: "#f4f1ea", strompe: "#f4f1ea", sko: "#111", hatt: "tricorn", hattF: "#1b1b22", hand: "gevaer", uttrykk: "noytral" }, o)),
+    fange: o => person(Object.assign({ hud: "#e8d2bc", har: "#ece8e0", harType: "langt", skjegg: "langt", frakk: "#7a7060", vest: "#9a9080", bukse: "#6a6050", strompe: "#9a9080", sko: "#4a4030", uttrykk: "overrasket", mager: true }, o)),
+    lafayette: o => person(Object.assign({ hud: "#f3d2b5", har: "#c87a4a", harType: "parykk", frakk: "#1f3d7a", vest: "#f4f1ea", bukse: "#f4f1ea", strompe: "#f4f1ea", sko: "#111", krage: "jabot", hatt: "tricorn", hattF: "#1b1b22", epaulett: true, rosett: true, hand: "sverd", uttrykk: "glad" }, o)),
+    jefferson: o => person(Object.assign({ hud: "#f3d2b5", har: "#b8693a", harType: "kort", frakk: "#7a5a3a", vest: "#c0392b", bukse: "#4a3a2a", krage: "hvit", hand: "papir", uttrykk: "glad", mager: true, skala: 1.06 }, o)),
+    olympe: o => person(Object.assign({ hud: "#f6d5bb", har: "#7a4a2a", harType: "langt", kjole: true, kjoleF: "#2f6a8a", hatt: "skaut", skautF: "#fbfaf5", hand: "penn", uttrykk: "lur", rosett: true }, o)),
+    fiskekone: o => person(Object.assign({ hud: "#e2b48c", har: "#5a3a1e", kjole: true, kjoleF: "#8a3a3a", forkle: "#e8dcc4", hatt: "skaut", skautF: "#e8e0cc", uttrykk: "sint", rosett: true }, o)),
+    noailles: o => person(Object.assign({ hud: "#f6d5bb", har: "#f4f1ea", harType: "parykk", frakk: "#7a4a8a", vest: "#e8c870", bukse: "#4a2a5a", krage: "jabot", hand: "sverd", uttrykk: "overrasket" }, o)),
     // portrettbilder til dialog for ting/forteller
     forteller: () => `<g><circle cx="0" cy="-160" r="30" fill="#f2eadb"/><text x="0" y="-148" font-size="34" text-anchor="middle">📜</text></g>`,
   };
@@ -301,6 +315,21 @@
       <path d="M-34 -6 L34 -10 M-30 -12 L30 -4" stroke="#6b4a2a" stroke-width="7" stroke-linecap="round"/>
       ${o && o.av ? "" : `<g class="flakk"><path d="M-30 -8 Q-34 -36 -16 -54 Q-14 -34 0 -64 Q8 -40 16 -52 Q32 -30 28 -8 Z" fill="#ff8a2a"/><path d="M-16 -8 Q-18 -26 -4 -38 Q2 -22 12 -30 Q20 -16 14 -8 Z" fill="#ffd54a"/></g>`}
       <rect x="-60" y="-200" width="120" height="66" rx="4" fill="#c9a227"/><rect x="-54" y="-194" width="108" height="54" fill="#a9c2d6"/></g>`,
+    vindebro: o => o && o.nede
+      ? `<g><rect x="-50" y="-150" width="100" height="150" rx="50" fill="#1b1a18"/><path d="M-50 0 L-60 40 L60 40 L50 0 Z" fill="#7a5a3a"/><path d="M-56 12 h112 M-58 26 h116" stroke="#5a3a1a" stroke-width="3"/><path d="M-50 -110 L-60 40 M50 -110 L60 40" stroke="#555" stroke-width="3" stroke-dasharray="6 4"/></g>`
+      : `<g><rect x="-50" y="-150" width="100" height="150" rx="50" fill="#1b1a18"/><rect x="-54" y="-150" width="108" height="150" fill="#7a5a3a"/><path d="M-54 -120 h108 M-54 -90 h108 M-54 -60 h108 M-54 -30 h108" stroke="#5a3a1a" stroke-width="3"/>
+        <path d="M-54 -150 L-80 -200 M54 -150 L80 -200" stroke="#555" stroke-width="4" stroke-dasharray="7 4"/></g>`,
+    kokardeskilt: () => `<g><rect x="-3" y="-90" width="6" height="90" fill="#6b4a2a"/><circle cx="0" cy="-104" r="22" fill="#1f3d7a"/><circle cx="0" cy="-104" r="15" fill="#fff"/><circle cx="0" cy="-104" r="8" fill="#c0392b"/></g>`,
+    nokkel: o => `<g><rect x="-40" y="-30" width="80" height="30" fill="#6a5a4a"/><path d="M-30 -30 v-6 M30 -30 v-6" stroke="#333" stroke-width="3"/>
+      ${o && o.tatt ? "" : `<g transform="translate(0 -60)"><circle cx="0" cy="-10" r="11" fill="none" stroke="#b0832f" stroke-width="5"/><path d="M0 1 V40 M0 30 h10 M0 38 h8" stroke="#b0832f" stroke-width="5"/></g>`}
+      <rect x="-4" y="-104" width="8" height="8" fill="#333"/></g>`,
+    protokoll: () => `<g><rect x="-50" y="-60" width="100" height="10" fill="#5a4030"/><rect x="-44" y="-50" width="8" height="50" fill="#4a3020"/><rect x="36" y="-50" width="8" height="50" fill="#4a3020"/>
+      <path d="M-34 -62 Q-16 -70 0 -64 Q16 -70 34 -62 L34 -60 L-34 -60 Z" fill="#f4ecd8" stroke="#a89060"/><path d="M-28 -64 h20 M8 -64 h20" stroke="#8a7a5a" stroke-width="1"/>
+      <rect x="22" y="-76" width="6" height="14" fill="#efe6d0"/><path d="M25 -76 q-4 -8 0 -12 q4 4 0 12" fill="#ffb347"/></g>`,
+    seng: () => `<g><rect x="-120" y="-220" width="240" height="14" fill="#c9a227"/><path d="M-120 -206 Q-130 -100 -114 -40 L-100 -40 Q-108 -120 -100 -206 Z M120 -206 Q130 -100 114 -40 L100 -40 Q108 -120 100 -206 Z" fill="#24438a"/>
+      <rect x="-104" y="-206" width="208" height="110" fill="#e8dcc0"/><rect x="-110" y="-60" width="220" height="40" rx="8" fill="#f4f1ea"/><rect x="-110" y="-90" width="220" height="34" rx="10" fill="#3e5a8a"/>
+      <ellipse cx="-70" cy="-92" rx="30" ry="12" fill="#fff"/><rect x="-116" y="-24" width="8" height="24" fill="#c9a227"/><rect x="108" y="-24" width="8" height="24" fill="#c9a227"/></g>`,
+    dagbok: () => `<g><rect x="-26" y="-60" width="52" height="60" fill="#8a5a3a"/><rect x="-30" y="-64" width="60" height="6" fill="#a07a50"/><rect x="-18" y="-74" width="34" height="10" fill="#2e4a7a"/><rect x="-16" y="-72" width="30" height="6" fill="#f4e7c9"/></g>`,
     lysekrone: () => `<g><path d="M0 -450 L0 -380" stroke="#c9a227" stroke-width="3"/><ellipse cx="0" cy="-370" rx="70" ry="14" fill="none" stroke="#c9a227" stroke-width="5"/>
       ${[-60, -30, 0, 30, 60].map(x => `<rect x="${x - 3}" y="-392" width="6" height="16" fill="#f4f1ea"/><path d="M${x} -392 q-4 -8 0 -14 q4 6 0 14" fill="#ffcf5a"/><circle cx="${x}" cy="-398" r="14" fill="#ffd36a" opacity=".18"/>`).join("")}</g>`,
     idekort: o => `<g><rect x="-26" y="-36" width="52" height="36" rx="5" fill="#fff8e0" stroke="#c9a227" stroke-width="2.5"/><text x="0" y="-11" font-size="18" text-anchor="middle">${(o && o.ikon) || "💡"}</text></g>`,
@@ -439,11 +468,81 @@
       for (let x = -200; x < 1000; x += 80) s += `<path d="M${x} 310 L${(x - 400) * 1.4 + 400} 450" stroke="#b8a98e" stroke-width="2"/>`;
       return s;
     },
+    palais() {
+      let s = sky("paSky", "#9cc2e4", "#f2e2c4");
+      s += `<rect x="0" y="80" width="300" height="250" fill="#e6d8bc"/><path d="M-10 80 L150 30 L310 80 Z" fill="#7a4a3a"/><rect x="0" y="80" width="300" height="10" fill="#c9b79a"/>`;
+      s += `<rect x="20" y="200" width="260" height="130" fill="#6a3a2a"/><rect x="34" y="214" width="110" height="80" fill="#f2d9a8"/><rect x="160" y="214" width="56" height="116" fill="#4a2a1a"/>`;
+      s += [50, 80, 110].map((x, i) => `<ellipse cx="${x}" cy="${270 - (i % 2) * 6}" rx="14" ry="7" fill="#c98a3a"/>`).join("") + `<ellipse cx="66" cy="252" rx="12" ry="6" fill="#b87a2a"/><ellipse cx="96" cy="250" rx="12" ry="6" fill="#c98a3a"/>`;
+      s += `<rect x="30" y="172" width="240" height="24" fill="#c9a227"/><text x="150" y="190" font-size="15" text-anchor="middle" font-family="Georgia" font-weight="700" fill="#3a2a06">BOULANGERIE</text>`;
+      s += `<rect x="40" y="110" width="40" height="50" fill="#5a6676"/><rect x="130" y="110" width="40" height="50" fill="#5a6676"/><rect x="220" y="110" width="40" height="50" fill="#5a6676"/>`;
+      s += `<rect x="320" y="60" width="480" height="270" fill="#efe6d0"/><rect x="320" y="52" width="480" height="12" fill="#d8c9a6"/>`;
+      for (let x = 340; x < 800; x += 64) s += `<path d="M${x} 330 V250 A22 22 0 0 1 ${x + 44} 250 V330 Z" fill="#9aa4a8"/><rect x="${x + 6}" y="96" width="32" height="56" fill="#5a6676"/>`;
+      srand(61); [360, 470, 590, 700].forEach(x => { s += `<rect x="${x - 6}" y="250" width="12" height="80" fill="#5a3a24"/>`; for (let i = 0; i < 6; i++) s += `<circle cx="${x + (rnd() - .5) * 70}" cy="${220 + (rnd() - .5) * 50}" r="${22 + rnd() * 10}" fill="${pick(["#4a8a42", "#3f7a3a", "#56984c"])}"/>`; });
+      s += `<rect y="330" width="800" height="120" fill="#b8ad9a"/>`;
+      srand(63); for (let i = 0; i < 70; i++) s += `<ellipse cx="${rnd() * 800}" cy="${340 + rnd() * 110}" rx="${10 + rnd() * 8}" ry="${4 + rnd() * 3}" fill="#a69c88"/>`;
+      return s;
+    },
+    bastille() {
+      let s = sky("baSky", "#8a96a6", "#e8c49a");
+      srand(71); for (let i = 0; i < 10; i++) s += `<circle cx="${100 + rnd() * 600}" cy="${30 + rnd() * 80}" r="${20 + rnd() * 30}" fill="#6a6a70" opacity=".35"/>`;
+      const torn = x => `<rect x="${x - 46}" y="40" width="92" height="270" fill="#6e6a64"/><ellipse cx="${x}" cy="40" rx="46" ry="10" fill="#7e7a74"/>
+        ${[-36, -12, 12, 36].map(d => `<rect x="${x + d - 8}" y="22" width="16" height="18" fill="#6e6a64"/>`).join("")}<rect x="${x - 6}" y="120" width="12" height="24" fill="#2a2826"/><rect x="${x - 6}" y="200" width="12" height="24" fill="#2a2826"/>`;
+      s += `<rect x="150" y="70" width="500" height="240" fill="#625e58"/>`;
+      for (let y = 80; y < 310; y += 22) s += `<path d="M150 ${y} H650" stroke="#56524c" stroke-width="2"/>`;
+      s += torn(150) + torn(330) + torn(470) + torn(650);
+      s += `<rect y="300" width="800" height="30" fill="#3a4a52"/><path d="M0 310 Q200 304 400 312 T800 308" stroke="#5a6a72" stroke-width="3" fill="none"/>`;
+      s += `<rect y="328" width="800" height="122" fill="#a89a80"/>`;
+      srand(73); for (let i = 0; i < 50; i++) s += `<ellipse cx="${rnd() * 800}" cy="${340 + rnd() * 110}" rx="${8 + rnd() * 8}" ry="${3 + rnd() * 3}" fill="#968a72"/>`;
+      srand(75); for (let x = 0; x < 800; x += 22) if (x < 340 || x > 470) s += `<circle cx="${x}" cy="${332 - rnd() * 6}" r="8" fill="${pick(["#e2b48c", "#f1c7a3", "#d9a37a"])}"/><path d="M${x - 10} 350 q10 -16 20 0" fill="${pick(["#c0392b", "#2a2a30", "#6a5a3a", "#1f3d7a", "#8a7350"])}"/>`;
+      return s;
+    },
+    celle() {
+      let s = `<rect width="800" height="450" fill="#5a5650"/>`;
+      srand(81); for (let y = 0; y < 330; y += 30) for (let x = (y / 30 % 2) * 40 - 40; x < 800; x += 80) s += `<rect x="${x + 2}" y="${y + 2}" width="76" height="26" rx="3" fill="${pick(["#625e58", "#6a665f", "#5e5a54"])}"/>`;
+      s += `<rect x="330" y="60" width="90" height="70" fill="#9ab0c4"/>${[345, 360, 375, 390, 405].map(x => `<rect x="${x}" y="60" width="5" height="70" fill="#2a2826"/>`).join("")}`;
+      s += `<path d="M330 130 L420 130 L560 330 L360 330 Z" fill="#fff6c8" opacity=".12"/>`;
+      s += `<path d="M120 120 l6 30 l-6 30 l6 30" stroke="#3a3836" stroke-width="5" fill="none"/><path d="M150 120 l6 30 l-6 30 l6 30" stroke="#3a3836" stroke-width="5" fill="none"/>`;
+      s += `<g stroke="#3a3836" stroke-width="2.5">${Array.from({ length: 4 }, (_, g) => `<path d="M${480 + g * 34} 160 v24 M${487 + g * 34} 160 v24 M${494 + g * 34} 160 v24 M${501 + g * 34} 160 v24 M${476 + g * 34} 178 l30 -14"/>`).join("")}</g>`;
+      s += `<text x="190" y="250" font-size="16" font-family="Georgia" fill="#3a3836" transform="rotate(-6 190 250)">F.-M. A. 1717</text>`;
+      s += `<rect y="330" width="800" height="120" fill="#4a463f"/>`;
+      srand(83); for (let i = 0; i < 90; i++) { const x = rnd() * 800, y = 336 + rnd() * 110; s += `<path d="M${x} ${y} l${8 + rnd() * 10} ${-3 + rnd() * 6}" stroke="#b8a060" stroke-width="2" opacity=".7"/>`; }
+      return s;
+    },
+    soverom() {
+      let s = `<rect width="800" height="450" fill="#e8dcc0"/>`;
+      for (let x = 20; x < 800; x += 160) s += `<rect x="${x}" y="60" width="120" height="220" fill="#3e5a8a"/><rect x="${x + 8}" y="68" width="104" height="204" fill="none" stroke="#c9a227" stroke-width="3"/>`;
+      s += `<rect width="800" height="44" fill="#d8c9a6"/><rect y="42" width="800" height="8" fill="#c9a227"/>`;
+      s += `<rect x="640" y="80" width="110" height="180" fill="#1d2a4a"/><circle cx="700" cy="120" r="14" fill="#f4f1d0"/><path d="M695 80 v180 M640 170 h110" stroke="#e8d8b0" stroke-width="6"/>`;
+      s += `<rect y="300" width="800" height="22" fill="#d9be78"/><rect y="320" width="800" height="130" fill="#a8743f"/>`;
+      for (let x = -200; x < 1000; x += 46) s += `<path d="M${x} 320 L${x + 130} 450 M${x + 130} 320 L${x} 450" stroke="#8a5a2f" stroke-width="2"/>`;
+      s += `<rect width="800" height="450" fill="#0a1030" opacity=".28"/>`;
+      return s;
+    },
+    stendersalNatt() {
+      let s = BG.stendersal() + `<rect width="800" height="450" fill="#0a1030" opacity=".5"/>`;
+      [90, 250, 550, 710].forEach(x => { s += `<circle cx="${x}" cy="280" r="40" fill="#ffd36a" opacity=".16"/><rect x="${x - 3}" y="282" width="6" height="18" fill="#f4f1ea"/><path d="M${x} 282 q-4 -8 0 -14 q4 6 0 14" fill="#ffcf5a"/>`; });
+      return s;
+    },
+    slottsport() {
+      let s = sky("spSky", "#6f7c8c", "#b8c0c8");
+      s += `<rect x="60" y="110" width="680" height="150" fill="#e0d4b8"/><rect x="50" y="98" width="700" height="14" fill="#bfb49e"/><path d="M50 98 L400 60 L750 98 Z" fill="#7a8a99"/>`;
+      for (let x = 80; x < 730; x += 52) if (x < 360 || x > 430) s += `<rect x="${x}" y="130" width="26" height="46" fill="#5a6676"/><rect x="${x}" y="196" width="26" height="46" fill="#5a6676"/>`;
+      s += `<rect x="350" y="120" width="100" height="74" fill="#5a6676"/><rect x="340" y="190" width="120" height="8" fill="#c9a227"/>${Array.from({ length: 9 }, (_, i) => `<rect x="${344 + i * 14}" y="198" width="3" height="18" fill="#c9a227"/>`).join("")}<rect x="340" y="214" width="120" height="5" fill="#c9a227"/>`;
+      s += `<rect y="258" width="800" height="72" fill="#a59c8c"/>`;
+      for (let x = 0; x < 800; x += 18) if (x < 330 || x > 470) s += `<path d="M${x} 330 V270" stroke="#2a2a2a" stroke-width="4"/><path d="M${x - 4} 272 L${x} 260 L${x + 4} 272 Z" fill="#c9a227"/>`;
+      s += `<path d="M0 290 H330 M470 290 H800 M0 318 H330 M470 318 H800" stroke="#2a2a2a" stroke-width="4"/><path d="M330 330 V240 M470 330 V240" stroke="#2a2a2a" stroke-width="8"/><circle cx="330" cy="234" r="9" fill="#c9a227"/><circle cx="470" cy="234" r="9" fill="#c9a227"/>`;
+      s += `<rect y="330" width="800" height="120" fill="#7a6e60"/>`;
+      srand(91); for (let i = 0; i < 40; i++) s += `<ellipse cx="${rnd() * 800}" cy="${340 + rnd() * 108}" rx="${18 + rnd() * 20}" ry="${3 + rnd() * 3}" fill="#6a5e50"/>`;
+      srand(93); let d = ""; for (let i = 0; i < 18; i++) { const x = rnd() * 820 - 10, y = rnd() * 36; for (let k = -1; k < 14; k++) d += `M${x} ${y + k * 36} l-4 14 `; }
+      s += `<g class="regn"><path d="${d}" stroke="#e4eef8" stroke-width="1.6" opacity=".5" stroke-linecap="round"/></g>`;
+      return s;
+    },
     kart() { return `<rect width="800" height="450" fill="#f2e6c8"/>`; },
   };
 
   /* ---------- portrett: hodeutsnitt av en figur (viewBox per figur, ellers standard) ---------- */
   const PVB = { ugle: "-34 -100 68 68", barn: "-34 -142 68 68", forteller: "-34 -194 68 68", madame: "-40 -236 80 80", kant: "-36 -194 72 72",
+    lafayette: "-40 -216 80 80", fange: "-40 -214 80 80", baker: "-40 -224 80 80",
     dronning: "-44 -246 88 88", kongen: "-40 -218 80 80", biskop: "-42 -236 84 84", mirabeau: "-42 -232 84 84", bailly: "-40 -222 80 80", seremonimester: "-40 -216 80 80", adelsmann: "-40 -216 80 80" };
   function portrett(navn, o) {
     if (navn === "deg") {
