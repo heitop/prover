@@ -333,7 +333,7 @@ function spillSkjerm() {
   gen++; opptatt = false; venter = null; valgt = null; P = null;
   const k = kapBy(A.kap);
   $("#topp").innerHTML = `<button class="iconbtn" data-act="kart" aria-label="Til kartet">🗺️</button>
-    <span class="tt">${k.nr === 0 ? "Prolog" : "Kap. " + k.nr}: ${esc(k.tittel)}</span>${A.humor ? `<span class="hchip">😂<span class="t"> Humor</span></span>` : ""}
+    <span class="tt">${k.nr === 0 ? "Prolog" : k.id === "epilog" ? "Epilog" : "Kap. " + k.nr}: ${esc(k.tittel)}</span>${A.humor ? `<span class="hchip">😂<span class="t"> Humor</span></span>` : ""}
     ${gullPill()}<button class="iconbtn" data-act="dagbok" aria-label="Dagbok">📔</button><span class="hidesm">${temaBtn()}</span>`;
   $("#app").innerHTML = `
     <div class="stagewrap"><svg id="stage" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Scene"></svg><div class="tip" id="tip" hidden></div></div>
@@ -516,13 +516,14 @@ function kapittelFerdig() {
   A = null; S.aktiv = null; save();
   gen++; opptatt = false; venter = null;
   sjekkMerke();
-  if (window.Gull) Gull.bonus(forste ? 10 : forsteHumor ? 6 : 2, `${k.nr === 0 ? "Prologen" : "Kapittel " + k.nr} er ferdig!`);
-  const i = T.KAPITLER.indexOf(k), neste = T.KAPITLER[i + 1];
+  const i = T.KAPITLER.indexOf(k), neste = T.KAPITLER[i + 1], navn = k.nr === 0 ? "Prologen" : k.id === "epilog" ? "Epilogen" : "Kapittel " + k.nr;
+  if (window.Gull) Gull.bonus(forste ? (neste ? 10 : 25) : forsteHumor ? 6 : 2, neste ? `${navn} er ferdig!` : "Hele Tidsreisen er ferdig!");
   const nesteKnapp = neste && spillbar(neste) ? `<button class="btn pri" data-act="start:${neste.id}">Neste: ${esc(neste.tittel)} ▸</button>`
     : neste ? `<p class="small muted">Neste kapittel – «${esc(neste.tittel)}» – kommer snart!</p>` : "";
   const ov = document.createElement("div"); ov.className = "ov"; ov.id = "ferdigOv";
   ov.innerHTML = `<div class="ovbox sentrert"><div class="stor-emoji">${humor ? "😂" : "🎉"}</div>
-    <h2>${k.nr === 0 ? "Prologen" : "Kapittel " + k.nr} er ferdig!</h2><p>${esc(k.tittel)} · ${esc(k.aar)}</p>
+    <h2>${neste ? navn + " er ferdig!" : "Hele Tidsreisen er ferdig!"}</h2><p>${esc(k.tittel)} · ${esc(k.aar)}</p>
+    ${neste ? "" : `<p>Du har reist fra 1687 til i dag, reddet idékortene fra Grev Glemsel – og sett hvordan ideene ble til rettighetene dine. 🦉</p>`}
     ${forste ? `<p class="fbk ok" style="border-radius:12px">😂 <b>Humormodus er låst opp</b> for dette kapitlet! Spill det igjen med mye mer tull.</p>` : ""}
     <p class="muted small">🃏 ${S.kort.length}/${Object.keys(T.IDEKORT).length} idékort · 📔 ${S.omgrep.length} omgrep i dagboka</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${nesteKnapp}<button class="btn" data-act="kart">Til kartet</button></div></div>`;
@@ -675,8 +676,8 @@ const GAATER = {
       const g = this.g, art = g.artikler[this.nr], ferdige = g.artikler.slice(0, this.nr);
       panel(`<div class="gt"><span class="glbl">📃 ${esc(g.tittel)}</span>
         <div class="perg"><b class="ptit">${esc(g.overskrift || "Erklæringen")}</b>
-          ${ferdige.map(a => `<p class="part ok"><span class="anr">Art. ${a.nr}</span> ${esc(a.t)} <span class="aik">${T.IDEKORT[this.svar[a.nr]].ikon}</span></p>`).join("")}
-          ${art ? `<p class="part naa"><span class="anr">Art. ${art.nr}</span> ${esc(art.t)}</p>` : ""}</div>
+          ${ferdige.map(a => `<p class="part ok"><span class="anr">${esc(g.prefiks || "Art.")} ${a.nr}</span> ${esc(a.t)} <span class="aik">${T.IDEKORT[this.svar[a.nr]].ikon}</span></p>`).join("")}
+          ${art ? `<p class="part naa"><span class="anr">${esc(g.prefiks || "Art.")} ${art.nr}</span> ${esc(art.t)}</p>` : ""}</div>
         ${art ? `<div class="gq">${esc(g.sporsmal || "Hvilket idékort bygger denne artikkelen på?")}</div>
         <div class="kortvalg">${Object.keys(T.IDEKORT).map(id => { const k = T.IDEKORT[id]; return `<button class="kv" data-act="p:${id}"><span class="ki">${k.ikon}</span><b>${esc(k.navn)}</b><span class="small muted">${esc(k.fra)}</span></button>`; }).join("")}</div>` : ""}
         <div id="gfb"></div></div>`);
@@ -686,7 +687,7 @@ const GAATER = {
       const ok = [].concat(art.kort);
       if (this.svart !== art.nr) {
         this.svart = art.nr; const kk = T.IDEKORT[ok[0]], kn = k => `${k.navn} (${k.fra})`;
-        fsSvar(this.nk + ":" + art.nr, ok.includes(id), { q: `Hvilken idé fra opplysningstiden bygger denne artikkelen fra 1789 på? «${art.t}»`, a: kn(kk),
+        fsSvar(this.nk + ":" + art.nr, ok.includes(id), { q: `${g.fsSporsmal || "Hvilken idé fra opplysningstiden bygger denne artikkelen fra 1789 på?"} «${art.t}»`, a: kn(kk),
           alt: shuffle(Object.keys(T.IDEKORT).filter(x => !ok.includes(x))).slice(0, 3).map(x => kn(T.IDEKORT[x])), forkl: `${kk.navn} (${kk.fra}): ${kk.tekst}` });
       }
       if (ok.includes(id)) {

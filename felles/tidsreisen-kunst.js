@@ -236,6 +236,11 @@
     pave: o => person(Object.assign({ hud: "#f0d0b8", har: "#d8d8d8", harType: "skallet", frakk: "#f4f1ea", vest: "#f4f1ea", bukse: "#f4f1ea", strompe: "#f4f1ea", sko: "#8a1f2b", kappe: "#8a1f2b", krage: "prest", hatt: "kalott", hand: "kors", uttrykk: "lei" }, o)),
     josephine: o => person(Object.assign({ hud: "#f6d5bb", har: "#3a2416", harType: "langt", kjole: true, kjoleF: "#f4f1ea", hatt: "laurbaer", uttrykk: "glad" }, o)),
     soldat1812: o => person(Object.assign({ hud: "#e2c4ac", har: "#8a5a2a", harType: "kort", frakk: "#1f3d7a", vest: "#f4f1ea", bukse: "#cfc8bc", strompe: "#8a8070", sko: "#3a2a1a", hatt: "shako", hand: "gevaer", uttrykk: "lei", mager: true, skjegg: "stubb", kappe: "#6a6050" }, o)),
+    // epilog: Eidsvoll 1814 og i dag
+    christianfrederik: o => person(Object.assign({ hud: "#f3d2b5", har: "#3a2416", harType: "kort", frakk: "#a8242c", vest: "#f4f1ea", bukse: "#f4f1ea", strompe: "#f4f1ea", sko: "#111", krage: "hvit", epaulett: true, hand: "sverd", uttrykk: "glad" }, o)),
+    falsen: o => person(Object.assign({ hud: "#f0cfb0", har: "#6a4a2a", harType: "kort", frakk: "#2a2a3a", vest: "#e8e0cc", bukse: "#3a3a4a", strompe: "#3a3a4a", krage: "hvit", hand: "papir", uttrykk: "glad" }, o)),
+    nbonde: o => person(Object.assign({ hud: "#e2b48c", har: "#8a6a3a", harType: "kort", frakk: "#5a4a3a", vest: "#c0392b", bukse: "#3a3a3a", strompe: "#e8e0cc", hatt: "lue", lueF: "#b8262c", hand: "stokk", uttrykk: "glad", skjegg: "stubb" }, o)),
+    bibliotekar: o => person(Object.assign({ hud: "#d8d2e0", har: "#1b1b22", harType: "kort", frakk: "#7a8a5a", vest: "#e8e0cc", bukse: "#3a3a4a", strompe: "#3a3a4a", sko: "#2a2a2a", hatt: "topphatt", briller: true, hand: "bok", uttrykk: "glad" }, o)),
     // portrettbilder til dialog for ting/forteller
     forteller: () => `<g><circle cx="0" cy="-160" r="30" fill="#f2eadb"/><text x="0" y="-148" font-size="34" text-anchor="middle">📜</text></g>`,
   };
@@ -618,12 +623,25 @@
       s += `<g class="sno" fill="#fff" opacity=".85">${d}</g>`;
       return s;
     },
+    eidsvoll() {
+      let s = `<rect width="800" height="450" fill="#efe6d2"/><rect width="800" height="40" fill="#f7f2e6"/><rect y="38" width="800" height="6" fill="#d8ccb0"/>`;
+      for (const x of [60, 250, 470, 660]) {
+        s += `<rect x="${x}" y="70" width="90" height="190" fill="#bfe0f0"/><path d="M${x} 210 Q${x + 45} 180 ${x + 90} 205 L${x + 90} 260 L${x} 260 Z" fill="#7ab86a"/>`;
+        s += `<path d="M${x + 20} 260 V150 M${x + 70} 260 V140" stroke="#f4f4f0" stroke-width="5"/><circle cx="${x + 20}" cy="140" r="16" fill="#9ccf6a"/><circle cx="${x + 70}" cy="130" r="18" fill="#8cc45e"/>`;
+        s += `<path d="M${x + 45} 70 v190 M${x} 135 h90 M${x} 200 h90" stroke="#fff" stroke-width="5"/><rect x="${x - 4}" y="66" width="98" height="198" fill="none" stroke="#fff" stroke-width="8"/>`;
+      }
+      s += `<rect y="296" width="800" height="16" fill="#d8ccb0"/><rect y="310" width="800" height="140" fill="#b8875a"/>`;
+      for (let y = 318; y < 450; y += 14) s += `<path d="M0 ${y} H800" stroke="#a87850" stroke-width="2"/>`;
+      s += `<rect x="330" y="252" width="140" height="44" fill="#2e6a3a"/><rect x="326" y="248" width="148" height="8" fill="#8a5a3a"/>`;
+      srand(141); [[20, 300], [600, 300]].forEach(([x0, y]) => { for (let r = 0; r < 2; r++) { const yy = y + r * 26; s += `<rect x="${x0}" y="${yy}" width="180" height="10" fill="#7a5236"/>`; for (let x = x0 + 14; x < x0 + 175; x += 22) s += `<circle cx="${x}" cy="${yy - 14}" r="7" fill="${pick(["#f1c7a3", "#e2b48c", "#f6d5bb"])}"/><path d="M${x - 9} ${yy + 2} q9 -18 18 0" fill="${pick(["#2a2a3a", "#5a4a3a", "#a8242c", "#3a4a6a"])}"/>`; } });
+      return s;
+    },
     kart() { return `<rect width="800" height="450" fill="#f2e6c8"/>`; },
   };
 
   /* ---------- portrett: hodeutsnitt av en figur (viewBox per figur, ellers standard) ---------- */
   const PVB = { ugle: "-34 -100 68 68", barn: "-34 -142 68 68", forteller: "-34 -194 68 68", madame: "-40 -236 80 80", kant: "-36 -194 72 72",
-    lafayette: "-40 -216 80 80", napoleon: "-44 -222 88 88", pave: "-40 -214 80 80", soldat1812: "-40 -226 80 80", robespierre: "-38 -210 76 76", fange: "-40 -214 80 80", baker: "-40 -224 80 80",
+    lafayette: "-40 -216 80 80", bibliotekar: "-40 -226 80 80", nbonde: "-40 -214 80 80", napoleon: "-44 -222 88 88", pave: "-40 -214 80 80", soldat1812: "-40 -226 80 80", robespierre: "-38 -210 76 76", fange: "-40 -214 80 80", baker: "-40 -224 80 80",
     dronning: "-44 -246 88 88", kongen: "-40 -218 80 80", biskop: "-42 -236 84 84", mirabeau: "-42 -232 84 84", bailly: "-40 -222 80 80", seremonimester: "-40 -216 80 80", adelsmann: "-40 -216 80 80" };
   function portrett(navn, o) {
     if (navn === "deg") {

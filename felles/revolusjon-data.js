@@ -422,6 +422,8 @@ FAKTA: [
     f: "Over 600 000 soldater dro – bare en liten del kom hjem." },
   { del: "napoleon", q: "Hvor tapte Napoleon sitt siste slag i 1815?", a: "Waterloo", feil: ["Austerlitz", "Moskva", "Versailles"],
     f: "Etterpå ble han sendt til den lille øya St. Helena i Atlanterhavet." },
+  { del: "napoleon", q: "Hvem fikk stemmerett i Norge i 1814?", a: "Menn over 25 år som eide jord eller var embetsmenn", feil: ["Alle over 18 år", "Alle voksne, både menn og kvinner", "Bare kongen og prinsen"],
+    f: "Rundt fire av ti voksne menn. Kvinner fikk stemmerett i 1913." },
   { del: "napoleon", q: "Var Napoleon egentlig veldig kort?", a: "Nei – han var omtrent like høy som andre franske menn", feil: ["Ja, under 1,40 meter", "Ja, han måtte stå på en kasse", "Han var over to meter"],
     f: "Rundt 1,69 meter. Myten kom blant annet fra britiske karikaturtegninger." },
   { del: "napoleon", q: "Hvordan påvirket Napoleonskrigene Norge?", a: "Danmark måtte gi fra seg Norge, og Norge laget sin egen grunnlov i 1814", feil: ["Norge ble en del av Frankrike", "Napoleon ble konge i Norge", "Det skjedde ingenting med Norge"],

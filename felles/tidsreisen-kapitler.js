@@ -72,6 +72,11 @@ FIGURER: {
   pave: { navn: "Pave Pius 7.", fig: "pave" },
   josephine: { navn: "Joséphine", fig: "josephine" },
   louisonVoksen: { navn: "Louison (voksen)", fig: "soldat1812" },
+  // epilog
+  christianfrederik: { navn: "Prins Christian Frederik", fig: "christianfrederik" },
+  falsen: { navn: "Christian Magnus Falsen", fig: "falsen" },
+  teis: { navn: "Bonden Teis", fig: "nbonde" },
+  bibliotekar: { navn: "Den nye bibliotekaren", fig: "bibliotekar" },
 },
 
 /* Ting i sekken. kap = kapitlet tingen hører til (fjernes hvis kapitlet spilles på nytt). */
@@ -89,6 +94,7 @@ TING: {
   seddel: { navn: "Pengeseddel", ikon: "💶", om: "En assignat – revolusjonens papirpenger. Kongens ansikt er trykket på den.", kap: "k8" },
   avis: { navn: "Desmoulins' avis", ikon: "📰", om: "«Den gamle cordelier» – Desmoulins ber republikken vise barmhjertighet og slutte med terroren.", kap: "k8" },
   krone: { navn: "Keiserkronen", ikon: "👑", om: "Kronen som skal brukes i Notre-Dame. Hvem skal sette den på?", kap: "k9" },
+  utkast: { navn: "Grunnlovsutkastet", ikon: "📜", om: "Utkastet til Norges grunnlov. Det må tilbake til Falsen før det kan skrives under.", kap: "epilog" },
 },
 
 /* Idékortene – samlingen spilleren bygger opp gjennom spillet. */
@@ -1809,6 +1815,170 @@ KAPITLER: [
       forklaring: "Fra soldat til keiser – og til fange på en øy. Alt på under 50 år." },
   },
 },
-{ id: "epilog", nr: 10, tittel: "Hjem igjen", sted: "Norge", aar: "1814 og i dag", ikon: "🦁", kommer: true, om: "Ideene finner veien til Eidsvoll – og til plakatene på skolen din." },
+/* =====================================================================
+   EPILOG – HJEM IGJEN (Eidsvoll 1814 og skolebiblioteket i dag)
+   ===================================================================== */
+{ id: "epilog", nr: 10, tittel: "Hjem igjen", sted: "Eidsvoll og skolebiblioteket", aar: "1814 og i dag", ikon: "🦁",
+  om: "Ideene finner veien til Eidsvoll – og til plakatene på skolen din.",
+  start: "eidsvoll",
+  scener: {
+    eidsvoll: {
+      tittel: "Riksforsamlingen på Eidsvoll, mai 1814", bg: "eidsvoll", spillerX: 60,
+      hint: "Snakk med prinsen og bonden Teis. Falsen har mistet noe – og tidskikkerten i sekken kan kanskje hjelpe deg mot Glemsel.",
+      inngang: [
+        { hvis: "!har:kikkert", da: [{ gi: "kikkert" }] },
+        ["forteller", "Du lander i en lys sal med høye vinduer. Ute er det vår, og bjørketrærne har fått museører.",
+                      "Du lander i en lys sal. Ute er det vår. Inne lukter det nyvasket gulv, grønnsåpe og ivrige menn i høye snipper."],
+        ["ugle", "Eidsvoll, mai 1814. Vi er i Norge! 112 menn fra hele landet er samlet her for å lage en grunnlov.",
+                 "Eidsvoll, 1814! Vi er i NORGE! Endelig et sted der folk forstår hva brunost er."],
+      ],
+      punkter: [
+        { id: "christianfrederik", navn: "Prins Christian Frederik", x: 160, y: 428, w: 66, h: 200, fig: "christianfrederik",
+          klikk: [{ hvis: "!kiel", da: [
+              ["christianfrederik", "Velkommen! Jeg er Christian Frederik, dansk prins og stattholder i Norge. I januar fikk vi en forferdelig beskjed fra Kiel.",
+                                    "Velkommen! Christian Frederik, dansk prins. Jeg har bodd i Norge i ett år og har allerede lært meg å si «uff». I januar kom det dårlige nyheter fra Kiel."],
+              { gaate: "kiel" }, { sett: "kiel" },
+              ["christianfrederik", "Men nordmennene vil ikke bare gis bort som en gave. De vil bestemme selv. Derfor er vi her.",
+                                    "Men nordmenn liker ikke å bli gitt bort som en julegave. De vil bestemme selv. Derfor er vi her. Og derfor er det så mange snipper."],
+              ["ugle", "Ser du? Folket vil bestemme selv. Det er Rousseaus folkesuverenitet – nå i Norge!", "Folket vil bestemme selv! Rousseau hadde jublet. I tre sekunder."],
+            ], ellers: [
+              ["christianfrederik", "Når Grunnloven er klar, skal forsamlingen velge en konge. Jeg håper de velger meg.", "Etterpå skal de velge konge. Jeg har pusset støvlene. For sikkerhets skyld."],
+            ] }] },
+        { id: "teis", navn: "Bonden Teis", x: 290, y: 428, w: 66, h: 200, fig: "teis",
+          klikk: [{ hvis: "!stemme", da: [
+              ["teis", "God dag! Jeg er bonde fra Agder. Vi bønder er 37 av de 112 utsendingene her. Det har aldri skjedd før!",
+                       "God dag! Jeg er bonde fra Agder. Vi er 37 bønder her. Det har aldri skjedd før. Jeg har tatt på meg den fineste lua mi."],
+              ["teis", "Men ikke alle får være med å bestemme. Vet du hvem som blir holdt utenfor?", "Men ikke alle får være med. Kona mi, for eksempel. Hun er ikke fornøyd. Hun er sjelden fornøyd, men nå har hun rett."],
+              { gaate: "utenfor" }, { sett: "stemme" },
+              ["ugle", "Akkurat som i Frankrike: Rettighetene gjaldt ikke for alle med en gang. Folk måtte kjempe for dem i mange år etterpå.",
+                       "Samme greie som med Olympe i Paris: Rettighetene kom ikke til alle samtidig. Noen måtte vente i 100 år. Det er lenge. Selv for en ugle."],
+            ], ellers: [
+              ["teis", "Vi bønder skal sørge for at ikke embetsmennene bestemmer alt!", "Vi bønder skal passe på embetsmennene. De snakker så fint at man nesten glemmer å være uenig."],
+            ] }] },
+        { id: "falsen", navn: "Christian Magnus Falsen", x: 470, y: 428, w: 66, h: 200, fig: "falsen",
+          klikk: [{ hvis: "!glemt", da: [
+              ["falsen", "Katastrofe! Utkastet til Grunnloven er borte! En mann med høy hatt nøs på meg – og så var det borte.",
+                         "KATASTROFE! Grunnlovsutkastet er borte! En mann med altfor høy hatt nøs på meg, og så forsvant det. Jeg trenger et lommetørkle. Og en grunnlov."],
+              ["ugle", "Glemsel! Han er her. Han vil at Norge skal glemme alt det vi har reddet.", "Glemsel har fulgt etter oss hele veien til Norge! Han må virkelig ha savnet oss."],
+            ], ellers: [{ hvis: "!signert", da: [
+              ["falsen", "Har du utkastet? Trykk på det i sekken, og så på meg!", "Utkastet! Sekken! Meg! Fort, før noen nyser igjen."],
+            ], ellers: [
+              ["falsen", "Grunnloven er underskrevet. Nå er Norge et fritt land med egen grunnlov!", "Underskrevet! Nå trenger jeg bare en lur. Og kake. 17. mai-kake."],
+            ] }] }],
+          bruk: { utkast: [{ ta: "utkast" },
+            ["falsen", "Utkastet! Takk! Hjelp meg å sjekke de viktigste paragrafene før vi skriver under. Hvilke ideer bygger de på?",
+                       "Utkastet! Med bare litt snørr på! Hjelp meg å sjekke paragrafene. Hvilke ideer har vi lånt? Vi har lånt mye. Ikke si det til franskmennene."],
+            { gaate: "grunnlov" },
+            ["forteller", "Utsendingene stiller seg opp og skriver under, én etter én.", "Alle stiller seg i kø for å skrive under. Det er første gang i historien at nordmenn står i kø frivillig."],
+            { gaate: "dato" }, { sett: "signert" }, { omgrep: "Grunnlov" },
+            ["falsen", "17. mai 1814. Norge har fått sin egen grunnlov! Og forsamlingen har valgt Christian Frederik til konge.",
+                       "17. mai 1814! Norge har grunnlov! Og en konge. Og om 200 år kommer folk til å feire med is, korps og pølser. Jeg kjenner det på meg."],
+            { gull: 2 }] } },
+        { id: "glemsel", navn: "Mannen med høy hatt", x: 610, y: 428, w: 66, h: 230, fig: "glemsel", vis: "!glemt",
+          klikk: [
+            ["glemsel", "Hah! Grunnloven? Den har jeg! Uten den glemmer Norge alt om frihet, maktfordeling og ytringsfrihet!",
+                        "HAH! Grunnloven er MIN! Uten den glemmer alle alt! Frihet? Glemt! Maktfordeling? Glemt! Brunost? … Nei, den får dere beholde. Jeg er ikke et monster."],
+            ["ugle", "Vent … Han har aldri sett hele historien på én gang. Har vi ikke noe i sekken som kan vise ham det?",
+                     "Hmm. Har du lagt merke til at du har båret på en tidskikkert HELE eventyret? Kanskje det er på tide å bruke den."]],
+          bruk: {
+            kikkert: [
+              ["forteller", "Du holder tidskikkerten for øyet til Grev Glemsel. Han ser alt på én gang: Newtons eple, salongen, Bastillen, erklæringen, Eidsvoll …",
+                            "Du holder tidskikkerten for øyet hans. Han ser ALT på én gang: eplet, salongen, Bastillen, ballhuset, Napoleon, Eidsvoll. Og grisen."],
+              ["glemsel", "Så … mange … ideer. De er overalt. Jeg klarer ikke å glemme dem alle! Jeg glemmer … jeg glemmer … hvem er jeg?",
+                          "Så MANGE ideer! Overalt! Jeg kan ikke glemme dem alle! Jeg glemmer … jeg glemmer … hvorfor har jeg denne hatten?"],
+              ["forteller", "Han nyser det største nyset i verdenshistorien. Da den grå skyen forsvinner, står bare utkastet til Grunnloven igjen på gulvet.",
+                            "ATSJOOOOOOO! Det største nyset i verdenshistorien. Lysekronene rister. Da skyen letter, ligger bare grunnlovsutkastet igjen på gulvet."],
+              ["ugle", "Han har glemt sin egen onde plan! Ideer kan ikke glemmes når så mange har sett dem. Ta utkastet til Falsen!",
+                       "Han glemte sin egen plan! Det er det mest ironiske jeg har sett. Og jeg har sett Necker holde tale. Ta utkastet til Falsen!"],
+              { sett: "glemt" }, { gi: "utkast" }],
+            utkast: [["ugle", "Nei, ikke gi det til ham!", "Hvorfor skulle du gi det TILBAKE til ham? Nei. Bare nei."]] } },
+        { id: "hjem", navn: "Hjem!", x: 765, y: 330, w: 60, h: 60, ting: "pil",
+          klikk: [{ hvis: "signert & kiel & stemme", da: [
+              ["ugle", "Samme sommer kom det krig med Sverige. Norge måtte gå i union med Sverige – men fikk beholde Grunnloven sin.",
+                       "Samme sommer ble det krig med Sverige. Norge måtte gå i union med svenskene. Men Grunnloven fikk vi beholde! Den var for god til å kaste."],
+              ["ugle", "Og vet du hvem som ble kronprins i Sverige? Jean-Baptiste Bernadotte – en av Napoleons gamle generaler. Han fikk navnet Karl Johan. Ja, som Karl Johans gate!",
+                       "Kronprinsen i Sverige var Bernadotte – Napoleons gamle general! Han kalte seg Karl Johan. Ja, som gata i Oslo. Historien er en liten verden."],
+              ["ugle", "Nå reiser vi hjem. Hold deg fast!", "Nå drar vi hjem. Hold deg fast – og ikke nys."],
+              { gaa: "hjemme" }],
+            ellers: [["ugle", "Vi er ikke ferdige her. Snakk med alle – og redd Grunnloven!", "Ikke ennå! Grunnloven trenger deg. Og Teis vil gjerne snakke. Han har ny lue."]] }] },
+      ],
+    },
+    hjemme: {
+      tittel: "Skolebiblioteket, i dag", bg: "bibliotek", spillerX: 140,
+      hint: "Se på plakatene, og snakk med Minerva i monteren. Den nye bibliotekaren virker også litt kjent …",
+      inngang: [
+        ["forteller", "Dunk! Du lander i skolebiblioteket. Klokka viser fortsatt siste time på fredag. Det har ikke gått ett minutt!",
+                      "DUNK. Skolebiblioteket. Fredag, siste time. Det har ikke gått ett minutt. Men du har vært borte i 300 år. Det er … mye å forklare."],
+      ],
+      punkter: [
+        { id: "vindu", navn: "Vinduet", x: 115, y: 252, w: 160, h: 200,
+          klikk: [["forteller", "Ute er det fredag. Måka har fått tak i en ny pølse.", "Måka har stjålet en ny pølse. Noen ting forandrer seg aldri."]] },
+        { id: "monter", navn: "Minerva", x: 250, y: 422, w: 110, h: 170, ting: "monter", o: { vaken: true },
+          klikk: [{ hvis: "!plakatSett", da: [
+              ["ugle", "Se på plakatene! Se hva som har skjedd!", "PLAKATENE! Se på dem! Nå! Jeg er så spent at tannhjulene mine surrer."],
+            ], ellers: [
+              ["ugle", "Vi klarte det. Ideene fra opplysningstiden ble til rettigheter i Frankrike – og i Norge. Nå står de på plakatene dine.",
+                       "Vi klarte det! Fra et eple i England til plakatene på skolen din. Det er tidenes lengste tur. Og den beste."],
+              ["ugle", "Men husk: Rettigheter kommer ikke av seg selv. Folk måtte kjempe for dem – og vi må huske dem. Ellers kan de glemmes.",
+                       "Men husk: Rettigheter er ikke som sykler. De forsvinner hvis ingen passer på dem. Så pass på dem. Og på sykkelen."],
+              ["deg", "Det skal jeg huske. Takk, Minerva.", "Det skal jeg huske. Takk, Minerva. Du er verdens beste ugle. Den eneste jeg kjenner, men likevel."],
+              ["ugle", "Ta med deg idékortene. Og når du skal holde presentasjonen om filosofene – nå vet du mer enn de fleste.",
+                       "Hoo. Nå skal jeg sove i monteren i 40 år til. Lykke til med presentasjonen! Du kan mer om filosofer enn læreren nå. Ikke si det til læreren."],
+              { ferdig: true },
+            ] }] },
+        { id: "bibliotekar", navn: "Den nye bibliotekaren", x: 470, y: 428, w: 66, h: 230, fig: "bibliotekar",
+          klikk: [
+            ["bibliotekar", "Hei! Jeg er ny bibliotekar her. Jeg heter … hm. Det har jeg glemt. Men jeg elsker bøker! Spesielt om historie.",
+                            "Hei! Ny bibliotekar. Jeg heter … hm. Glemt det. Men jeg ELSKER historiebøker. De hjelper meg å huske ting. Atsjo! Unnskyld. Støvallergi."],
+            { valg: [
+              { t: "Kan du anbefale en bok om opplysningstiden?", h: "Har du en bok om en ugle, et eple og en fyr med høy hatt?", gjor: [
+                ["bibliotekar", "Den med ugla på forsiden! Den er min favoritt. Jeg har lest den tre ganger. Jeg glemmer slutten hver gang.",
+                                "Den med ugla på forsiden! Fyren med høy hatt er skurken. Han minner meg om noen … men hvem?"]] },
+              { t: "Fin hatt!", h: "Fin hatt! Den er … litt høy?", gjor: [
+                ["bibliotekar", "Takk! Jeg vet ikke hvor jeg fikk den fra. Den bare var der.", "Takk! Jeg fant den på hodet mitt en dag. Den passer perfekt. Mistenkelig perfekt."]] },
+            ] },
+            ["ugle", "(hvisker) Han husker ingenting. Kanskje det er best sånn. Nå hjelper han folk å huske i stedet.",
+                     "(hvisker) Han har glemt alt. Nå jobber han med å hjelpe folk å huske. Det kalles karakterutvikling."]] },
+        { id: "plakater", navn: "Plakatene", x: 662, y: 300, w: 260, h: 150, ting: "plakatvegg",
+          klikk: [{ hvis: "!plakatSett", da: [
+              ["forteller", "Plakatene lyser i full farge igjen: «Ytringsfrihet», «Stemmerett», «Like for loven».",
+                            "Plakatene lyser! Fargene er så sterke at du må myse. Vaktmesteren tror det er nye plakater."],
+              { gaate: "idag" }, { sett: "plakatSett" },
+              ["ugle", "Du kjenner igjen alle ideene, ikke sant? Locke, Montesquieu, Voltaire, Rousseau, Kant – og Newton med eplet.",
+                       "Kjenner du igjen ideene? Locke! Montesquieu! Voltaire! Rousseau! Kant! Og eplet. Alltid eplet."],
+            ], ellers: [
+              ["forteller", "Plakatene henger rett og fargene er sterke.", "Plakatene henger rett. Til og med vaktmesteren er imponert."],
+            ] }] },
+      ],
+    },
+  },
+  gaater: {
+    kiel: { type: "velg", sporsmal: "Hvorfor måtte Danmark gi fra seg Norge i 1814?", riktig: "Danmark-Norge hadde vært på Napoleons side og tapte krigen",
+      feil: ["Nordmennene ville selv bli svenske", "Danmark solgte Norge for korn", "Napoleon vant krigen og ga Norge bort"],
+      forklaring: "Kieltraktaten, 14. januar 1814: Norge skulle gis til kongen av Sverige. Men nordmennene ville bestemme selv – og samlet seg på Eidsvoll." },
+    utenfor: { type: "flervalg", sporsmal: "Hvem fikk IKKE stemme eller de samme rettighetene i 1814? Velg alle som passer.",
+      riktige: ["Kvinner", "Menn som verken eide jord eller hadde et embete", "Jøder – de fikk ikke engang komme inn i landet"],
+      feil: ["Bønder som eide jorda si", "Embetsmenn, som prester og offiserer"],
+      feilTekst: "De røde fikk faktisk stemme i 1814.",
+      forklaring: "Rundt fire av ti voksne menn fikk stemme. Jøder fikk komme inn i landet fra 1851, og kvinner fikk stemmerett i 1913." },
+    grunnlov: { type: "erklaering", tittel: "Sjekk Grunnloven med idékortene dine", prefiks: "§",
+      overskrift: "Kongeriket Norges Grunnlov, 17. mai 1814",
+      sporsmal: "Hvilket idékort bygger denne paragrafen på?",
+      fsSporsmal: "Hvilken idé fra opplysningstiden bygger denne paragrafen i Grunnloven fra 1814 på?",
+      artikler: [
+        { nr: 3, t: "Den utøvende makt er hos kongen. (Stortinget lager lovene, og domstolene dømmer.)", kort: "makt", hint: "Tre makter som holder hverandre i sjakk …" },
+        { nr: 49, t: "Folket utøver den lovgivende makt ved Stortinget.", kort: ["folk", "makt"], hint: "Hvem skal makten tilhøre?" },
+        { nr: 96, t: "Ingen kan dømmes uten etter lov, eller straffes uten etter dom.", kort: ["rettigheter", "naturlov"], hint: "Husker du Bastillen, der kongen kunne sperre folk inne uten dom?" },
+        { nr: 100, t: "Det skal være trykkefrihet.", kort: ["ytring", "tenk"], hint: "Hvem satt i Bastillen for det han skrev?" },
+      ],
+      forklaring: "Grunnloven bygde på de samme ideene som i Frankrike og USA. Den er en av verdens eldste grunnlover som fortsatt er i bruk." },
+    dato: { type: "velg", sporsmal: "Hvilken dag ble Grunnloven underskrevet?", riktig: "17. mai 1814",
+      feil: ["14. juli 1789", "24. desember 1814", "1. mai 1814"],
+      forklaring: "Derfor feirer vi nasjonaldagen 17. mai – med tog, flagg og altfor mye is." },
+    idag: { type: "velg", sporsmal: "Hvor står ytringsfriheten i Norge i dag?", riktig: "I Grunnloven, paragraf 100",
+      feil: ["I en fransk avis fra 1789", "Bare i Frankrike", "Ingen steder – den er avskaffet"],
+      forklaring: "I 2014, 200 år etter Eidsvoll, fikk Grunnloven også et eget kapittel om menneskerettigheter." },
+  },
+},
 ],
 };
