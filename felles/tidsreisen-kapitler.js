@@ -75,7 +75,7 @@ FIGURER: {
   // epilog
   christianfrederik: { navn: "Prins Christian Frederik", fig: "christianfrederik" },
   falsen: { navn: "Christian Magnus Falsen", fig: "falsen" },
-  teis: { navn: "Bonden Teis", fig: "nbonde" },
+  asgaut: { navn: "Asgaut Olsen Regelstad", fig: "nbonde" },
   bibliotekar: { navn: "Den nye bibliotekaren", fig: "bibliotekar" },
 },
 
@@ -1824,7 +1824,7 @@ KAPITLER: [
   scener: {
     eidsvoll: {
       tittel: "Riksforsamlingen på Eidsvoll, mai 1814", bg: "eidsvoll", spillerX: 60,
-      hint: "Snakk med prinsen og bonden Teis. Falsen har mistet noe – og tidskikkerten i sekken kan kanskje hjelpe deg mot Glemsel.",
+      hint: "Snakk med prinsen og bonden Asgaut. Falsen har mistet noe – og tidskikkerten i sekken kan kanskje hjelpe deg mot Glemsel.",
       inngang: [
         { hvis: "!har:kikkert", da: [{ gi: "kikkert" }] },
         ["forteller", "Du lander i en lys sal med høye vinduer. Ute er det vår, og bjørketrærne har fått museører.",
@@ -1844,16 +1844,21 @@ KAPITLER: [
             ], ellers: [
               ["christianfrederik", "Når Grunnloven er klar, skal forsamlingen velge en konge. Jeg håper de velger meg.", "Etterpå skal de velge konge. Jeg har pusset støvlene. For sikkerhets skyld."],
             ] }] },
-        { id: "teis", navn: "Bonden Teis", x: 290, y: 428, w: 66, h: 200, fig: "teis",
+        { id: "asgaut", navn: "Asgaut Olsen Regelstad", x: 290, y: 428, w: 66, h: 200, fig: "asgaut",
           klikk: [{ hvis: "!stemme", da: [
-              ["teis", "God dag! Jeg er bonde fra Agder. Vi bønder er 37 av de 112 utsendingene her. Det har aldri skjedd før!",
-                       "God dag! Jeg er bonde fra Agder. Vi er 37 bønder her. Det har aldri skjedd før. Jeg har tatt på meg den fineste lua mi."],
-              ["teis", "Men ikke alle får være med å bestemme. Vet du hvem som blir holdt utenfor?", "Men ikke alle får være med. Kona mi, for eksempel. Hun er ikke fornøyd. Hun er sjelden fornøyd, men nå har hun rett."],
+              ["asgaut", "God dag! Asgaut Olsen Regelstad, bonde på Reilstad i Finnøy i Rogaland. Jeg er den eneste bonden fra Stavanger amt her.",
+                         "God dag! Asgaut fra Finnøy i Rogaland. Eneste bonde fra Stavanger amt! Det er langt hjemmefra, så jeg har tatt på meg den fineste lua mi."],
+              ["asgaut", "Vi bønder er 37 av de 112 utsendingene. Det har aldri skjedd før at så mange bønder har fått være med å bestemme!",
+                         "Vi er 37 bønder her. 37! Hjemme på Finnøy tror de ikke på meg når jeg skriver det i brevene."],
+              ["asgaut", "Men ikke alle får være med å bestemme. Vet du hvem som blir holdt utenfor?",
+                         "Men ikke alle får være med. Tenk på alle kvinnene som driver gårdene hjemme mens vi sitter her – de får ikke stemme. Rart, ikke sant?"],
               { gaate: "utenfor" }, { sett: "stemme" },
               ["ugle", "Akkurat som i Frankrike: Rettighetene gjaldt ikke for alle med en gang. Folk måtte kjempe for dem i mange år etterpå.",
                        "Samme greie som med Olympe i Paris: Rettighetene kom ikke til alle samtidig. Noen måtte vente i 100 år. Det er lenge. Selv for en ugle."],
             ], ellers: [
-              ["teis", "Vi bønder skal sørge for at ikke embetsmennene bestemmer alt!", "Vi bønder skal passe på embetsmennene. De snakker så fint at man nesten glemmer å være uenig."],
+              ["asgaut", "Jeg stemmer med Falsen og selvstendighetspartiet – Norge skal være et fritt land. Og odelsretten skal inn i Grunnloven, så gårdene blir i slekta.",
+                         "Jeg stemmer med Falsen. Han snakker fint. Og odelsretten skal inn i Grunnloven! Gården på Reilstad skal bli i slekta i hundrevis av år. Minst."],
+              ["ugle", "Det fikk han: Odelsretten og åsetesretten kom med i Grunnloven fra 1814.", "Og det fikk han! Odelsretten kom med i Grunnloven. Asgaut gikk hjem med et stort smil. Og den fine lua."],
             ] }] },
         { id: "falsen", navn: "Christian Magnus Falsen", x: 470, y: 428, w: 66, h: 200, fig: "falsen",
           klikk: [{ hvis: "!glemt", da: [
@@ -1900,7 +1905,7 @@ KAPITLER: [
                        "Kronprinsen i Sverige var Bernadotte – Napoleons gamle general! Han kalte seg Karl Johan. Ja, som gata i Oslo. Historien er en liten verden."],
               ["ugle", "Nå reiser vi hjem. Hold deg fast!", "Nå drar vi hjem. Hold deg fast – og ikke nys."],
               { gaa: "hjemme" }],
-            ellers: [["ugle", "Vi er ikke ferdige her. Snakk med alle – og redd Grunnloven!", "Ikke ennå! Grunnloven trenger deg. Og Teis vil gjerne snakke. Han har ny lue."]] }] },
+            ellers: [["ugle", "Vi er ikke ferdige her. Snakk med alle – og redd Grunnloven!", "Ikke ennå! Grunnloven trenger deg. Og Asgaut fra Finnøy vil gjerne snakke. Han har ny lue."]] }] },
       ],
     },
     hjemme: {

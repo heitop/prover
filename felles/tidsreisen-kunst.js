@@ -239,7 +239,7 @@
     // epilog: Eidsvoll 1814 og i dag
     christianfrederik: o => person(Object.assign({ hud: "#f3d2b5", har: "#3a2416", harType: "kort", frakk: "#a8242c", vest: "#f4f1ea", bukse: "#f4f1ea", strompe: "#f4f1ea", sko: "#111", krage: "hvit", epaulett: true, hand: "sverd", uttrykk: "glad" }, o)),
     falsen: o => person(Object.assign({ hud: "#f0cfb0", har: "#6a4a2a", harType: "kort", frakk: "#2a2a3a", vest: "#e8e0cc", bukse: "#3a3a4a", strompe: "#3a3a4a", krage: "hvit", hand: "papir", uttrykk: "glad" }, o)),
-    nbonde: o => person(Object.assign({ hud: "#e2b48c", har: "#8a6a3a", harType: "kort", frakk: "#5a4a3a", vest: "#c0392b", bukse: "#3a3a3a", strompe: "#e8e0cc", hatt: "lue", lueF: "#b8262c", hand: "stokk", uttrykk: "glad", skjegg: "stubb" }, o)),
+    nbonde: o => person(Object.assign({ hud: "#e2b48c", har: "#b8b0a0", harType: "kort", frakk: "#5a4a3a", vest: "#c0392b", bukse: "#3a3a3a", strompe: "#e8e0cc", hatt: "lue", lueF: "#b8262c", hand: "stokk", uttrykk: "glad", skjegg: "stubb" }, o)),
     bibliotekar: o => person(Object.assign({ hud: "#d8d2e0", har: "#1b1b22", harType: "kort", frakk: "#7a8a5a", vest: "#e8e0cc", bukse: "#3a3a4a", strompe: "#3a3a4a", sko: "#2a2a2a", hatt: "topphatt", briller: true, hand: "bok", uttrykk: "glad" }, o)),
     // portrettbilder til dialog for ting/forteller
     forteller: () => `<g><circle cx="0" cy="-160" r="30" fill="#f2eadb"/><text x="0" y="-148" font-size="34" text-anchor="middle">📜</text></g>`,
