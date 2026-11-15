@@ -19,6 +19,8 @@
    alt  andre norske svar som godtas (også nynorsk)
    obj  ting som passer etter verbet: [spansk, norsk]
    ====================================================================== */
+const PROVEDATO = "2026-11-18";   // vises øverst i spillet (står også i felles/spill.js)
+
 const VERB = [
   { es: "hablar",   no: "å snakke",            pres: "snakker",   alt: ["snakka", "prate", "prata"],                  obj: [["español", "spansk"], ["noruego", "norsk"], ["inglés", "engelsk"], ["mucho", "mye"]] },
   { es: "estudiar", no: "å studere / å øve",   pres: "studerer",  alt: ["studera", "øva", "lese", "lesa"],             obj: [["en la escuela", "på skolen"], ["español", "spansk"], ["mucho", "mye"], ["en casa", "hjemme"]] },
@@ -384,9 +386,14 @@ function home() {
   const b = S.best, kan = VERB.filter(g => lv(g) >= 3).length;
   const mode = (act, ic, t, d, rec) => `<button class="mode" data-act="${act}"><span class="ic">${ic}</span><span><b>${t}</b><small>${d}</small>${rec ? `<span class="rec">${rec}</span>` : ""}</span></button>`;
   const pst = k => b[k] != null ? `Beste: ${b[k]} %` : "";
+  const d = new Date(), idag = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const n = Math.round((new Date(PROVEDATO + "T00:00:00") - new Date(idag + "T00:00:00")) / 864e5);
+  const naar = n > 1 ? `om ${n} dager` : n === 1 ? "i morgen!" : n === 0 ? "i dag!" : "er ferdig";
+  const dato = new Date(PROVEDATO + "T00:00:00").toLocaleDateString("nb-NO", { weekday: "long", day: "numeric", month: "long" });
   show(`
   <section class="hero">
     <h1>Spansk: regelrette -ar-verb</h1>
+    <span class="when">📅 Prøve ${esc(dato)} – ${naar}</span>
     <span class="when">✂️ Ta bort -ar · ➕ legg til ny ending</span>
   </section>
 
