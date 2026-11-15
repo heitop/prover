@@ -14,6 +14,8 @@ window.SPILL = [
     beskrivelse: "Musikkhistorie: spirituals, blues, jazz og rock (bokmål)" },
   { fag: "Musikk", ikon: "🎺", tittel: "Blå tonar",     fil: "blaa-tonar-nynorsk.html", trinn: [8], lagt: "2026-11-05",
     beskrivelse: "Same prøve på nynorsk" },
+  { fag: "Musikk", ikon: "💿", tittel: "Platereisen",   fil: "platereisen.html", trinn: [8],       lagt: "2026-11-15",
+    beskrivelse: "Pek-og-klikk-eventyr gjennom musikkhistorien: arbeidssang, spirituals, blues, jazz, R&B og rock and roll. Lytt, løs gåter og samle platekort – humormodus låses opp" },
   { fag: "Matte",  ikon: "🍕", tittel: "Brøkmester",    fil: "brokmester.html", trinn: [8],         lagt: "2026-11-05",
     beskrivelse: "Øv på brøk" },
   { fag: "Matte",  ikon: "🐸", tittel: "Gangestien",    fil: "gangestien.html", trinn: [4],         lagt: "2026-11-07",

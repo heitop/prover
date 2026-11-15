@@ -552,6 +552,7 @@
       `<line x1="165" y1="168" x2="190" y2="98" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line x1="157" y1="190" x2="166" y2="166" stroke="#555" stroke-width="7" stroke-linecap="round"/>`,
     sax: () => `<path d="M170 112L166 121" stroke="#333" stroke-width="4" stroke-linecap="round"/><path d="M166 121L162 176Q160 198 176 198Q190 198 190 182L188 167" stroke="#e8b923" stroke-width="8" fill="none" stroke-linecap="round"/>` +
       `<ellipse cx="188" cy="164" rx="8" ry="4.5" fill="#c9971c" stroke="#8a6410" stroke-width="1"/>` + [134, 146, 158, 170].map(y => `<circle cx="${(166 - (y - 120) * .07).toFixed(1)}" cy="${y}" r="2.2" fill="#fff3c4" stroke="#8a6410" stroke-width=".8"/>`).join(""),
+    gullplate: () => `<circle cx="180" cy="168" r="20" fill="#e8b923" stroke="#8a6410" stroke-width="1.5"/><circle cx="180" cy="168" r="15" fill="none" stroke="#c9971c" stroke-width="1"/><circle cx="180" cy="168" r="10.5" fill="none" stroke="#c9971c" stroke-width="1"/><circle cx="180" cy="168" r="6" fill="#b0242d"/><circle cx="180" cy="168" r="1.6" fill="#fff3c4"/><path d="M167 159Q173 152 182 151" stroke="#fff3c4" stroke-width="2" fill="none" opacity=".7" stroke-linecap="round"/>`,
     pizza: () => `<path d="M150 150L188 150L169 196Z" fill="#f6c453" stroke="#d58b3a" stroke-width="1.5" stroke-linejoin="round"/><path d="M149 147Q169 139 189 147L188 155Q169 147 150 155Z" fill="#d58b3a"/>` +
       `<circle cx="162" cy="161" r="4" fill="#d32f2f"/><circle cx="176" cy="162" r="4" fill="#d32f2f"/><circle cx="169" cy="177" r="3.5" fill="#d32f2f"/><path d="M158 171L161 168M178 156L181 158" stroke="#4caf50" stroke-width="2"/>`,
     hammer: () => `<line x1="158" y1="190" x2="178" y2="128" stroke="#a1662f" stroke-width="6" stroke-linecap="round"/><g transform="rotate(18 179 124)"><rect x="164" y="116" width="30" height="13" rx="2" fill="#78909c" stroke="#455a64" stroke-width="1.5"/><path d="M164 116L158 112V133L164 129Z" fill="#607d8b"/></g>`,
@@ -832,6 +833,7 @@
     ["napoleonshatt", "Napoleonshatt", "hode", 0, "napoleon", { merke: "revolusjon" }],
     ["bg-tidsportal", "Tidsportalen", "bakgrunn", 0, "portal", { merke: "tidsreisen" }],
     ["stjernekappe", "Stjernekappe", "rygg", 0, "kappe", { f: "#1a237e", m: "stjerner", merke: "fortellingsreisen" }],
+    ["gullplate", "Gullplate", "hand", 0, "gullplate", { merke: "platereisen" }],
     ["regnbuecaps", "Regnbuecaps", "hode", 0, "regnbuecaps", { merke: "allsidig" }],
     ["comebackgenser", "Comeback-genser", "overdel", 0, "genser", { f: "#00897b", m: "comeback", merke: "comeback" }],
     ["rev", "Oppdragsreven", "venn", 0, "rev", { merke: "oppdrag" }],
@@ -852,6 +854,7 @@
     ["revolusjon", "Revolusjonsekspert", "⚖️", ["revolusjon"], "Minst 90 % på prøveprøven, enten i «Alt sammen» eller i hver av de tre delene", "napoleonshatt"],
     ["tidsreisen", "Tidsreisende", "🦉", ["tidsreisen"], "Fullfør alle kapitlene i Tidsreisen", "bg-tidsportal"],
     ["fortellingsreisen", "Fortellingsvokter", "📖", ["fortellingsreisen"], "Fullfør alle fem fortellingene og epilogen, eller samle alle symbolkortene", "stjernekappe"],
+    ["platereisen", "Platesamler", "💿", ["platereisen"], "Fullfør alle seks platene og epilogen i Platereisen, eller samle alle platekortene", "gullplate"],
     ["allsidig", "Allsidig", "🌈", null, "Tjen gull i fem ulike spill", "regnbuecaps"],
     ["comeback", "Comeback-helt", "🔁", null, "Få 10 feil til å sitte i Feilsamleren", "comebackgenser"],
     ["oppdrag", "Oppdragsjeger", "🎯", null, "Fullfør alle dagens oppdrag på fem forskjellige dager", "rev"],
