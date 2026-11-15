@@ -67,6 +67,7 @@ p{margin:0}
 .hero h1{font-size:clamp(1.8rem,5vw,2.6rem)}
 .hero .rank{color:var(--rav);font-weight:700;margin-top:4px}
 .hero .lead{color:var(--dempet);margin-top:8px;max-width:52ch}
+.hero .prove{color:var(--rav);font-weight:700}
 .ring{width:96px;height:96px;position:relative}
 .ring svg{width:96px;height:96px;transform:rotate(-90deg)}
 .ring .rt{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-size:.75rem;color:var(--dempet);line-height:1.15}
@@ -857,6 +858,14 @@ function topbar(){return `<header class="top"><div class="topin"><button class="
 function bindTop(){document.getElementById('logo').onclick=()=>{stopLyn();home()};document.getElementById('snd').onclick=()=>{S.sound=!S.sound;save();const b=document.getElementById('snd');b.innerHTML=S.sound?SOUND_ON:SOUND_OFF;b.setAttribute('aria-label',S.sound?'Slå av lyd':'Slå på lyd')}}
 function updStats(){const a=document.getElementById('st-stars'),b=document.getElementById('st-combo');if(a)a.textContent=S.stars;if(b)b.textContent=S.streak}
 
+// nedtelling til prøven: datoen står i felles/spill.js, som gull.js laster etter at siden er tegnet
+function proveLinje(){const el=document.getElementById('provelinje');if(!el||!window.Gull||!Gull.prover)return;
+  const p=Gull.prover().find(x=>x.spill==='brokmester');if(!p){el.hidden=true;return}
+  const d=p.dato.split('-'),dato=`${+d[2]}.${+d[1]}.`;
+  el.textContent=p.dager===0?`Prøven er i dag. Lykke til!`
+    :`${p.navn} ${p.dager===1?'i morgen':`om ${p.dager} dager`} (${dato}).`+(p.dager<=3?' Nå gir øvingen dobbelt gull!':' Ta en øveprøve for å se hvor du står.');
+  el.hidden=false}
+if(window.Gull&&Gull.onEndring)Gull.onEndring(proveLinje);
 function home(){
   touchDay();save();window.scrollTo(0,0);
   const f=focusTopic(),rk=rankOf(S.stars),pct=rk.next?Math.round(100*(S.stars-rk.from)/(rk.next[0]-rk.from)):100;
@@ -867,7 +876,7 @@ function home(){
   else lead=`Du har løst ${S.total} oppgaver.`+(strong.length?` Du mestrer ${strong.map(t=>t.name.toLowerCase()).slice(0,2).join(' og ')}.`:'')+(weak.length?` Smart øving tar deg videre med ${weak[0].name.toLowerCase()}.`:'');
   const goalPct=Math.min(1,S.today/S.goal),C=2*Math.PI*40;
   app.innerHTML=`${topbar()}<main class="wrap">
-  <section class="hero"><div><h1>Hei${S.name?', '+esc(S.name):''}!</h1><p class="rank">${rk.name}</p><p class="lead">${lead}</p>
+  <section class="hero"><div><h1>Hei${S.name?', '+esc(S.name):''}!</h1><p class="rank">${rk.name}</p><p class="lead">${lead}</p><p class="lead prove" id="provelinje" hidden></p>
    ${S.name?'':`<form class="row" id="nameform" style="margin-top:12px"><label for="nm0">Hva heter du?</label><input class="txt" id="nm0" maxlength="20" autocomplete="off"><button class="btn" type="submit">Lagre</button></form>`}</div>
    <div class="ring" title="Dagens mål"><svg viewBox="0 0 96 96"><circle class="bg" cx="48" cy="48" r="40"/><circle class="fg" cx="48" cy="48" r="40" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-goalPct)}"/></svg>
    <div class="rt"><span><b>${Math.min(S.today,S.goal)}/${S.goal}</b>i dag</span></div></div></section>
@@ -890,6 +899,7 @@ function home(){
   document.getElementById('go-lyn').onclick=()=>{if(lynOpen)startLyn();else toast('Øv litt på to tema først, så åpner Lynrunden seg.')};
   document.getElementById('go-prog').onclick=progress;
   bindReset('reset-home','Nullstill');
+  proveLinje();
   const nf=document.getElementById('nameform');if(nf)nf.onsubmit=e=>{e.preventDefault();const v=document.getElementById('nm0').value.trim();if(!v)return;S.name=v;save();home()};
   document.querySelectorAll('.tcard').forEach(b=>b.onclick=()=>startRound('topic',b.dataset.id));
 }
