@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Spansk-juksearket</title>
+<meta name="description" content="Det viktigste til spanskprøven på ett ark: personlige pronomen, bøying av -ar-, -er- og -ir-verb og familien">
+<meta name="theme-color" content="#1d4e89">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f2b705'/><text x='50' y='74' font-size='70' text-anchor='middle' font-family='Arial' font-weight='700' fill='%231d4e89'>Ñ</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
+<style>
+/* Samme azulejo-blå og safran som spansk-spillene. Ett A4-ark: pronomen og endinger øverst,
+   hvem-er-det og verbene i midten, familien og fellene nederst. */
+:root{
+  --bg:#f7f3ea; --flate:#ffffff; --flate2:#f3eddf; --blekk:#1f2633; --demp:#5d6673; --linje:#ddd3c0;
+  --pri:#1d4e89; --pri-bg:#e0eaf6; --sol:#f2b705; --sol-bg:#fff1c4; --sol-blekk:#4a3700;
+  --ende:#b9532e; --ende-bg:#fbe3d8; --ok:#23804e;
+  --fd:"Fredoka","Segoe UI",system-ui,sans-serif;
+  --fb:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#13171d; --flate:#1d232b; --flate2:#262e38; --blekk:#eef1f5; --demp:#a3acb8; --linje:#333d49;
+  --pri:#7fb0ec; --pri-bg:#1b2d45; --sol:#ffcc3d; --sol-bg:#3a3115; --sol-blekk:#ffe7a3;
+  --ende:#ffb08f; --ende-bg:#3d261d; --ok:#62d394; color-scheme:dark}}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--blekk);font-family:var(--fb);font-size:1rem;line-height:1.4;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ul,ol{margin:0}
+h1,h2,h3{font-family:var(--fd);font-weight:600;line-height:1.15;text-wrap:balance}
+.ark{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:12px;
+  padding-block:max(16px,env(safe-area-inset-top,0px)) max(32px,env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+.hode{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px;border-bottom:3px solid var(--pri);padding-bottom:8px}
+.hode h1{font-size:clamp(1.7rem,6vw,2.3rem);color:var(--pri)}
+.hode p{color:var(--demp);font-weight:700}
+.verktoy{display:flex;gap:8px;flex-wrap:wrap}
+.verktoy a,.verktoy button{font:inherit;font-weight:700;font-size:.9rem;color:var(--blekk);background:var(--flate);border:1.5px solid var(--linje);border-radius:10px;padding:7px 12px;cursor:pointer;text-decoration:none}
+.verktoy a:hover,.verktoy button:hover{border-color:var(--pri)}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+
+.rad{display:grid;gap:12px;align-items:start}
+.r1{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+.r2{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+.r3{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.boks{background:var(--flate);border:1.5px solid var(--linje);border-radius:12px;padding:11px 13px;display:flex;flex-direction:column;gap:7px;min-width:0}
+.boks h2{font-size:1.15rem;color:var(--pri);display:flex;align-items:baseline;gap:8px}
+.boks h2 .nr{flex:none;width:1.45em;height:1.45em;border-radius:50%;background:var(--pri);color:var(--flate);display:inline-grid;place-items:center;font-size:.8em}
+.etikett{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--demp)}
+.liten{font-size:.9em}
+.demp{color:var(--demp)}
+.e{color:var(--ende);font-weight:700}
+.st{color:var(--demp)}
+.merk{background:var(--sol-bg);color:var(--sol-blekk);border-radius:9px;padding:6px 9px;font-size:.92em}
+.ex{background:var(--flate2);border-radius:9px;padding:6px 9px;font-weight:700}
+.ex span{font-weight:400;color:var(--demp)}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--demp);padding:0 6px 3px 0;font-weight:700}
+td{padding:3px 6px 3px 0;border-top:1px solid var(--linje);vertical-align:top}
+td.es{font-weight:700}
+.end td,.end th{text-align:center}
+.end td:first-child,.end th:first-child{text-align:left}
+.end td.e{background:var(--ende-bg);font-size:1.05em}
+.end tr.ulik td.e{outline:2px solid var(--ende);outline-offset:-2px}
+.end .fm{font-size:.82em;color:var(--demp);font-weight:400;display:block}
+
+.steg{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-weight:700}
+.steg .cut{text-decoration:line-through;text-decoration-thickness:2px;color:var(--ende)}
+
+.who{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;align-items:baseline}
+.who .e{white-space:nowrap;margin-left:4px}
+.who b{color:var(--pri)}
+
+.verb{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.verb h3{font-size:.95rem;color:var(--ende)}
+.verb ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:1px;font-size:.92em}
+.verb li b{font-weight:700}
+.verb li span{color:var(--demp)}
+
+.fam{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}
+.fam td{padding:2px 6px 2px 0}
+.fam td.art{color:var(--demp);width:2.1em}
+
+.feller{background:var(--blekk);color:var(--bg);border-color:var(--blekk)}
+.feller h2{color:var(--bg)}
+.feller h2 .nr{background:var(--sol);color:#1f2633}
+.feller ul{padding-left:1.1em;display:flex;flex-direction:column;gap:3px}
+.feller s{opacity:.7}
+.feller b{color:var(--sol)}
+
+@media (max-width:820px){
+  .r1,.r2,.r3{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:480px){
+  .verb{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .fam{grid-template-columns:minmax(0,1fr)}
+}
+
+/* Utskrift: ett A4-ark. Klassen .a4 settes av skriptet før utskrift. */
+@page{size:A4;margin:8mm}
+@media print{
+  :root{--bg:#fff;--flate:#fff;--flate2:#f1ece1;--blekk:#000;--demp:#444;--linje:#bbb;--pri:#1d4e89;--pri-bg:#e0eaf6;--sol:#f2b705;--sol-bg:#fff1c4;--sol-blekk:#4a3700;--ende:#a2431f;--ende-bg:#fbe3d8;color-scheme:light}
+  .verktoy{display:none}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+.a4 .ark{max-width:none;width:194mm;padding:0;gap:2.4mm}
+.a4 body,.a4 .ark{font-size:8.6pt;line-height:1.3}
+.a4 .hode{padding-bottom:1.3mm;border-bottom-width:2px}
+.a4 .hode h1{font-size:17pt}
+.a4 .rad{gap:2.4mm}
+.a4 .boks{padding:2mm 2.6mm;gap:1.3mm;border-radius:2.5mm;break-inside:avoid}
+.a4 .boks h2{font-size:10.5pt}
+.a4 .etikett{font-size:6.2pt}
+.a4 td{padding:.5mm 1.4mm .5mm 0}
+.a4 th{font-size:6.2pt;padding-bottom:.5mm}
+.a4 .merk,.a4 .ex{padding:1.1mm 1.8mm;border-radius:1.8mm}
+.a4 .verb{gap:2mm}
+.a4 .verb h3{font-size:8.6pt}
+.a4 .feller ul{gap:.6mm}
+.a4 .r1,.a4 .r2{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+.a4 .r3{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.a4 .verb{grid-template-columns:repeat(3,minmax(0,1fr))}
+.a4 .fam{grid-template-columns:repeat(2,minmax(0,1fr))}
+.a4 .end .fm{display:inline;margin-left:1.2mm}
+.a4 .end td.e{font-size:1em}
+</style>
+</head>
+<body>
+<main class="ark">
+
+  <header class="hode">
+    <div>
+      <h1>Spansk-juksearket</h1>
+      <p>Spanskprøven: pronomen, bøying av -ar-, -er- og -ir-verb og familien</p>
+    </div>
+    <div class="verktoy">
+      <a href="spansk-ar-verb.html">Til Spanske verb</a>
+      <a href="spansk-gloser.html">Til Spanske gloser</a>
+      <button type="button" id="skrivut">Skriv ut (ett A4-ark)</button>
+    </div>
+  </header>
+
+  <div class="rad r1">
+    <section class="boks">
+      <h2><span class="nr">1</span>Personlige pronomen</h2>
+      <table>
+        <tr><td class="es">yo</td><td>jeg <span class="demp">(eg)</span></td><td class="es">nosotros</td><td>vi</td></tr>
+        <tr><td class="es">tú</td><td>du</td><td class="es">nosotras</td><td>vi <span class="demp">(bare jenter)</span></td></tr>
+        <tr><td class="es">él</td><td>han</td><td class="es">vosotros</td><td>dere <span class="demp">(dokker)</span></td></tr>
+        <tr><td class="es">ella</td><td>hun <span class="demp">(ho)</span></td><td class="es">vosotras</td><td>dere <span class="demp">(bare jenter)</span></td></tr>
+        <tr><td class="es">usted</td><td>De <span class="demp">(høflig)</span></td><td class="es">ellos</td><td>de <span class="demp">(dei)</span></td></tr>
+        <tr><td></td><td></td><td class="es">ellas</td><td>de <span class="demp">(bare jenter)</span></td></tr>
+        <tr><td></td><td></td><td class="es">ustedes</td><td>De <span class="demp">(høflig, flere)</span></td></tr>
+      </table>
+      <p class="liten"><b>-as</b> bare når alle er jenter. Én gutt med → <b>-os</b>.</p>
+      <p class="liten"><b>usted</b> bøyes som él, <b>ustedes</b> som ellos.</p>
+      <p class="merk">Aksenten betyr noe: <b>tú</b> = du, men tu = din. <b>él</b> = han, men el = artikkelen (el padre).</p>
+    </section>
+
+    <section class="boks">
+      <h2><span class="nr">2</span>Slik bøyer du et regelrett verb</h2>
+      <div class="steg"><span>1. Ta bort endingen:</span><span>habl<span class="cut">ar</span> · com<span class="cut">er</span> · viv<span class="cut">ir</span></span></div>
+      <div class="steg"><span>2. Legg til endingen for personen:</span></div>
+      <table class="end">
+        <tr><th>Person</th><th>-ar</th><th>-er</th><th>-ir</th></tr>
+        <tr><td>yo</td><td class="e">-o<span class="fm">hablo</span></td><td class="e">-o<span class="fm">como</span></td><td class="e">-o<span class="fm">vivo</span></td></tr>
+        <tr><td>tú</td><td class="e">-as<span class="fm">hablas</span></td><td class="e">-es<span class="fm">comes</span></td><td class="e">-es<span class="fm">vives</span></td></tr>
+        <tr><td>él / ella / usted</td><td class="e">-a<span class="fm">habla</span></td><td class="e">-e<span class="fm">come</span></td><td class="e">-e<span class="fm">vive</span></td></tr>
+        <tr class="ulik"><td>nosotros / -as</td><td class="e">-amos<span class="fm">hablamos</span></td><td class="e">-emos<span class="fm">comemos</span></td><td class="e">-imos<span class="fm">vivimos</span></td></tr>
+        <tr class="ulik"><td>vosotros / -as</td><td class="e">-áis<span class="fm">habláis</span></td><td class="e">-éis<span class="fm">coméis</span></td><td class="e">-ís<span class="fm">vivís</span></td></tr>
+        <tr><td>ellos / ellas / ustedes</td><td class="e">-an<span class="fm">hablan</span></td><td class="e">-en<span class="fm">comen</span></td><td class="e">-en<span class="fm">viven</span></td></tr>
+      </table>
+      <p class="liten"><b>-er</b> og <b>-ir</b> er like, bortsett fra <b>nosotros</b> og <b>vosotros</b> (de innrammede). Vosotros har alltid aksent: -áis, -éis, -ís.</p>
+    </section>
+  </div>
+
+  <div class="rad r2">
+    <section class="boks">
+      <h2><span class="nr">3</span>Hvem er det?</h2>
+      <div class="who">
+        <span>María <b>y yo</b></span><span>= nosotros <span class="e">-amos · -emos · -imos</span></span>
+        <span><b>Tú y</b> María</span><span>= vosotros <span class="e">-áis · -éis · -ís</span></span>
+        <span>María y Pedro</span><span>= ellos <span class="e">-an · -en</span></span>
+        <span>María, Pedro, mi amigo</span><span>= ella / él <span class="e">-a · -e</span></span>
+      </div>
+      <p class="liten">Er <b>jeg</b> med → vi. Er <b>du</b> med (ikke jeg) → dere. Ellers → de.</p>
+      <p class="ex">Mi amigo y yo leemos español. <span>Vennen min og jeg leser spansk.</span></p>
+      <p class="ex">Tú y María abrís la puerta. <span>Du og María åpner døra.</span></p>
+      <p class="liten"><b>Pronomenet kan sløyfes</b> – endingen viser hvem: <b>Hablo español.</b> = Jeg snakker spansk.</p>
+    </section>
+
+    <section class="boks">
+      <h2><span class="nr">4</span>Verbene du bør kunne</h2>
+      <div class="verb">
+        <div><h3>-ar</h3><ul>
+          <li><b>hablar</b> <span>snakke</span></li><li><b>estudiar</b> <span>studere</span></li><li><b>escuchar</b> <span>høre på</span></li>
+          <li><b>bailar</b> <span>danse</span></li><li><b>cantar</b> <span>synge</span></li><li><b>mirar</b> <span>se på</span></li>
+          <li><b>trabajar</b> <span>jobbe</span></li><li><b>saltar</b> <span>hoppe</span></li><li><b>tocar</b> <span>spille, ta på</span></li>
+          <li><b>pagar</b> <span>betale</span></li><li><b>cocinar</b> <span>lage mat</span></li><li><b>viajar</b> <span>reise</span></li>
+          <li><b>caminar</b> <span>gå</span></li><li><b>nadar</b> <span>svømme</span></li><li><b>comprar</b> <span>kjøpe</span></li>
+        </ul></div>
+        <div><h3>-er</h3><ul>
+          <li><b>comer</b> <span>spise (ete)</span></li><li><b>beber</b> <span>drikke</span></li><li><b>aprender</b> <span>lære</span></li>
+          <li><b>comprender</b> <span>forstå</span></li><li><b>leer</b> <span>lese</span></li><li><b>vender</b> <span>selge</span></li>
+          <li><b>correr</b> <span>springe</span></li>
+        </ul></div>
+        <div><h3>-ir</h3><ul>
+          <li><b>vivir</b> <span>bo</span></li><li><b>escribir</b> <span>skrive</span></li><li><b>abrir</b> <span>åpne</span></li>
+          <li><b>recibir</b> <span>ta imot, få</span></li><li><b>asistir</b> <span>delta</span></li><li><b>interrumpir</b> <span>avbryte</span></li>
+          <li><b>discutir</b> <span>diskutere</span></li>
+        </ul></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="rad r3">
+    <section class="boks">
+      <h2><span class="nr">5</span>Familien</h2>
+      <div class="fam">
+        <table>
+          <tr><td class="art">la</td><td class="es">madre</td><td>mor</td></tr>
+          <tr><td class="art">el</td><td class="es">padre</td><td>far</td></tr>
+          <tr><td class="art">la</td><td class="es">madrastra</td><td>stemor</td></tr>
+          <tr><td class="art">el</td><td class="es">padrastro</td><td>stefar</td></tr>
+          <tr><td class="art">la</td><td class="es">hija</td><td>datter</td></tr>
+          <tr><td class="art">el</td><td class="es">hijo</td><td>sønn</td></tr>
+          <tr><td class="art">la</td><td class="es">hermana</td><td>søster</td></tr>
+          <tr><td class="art">el</td><td class="es">hermano</td><td>bror</td></tr>
+        </table>
+        <table>
+          <tr><td class="art">la</td><td class="es">abuela</td><td>bestemor</td></tr>
+          <tr><td class="art">el</td><td class="es">abuelo</td><td>bestefar</td></tr>
+          <tr><td class="art">la</td><td class="es">nieta</td><td>barnebarn (jente)</td></tr>
+          <tr><td class="art">el</td><td class="es">nieto</td><td>barnebarn (gutt)</td></tr>
+          <tr><td class="art">la</td><td class="es">prima</td><td>kusine</td></tr>
+          <tr><td class="art">el</td><td class="es">primo</td><td>fetter</td></tr>
+          <tr><td class="art">la</td><td class="es">tía</td><td>tante</td></tr>
+          <tr><td class="art">el</td><td class="es">tío</td><td>onkel</td></tr>
+        </table>
+      </div>
+      <p class="liten"><b>-o</b> → el (han), <b>-a</b> → la (hun). Unntak: <b>el padre</b>, <b>la madre</b>.
+        Flertall: + <b>-s</b>, el → <b>los</b>, la → <b>las</b>. <b>los padres</b> = foreldrene, <b>los hermanos</b> = søsknene, <b>los abuelos</b> = besteforeldrene.</p>
+    </section>
+
+    <section class="boks">
+      <h2><span class="nr">6</span>Hva heter de? – se llama</h2>
+      <p class="ex">Mi madre se llama María. <span>Moren min heter María.</span></p>
+      <p class="ex">Mi hermano se llama Pedro. <span>Broren min heter Pedro.</span></p>
+      <p class="ex">Mis hermanos se llaman Pedro y Juan. <span>Brødrene mine heter …</span></p>
+      <p class="liten"><b>Mi</b> + familieord + <b>se llama</b> + navn. Flere: <b>mis</b> … <b>se llaman</b> … <b>y</b> …</p>
+      <p class="liten">Spørsmål: <b>¿Cómo se llama tu padre?</b> = Hva heter faren din? Svar: <b>Mi padre se llama Juan.</b></p>
+      <p class="liten"><b>tener</b> (å ha): tengo, tienes, tiene, tenemos, tenéis, tienen. <b>Tengo un hermano.</b></p>
+    </section>
+  </div>
+
+  <section class="boks feller">
+    <h2><span class="nr">!</span>Vanlige feller</h2>
+    <ul>
+      <li>Riktig gruppe: comer er et -er-verb → nosotros <b>comemos</b> <s>comamos</s>. Vivir er et -ir-verb → <b>vivimos</b> <s>vivemos</s>.</li>
+      <li>Aldri infinitiv etter personen: <b>Yo hablo</b> <s>Yo hablar</s>.</li>
+      <li>«Du og María» er dere → <b>vosotros</b>: Tú y María <b>coméis</b>. «María og jeg» er vi → <b>comemos</b>.</li>
+      <li>Husk aksentene: <b>tú</b>, <b>él</b>, María, -áis / -éis / -ís.</li>
+      <li>Flere personer: <b>mis</b> hermanos <b>se llaman</b> <s>mi hermanos se llama</s>.</li>
+    </ul>
+  </section>
+
+</main>
+<script>
+const a4 = on => document.documentElement.classList.toggle('a4', on);
+window.addEventListener('beforeprint', () => a4(true));
+window.addEventListener('afterprint', () => a4(false));
+document.getElementById('skrivut').addEventListener('click', () => { a4(true); window.print(); });
+</script>
+</body>
+</html>

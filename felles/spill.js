@@ -39,6 +39,8 @@ window.SPILL = [
   { fag: "Spansk", ikon: "🗣️", tittel: "Spanske verb", fil: "spansk-ar-verb.html", trinn: [8], lagt: "2026-11-11",
     prover: [{ dato: "2026-11-18", navn: "Spanskprøve: pronomen, verb og familien" }],
     beskrivelse: "Personlige pronomen og regelrette -ar-, -er- og -ir-verb: regelen, bøying, finn personen, oversetting, øvearkene (-ar, -er, -ir) og prøveprøve" },
+  { fag: "Spansk", ikon: "📜", tittel: "Spansk-juksearket", fil: "spansk-jukseark.html", trinn: [8], lagt: "2026-11-16", gull: false,
+    beskrivelse: "Det viktigste til spanskprøven på ett ark: pronomen, endingene for -ar, -er og -ir, verbene og familien" },
   { fag: "Samfunnsfag", ikon: "⚖️", tittel: "Kampen for rettigheter", fil: "revolusjon.html", trinn: [8], lagt: "2026-11-12",
     beskrivelse: "Opplysningstiden, den franske revolusjonen og Napoleon: omgrep, standssamfunnet, filosofene, tidslinja og prøveprøve" },
   { fag: "Samfunnsfag", ikon: "🦉", tittel: "Tidsreisen", fil: "tidsreisen.html", trinn: [8], lagt: "2026-11-12",

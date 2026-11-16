@@ -570,6 +570,7 @@ function home() {
     <div class="modes">
       ${mode("prove", "🏁", "Prøveprøve", "20 oppgaver: pronomen, -ar/-er/-ir, setninger og familien – uten hjelp", pst("prove"))}
       ${Object.keys(ARKER).map(id => mode(`ark:${id}`, "📄", `Øvearket (-${id})`, "Akkurat de 20 oppgavene fra arket", pst(id === "ar" ? "ark" : "ark-" + id))).join("")}
+      <a class="mode" href="spansk-jukseark.html"><span class="ic">📜</span><span><b>Juksearket</b><small>Alt til prøven på ett ark – les det, eller skriv det ut →</small></span></a>
       <a class="mode" href="spansk-gloser.html"><span class="ic">👪</span><span><b>Familieordene</b><small>Øv på familien og «Mi madre se llama …» i Spanske gloser →</small></span></a>
     </div>
   </section>
