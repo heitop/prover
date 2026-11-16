@@ -849,7 +849,7 @@
     ["dobbel-mester", "Dobbeltmester", "✌️", ["dobbel-konsonant"], "Få stjerne på minst 8 av 10 ord, eller minst 90 % på prøveprøven", "narrelue"],
     ["eventyr-mester", "Eventyrmester", "🏰", ["eventyrproven"], "Fullfør alle fire stasjonene i alle tre eventyrene", "troll"],
     ["spansk-gloser", "Glosemester på spansk", "💃", ["spansk-gloser"], "Minst 90 % på prøveprøven, eller få alle glosene i én gloseprøve til å sitte", "vifte"],
-    ["spansk-verb", "Verbmester", "🗣️", ["spansk-ar-verb"], "Minst 90 % på prøveprøven, eller få alle 15 verbene og alle 6 endingene til å sitte", "bg-solnedgang"],
+    ["spansk-verb", "Verbmester", "🗣️", ["spansk-ar-verb"], "Minst 90 % på prøveprøven, eller få alle verbene og alle endingene til å sitte", "bg-solnedgang"],
     ["engelsk-gloser", "Glosemester på engelsk", "🌍", ["engelsk-gloser"], "Minst 90 % på prøveprøven, eller få alle glosene i én gloseprøve til å sitte", "flosshatt"],
     ["revolusjon", "Revolusjonsekspert", "⚖️", ["revolusjon"], "Minst 90 % på prøveprøven, enten i «Alt sammen» eller i hver av de tre delene", "napoleonshatt"],
     ["tidsreisen", "Tidsreisende", "🦉", ["tidsreisen"], "Fullfør alle kapitlene i Tidsreisen", "bg-tidsportal"],

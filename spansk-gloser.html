@@ -25,32 +25,37 @@
               par = ordet for motsatt kjønn, f.eks. tío ↔ tía (valgfritt)
               fl  = flertall hvis det ikke bare er +s (valgfritt)
    setninger  enkle setninger; ord = glosen slik den står i setningen
+   bf / bfl   «moren min» / «brødrene mine» – brukes i «Fortell om familien» (valgfritt)
+   fortell    true = vis øvingen «Fortell om familien» (Mi madre se llama …)
    boying     hvilke bøyingsøvelser som passer:
               "artikkel" (el/la), "flertall", "kjonn" (tío→tía), "mi" (mi/mis), "tener"
    ====================================================================== */
 const PROVER = [
   {
-    id: "familien", tittel: "Familien", dato: "2026-11-11",
+    id: "familien", tittel: "Familien", dato: "2026-11-18", fortell: true,
     gloser: [
-      { es: "madre",     no: "mor",               alt: ["mamma"],                          kj: "f", par: "padre" },
-      { es: "padre",     no: "far",               alt: ["pappa"],                          kj: "m", par: "madre" },
-      { es: "madrastra", no: "stemor",            alt: [],                                 kj: "f", par: "padrastro" },
-      { es: "padrastro", no: "stefar",            alt: [],                                 kj: "m", par: "madrastra" },
-      { es: "hija",      no: "dotter",            alt: ["datter"],                         kj: "f", par: "hijo" },
-      { es: "hijo",      no: "son",               alt: ["sønn"],                           kj: "m", par: "hija" },
-      { es: "hermana",   no: "søster",            alt: ["syster"],                         kj: "f", par: "hermano" },
-      { es: "hermano",   no: "bror",              alt: [],                                 kj: "m", par: "hermana" },
-      { es: "abuela",    no: "bestemor",          alt: ["farmor", "mormor"],               kj: "f", par: "abuelo" },
-      { es: "abuelo",    no: "bestefar",          alt: ["farfar", "morfar"],               kj: "m", par: "abuela" },
-      { es: "nieta",     no: "barnebarn (jente)", alt: [],                                 kj: "f", par: "nieto" },
-      { es: "nieto",     no: "barnebarn (gut)",   alt: ["barnebarn gutt"],                 kj: "m", par: "nieta" },
-      { es: "primo",     no: "søskenbarn (gut)",  alt: ["fetter", "søskenbarn gutt"],      kj: "m", par: "prima" },
-      { es: "prima",     no: "søskenbarn (jente)",alt: ["kusine"],                         kj: "f", par: "primo" },
-      { es: "tía",       no: "tante",             alt: [],                                 kj: "f", par: "tío" },
-      { es: "tío",       no: "onkel",             alt: [],                                 kj: "m", par: "tía" },
+      { es: "madre",     no: "mor",               alt: ["mamma"],                          kj: "f", par: "padre", bf: "moren min" },
+      { es: "padre",     no: "far",               alt: ["pappa"],                          kj: "m", par: "madre", bf: "faren min" },
+      { es: "madrastra", no: "stemor",            alt: [],                                 kj: "f", par: "padrastro", bf: "stemoren min" },
+      { es: "padrastro", no: "stefar",            alt: [],                                 kj: "m", par: "madrastra", bf: "stefaren min" },
+      { es: "hija",      no: "dotter",            alt: ["datter"],                         kj: "f", par: "hijo", bf: "datteren min", bfl: "døtrene mine" },
+      { es: "hijo",      no: "son",               alt: ["sønn"],                           kj: "m", par: "hija", bf: "sønnen min", bfl: "sønnene mine" },
+      { es: "hermana",   no: "søster",            alt: ["syster"],                         kj: "f", par: "hermano", bf: "søsteren min", bfl: "søstrene mine" },
+      { es: "hermano",   no: "bror",              alt: [],                                 kj: "m", par: "hermana", bf: "broren min", bfl: "brødrene mine" },
+      { es: "abuela",    no: "bestemor",          alt: ["farmor", "mormor"],               kj: "f", par: "abuelo", bf: "bestemoren min" },
+      { es: "abuelo",    no: "bestefar",          alt: ["farfar", "morfar"],               kj: "m", par: "abuela", bf: "bestefaren min" },
+      { es: "nieta",     no: "barnebarn (jente)", alt: [],                                 kj: "f", par: "nieto", bf: "barnebarnet mitt (jente)" },
+      { es: "nieto",     no: "barnebarn (gut)",   alt: ["barnebarn gutt"],                 kj: "m", par: "nieta", bf: "barnebarnet mitt (gutt)" },
+      { es: "primo",     no: "søskenbarn (gut)",  alt: ["fetter", "søskenbarn gutt"],      kj: "m", par: "prima", bf: "fetteren min", bfl: "fetterne mine" },
+      { es: "prima",     no: "søskenbarn (jente)",alt: ["kusine"],                         kj: "f", par: "primo", bf: "kusinen min", bfl: "kusinene mine" },
+      { es: "tía",       no: "tante",             alt: [],                                 kj: "f", par: "tío", bf: "tanten min" },
+      { es: "tío",       no: "onkel",             alt: [],                                 kj: "m", par: "tía", bf: "onkelen min" },
     ],
     setninger: [
-      { es: "Mi madre se llama Ana.",        no: "Moren min heter Ana.",              ord: "madre" },
+      { es: "Mi madre se llama María.",      no: "Moren min heter María.",            ord: "madre" },
+      { es: "Mi hermano se llama Pedro.",    no: "Broren min heter Pedro.",           ord: "hermano" },
+      { es: "Mi hermana se llama Lucía.",    no: "Søsteren min heter Lucía.",         ord: "hermana" },
+      { es: "Mis abuelos se llaman Rosa y Luis.", no: "Besteforeldrene mine heter Rosa og Luis.", ord: "abuelos" },
       { es: "Mi padre se llama Juan.",       no: "Faren min heter Juan.",             ord: "padre" },
       { es: "Tengo un hermano.",             no: "Jeg har en bror.",                  ord: "hermano" },
       { es: "Tengo dos hermanas.",           no: "Jeg har to søstre.",                ord: "hermanas" },
@@ -282,6 +287,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const pick = a => a[Math.floor(Math.random() * a.length)];
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 const fold = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
 const clean = s => String(s).toLowerCase().replace(/[¿?¡!.,;:()«»"]/g, " ").replace(/\s+/g, " ").trim();
 function lev(a, b) {
@@ -401,9 +407,10 @@ function home() {
     </div>
   </section>
 
-  ${(p.setninger || p.boying) ? `<section class="step">
+  ${(p.setninger || p.boying || p.fortell) ? `<section class="step">
     <div class="stephead"><span class="num">4</span><h2>Neste steg: setninger og bøying</h2></div>
     <div class="modes">
+      ${p.fortell ? mode("fortell", "👪", "Fortell om familien", "Mi madre se llama María – skriv hele setningen", b.fortell != null ? `Beste: ${b.fortell} %` : "") : ""}
       ${p.setninger ? mode("setn", "💬", "Setninger", "Hvilket ord mangler? Hva betyr setningen?", b.setn != null ? `Beste: ${b.setn} %` : "") : ""}
       ${p.boying ? mode("boyIntro", "🔤", "Bøying", "el/la, flertall, mi/mis og tener", b.boy != null ? `Beste: ${b.boy} %` : "") : ""}
     </div>
@@ -633,6 +640,7 @@ const MODES = {
     startQuiz({ title: "Prøveprøve", again: "prove", requeue: false, bestKey: "prove", items: shuffle(gl.map((g, i) => i < half ? itSkrivEs(g) : itSkrivNo(g))) });
   },
   setn() { startQuiz({ title: "Setninger", again: "setn", bestKey: "setn", noLv: true, items: lagSetninger() }); },
+  fortell() { startQuiz({ title: "Fortell om familien", again: "fortell", bestKey: "fortell", noLv: true, items: lagFortell() }); },
   boy() { startQuiz({ title: "Bøying", again: "boy", bestKey: "boy", noLv: true, items: lagBoying() }); },
 };
 
@@ -667,6 +675,44 @@ function lagSetninger() {
     return { kind: "choice", sent: true, wide: true, label: "Hva betyr setningen?", big: s.es, say: s.es, options: [s.no, ...others], answer: s.no, line: `${s.es} = ${s.no}`, sayF: s.es,
       fe: { k: `setn:${s.es}:betyr`, q: `Hva betyr «${s.es}»?`, emne: `Spansk: ${P().tittel} – setninger` } };
   }));
+}
+
+/* ---------- fortell om familien: Mi madre se llama María ---------- */
+const NAVN = { m: ["Pedro", "Juan", "Carlos", "Pablo", "Diego", "Luis"], f: ["María", "Ana", "Lucía", "Carmen", "Sofía", "Elena"] };
+function checkFortell(x, fasit, fl) {
+  const a = clean(x), f = clean(fasit);
+  if (!a) return { st: "wrong" };
+  if (a === f) return { st: "ok" };
+  if (fold(a) === fold(f)) return { st: "accent" };
+  if (!/se llama/.test(fold(a))) return { st: "wrong", note: `«heter» er <b>se llama</b>${fl ? " – og <b>se llaman</b> når det er flere" : ""}.` };
+  if (fl && !/se llaman/.test(fold(a))) return { st: "wrong", note: "Når det er flere som heter noe, blir det <b>se llaman</b>." };
+  if (fl && /^mi /.test(a)) return { st: "wrong", note: "Når det er flere, blir <b>mi</b> til <b>mis</b>." };
+  if (lev(fold(a), fold(f)) <= 2) return { st: "typo" };
+  return { st: "wrong" };
+}
+function lagFortell() {
+  const gl = P().gloser.filter(g => g.bf), out = [];
+  for (const g of shuffle(gl.slice())) {
+    const navn = pick(NAVN[g.kj]), fasit = `Mi ${g.es} se llama ${navn}.`, after = `${sayBtn(fasit, 1)} ${esc(fasit)}`;
+    const sporsmal = Math.random() < .35;
+    out.push({
+      kind: "write", lang: "es", sent: true, wide: true, g,
+      label: sporsmal ? "Svar på spansk" : "Oversett til spansk",
+      big: sporsmal ? `¿Cómo se llama tu ${g.es}?` : `${cap(g.bf)} heter ${navn}.`, say: sporsmal ? `¿Cómo se llama tu ${g.es}?` : "",
+      sub: sporsmal ? `Svar at ${g.kj === "f" ? "hun" : "han"} heter ${esc(navn)}.` : "heter = se llama",
+      fasit, check: v => checkFortell(v, fasit, false), forkl: `<b>Mi</b> + ${esc(g.es)} + <b>se llama</b> + ${esc(navn)}.`, line: fasit, sayF: fasit, after,
+      fe: { k: `fortell:${g.es}`, q: sporsmal ? `Svar på spansk: «¿Cómo se llama tu ${g.es}?» (${g.kj === "f" ? "hun" : "han"} heter ${navn})` : `Oversett til spansk: «${cap(g.bf)} heter ${navn}.»`, emne: `Spansk: ${P().tittel} – se llama` },
+    });
+  }
+  for (const g of shuffle(gl.filter(g => g.bfl)).slice(0, 4)) {
+    const [n1, n2] = shuffle(NAVN[g.kj].slice()), fasit = `Mis ${plOf(g)} se llaman ${n1} y ${n2}.`;
+    out.push({
+      kind: "write", lang: "es", sent: true, wide: true, label: "Oversett til spansk – flere personer", big: `${cap(g.bfl)} heter ${n1} og ${n2}.`, sub: "flere: mis … se llaman … y …",
+      fasit, check: v => checkFortell(v, fasit, true), forkl: `Flere personer: <b>mis</b> + ${esc(plOf(g))} + <b>se llaman</b>.`, line: fasit, sayF: fasit, after: `${sayBtn(fasit, 1)} ${esc(fasit)}`,
+      fe: { k: `fortell:${plOf(g)}`, q: `Oversett til spansk: «${cap(g.bfl)} heter ${n1} og ${n2}.»`, emne: `Spansk: ${P().tittel} – se llama` },
+    });
+  }
+  return shuffle(out);
 }
 
 /* ---------- bøying ---------- */
@@ -805,7 +851,7 @@ function kNeste() {
 const ACT = {
   home, kort, koble, boyIntro,
   velg: () => MODES.velg(), skrivEs: () => MODES.skrivEs(), skrivNo: () => MODES.skrivNo(), vansk: () => MODES.vansk(),
-  prove: () => MODES.prove(), setn: () => MODES.setn(), boy: () => MODES.boy(),
+  prove: () => MODES.prove(), setn: () => MODES.setn(), boy: () => MODES.boy(), fortell: () => MODES.fortell(),
   theme() { S.theme = erMork() ? "light" : "dark"; save(); applyTheme(); },
   velgProve(id) { S.valgt = id; save(); home(); },
   reset() { if (confirm(`Nullstille fremgangen for «${P().tittel}»?`)) { delete S.prover[P().id]; save(); home(); } },

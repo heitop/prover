@@ -2,17 +2,20 @@
 <html lang="no">
 <head>
 <meta charset="utf-8">
-<title>Spanske -ar-verb</title>
+<title>Spanske verb</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Øv på regelrette -ar-verb på spansk: regelen, verbene, bøying, finn personen og oversetting">
+<meta name="description" content="Øv på spanske verb (-ar, -er og -ir) og personlige pronomen: regelen, verbene, bøying, finn personen og oversetting">
 <meta name="theme-color" content="#1d4e89">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f2b705'/><text x='50' y='68' font-size='46' text-anchor='middle' font-family='Arial' font-weight='700' fill='%231d4e89'>-ar</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f2b705'/><text x='50' y='68' font-size='54' text-anchor='middle' font-family='Arial' font-weight='700' fill='%231d4e89'>yo</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
 <script>
 /* ======================================================================
-   VERBENE – fra øvearket og PowerPointen om -ar-verb.
+   VERBENE – -ar-verbene er fra øvearket og PowerPointen.
+   NYE VERB? Legg dem inn i lista under. Gruppen (-ar, -er, -ir) finnes ut fra endingen,
+   og alle øvingene, tabellene og prøveprøven tar dem med automatisk.
+   -er- og -ir-verbene under er vanlige lærebokverb – bytt dem ut med ordlista fra skolen.
    es   infinitiv på spansk
    no   norsk betydning slik den vises
    pres norsk presens (brukes i setningene: «Jeg ___ spansk»)
@@ -37,7 +40,45 @@ const VERB = [
   { es: "caminar",  no: "å gå / å spasere",    pres: "går",       alt: ["spasera", "gå tur"],                           obj: [["mucho", "mye"], ["a la escuela", "til skolen"]] },
   { es: "nadar",    no: "å svømme",            pres: "svømmer",   alt: ["symja", "symje", "svømma"],                    obj: [["bien", "godt"], ["en el mar", "i havet"]] },
   { es: "comprar",  no: "å kjøpe / å handle",  pres: "kjøper",    alt: ["kjøpa", "handla", "handle"],                   obj: [["pan", "brød"], ["una pizza", "en pizza"]] },
+
+  /* -er-verb */
+  { es: "comer",    no: "å spise",             pres: "spiser",    alt: ["eta", "ete"],                                  obj: [["una pizza", "en pizza"], ["pan", "brød"], ["mucho", "mye"], ["en casa", "hjemme"]] },
+  { es: "beber",    no: "å drikke",            pres: "drikker",   alt: ["drikka"],                                      obj: [["agua", "vann"], ["leche", "melk"], ["café", "kaffe"]] },
+  { es: "leer",     no: "å lese",              pres: "leser",     alt: ["lesa"],                                        obj: [["un libro", "en bok"], ["el periódico", "avisen"], ["mucho", "mye"]] },
+  { es: "aprender", no: "å lære",              pres: "lærer",     alt: ["læra", "lære seg"],                            obj: [["español", "spansk"], ["inglés", "engelsk"], ["mucho", "mye"]] },
+  { es: "correr",   no: "å løpe / å springe",  pres: "løper",     alt: ["springa", "springe", "spring", "lope", "laupa", "springa"], obj: [["mucho", "mye"], ["en el parque", "i parken"], ["rápido", "fort"]] },
+
+  /* -ir-verb */
+  { es: "vivir",    no: "å bo / å leve",       pres: "bor",       alt: ["bu", "leva"],                                  obj: [["en Noruega", "i Norge"], ["en Madrid", "i Madrid"], ["en una casa", "i et hus"]] },
+  { es: "escribir", no: "å skrive",            pres: "skriver",   alt: ["skriva"],                                      obj: [["una carta", "et brev"], ["un libro", "en bok"], ["en español", "på spansk"]] },
+  { es: "abrir",    no: "å åpne",              pres: "åpner",     alt: ["opna", "opne"],                                obj: [["la puerta", "døra"], ["la ventana", "vinduet"]] },
+  { es: "compartir", no: "å dele",             pres: "deler",     alt: ["dela"],                                        obj: [["la pizza", "pizzaen"], ["la comida", "maten"]] },
+  { es: "recibir",  no: "å få / å motta",      pres: "får",       alt: ["motta", "ta imot", "ta imot"],                 obj: [["un regalo", "en gave"], ["una carta", "et brev"]] },
 ];
+
+/* Personlige pronomen (side 19 i spanskboka). */
+const PRONOMEN = [
+  { es: "yo",       no: "jeg",                        alt: ["eg"] },
+  { es: "tú",       no: "du" },
+  { es: "él",       no: "han" },
+  { es: "ella",     no: "hun",                        alt: ["ho"] },
+  { es: "usted",    no: "De (høflig, én person)" },
+  { es: "nosotros", no: "vi (gutter eller blandet)" },
+  { es: "nosotras", no: "vi (bare jenter)" },
+  { es: "vosotros", no: "dere (gutter eller blandet)", alt: ["dykk", "dokker"] },
+  { es: "vosotras", no: "dere (bare jenter)" },
+  { es: "ellos",    no: "de (gutter eller blandet)",   alt: ["dei"] },
+  { es: "ellas",    no: "de (bare jenter)" },
+  { es: "ustedes",  no: "De (høflig, flere personer)" },
+];
+
+/* Litt familie til prøveprøven (alle familieordene øves i Spanske gloser). «se llama» = heter. */
+const FAMILIE = [
+  ["madre", "Moren min"], ["padre", "Faren min"], ["hermano", "Broren min"], ["hermana", "Søsteren min"],
+  ["abuelo", "Bestefaren min"], ["abuela", "Bestemoren min"], ["tío", "Onkelen min"], ["tía", "Tanten min"],
+  ["primo", "Fetteren min"], ["prima", "Kusinen min"],
+];
+const NAVN = { m: ["Pedro", "Juan", "Carlos", "Pablo", "Diego"], f: ["María", "Ana", "Lucía", "Carmen", "Sofía"] };
 
 /* Hvem gjør noe? p = person (0 yo, 1 tú, 2 él/ella, 3 nosotros, 4 vosotros, 5 ellos/ellas).
    pron = vanlig pronomen (kan sløyfes på spansk). alt = andre former som godtas. */
@@ -170,6 +211,8 @@ p{margin:0}
 .tiles{display:flex;flex-wrap:wrap;gap:6px}
 .tile{border:0;border-radius:10px;padding:5px 10px;font-weight:700;font-size:.95rem;background:var(--lv0)}
 .tile small{font-weight:400;opacity:.85}
+.tile.grp{background:none;color:var(--muted);padding-left:0;min-width:2.6em}
+a.mode{color:inherit;text-decoration:none}
 .lv1{background:var(--lv1)} .lv2{background:var(--lv2)} .lv3{background:var(--lv3);color:var(--lv3-ink)}
 .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:5px}
@@ -297,7 +340,7 @@ details summary{cursor:pointer;font-weight:700;color:var(--pri)}
 </head>
 <body>
 <header class="top"><div class="topin">
-  <button class="logo" data-act="home"><span class="badge">-ar</span>Verb</button>
+  <button class="logo" data-act="home"><span class="badge">yo</span>Verb</button>
   <div class="stats">
     <span class="pill" id="pillKan" title="Verb du kan">⭐ 0/0</span>
     <button class="iconbtn" data-act="theme" id="themeBtn" aria-label="Bytt lys/mørk">☾</button>
@@ -327,21 +370,38 @@ function lev(a, b) {
 }
 
 /* ---------- bøying ---------- */
-const END = ["o", "as", "a", "amos", "áis", "an"];
+const ENDS = { ar: ["o", "as", "a", "amos", "áis", "an"], er: ["o", "es", "e", "emos", "éis", "en"], ir: ["o", "es", "e", "imos", "ís", "en"] };
+const GR = ["ar", "er", "ir"];
+const grp = v => v.es.slice(-2);
+const endOf = (v, p) => ENDS[grp(v)][p];
 const PERS = ["yo", "tú", "él / ella", "nosotros", "vosotros", "ellos / ellas"];
 const PERS_B = ["Yo", "Tú", "Él / Ella", "Nosotros", "Vosotros", "Ellos / Ellas"];
 const PERS_FULL = ["yo", "tú", "él / ella / usted", "nosotros / nosotras", "vosotros / vosotras", "ellos / ellas / ustedes"];
 const PERS_NO = ["jeg", "du", "han / hun", "vi", "dere", "de"];
 const PRON_ALL = ["yo", "tú", "tu", "él", "el", "ella", "usted", "nosotros", "nosotras", "vosotros", "vosotras", "ellos", "ellas", "ustedes"];
 const stem = v => v.es.slice(0, -2);
-const form = (v, p) => stem(v) + END[p];
-const formHtml = (v, p) => `<span class="st">${esc(stem(v))}</span><span class="e">${END[p]}</span>`;
+const form = (v, p) => stem(v) + endOf(v, p);
+const formHtml = (v, p) => `<span class="st">${esc(stem(v))}</span><span class="e">${endOf(v, p)}</span>`;
+/* Fremgang per ending: -ar-endingene har nøkkel "0"–"5" (som før), -er/-ir "er0", "ir3" osv. */
+const pkey = (v, p) => grp(v) === "ar" ? String(p) : grp(v) + p;
+const grupper = () => GR.filter(g => VERB.some(v => grp(v) === g));
+/* Hvilken ending har et ord? Egen gruppe sjekkes først. → { g, p } eller null */
+function finnEnding(v, tok) {
+  const st = fold(stem(v)), t = fold(tok);
+  for (const g of [grp(v), ...GR.filter(x => x !== grp(v))]) { const p = ENDS[g].findIndex(e => st + fold(e) === t); if (p >= 0) return { g, p }; }
+  return null;
+}
+function feilForm(v, tok, p) {
+  const h = finnEnding(v, tok); if (!h) return "";
+  if (h.g !== grp(v)) return `<b>${esc(v.es)}</b> er et <b>-${grp(v)}</b>-verb, så ${PERS[p]} får endingen <b>-${endOf(v, p)}</b> (ikke -${ENDS[h.g][h.p]}).`;
+  return `<b>${esc(tok)}</b> er formen for <b>${PERS[h.p]}</b>.`;
+}
 const byEs = es => VERB.find(v => v.es === es);
 const subjOf = es => SUBJ.find(s => s.es === es);
 
 /* ---------- lagring ---------- */
 const KEY = "spansk-ar-verb-v1";
-const fresh = () => ({ v: 1, theme: "auto", lv: {}, lvP: {}, best: {}, regel: "hablar" });
+const fresh = () => ({ v: 1, theme: "auto", lv: {}, lvP: {}, best: {}, regel: "hablar", grp: "alle" });
 function load() { try { const x = JSON.parse(localStorage.getItem(KEY)); if (x && x.v === 1) return Object.assign(fresh(), x); } catch (e) {} return fresh(); }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
 let S = load();
@@ -350,6 +410,8 @@ const lvP = p => S.lvP[p] || 0;
 function step(v, kind, ok) { return ok ? (kind === "write" ? Math.min(3, v + 1) : Math.max(v, 1)) : Math.max(0, v - 1); }
 function updLv(g, kind, ok) { S.lv[g.es] = step(lv(g), kind, ok); save(); updTop(); }
 function updP(p, kind, ok) { S.lvP[p] = step(lvP(p), kind, ok); save(); }
+/* Verbene det øves på nå (velges på forsiden: alle, -ar, -er eller -ir). */
+const VB = () => { const l = S.grp && S.grp !== "alle" ? VERB.filter(v => grp(v) === S.grp) : VERB; return l.length >= 4 ? l : VERB; };
 
 /* ---------- tale ---------- */
 const TTS = "speechSynthesis" in window;
@@ -390,25 +452,39 @@ function home() {
   const n = Math.round((new Date(PROVEDATO + "T00:00:00") - new Date(idag + "T00:00:00")) / 864e5);
   const naar = n > 1 ? `om ${n} dager` : n === 1 ? "i morgen!" : n === 0 ? "i dag!" : "er ferdig";
   const dato = new Date(PROVEDATO + "T00:00:00").toLocaleDateString("nb-NO", { weekday: "long", day: "numeric", month: "long" });
+  const gr = grupper(), nEnd = gr.length * 6;
+  const satt = gr.reduce((a, g) => a + [0, 1, 2, 3, 4, 5].filter(p => lvP(pkey({ es: "x" + g }, p)) >= 3).length, 0);
+  const valgt = S.grp && gr.includes(S.grp) ? S.grp : "alle";
   show(`
   <section class="hero">
-    <h1>Spansk: regelrette -ar-verb</h1>
+    <h1>Spansk: verb og pronomen</h1>
     <span class="when">📅 Prøve ${esc(dato)} – ${naar}</span>
-    <span class="when">✂️ Ta bort -ar · ➕ legg til ny ending</span>
+    <p class="muted small">På prøven: personlige pronomen · bøying av -ar-, -er- og -ir-verb · familieord og «Mi madre se llama …»</p>
   </section>
 
   <section class="card prog">
-    <div class="progtop"><h3>Endingene dine</h3><span class="muted small">${[0, 1, 2, 3, 4, 5].filter(p => lvP(p) >= 3).length} av 6 sitter</span></div>
-    <div class="tiles">${END.map((e, p) => `<span class="tile lv${lvP(p)}">${PERS[p]} <small>-${e}</small></span>`).join("")}</div>
+    <div class="progtop"><h3>Endingene dine</h3><span class="muted small">${satt} av ${nEnd} sitter</span></div>
+    ${gr.map(g => `<div class="tiles"><span class="tile grp">-${g}</span>${ENDS[g].map((e, p) => `<span class="tile lv${lvP(pkey({ es: "x" + g }, p))}">${PERS[p]} <small>-${e}</small></span>`).join("")}</div>`).join("")}
     <div class="progtop"><h3>Verbene dine</h3><span class="muted small">${kan} av ${VERB.length} sitter</span></div>
-    <div class="tiles">${VERB.map(g => `<button class="tile lv${lv(g)}" ${TTS ? `data-say="${esc(g.es)}"` : ""} title="${esc(g.no)}">${esc(g.es)}</button>`).join("")}</div>
+    ${gr.map(g => `<div class="tiles"><span class="tile grp">-${g}</span>${VERB.filter(v => grp(v) === g).map(v => `<button class="tile lv${lv(v)}" ${TTS ? `data-say="${esc(v.es)}"` : ""} title="${esc(v.no)}">${esc(v.es)}</button>`).join("")}</div>`).join("")}
     <div class="legend"><span><i></i>Ny</span><span><i class="lv1"></i>Kjenner igjen</span><span><i class="lv2"></i>På vei</span><span><i class="lv3"></i>Sitter</span></div>
   </section>
 
   <section class="step">
-    <div class="stephead"><span class="num">1</span><h2>Regelen og verbene</h2></div>
+    <div class="stephead"><span class="num">1</span><h2>Pronomen og regelen</h2></div>
     <div class="modes">
-      ${mode("regel", "📏", "Regelen", "Slik bøyer du et -ar-verb – med tabell")}
+      ${mode("regel", "📏", "Regelen", "Pronomenene og hvordan -ar, -er og -ir bøyes")}
+      ${mode("pron", "👥", "Personlige pronomen", "yo, tú, él, ella, nosotros, nosotras …", pst("pron"))}
+    </div>
+  </section>
+
+  <div class="chips" role="group" aria-label="Hvilke verb vil du øve på?"><span class="muted small" style="align-self:center">Øv på:</span>
+    ${["alle", ...gr].map(g => `<button class="chip" data-act="grp:${g}" aria-pressed="${valgt === g}">${g === "alle" ? "Alle verb" : "-" + g + "-verb"}</button>`).join("")}
+  </div>
+
+  <section class="step">
+    <div class="stephead"><span class="num">2</span><h2>Verbene</h2></div>
+    <div class="modes">
       ${mode("kort", "📖", "Verbkort", "Snu kortene og hør uttalen")}
       ${mode("koble", "🧩", "Koble sammen", "Spansk verb og norsk betydning", b.koble ? `Rekord: ${b.koble} sek` : "")}
       ${mode("velgVerb", "🎯", "Hva betyr verbet?", "Fire alternativer, begge veier")}
@@ -417,7 +493,7 @@ function home() {
   </section>
 
   <section class="step">
-    <div class="stephead"><span class="num">2</span><h2>Bøy verbene</h2></div>
+    <div class="stephead"><span class="num">3</span><h2>Bøy verbene</h2></div>
     <div class="modes">
       ${mode("velgForm", "🔘", "Velg riktig form", "habla, hablas eller hablamos?", pst("velgForm"))}
       ${mode("tabell", "🔤", "Fyll tabellen", "Alle seks formene av et verb", pst("tab"))}
@@ -427,7 +503,7 @@ function home() {
   </section>
 
   <section class="step">
-    <div class="stephead"><span class="num">3</span><h2>Setninger</h2></div>
+    <div class="stephead"><span class="num">4</span><h2>Setninger</h2></div>
     <div class="modes">
       ${mode("betyr", "💬", "Hva betyr setningen?", "Endingen avslører hvem det er", pst("betyr"))}
       ${mode("omsetC", "🇪🇸", "Oversett til spansk", "Som oppgåve C – skriv hele setningen", pst("omsetC"))}
@@ -435,10 +511,11 @@ function home() {
   </section>
 
   <section class="step">
-    <div class="stephead"><span class="num">4</span><h2>Prøv deg</h2></div>
+    <div class="stephead"><span class="num">5</span><h2>Prøv deg</h2></div>
     <div class="modes">
-      ${mode("ark", "📄", "Øvearket", "Akkurat de 20 oppgavene fra arket", pst("ark"))}
-      ${mode("prove", "🏁", "Prøveprøve", "20 nye oppgaver av samme slag – uten hjelp", pst("prove"))}
+      ${mode("prove", "🏁", "Prøveprøve", "20 oppgaver: pronomen, -ar/-er/-ir, setninger og familien – uten hjelp", pst("prove"))}
+      ${mode("ark", "📄", "Øvearket (-ar)", "Akkurat de 20 oppgavene fra arket", pst("ark"))}
+      <a class="mode" href="spansk-gloser.html"><span class="ic">👪</span><span><b>Familieordene</b><small>Øv på familien og «Mi madre se llama …» i Spanske gloser →</small></span></a>
     </div>
   </section>
 
@@ -448,42 +525,56 @@ function home() {
 
 /* ---------- regelen ---------- */
 function regel() {
-  const v = byEs(S.regel) || VERB[0];
+  const v = byEs(S.regel) || VERB[0], gr = grupper();
+  const eks = { ar: byEs("hablar"), er: byEs("comer"), ir: byEs("vivir") };
   show(`
   <button class="back" data-act="home">← Tilbake</button>
-  <h2>Regelen: -ar-verb</h2>
+  <h2>Regelen</h2>
   <div class="rules">
-    <div class="rule"><h3>To steg</h3>
-      <p><b>1.</b> Ta bort <b>-ar</b> fra infinitiven. Da står du igjen med <b>stammen</b>.</p>
-      <div class="big-ex">habl<span class="cut">ar</span> → habl-</div>
-      <p><b>2.</b> Legg til endingen som passer til personen.</p>
-      <div class="big-ex">habl<span class="e">o</span> ${sayBtn("hablo", 1)} <span class="muted small" style="font-family:var(--fb)">= jeg snakker</span></div>
+    <div class="rule"><h3>Personlige pronomen</h3>
+      <table class="list">
+        ${PRONOMEN.map(x => `<tr><td class="f">${esc(x.es)}</td><td>${sayBtn(x.es, 1)}</td><td>${esc(x.no)}</td></tr>`).join("")}
+      </table>
+      <p class="small"><b>-as</b> (nosotras, vosotras, ellas) brukes bare når alle er jenter. Er det minst én gutt med, blir det <b>-os</b>.</p>
+      <p class="small"><b>usted</b> og <b>ustedes</b> er høflige former. De bøyes som él/ella og ellos/ellas.</p>
+      <p class="small">Husk aksenten: <b>tú</b> = du (tu = din) og <b>él</b> = han (el = artikkelen, el padre).</p>
+    </div>
+
+    <div class="rule"><h3>Tre grupper verb – samme to steg</h3>
+      <p><b>1.</b> Ta bort <b>-ar</b>, <b>-er</b> eller <b>-ir</b>. Da står du igjen med <b>stammen</b>.</p>
+      ${gr.map(g => eks[g] ? `<div class="big-ex">${esc(stem(eks[g]))}<span class="cut">${g}</span> → ${esc(stem(eks[g]))}-</div>` : "").join("")}
+      <p><b>2.</b> Legg til endingen som passer til personen <i>og</i> verbgruppen.</p>
+      ${gr.map(g => eks[g] ? `<div class="big-ex">${formHtml(eks[g], 0)} ${sayBtn(form(eks[g], 0), 1)} <span class="muted small" style="font-family:var(--fb)">= jeg ${esc(eks[g].pres)}</span></div>` : "").join("")}
+    </div>
+
+    <div class="rule"><h3>Endingene</h3>
+      <table class="list">
+        <tr><th>Person</th>${gr.map(g => `<th>-${g}</th>`).join("")}</tr>
+        ${[0, 1, 2, 3, 4, 5].map(p => `<tr><td>${PERS[p]}</td>${gr.map(g => `<td class="f"><span class="e">-${ENDS[g][p]}</span></td>`).join("")}</tr>`).join("")}
+      </table>
+      <p class="small"><b>-er</b> og <b>-ir</b> har de samme endingene, bortsett fra <b>nosotros</b> (-emos / -imos) og <b>vosotros</b> (-éis / -ís).
+      Husk aksenten på vosotros-formene: -áis, -éis, -ís.</p>
     </div>
 
     <div class="rule"><h3>Bøy et verb</h3>
       <p class="muted small">Velg et verb. Stammen er grå, endingen er farget.</p>
-      <div class="chips">${VERB.map(x => `<button class="chip" data-act="regelVerb:${x.es}" aria-pressed="${x === v}">${x.es}</button>`).join("")}</div>
-      <p><b>${esc(v.es)}</b> = ${esc(v.no)} · stammen er <b>${esc(stem(v))}-</b></p>
+      ${gr.map(g => `<div class="chips"><span class="tile grp">-${g}</span>${VERB.filter(x => grp(x) === g).map(x => `<button class="chip" data-act="regelVerb:${x.es}" aria-pressed="${x === v}">${x.es}</button>`).join("")}</div>`).join("")}
+      <p><b>${esc(v.es)}</b> = ${esc(v.no)} · et <b>-${grp(v)}</b>-verb · stammen er <b>${esc(stem(v))}-</b></p>
       <table class="list">
         <tr><th>Person</th><th>Form</th><th></th><th>Norsk</th></tr>
-        ${END.map((e, p) => `<tr><td>${PERS_FULL[p]}</td><td class="f">${formHtml(v, p)}</td><td>${sayBtn(form(v, p), 1)}</td><td class="muted">${PERS_NO[p]} ${esc(v.pres)}</td></tr>`).join("")}
+        ${[0, 1, 2, 3, 4, 5].map(p => `<tr><td>${PERS_FULL[p]}</td><td class="f">${formHtml(v, p)}</td><td>${sayBtn(form(v, p), 1)}</td><td class="muted">${PERS_NO[p]} ${esc(v.pres)}</td></tr>`).join("")}
       </table>
-    </div>
-
-    <div class="rule"><h3>Hugseregel for endingene</h3>
-      <div class="ex">-o · -as · -a · -amos · -áis · -an</div>
-      <p class="small">Husk aksenten på <b>-áis</b> (vosotros). <b>Usted</b> (De, høflig) bøyes som él, og <b>ustedes</b> som ellos.</p>
     </div>
 
     <div class="rule"><h3>Hvem er det? Når to gjør noe sammen</h3>
       <div class="who">
-        <span>María <b>y yo</b></span><span>= nosotros</span><span class="e">-amos</span>
-        <span><b>Tú y</b> María</span><span>= vosotros</span><span class="e">-áis</span>
-        <span>María y Pedro</span><span>= ellos</span><span class="e">-an</span>
-        <span>María / Pedro</span><span>= ella / él</span><span class="e">-a</span>
+        <span>María <b>y yo</b></span><span>= nosotros</span><span class="e">-amos / -emos / -imos</span>
+        <span><b>Tú y</b> María</span><span>= vosotros</span><span class="e">-áis / -éis / -ís</span>
+        <span>María y Pedro</span><span>= ellos</span><span class="e">-an / -en</span>
+        <span>María / Pedro</span><span>= ella / él</span><span class="e">-a / -e</span>
       </div>
       <p class="small">Er <b>jeg</b> med, er det <b>vi</b>. Er <b>du</b> med (og ikke jeg), er det <b>dere</b>. Ellers er det <b>de</b>.</p>
-      <div class="ex">Tú y María bailáis. = Du og María danser.</div>
+      <div class="ex">Tú y María bailáis. · María y yo comemos. · Mis padres viven en Madrid.</div>
     </div>
 
     <div class="rule"><h3>Pronomenet kan sløyfes</h3>
@@ -491,12 +582,15 @@ function regel() {
       <div class="ex">Hablo español. = Yo hablo español. = Jeg snakker spansk.</div>
     </div>
   </div>
-  <button class="btn pri big" data-act="velgForm">Øv på å bøye →</button>`);
+  <div class="row">
+    <button class="btn pri big" data-act="pron">Øv på pronomen →</button>
+    <button class="btn big" data-act="velgForm">Øv på å bøye →</button>
+  </div>`);
 }
 
 /* ---------- verbkort ---------- */
 let F = null;
-function kort() { F = { list: VERB.slice(), i: 0, on: false, noFirst: false, mix: false }; fRender(); }
+function kort() { F = { list: VB().slice(), i: 0, on: false, noFirst: false, mix: false }; fRender(); }
 function fRender() {
   const g = F.list[F.i], n = F.list.length;
   const es = `<span class="w">${esc(g.es)}</span>${sayBtn(g.es)}`;
@@ -519,7 +613,7 @@ function fRender() {
     <button class="chip" data-act="fnofirst" aria-pressed="${F.noFirst}">🔁 Norsk først</button>
   </div>
   <details class="card"><summary>Alle verbene</summary>
-    <table class="list">${VERB.map(x => `<tr><td class="f">${esc(x.es)}</td><td>${esc(x.no)}</td><td>${sayBtn(x.es, 1)}</td></tr>`).join("")}</table>
+    <table class="list">${F.list.map(x => `<tr><td class="f">${esc(x.es)}</td><td>${esc(x.no)}</td><td>${sayBtn(x.es, 1)}</td></tr>`).join("")}</table>
   </details>
   <p class="small muted">Tastatur: mellomrom snur, piltaster blar.</p>`);
 }
@@ -554,9 +648,9 @@ function checkForm(input, v, p, subjEs) {
   if (!a) return { st: "wrong" };
   if (a === f) return { st: "ok" };
   if (fold(a) === fold(f)) return { st: "accent" };
-  const other = END.findIndex(e => fold(a) === fold(stem(v) + e));
-  if (other >= 0) return { st: "wrong", note: `<b>${esc(a)}</b> er formen for <b>${PERS[other]}</b>.` };
-  if (fold(a) === fold(v.es)) return { st: "wrong", note: `Du skrev infinitiven. Ta bort <b>-ar</b> og legg til endingen.` };
+  const fn = feilForm(v, a, p);
+  if (fn) return { st: "wrong", note: fn };
+  if (fold(a) === fold(v.es)) return { st: "wrong", note: `Du skrev infinitiven. Ta bort <b>-${grp(v)}</b> og legg til endingen.` };
   if (lev(fold(a), fold(f)) <= 1) return { st: "almost" };
   return { st: "wrong" };
 }
@@ -566,13 +660,13 @@ function checkSetn(input, it) {
   const acc = it.acc.map(clean);
   if (acc.includes(a)) return { st: "ok" };
   if (acc.some(x => fold(x) === fold(a))) return { st: "accent" };
-  const st = fold(stem(it.v));
-  const vt = a.split(" ").find(t => fold(t).startsWith(st) && fold(t).length <= st.length + 5);
+  const st = fold(stem(it.v)), toks = a.split(" ");
+  const vt = toks.find(t => finnEnding(it.v, t) || fold(t) === fold(it.v.es)) || toks.find(t => fold(t).startsWith(st) && fold(t).length <= st.length + 5);
   if (!vt) return { st: "wrong", note: `Bruk verbet <b>${esc(it.v.es)}</b> (${esc(it.v.no)}).` };
   const f = form(it.v, it.p);
   if (fold(vt) !== fold(f)) {
-    const other = END.findIndex(e => fold(vt) === st + fold(e));
-    return { st: "wrong", note: other >= 0 ? `<b>${esc(vt)}</b> er formen for <b>${PERS[other]}</b>. Her skal det være <b>${esc(f)}</b>.` : `Verbet skal være <b>${esc(f)}</b>.` };
+    const fn = feilForm(it.v, vt, it.p);
+    return { st: "wrong", note: fn ? `${fn} Her skal det være <b>${esc(f)}</b>.` : `Verbet skal være <b>${esc(f)}</b>.` };
   }
   const d = Math.min(...acc.map(x => lev(fold(a), fold(x))));
   if (d <= 3) return { st: vt === f ? "typo" : "accent" };
@@ -580,7 +674,7 @@ function checkSetn(input, it) {
 }
 function forklP(s, v, p) {
   const who = s.pron ? `<b>${esc(s.es.toLowerCase())}</b>` : `<b>${esc(s.es)}</b> = <b>${PERS[p]}</b>`;
-  return `${who} → endingen <b>-${END[p]}</b>: ${formHtml(v, p)}`;
+  return `${who} → endingen <b>-${endOf(v, p)}</b>: ${formHtml(v, p)}${grp(v) !== "ar" ? ` <span class="muted">(-${grp(v)}-verb)</span>` : ""}`;
 }
 
 /* ---------- oppgavetyper ---------- */
@@ -593,19 +687,22 @@ function accFor(s, v, p, oEs) {
   return subs.map(x => sentEs(x, v, p, oEs));
 }
 
-function distract(g, n = 3) { return shuffle(VERB.filter(x => x !== g)).slice(0, n); }
+function distract(g, n = 3) { return shuffle(VB().filter(x => x !== g)).slice(0, n); }
 function itVelgEsNo(g) { return { kind: "choice", g, label: "Hva betyr verbet?", big: g.es, say: g.es, options: [g.no, ...distract(g).map(x => x.no)], answer: g.no, line: `${g.es} = ${g.no}`, sayF: g.es,
-  fe: { k: `${g.es}:es-no`, q: `Hva betyr det spanske verbet «${g.es}»?`, emne: "Spansk: -ar-verb" } }; }
+  fe: { k: `${g.es}:es-no`, q: `Hva betyr det spanske verbet «${g.es}»?`, emne: "Spansk: verb" } }; }
 function itVelgNoEs(g) { return { kind: "choice", g, label: "Hva heter det på spansk?", big: g.no, options: [g.es, ...distract(g).map(x => x.es)], answer: g.es, line: `${g.no} = ${g.es}`, sayF: g.es,
-  fe: { k: `${g.es}:no-es`, q: `Hva heter «${g.no}» på spansk?`, emne: "Spansk: -ar-verb" } }; }
+  fe: { k: `${g.es}:no-es`, q: `Hva heter «${g.no}» på spansk?`, emne: "Spansk: verb" } }; }
 function itSkrivVerb(g) { return { kind: "write", g, label: "Skriv verbet på spansk", big: g.no, sub: "i infinitiv – slik det står i ordlista", fasit: g.es, check: v => checkWord(v, g.es), line: `${g.no} = ${g.es}`, sayF: g.es,
-  fe: { k: `${g.es}:skriv`, q: `Skriv verbet på spansk (i infinitiv): «${g.no}»`, emne: "Spansk: -ar-verb" } }; }
+  fe: { k: `${g.es}:skriv`, q: `Skriv verbet på spansk (i infinitiv): «${g.no}»`, emne: "Spansk: verb" } }; }
 
 /* Velg riktig form: Tú ___ (cantar) bien. */
 function itVelgForm(v, p) {
   const s = subjFor(p), o = objFor(v), f = form(v, p);
   const opts = [f, ...shuffle([0, 1, 2, 3, 4, 5].filter(x => x !== p)).slice(0, 3).map(x => form(v, x))];
-  return { kind: "choice", sent: true, p, label: "Velg riktig form", bigHtml: `${esc(s.es)} <span class="gap">___</span> <span class="paren">(${esc(v.es)})</span> ${esc(o.es)}.`, sub: esc(sentNo(s.no, v, o.no)),
+  /* Felle: samme person, men endingen fra en annen verbgruppe (comamos, vivemos …). */
+  const felle = GR.filter(g => g !== grp(v)).map(g => stem(v) + ENDS[g][p]).find(x => !opts.includes(x));
+  if (felle && Math.random() < .6) opts[3] = felle;
+  return { kind: "choice", sent: true, p, pk: pkey(v, p), label: "Velg riktig form", bigHtml: `${esc(s.es)} <span class="gap">___</span> <span class="paren">(${esc(v.es)})</span> ${esc(o.es)}.`, sub: esc(sentNo(s.no, v, o.no)),
     options: opts, answer: f, forkl: forklP(s, v, p), line: sentEs(s.es, v, p, o.es), sayF: sentEs(s.es, v, p, o.es),
     fe: { k: `${v.es}:${p}:velg`, q: `Velg riktig form av ${v.es}: «${s.es} ___ ${o.es}.» (${sentNo(s.no, v, o.no)})` } };
 }
@@ -613,7 +710,7 @@ function itVelgForm(v, p) {
 function itBoyA(v, p, s, o, noTxt) {
   s = s || subjFor(p); o = o || objFor(v);
   const full = sentEs(s.es, v, p, o.es);
-  return { kind: "write", sent: true, p, label: "Bøy verbet i parentes", bigHtml: `${esc(s.es)} <span class="gap">___</span> <span class="paren">(${esc(v.es)})</span> ${esc(o.es)}.`,
+  return { kind: "write", sent: true, p, pk: pkey(v, p), label: "Bøy verbet i parentes", bigHtml: `${esc(s.es)} <span class="gap">___</span> <span class="paren">(${esc(v.es)})</span> ${esc(o.es)}.`,
     sub: esc(noTxt || sentNo(s.no, v, o.no)), fasit: form(v, p), check: x => checkForm(x, v, p, s.es), forkl: forklP(s, v, p), line: full, sayF: full, after: `${sayBtn(full, 1)} ${esc(full)}`,
     fe: { k: `${v.es}:${p}:boy`, q: `Bøy verbet ${v.es}: «${s.es} ___ ${o.es}.» (${noTxt || sentNo(s.no, v, o.no)})`, godta: [`${s.es} ${form(v, p)}`] } };
 }
@@ -622,8 +719,8 @@ function itFinnB(v, p, oEs) {
   if (oEs == null) oEs = objFor(v).es;
   const f = form(v, p), s = SUBJ.find(x => x.p === p && x.pron);
   const full = sentEs(PERS_B[p].split(" / ")[0], v, p, oEs);
-  return { kind: "choice", fixed: true, pron: true, sent: true, p, label: "Hvem? Se på endingen", bigHtml: `<span class="gap">___</span> ${esc(f)} ${esc(oEs)}.`,
-    options: PERS_B.slice(), answer: PERS_B[p], forkl: `Endingen <b>-${END[p]}</b> (${formHtml(v, p)}) hører til <b>${PERS[p]}</b>.`, line: full, sayF: full,
+  return { kind: "choice", fixed: true, pron: true, sent: true, p, pk: pkey(v, p), label: "Hvem? Se på endingen", bigHtml: `<span class="gap">___</span> ${esc(f)} ${esc(oEs)}.`,
+    options: PERS_B.slice(), answer: PERS_B[p], forkl: `Endingen <b>-${endOf(v, p)}</b> (${formHtml(v, p)}) hører til <b>${PERS[p]}</b>.`, line: full, sayF: full,
     fe: { k: `${v.es}:${p}:hvem`, q: `Hvem passer? Se på endingen: «___ ${f} ${oEs}.»`.replace(/ \./, ".") } };
 }
 /* Hvem er det? María y yo → Nosotros */
@@ -638,7 +735,7 @@ function itHvem() {
 function itOmsetC(v, p, s, o, noTxt) {
   s = s || subjFor(p); o = o || objFor(v);
   const fasit = sentEs(s.es, v, p, o.es);
-  return { kind: "write", sent: true, wide: true, p, v, label: "Oversett til spansk", big: noTxt || sentNo(s.no, v, o.no), sub: `Verbet: <b>${esc(v.es)}</b>`,
+  return { kind: "write", sent: true, wide: true, p, pk: pkey(v, p), v, label: "Oversett til spansk", big: noTxt || sentNo(s.no, v, o.no), sub: `Verbet: <b>${esc(v.es)}</b>`,
     fasit, acc: accFor(s, v, p, o.es), check(x) { return checkSetn(x, this); }, forkl: forklP(s, v, p), line: fasit, sayF: fasit, after: `${sayBtn(fasit, 1)} ${esc(fasit)}`,
     fe: { k: `${v.es}:${p}:omset`, q: `Oversett til spansk: «${noTxt || sentNo(s.no, v, o.no)}» (verbet: ${v.es})`, godta: [...new Set(accFor(s, v, p, o.es).flatMap(x => [x, x.replace(/\.$/, "")]))].filter(x => x !== fasit) } };
 }
@@ -647,12 +744,56 @@ function itBetyr(v, p) {
   const s = subjFor(p), o = objFor(v), dropp = s.pron && p !== 2 && p !== 5 && Math.random() < .5;
   const es = cap(sentEs(dropp ? "" : s.es, v, p, o.es));
   const andre = shuffle([0, 1, 2, 3, 4, 5].filter(x => x !== p)).slice(0, 3).map(x => sentNo(subjFor(x, true).no, v, o.no));
-  return { kind: "choice", wide: true, sent: true, p, label: "Hva betyr setningen?", big: es, say: es, sub: dropp ? "Pronomenet er sløyfet – se på endingen!" : "",
+  return { kind: "choice", wide: true, sent: true, p, pk: pkey(v, p), label: "Hva betyr setningen?", big: es, say: es, sub: dropp ? "Pronomenet er sløyfet – se på endingen!" : "",
     options: [sentNo(s.no, v, o.no), ...andre], answer: sentNo(s.no, v, o.no), forkl: forklP(dropp ? Object.assign({}, s, { pron: true }) : s, v, p), line: `${es} = ${sentNo(s.no, v, o.no)}`, sayF: es,
     fe: { k: `${v.es}:${p}:betyr`, q: `Hva betyr «${es}»?` } };
 }
 const persRekke = n => { const out = []; while (out.length < n) out.push(...shuffle([0, 1, 2, 3, 4, 5])); return out.slice(0, n); };
-const verbRekke = n => { const out = []; while (out.length < n) out.push(...shuffle(VERB.slice())); return out.slice(0, n); };
+const verbRekke = (n, pool) => { pool = pool || VB(); const out = []; while (out.length < n) out.push(...shuffle(pool.slice())); return out.slice(0, n); };
+
+/* Personlige pronomen */
+const pronAndre = (pr, felt) => shuffle(PRONOMEN.filter(x => x !== pr)).slice(0, 3).map(x => x[felt]);
+function itPronEsNo(pr) {
+  return { kind: "choice", wide: true, label: "Hva betyr pronomenet?", big: pr.es, say: pr.es, options: [pr.no, ...pronAndre(pr, "no")], answer: pr.no, line: `${pr.es} = ${pr.no}`, sayF: pr.es, forkl: pronForkl(pr),
+    fe: { k: `pron:${pr.es}:es-no`, q: `Hva betyr det spanske pronomenet «${pr.es}»?`, emne: "Spansk: personlige pronomen" } };
+}
+function itPronNoEs(pr) {
+  return { kind: "choice", label: "Hva heter det på spansk?", big: pr.no, options: [pr.es, ...pronAndre(pr, "es")], answer: pr.es, line: `${pr.no} = ${pr.es}`, sayF: pr.es, forkl: pronForkl(pr),
+    fe: { k: `pron:${pr.es}:no-es`, q: `Hva heter «${pr.no}» på spansk?`, emne: "Spansk: personlige pronomen" } };
+}
+function itPronSkriv(pr) {
+  return { kind: "write", label: "Skriv pronomenet på spansk", big: pr.no, fasit: pr.es, line: `${pr.no} = ${pr.es}`, sayF: pr.es, forkl: pronForkl(pr),
+    check: x => {
+      const r = checkWord(x, pr.es);
+      if (r.st === "accent" && (pr.es === "tú" || pr.es === "él")) return { st: "almost", note: pr.es === "tú" ? "Uten aksent betyr <b>tu</b> «din». Pronomenet er <b>tú</b>." : "Uten aksent er <b>el</b> artikkelen (el padre). Pronomenet er <b>él</b>." };
+      return r;
+    },
+    fe: { k: `pron:${pr.es}:skriv`, q: `Skriv på spansk: «${pr.no}»`, emne: "Spansk: personlige pronomen" } };
+}
+function pronForkl(pr) {
+  if (/bare jenter/.test(pr.no)) return `Bare jenter → <b>-as</b>: ${esc(pr.es)}. Er det minst én gutt med, blir det -os.`;
+  if (/gutter eller blandet/.test(pr.no)) return `Gutter eller blandet gruppe → <b>-os</b>: ${esc(pr.es)}.`;
+  if (/høflig/.test(pr.no)) return `<b>${esc(pr.es)}</b> er høflig form. Den bøyes som ${pr.es === "usted" ? "él/ella" : "ellos/ellas"}.`;
+  return "";
+}
+const itPron = pr => pick([itPronEsNo, itPronNoEs, itPronSkriv])(pr);
+
+/* Familien: «Moren min heter María.» → «Mi madre se llama María.» */
+function itFamilie(f) {
+  const [es, no] = f || pick(FAMILIE), kv = es === "madre" || /a$/.test(es), navn = pick(NAVN[kv ? "f" : "m"]);
+  const fasit = `Mi ${es} se llama ${navn}.`;
+  return { kind: "write", sent: true, wide: true, label: "Oversett til spansk", big: `${no} heter ${navn}.`, sub: "heter = se llama", fasit, line: fasit, sayF: fasit, after: `${sayBtn(fasit, 1)} ${esc(fasit)}`,
+    forkl: `<b>Mi</b> + familieordet + <b>se llama</b> + navnet.`,
+    check: x => {
+      const a = clean(x), f = clean(fasit);
+      if (a === f) return { st: "ok" };
+      if (fold(a) === fold(f)) return { st: "accent" };
+      if (!/se llama/.test(fold(a))) return { st: "wrong", note: "«heter» er <b>se llama</b>." };
+      if (lev(fold(a), fold(f)) <= 2) return { st: "typo" };
+      return { st: "wrong" };
+    },
+    fe: { k: `familie:${es}`, q: `Oversett til spansk: «${no} heter ${navn}.»`, emne: "Spansk: familien" } };
+}
 
 /* ---------- quiz-motor ---------- */
 let Q = null;
@@ -695,7 +836,7 @@ function qAnswer(r, given) {
   if (!(it.id in Q.first)) {
     Q.first[it.id] = ok;
     if (it.g) updLv(it.g, it.kind, ok);
-    if (it.p != null) updP(it.p, it.kind, ok);
+    if (it.pk != null) updP(it.pk, it.kind, ok);
     if (ok) window.Gull && Gull.tjen(it.kind === "write" ? 2 : 1);
     fMeld(it, ok);
   }
@@ -767,7 +908,7 @@ function fMeld(it, ok, f) {
     const k = `ar-verb:${f.k}`;
     if (ok) { if (Gull.riktig) Gull.riktig(k); return; }
     if (!Gull.feil) return;
-    const o = { q: txt(f.q), a: txt(f.a || it.fasit || it.answer), emne: f.emne || "Spansk: bøying av -ar-verb" };
+    const o = { q: txt(f.q), a: txt(f.a || it.fasit || it.answer), emne: f.emne || "Spansk: bøying av verb" };
     const alt = it.kind === "choice" && it.options ? shuffle(it.options.filter(x => x !== it.answer)).slice(0, 3) : [];
     if (alt.length >= 2) o.alt = alt;
     if (f.godta && f.godta.length) o.godta = f.godta;
@@ -778,14 +919,19 @@ function fMeld(it, ok, f) {
 /* Merke: minst 90 % på prøveprøven, eller alle 15 verbene og alle 6 endingene sitter (nivå 3). */
 function sjekkMerke() {
   if (!window.Gull || !Gull.merke) return;
-  const alle = VERB.every(g => lv(g) >= 3) && [0, 1, 2, 3, 4, 5].every(p => lvP(p) >= 3);
+  const alle = VERB.every(g => lv(g) >= 3) && grupper().every(g => [0, 1, 2, 3, 4, 5].every(p => lvP(pkey({ es: "x" + g }, p)) >= 3));
   if ((S.best.prove != null && S.best.prove >= 90) || alle) try { Gull.merke("spansk-verb"); } catch (e) {}
 }
 
 /* ---------- moduser ---------- */
 const MODES = {
-  velgVerb() { startQuiz({ title: "Hva betyr verbet?", again: "velgVerb", items: shuffle(VERB.map(g => Math.random() < .5 ? itVelgEsNo(g) : itVelgNoEs(g))) }); },
-  skrivVerb() { startQuiz({ title: "Skriv verbet", again: "skrivVerb", items: shuffle(VERB.map(itSkrivVerb)) }); },
+  velgVerb() { startQuiz({ title: "Hva betyr verbet?", again: "velgVerb", items: shuffle(VB().map(g => Math.random() < .5 ? itVelgEsNo(g) : itVelgNoEs(g))) }); },
+  skrivVerb() { startQuiz({ title: "Skriv verbet", again: "skrivVerb", items: shuffle(VB().map(itSkrivVerb)) }); },
+  pron() {
+    const items = shuffle(PRONOMEN.map(itPron));
+    for (let i = 0; i < 3; i++) items.splice(4 + i * 5, 0, itHvem());
+    startQuiz({ title: "Personlige pronomen", again: "pron", bestKey: "pron", items });
+  },
   velgForm() { const ps = persRekke(12), vs = verbRekke(12); startQuiz({ title: "Velg riktig form", again: "velgForm", bestKey: "velgForm", items: ps.map((p, i) => itVelgForm(vs[i], p)) }); },
   boyA() { const ps = persRekke(12), vs = verbRekke(12); startQuiz({ title: "Bøy verbet i parentes", again: "boyA", bestKey: "boyA", items: ps.map((p, i) => itBoyA(vs[i], p)) }); },
   finnB() {
@@ -805,23 +951,22 @@ const MODES = {
     const C = ARK.C.map(x => { const s = subjOf(x.s), v = byEs(x.v); return Object.assign(itOmsetC(v, s.p, s, { es: x.o, no: "" }, x.no), { del: "Oppgåve C" }); });
     startQuiz({ title: "Øvearket", again: "ark", bestKey: "ark", items: [...A, ...B, ...C] });
   },
+  /* Som prøven: pronomen, bøying av alle tre verbgruppene, finn personen, oversetting og familien. */
   prove() {
-    const vs = verbRekke(20);
-    const A = persRekke(6).map((p, i) => Object.assign(itBoyA(vs[i], p), { del: "Del A" }));
-    const B = persRekke(6).map((p, i) => Object.assign(itFinnB(vs[6 + i], p), { del: "Del B" }));
-    const cs = [...persRekke(5), 3, 4, 5];   // de tre siste: «María y yo», «Tú y María», «María y Pedro»
-    const C = cs.map((p, i) => {
-      const v = vs[12 + i];
-      const s = i >= 5 ? pick(SUBJ.filter(x => x.p === p && !x.pron)) : subjFor(p);
-      return Object.assign(itOmsetC(v, p, s), { del: "Del C" });
-    });
-    startQuiz({ title: "Prøveprøve", again: "prove", requeue: false, bestKey: "prove", items: [...A, ...B, ...C] });
+    const blandet = n => { const en = grupper().map(g => pick(VERB.filter(v => grp(v) === g))); return shuffle([...en, ...verbRekke(n - en.length, VERB)]); };
+    const A = shuffle(PRONOMEN.slice()).slice(0, 3).map((pr, i) => Object.assign(i === 0 ? itPronSkriv(pr) : itPron(pr), { del: "Pronomen" }));
+    const vb = blandet(5), B = persRekke(5).map((p, i) => Object.assign(itBoyA(vb[i], p), { del: "Bøy verbet" }));
+    const vf = blandet(4), C = persRekke(4).map((p, i) => Object.assign(itFinnB(vf[i], p), { del: "Finn personen" }));
+    const vo = blandet(5), cs = [...persRekke(3), pick([3, 4]), 5];   // de to siste: «María y yo»/«Tú y María» og «María y Pedro»
+    const D = cs.map((p, i) => Object.assign(itOmsetC(vo[i], p, i >= 3 ? pick(SUBJ.filter(x => x.p === p && !x.pron)) : subjFor(p)), { del: "Oversett" }));
+    const E = shuffle(FAMILIE.slice()).slice(0, 3).map(f => Object.assign(itFamilie(f), { del: "Familien" }));
+    startQuiz({ title: "Prøveprøve", again: "prove", requeue: false, bestKey: "prove", items: [...A, ...B, ...C, ...D, ...E] });
   },
 };
 
 /* ---------- fyll tabellen ---------- */
 let T = null;
-function tabell() { T = { verbs: shuffle(VERB.slice()).slice(0, 5), i: 0, right: 0, total: 0, miss: [] }; tRender(); }
+function tabell() { T = { verbs: shuffle(VB().slice()).slice(0, 5), i: 0, right: 0, total: 0, miss: [] }; tRender(); }
 function tRender() {
   const v = T.verbs[T.i]; T.checked = false;
   show(`
@@ -832,9 +977,9 @@ function tRender() {
   <div class="card qcard pop" id="qcard">
     <div class="qlabel">Bøy verbet</div>
     <div class="qbig">${esc(v.es)} ${sayBtn(v.es)}</div>
-    <div class="qsub">${esc(v.no)}</div>
+    <div class="qsub">${esc(v.no)} · et -${grp(v)}-verb</div>
     <form class="tgrid" id="tform" autocomplete="off">
-      ${END.map((e, p) => `<label for="t${p}">${PERS[p]}</label><div class="tcell"><input class="tin" id="t${p}" type="text" lang="es" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><span class="tfas" id="tf${p}"></span></div>`).join("")}
+      ${[0, 1, 2, 3, 4, 5].map(p => `<label for="t${p}">${PERS[p]}</label><div class="tcell"><input class="tin" id="t${p}" type="text" lang="es" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><span class="tfas" id="tf${p}"></span></div>`).join("")}
       <button type="submit" hidden></button>
     </form>
     <div class="accbar">${["á", "é", "í", "ó", "ú"].map(c => `<button type="button" class="acc" data-act="acc:${c}">${c}</button>`).join("")}</div>
@@ -848,13 +993,13 @@ function tCheck() {
   if (!T || T.checked) return;
   const v = T.verbs[T.i]; T.checked = true;
   let n = 0;
-  END.forEach((e, p) => {
+  [0, 1, 2, 3, 4, 5].forEach(p => {
     const inp = $("#t" + p), r = checkForm(inp.value, v, p), ok = r.st === "ok" || r.st === "accent";
     inp.readOnly = true; inp.classList.add(ok ? "good" : "bad");
     if (!ok || r.st === "accent") $("#tf" + p).innerHTML = `${ok ? "Husk aksenten: " : "→ "}${formHtml(v, p)}`;
     if (ok) { n++; window.Gull && Gull.tjen(1); } else T.miss.push(`${PERS[p]} ${form(v, p)}`);
-    if (ok || inp.value.trim()) fMeld({ kind: "write", fasit: form(v, p) }, ok, { k: `${v.es}:${p}:tabell`, q: `Bøy ${v.es} (${v.no}) for ${PERS[p]}.`, forkl: `Ta bort -ar og legg til -${END[p]}: ${form(v, p)}.` });
-    updP(p, "write", ok);
+    if (ok || inp.value.trim()) fMeld({ kind: "write", fasit: form(v, p) }, ok, { k: `${v.es}:${p}:tabell`, q: `Bøy ${v.es} (${v.no}) for ${PERS[p]}.`, forkl: `Ta bort -${grp(v)} og legg til -${endOf(v, p)}: ${form(v, p)}.` });
+    updP(pkey(v, p), "write", ok);
   });
   T.right += n; T.total += 6;
   updLv(v, n >= 5 ? "write" : "choice", n >= 3);
@@ -862,7 +1007,7 @@ function tCheck() {
   const fb = $("#fb");
   fb.className = "fb pop " + (n === 6 ? "ok" : n >= 4 ? "almost" : "wrong");
   fb.innerHTML = `<div class="head">${n === 6 ? "✓ ¡Perfecto! Alle seks riktige" : `${n} av 6 riktig`}</div>
-    ${n < 6 ? `<div class="extra">Stammen er <b>${esc(stem(v))}-</b>. Endingene: -o · -as · -a · -amos · -áis · -an</div>` : ""}
+    ${n < 6 ? `<div class="extra">Stammen er <b>${esc(stem(v))}-</b>. Endingene for -${grp(v)}-verb: ${ENDS[grp(v)].map(e => "-" + e).join(" · ")}</div>` : ""}
     <button class="btn pri" data-act="tnext" id="nextBtn">${T.i + 1 < T.verbs.length ? "Neste verb →" : "Ferdig →"}</button>`;
   $("#nextBtn").focus({ preventScroll: true });
 }
@@ -876,7 +1021,7 @@ function tNext() {
 /* ---------- koble sammen ---------- */
 let K = null;
 function koble() {
-  const gl = shuffle(VERB.slice()), nR = Math.ceil(gl.length / 5), size = Math.ceil(gl.length / nR), rounds = [];
+  const gl = shuffle(VB().slice()), nR = Math.ceil(gl.length / 5), size = Math.ceil(gl.length / nR), rounds = [];
   for (let i = 0; i < gl.length; i += size) rounds.push(gl.slice(i, i + size));
   K = { rounds, r: 0, sel: null, err: 0, t0: Date.now(), feil: new Set() };
   kRender();
@@ -939,14 +1084,15 @@ const ACT = {
   home, kort, koble, regel, tabell,
   velgVerb: () => MODES.velgVerb(), skrivVerb: () => MODES.skrivVerb(), velgForm: () => MODES.velgForm(),
   boyA: () => MODES.boyA(), finnB: () => MODES.finnB(), betyr: () => MODES.betyr(), omsetC: () => MODES.omsetC(),
-  ark: () => MODES.ark(), prove: () => MODES.prove(),
+  ark: () => MODES.ark(), prove: () => MODES.prove(), pron: () => MODES.pron(),
+  grp(g) { S.grp = g; save(); const y = window.scrollY; home(); window.scrollTo(0, y); },
   theme() { S.theme = erMork() ? "light" : "dark"; save(); applyTheme(); },
   regelVerb(es) { S.regel = es; save(); const y = window.scrollY; regel(); window.scrollTo(0, y); },
-  reset() { if (confirm("Nullstille fremgangen i -ar-verb?")) { S = Object.assign(fresh(), { theme: S.theme }); save(); home(); } },
+  reset() { if (confirm("Nullstille fremgangen i Spanske verb?")) { S = Object.assign(fresh(), { theme: S.theme }); save(); home(); } },
   flip() { F.on = !F.on; $("#flip").classList.toggle("on", F.on); },
   fnext() { F.i = (F.i + 1) % F.list.length; F.on = false; fRender(); },
   fprev() { F.i = (F.i - 1 + F.list.length) % F.list.length; F.on = false; fRender(); },
-  fmix() { F.mix = !F.mix; F.list = F.mix ? shuffle(VERB.slice()) : VERB.slice(); F.i = 0; F.on = false; fRender(); },
+  fmix() { F.mix = !F.mix; F.list = F.mix ? shuffle(VB().slice()) : VB().slice(); F.i = 0; F.on = false; fRender(); },
   fnofirst() { F.noFirst = !F.noFirst; F.on = false; fRender(); },
   opt(_, b) {
     if (!Q || Q.answered) return;
