@@ -15,7 +15,7 @@
    VERBENE – -ar-verbene er fra øvearket og PowerPointen.
    NYE VERB? Legg dem inn i lista under. Gruppen (-ar, -er, -ir) finnes ut fra endingen,
    og alle øvingene, tabellene og prøveprøven tar dem med automatisk.
-   -er- og -ir-verbene under er vanlige lærebokverb – bytt dem ut med ordlista fra skolen.
+   -er- og -ir-verbene er fra øvearkene om regelrette -er- og -ir-verb.
    es   infinitiv på spansk
    no   norsk betydning slik den vises
    pres norsk presens (brukes i setningene: «Jeg ___ spansk»)
@@ -41,19 +41,23 @@ const VERB = [
   { es: "nadar",    no: "å svømme",            pres: "svømmer",   alt: ["symja", "symje", "svømma"],                    obj: [["bien", "godt"], ["en el mar", "i havet"]] },
   { es: "comprar",  no: "å kjøpe / å handle",  pres: "kjøper",    alt: ["kjøpa", "handla", "handle"],                   obj: [["pan", "brød"], ["una pizza", "en pizza"]] },
 
-  /* -er-verb */
-  { es: "comer",    no: "å spise",             pres: "spiser",    alt: ["eta", "ete"],                                  obj: [["una pizza", "en pizza"], ["pan", "brød"], ["mucho", "mye"], ["en casa", "hjemme"]] },
+  /* -er-verb (øvearket om regelrette -er-verb) */
+  { es: "comer",    no: "å spise / å ete",     pres: "spiser",    alt: ["eta", "ete"],                                  obj: [["una manzana", "et eple"], ["pizza", "pizza"], ["pan", "brød"], ["mucho", "mye"]] },
   { es: "beber",    no: "å drikke",            pres: "drikker",   alt: ["drikka"],                                      obj: [["agua", "vann"], ["leche", "melk"], ["café", "kaffe"]] },
-  { es: "leer",     no: "å lese",              pres: "leser",     alt: ["lesa"],                                        obj: [["un libro", "en bok"], ["el periódico", "avisen"], ["mucho", "mye"]] },
-  { es: "aprender", no: "å lære",              pres: "lærer",     alt: ["læra", "lære seg"],                            obj: [["español", "spansk"], ["inglés", "engelsk"], ["mucho", "mye"]] },
-  { es: "correr",   no: "å løpe / å springe",  pres: "løper",     alt: ["springa", "springe", "spring", "lope", "laupa", "springa"], obj: [["mucho", "mye"], ["en el parque", "i parken"], ["rápido", "fort"]] },
+  { es: "aprender", no: "å lære",              pres: "lærer",     alt: ["læra", "lære seg"],                            obj: [["español", "spansk"], ["mucho en la escuela", "mye på skolen"], ["inglés", "engelsk"]] },
+  { es: "comprender", no: "å forstå",          pres: "forstår",   alt: ["forstå", "skjønne", "skjøna", "meine"],        obj: [["español", "spansk"], ["la pregunta", "spørsmålet"], ["el libro", "boka"]] },
+  { es: "leer",     no: "å lese",              pres: "leser",     alt: ["lesa"],                                        obj: [["un libro", "en bok"], ["el periódico", "avisen"], ["español", "spansk"]] },
+  { es: "vender",   no: "å selge",             pres: "selger",    alt: ["selje", "selja", "selga"],                     obj: [["manzanas", "epler"], ["pan", "brød"], ["la casa", "huset"]] },
+  { es: "correr",   no: "å springe / å løpe",  pres: "springer",  alt: ["springa", "spring", "løpe", "løpa", "lope"],  obj: [["mucho", "mye"], ["en el parque", "i parken"], ["rápido", "fort"]] },
 
-  /* -ir-verb */
-  { es: "vivir",    no: "å bo / å leve",       pres: "bor",       alt: ["bu", "leva"],                                  obj: [["en Noruega", "i Norge"], ["en Madrid", "i Madrid"], ["en una casa", "i et hus"]] },
-  { es: "escribir", no: "å skrive",            pres: "skriver",   alt: ["skriva"],                                      obj: [["una carta", "et brev"], ["un libro", "en bok"], ["en español", "på spansk"]] },
-  { es: "abrir",    no: "å åpne",              pres: "åpner",     alt: ["opna", "opne"],                                obj: [["la puerta", "døra"], ["la ventana", "vinduet"]] },
-  { es: "compartir", no: "å dele",             pres: "deler",     alt: ["dela"],                                        obj: [["la pizza", "pizzaen"], ["la comida", "maten"]] },
-  { es: "recibir",  no: "å få / å motta",      pres: "får",       alt: ["motta", "ta imot", "ta imot"],                 obj: [["un regalo", "en gave"], ["una carta", "et brev"]] },
+  /* -ir-verb (øvearket om regelrette -ir-verb) */
+  { es: "vivir",    no: "å bo",                pres: "bor",       alt: ["bu", "leve", "leva"],                          obj: [["en Noruega", "i Norge"], ["en Madrid", "i Madrid"], ["en Oslo", "i Oslo"], ["en España", "i Spania"]] },
+  { es: "escribir", no: "å skrive",            pres: "skriver",   alt: ["skriva"],                                      obj: [["una carta", "et brev"], ["un libro", "en bok"], ["en español", "på spansk"], ["una lista", "en liste"]] },
+  { es: "abrir",    no: "å åpne",              pres: "åpner",     alt: ["opne", "opna"],                                obj: [["la puerta", "døra"], ["las ventanas", "vinduene"], ["la ventana", "vinduet"]] },
+  { es: "recibir",  no: "å ta imot / å få",    pres: "får",       alt: ["ta imot", "motta", "få", "ta i mot"],          obj: [["regalos", "gaver"], ["un mensaje", "en melding"], ["una carta", "et brev"]] },
+  { es: "asistir",  no: "å delta / å være til stede", pres: "deltar", alt: ["vere til stades", "vera til stades", "være til stede", "delta"], obj: [["a la clase", "i timen"], ["a la fiesta", "på festen"]] },
+  { es: "interrumpir", no: "å avbryte",        pres: "avbryter",  alt: ["avbryta"],                                     obj: [["la clase", "timen"], ["a María", "María"], ["", ""]] },
+  { es: "discutir", no: "å diskutere",         pres: "diskuterer", alt: ["diskutera", "drøfte", "krangle"],             obj: [["el libro", "boka"], ["mucho", "mye"], ["", ""]] },
 ];
 
 /* Personlige pronomen (side 19 i spanskboka). */
@@ -101,29 +105,80 @@ const SUBJ = [
 ];
 
 /* Øvearket, akkurat som på papiret (oppgåve A, B og C). */
-const ARK = {
-  A: [
-    { s: "Yo",       v: "hablar",   o: "español",       no: "Eg snakkar spansk." },
-    { s: "Tú",       v: "bailar",   o: "bien",          no: "Du dansar godt." },
-    { s: "María",    v: "escuchar", o: "música",        no: "María lyttar til musikk." },
-    { s: "Nosotros", v: "estudiar", o: "en la escuela", no: "Vi studerer på skulen." },
-    { s: "Vosotros", v: "cantar",   o: "una canción",   no: "Dokker syng ein song." },
-    { s: "Ellos",    v: "mirar",    o: "la televisión", no: "Dei ser på TV." },
-  ],
-  B: [
-    { v: "bailar", p: 1, o: "salsa" }, { v: "hablar", p: 0, o: "noruego" }, { v: "escuchar", p: 5, o: "la radio" },
-    { v: "trabajar", p: 3, o: "hoy" }, { v: "mirar", p: 4, o: "un libro" }, { v: "cantar", p: 2, o: "bien" },
-  ],
-  C: [
-    { no: "Eg dansar.",                   s: "Yo",            v: "bailar",  o: "" },
-    { no: "Du snakkar spansk.",           s: "Tú",            v: "hablar",  o: "español" },
-    { no: "Vi høyrer på musikk.",         s: "Nosotros",      v: "escuchar", o: "música" },
-    { no: "Han jobbar.",                  s: "Él",            v: "trabajar", o: "" },
-    { no: "Pedro dansar.",                s: "Pedro",         v: "bailar",  o: "" },
-    { no: "Min venn og eg snakkar norsk.", s: "Mi amigo y yo", v: "hablar",  o: "noruego" },
-    { no: "Du og María dansar.",          s: "Tú y María",    v: "bailar",  o: "" },
-    { no: "María og Pedro dansar tango.", s: "María y Pedro", v: "bailar",  o: "tango" },
-  ],
+/* Øvearkene, akkurat som på papiret (oppgåve A, B og C). Nytt ark: legg til en blokk her. */
+const ARKER = {
+  ar: { tittel: "Øvearket: -ar-verb",
+    A: [
+      { s: "Yo",       v: "hablar",   o: "español",       no: "Eg snakkar spansk." },
+      { s: "Tú",       v: "bailar",   o: "bien",          no: "Du dansar godt." },
+      { s: "María",    v: "escuchar", o: "música",        no: "María lyttar til musikk." },
+      { s: "Nosotros", v: "estudiar", o: "en la escuela", no: "Vi studerer på skulen." },
+      { s: "Vosotros", v: "cantar",   o: "una canción",   no: "Dokker syng ein song." },
+      { s: "Ellos",    v: "mirar",    o: "la televisión", no: "Dei ser på TV." },
+    ],
+    B: [
+      { v: "bailar", p: 1, o: "salsa" }, { v: "hablar", p: 0, o: "noruego" }, { v: "escuchar", p: 5, o: "la radio" },
+      { v: "trabajar", p: 3, o: "hoy" }, { v: "mirar", p: 4, o: "un libro" }, { v: "cantar", p: 2, o: "bien" },
+    ],
+    C: [
+      { no: "Eg dansar.",                   s: "Yo",            v: "bailar",  o: "" },
+      { no: "Du snakkar spansk.",           s: "Tú",            v: "hablar",  o: "español" },
+      { no: "Vi høyrer på musikk.",         s: "Nosotros",      v: "escuchar", o: "música" },
+      { no: "Han jobbar.",                  s: "Él",            v: "trabajar", o: "" },
+      { no: "Pedro dansar.",                s: "Pedro",         v: "bailar",  o: "" },
+      { no: "Min venn og eg snakkar norsk.", s: "Mi amigo y yo", v: "hablar",  o: "noruego" },
+      { no: "Du og María dansar.",          s: "Tú y María",    v: "bailar",  o: "" },
+      { no: "María og Pedro dansar tango.", s: "María y Pedro", v: "bailar",  o: "tango" },
+    ],
+  },
+  er: { tittel: "Øvearket: -er-verb",
+    A: [
+      { s: "Yo",       v: "comer",      o: "una manzana",         no: "Eg et eit eple." },
+      { s: "Tú",       v: "beber",      o: "agua",                no: "Du drikk vatn." },
+      { s: "María",    v: "comprender", o: "español",             no: "María meinar/forstår spansk." },
+      { s: "Nosotros", v: "aprender",   o: "mucho en la escuela", no: "Vi lærer mye på skulen." },
+      { s: "Vosotros", v: "correr",     o: "en el parque",        no: "Dokker springer i parken." },
+      { s: "Ellos",    v: "leer",       o: "un libro",            no: "Dei les ein bok." },
+    ],
+    B: [
+      { v: "beber", p: 1, o: "leche" }, { v: "comer", p: 0, o: "pizza" }, { v: "leer", p: 5, o: "el periódico" },
+      { v: "aprender", p: 3, o: "español hoy" }, { v: "correr", p: 4, o: "mucho" }, { v: "vender", p: 2, o: "manzanas" },
+    ],
+    C: [
+      { no: "Eg et.",                       s: "Yo",            v: "comer",    o: "" },
+      { no: "Du drikk vatn.",               s: "Tú",            v: "beber",    o: "agua" },
+      { no: "Vi lærer spansk.",             s: "Nosotros",      v: "aprender", o: "español" },
+      { no: "Han springer.",                s: "Él",            v: "correr",   o: "" },
+      { no: "Pedro et.",                    s: "Pedro",         v: "comer",    o: "" },
+      { no: "Min venn og eg les spansk.",   s: "Mi amigo y yo", v: "leer",     o: "español" },
+      { no: "Du og María et.",              s: "Tú y María",    v: "comer",    o: "" },
+      { no: "María og Pedro les ein bok.",  s: "María y Pedro", v: "leer",     o: "un libro" },
+    ],
+  },
+  ir: { tittel: "Øvearket: -ir-verb",
+    A: [
+      { s: "Yo",       v: "vivir",    o: "en Noruega", no: "Eg bur i Noreg." },
+      { s: "Tú",       v: "escribir", o: "una carta",  no: "Du skriv eit brev." },
+      { s: "María",    v: "abrir",    o: "la puerta",  no: "María opnar døra." },
+      { s: "Nosotros", v: "recibir",  o: "regalos",    no: "Vi får gåver." },
+      { s: "Vosotros", v: "escribir", o: "en español", no: "Dokker skriv på spansk." },
+      { s: "Ellos",    v: "vivir",    o: "en Madrid",  no: "Dei bur i Madrid." },
+    ],
+    B: [
+      { v: "escribir", p: 1, o: "una lista" }, { v: "vivir", p: 0, o: "en Oslo" }, { v: "abrir", p: 5, o: "las ventanas" },
+      { v: "recibir", p: 3, o: "un mensaje" }, { v: "vivir", p: 4, o: "en España" }, { v: "escribir", p: 2, o: "un libro" },
+    ],
+    C: [
+      { no: "Eg bur.",                        s: "Yo",            v: "vivir",    o: "" },
+      { no: "Du skriv eit brev.",             s: "Tú",            v: "escribir", o: "una carta" },
+      { no: "Vi opnar døra.",                 s: "Nosotros",      v: "abrir",    o: "la puerta" },
+      { no: "Han bur i Noreg.",               s: "Él",            v: "vivir",    o: "en Noruega" },
+      { no: "Pedro skriv.",                   s: "Pedro",         v: "escribir", o: "" },
+      { no: "Min venn og eg bur i Noreg.",    s: "Mi amigo y yo", v: "vivir",    o: "en Noruega" },
+      { no: "Du og María opnar døra.",        s: "Tú y María",    v: "abrir",    o: "la puerta" },
+      { no: "María og Pedro skriv eit brev.", s: "María y Pedro", v: "escribir", o: "una carta" },
+    ],
+  },
 };
 </script>
 <style>
@@ -514,7 +569,7 @@ function home() {
     <div class="stephead"><span class="num">5</span><h2>Prøv deg</h2></div>
     <div class="modes">
       ${mode("prove", "🏁", "Prøveprøve", "20 oppgaver: pronomen, -ar/-er/-ir, setninger og familien – uten hjelp", pst("prove"))}
-      ${mode("ark", "📄", "Øvearket (-ar)", "Akkurat de 20 oppgavene fra arket", pst("ark"))}
+      ${Object.keys(ARKER).map(id => mode(`ark:${id}`, "📄", `Øvearket (-${id})`, "Akkurat de 20 oppgavene fra arket", pst(id === "ar" ? "ark" : "ark-" + id))).join("")}
       <a class="mode" href="spansk-gloser.html"><span class="ic">👪</span><span><b>Familieordene</b><small>Øv på familien og «Mi madre se llama …» i Spanske gloser →</small></span></a>
     </div>
   </section>
@@ -945,11 +1000,12 @@ const MODES = {
     const ps = persRekke(8), vs = verbRekke(8);
     startQuiz({ title: "Oversett til spansk", again: "omsetC", bestKey: "omsetC", items: ps.map((p, i) => itOmsetC(vs[i], p)) });
   },
-  ark() {
+  ark(id) {
+    const ARK = ARKER[id] || ARKER.ar, bk = id && id !== "ar" ? "ark-" + id : "ark";
     const A = ARK.A.map(x => { const s = subjOf(x.s), v = byEs(x.v); return Object.assign(itBoyA(v, s.p, s, { es: x.o, no: "" }, x.no), { del: "Oppgåve A" }); });
     const B = ARK.B.map(x => Object.assign(itFinnB(byEs(x.v), x.p, x.o), { del: "Oppgåve B" }));
     const C = ARK.C.map(x => { const s = subjOf(x.s), v = byEs(x.v); return Object.assign(itOmsetC(v, s.p, s, { es: x.o, no: "" }, x.no), { del: "Oppgåve C" }); });
-    startQuiz({ title: "Øvearket", again: "ark", bestKey: "ark", items: [...A, ...B, ...C] });
+    startQuiz({ title: ARK.tittel, again: `ark:${id || "ar"}`, bestKey: bk, items: [...A, ...B, ...C] });
   },
   /* Som prøven: pronomen, bøying av alle tre verbgruppene, finn personen, oversetting og familien. */
   prove() {
@@ -1084,7 +1140,7 @@ const ACT = {
   home, kort, koble, regel, tabell,
   velgVerb: () => MODES.velgVerb(), skrivVerb: () => MODES.skrivVerb(), velgForm: () => MODES.velgForm(),
   boyA: () => MODES.boyA(), finnB: () => MODES.finnB(), betyr: () => MODES.betyr(), omsetC: () => MODES.omsetC(),
-  ark: () => MODES.ark(), prove: () => MODES.prove(), pron: () => MODES.pron(),
+  ark: id => MODES.ark(id || "ar"), prove: () => MODES.prove(), pron: () => MODES.pron(),
   grp(g) { S.grp = g; save(); const y = window.scrollY; home(); window.scrollTo(0, y); },
   theme() { S.theme = erMork() ? "light" : "dark"; save(); applyTheme(); },
   regelVerb(es) { S.regel = es; save(); const y = window.scrollY; regel(); window.scrollTo(0, y); },

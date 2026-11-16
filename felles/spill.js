@@ -38,7 +38,7 @@ window.SPILL = [
     beskrivelse: "Gloseprøvene – nå: familien og «Mi madre se llama …» (18.11). Koble, velg, skriv, setninger og bøying" },
   { fag: "Spansk", ikon: "🗣️", tittel: "Spanske verb", fil: "spansk-ar-verb.html", trinn: [8], lagt: "2026-11-11",
     prover: [{ dato: "2026-11-18", navn: "Spanskprøve: pronomen, verb og familien" }],
-    beskrivelse: "Personlige pronomen og regelrette -ar-, -er- og -ir-verb: regelen, bøying, finn personen, oversetting, øvearket og prøveprøve" },
+    beskrivelse: "Personlige pronomen og regelrette -ar-, -er- og -ir-verb: regelen, bøying, finn personen, oversetting, øvearkene (-ar, -er, -ir) og prøveprøve" },
   { fag: "Samfunnsfag", ikon: "⚖️", tittel: "Kampen for rettigheter", fil: "revolusjon.html", trinn: [8], lagt: "2026-11-12",
     beskrivelse: "Opplysningstiden, den franske revolusjonen og Napoleon: omgrep, standssamfunnet, filosofene, tidslinja og prøveprøve" },
   { fag: "Samfunnsfag", ikon: "🦉", tittel: "Tidsreisen", fil: "tidsreisen.html", trinn: [8], lagt: "2026-11-12",
