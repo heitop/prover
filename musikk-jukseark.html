@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Musikk-juksearket</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Limelight&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: ett ark, to sider. Side 1: den røde tråden og de seks sjangrene (tre spalter × to rader).
+   Side 2: slaveriet, tidslinjen, begrepene og «står du fast». Samme uttrykk som Blå toner. */
+:root{
+  --bg:#F2F3F9; --flate:#FFFFFF; --blekk:#141729; --demp:#596080; --linje:#D7DAE8;
+  --blaa:#2742A6; --messing:#A87414; --rod:#B0242D; --teal:#18706E; --gronn:#1D7A45; --lilla:#6B3FA0;
+  --display:"Limelight",Georgia,serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D0F1C; --flate:#161A2E; --blekk:#ECEDF6; --demp:#9CA2C0; --linje:#2A2F4A;
+  --blaa:#8DA2FF; --messing:#E2B24C; --rod:#FF7680; --teal:#5BC9C3; --gronn:#4FC683; --lilla:#C3A2F0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D0F1C; --flate:#161A2E; --blekk:#ECEDF6; --demp:#9CA2C0; --linje:#2A2F4A;
+  --blaa:#8DA2FF; --messing:#E2B24C; --rod:#FF7680; --teal:#5BC9C3; --gronn:#4FC683; --lilla:#C3A2F0; color-scheme:dark}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--blekk);font-family:var(--body);font-size:1rem;line-height:1.42;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ul,ol,dl,dd{margin:0}
+h1,h2,h3{text-wrap:balance;line-height:1.15}
+.ark{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:14px;
+  padding-block:max(16px,env(safe-area-inset-top,0px)) max(32px,env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.side{display:flex;flex-direction:column;gap:14px}
+
+.hode{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px;border-bottom:2px solid var(--blekk);padding-bottom:8px}
+.hode h1{font-family:var(--display);font-weight:400;font-size:clamp(1.8rem,6vw,2.4rem);color:var(--blaa)}
+.hode p{color:var(--demp);font-weight:700}
+.verktoy{display:flex;gap:8px;flex-wrap:wrap}
+.verktoy a,.verktoy button{font:inherit;font-weight:700;font-size:.9rem;color:var(--blekk);background:var(--flate);border:1.5px solid var(--linje);border-radius:10px;padding:7px 12px;cursor:pointer;text-decoration:none}
+.verktoy a:hover,.verktoy button:hover{border-color:var(--messing)}
+:focus-visible{outline:3px solid var(--messing);outline-offset:2px}
+
+.etikett{font-family:var(--mono);font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--demp)}
+.boks{background:var(--flate);border:1.5px solid var(--linje);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+
+/* den røde tråden */
+.traad{list-style:none;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.traad li{border-top:4px solid var(--f);padding-top:6px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.traad b{font-size:1rem}
+.traad .aar{font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--f)}
+.traad span{color:var(--demp);font-size:.88rem}
+.oppskrift{background:color-mix(in srgb,var(--messing) 13%,var(--flate));border-radius:10px;padding:8px 11px}
+.oppskrift b{color:var(--messing)}
+
+/* sjangerkortene */
+.sjangre{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:stretch}
+.sjanger{border-top:6px solid var(--f)}
+.sjanger h2{font-family:var(--display);font-weight:400;font-size:1.35rem;color:var(--f)}
+.sjanger dl{display:grid;grid-template-columns:5.6rem minmax(0,1fr);gap:4px 10px;font-size:.92rem}
+.sjanger dt{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--demp);padding-top:3px}
+.sjanger q{quotes:"«" "»"}
+.lytt{margin-top:auto;font-size:.88rem;border-top:1px dashed var(--linje);padding-top:6px}
+.lytt b{color:var(--f)}
+
+/* side 2 */
+.topp2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+.trekant{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 10px;font-size:.93rem}
+.trekant dt{font-weight:700;white-space:nowrap}
+.punkt{padding-left:1.1em;display:flex;flex-direction:column;gap:3px;font-size:.93rem}
+.tidslinje{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;font-size:.92rem}
+.tidslinje dt{font-family:var(--mono);font-weight:600;font-size:.82rem;color:var(--blaa);padding-top:2px;white-space:nowrap}
+.begreper{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 16px;font-size:.92rem}
+.begreper div{break-inside:avoid}
+.begreper b{color:var(--rod)}
+.fast{background:var(--blekk);color:var(--bg);border-color:var(--blekk)}
+.fast .etikett{color:color-mix(in srgb,var(--bg) 70%,var(--blekk))}
+.fast ul{padding-left:1.1em;display:flex;flex-direction:column;gap:4px}
+.fast b{color:color-mix(in srgb,var(--messing) 60%,var(--bg))}
+
+@media (max-width:900px){
+  .sjangre{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .traad{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .begreper{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:620px){
+  .sjangre,.topp2,.begreper{grid-template-columns:minmax(0,1fr)}
+  .traad{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* Utskrift: ett A4-ark med to sider. Klassen .a4 settes av skriptet før utskrift. */
+@page{size:A4;margin:8mm}
+@media print{
+  :root,:root[data-theme="dark"]{--bg:#fff;--flate:#fff;--blekk:#000;--demp:#444;--linje:#bbb;
+    --blaa:#1f378f;--messing:#7a5208;--rod:#9c1c25;--teal:#11605e;--gronn:#17663a;--lilla:#58308a;color-scheme:light}
+  .verktoy{display:none}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .side+.side{break-before:page}
+}
+.a4 .ark{max-width:none;width:194mm;padding:0;gap:2.4mm}
+.a4 .side{gap:2.4mm}
+.a4 body,.a4 .ark{font-size:8.9pt;line-height:1.3}
+.a4 .hode{padding-bottom:1.4mm}
+.a4 .hode h1{font-size:18pt}
+.a4 .boks{padding:2mm 2.6mm;gap:1.3mm;border-radius:2.5mm;break-inside:avoid}
+.a4 .traad{grid-template-columns:repeat(6,minmax(0,1fr));gap:2mm}
+.a4 .traad b{font-size:9pt}
+.a4 .traad span{font-size:7.6pt}
+.a4 .sjangre{grid-template-columns:repeat(3,minmax(0,1fr));gap:2.4mm}
+.a4 .sjanger h2{font-size:12.5pt}
+.a4 .sjanger dl{grid-template-columns:13mm minmax(0,1fr);gap:.6mm 1.6mm;font-size:8.2pt;line-height:1.25}
+.a4 .sjanger dt{font-size:5.6pt;padding-top:.6mm}
+.a4 .lytt{font-size:8pt;padding-top:1mm}
+.a4 .topp2{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2.4mm}
+.a4 .begreper{grid-template-columns:repeat(3,minmax(0,1fr));gap:1.2mm 3mm;font-size:8.6pt}
+.a4 .etikett{font-size:6.3pt}
+.a4 .oppskrift{padding:1.4mm 2mm}
+</style>
+</head>
+<body>
+<main class="ark">
+
+  <section class="side">
+    <header class="hode">
+      <div>
+        <h1>Musikk-juksearket</h1>
+        <p>Afroamerikansk musikkhistorie: fra arbeidssang til rock and roll</p>
+      </div>
+      <div class="verktoy">
+        <a href="blaa-tonar.html">Til Blå toner</a>
+        <a href="platereisen.html">Til Platereisen</a>
+        <button type="button" id="skrivut">Skriv ut (ett ark, to sider)</button>
+      </div>
+    </header>
+
+    <section class="boks">
+      <p class="etikett">Den røde tråden: hver sjanger vokser ut av den forrige</p>
+      <ol class="traad">
+        <li style="--f:var(--messing)"><span class="aar">Slavetiden</span><b>Arbeidssang</b><span>Forsangeren roper, gjengen svarer</span></li>
+        <li style="--f:var(--teal)"><span class="aar">Slavetiden og etter</span><b>Spirituals</b><span>Menigheten svarer. Bibelen og håpet om frihet</span></li>
+        <li style="--f:var(--blaa)"><span class="aar">1890-årene</span><b>Blues</b><span>Gitaren tar over svaret. Sorg og ensomhet</span></li>
+        <li style="--f:var(--rod)"><span class="aar">1910–1920</span><b>Jazz</b><span>Blåserne improviserer. Lidelse blir glede</span></li>
+        <li style="--f:var(--lilla)"><span class="aar">1930–40, navn 1949</span><b>Rhythm and blues</b><span>Blues med livligere rytme</span></li>
+        <li style="--f:var(--gronn)"><span class="aar">Midten av 1950-tallet</span><b>Rock and roll</b><span>R&amp;B for hele ungdommen</span></li>
+      </ol>
+      <p class="oppskrift"><b>Svar på en sjanger med:</b> tid og sted · samfunnet rundt · form · innhold · instrumenter · ett eller to navn.</p>
+    </section>
+
+    <div class="sjangre">
+      <section class="boks sjanger" style="--f:var(--messing)">
+        <h2>Arbeidssang</h2>
+        <dl>
+          <dt>Tid og sted</dt><dd>Slavetiden, på plantasjene i sørstatene i USA. Røtter i Vest-Afrika.</dd>
+          <dt>Samfunn</dt><dd>Slaveri. Trommene ble forbudt (frykt for opprør), men sangen ble oppmuntret fordi slavene da arbeidet mer.</dd>
+          <dt>Form</dt><dd><b>Call and response</b>: forsangeren (<b>field holler</b>) roper en linje, gjengen svarer i kor. Korte, <b>pentatone</b> motiver som gjentas. Forsangeren improviserer.</dd>
+          <dt>Innhold</dt><dd>Det harde arbeidet og lengselen bort.</dd>
+          <dt>Instrumenter</dt><dd>Stemmer, klapp og redskaper. Fra Afrika: trommer, balafon, banjo.</dd>
+          <dt>Navn</dt><dd>James Hungerford (båtsangen, 1859), Frederick Olmsted (1853).</dd>
+        </dl>
+        <p class="lytt"><b>Lytt etter:</b> én roper, mange svarer i takt med arbeidet.</p>
+      </section>
+
+      <section class="boks sjanger" style="--f:var(--teal)">
+        <h2>Spirituals</h2>
+        <dl>
+          <dt>Tid og sted</dt><dd>Slavetiden og etter, i de svarte menighetene.</dd>
+          <dt>Samfunn</dt><dd>Afrikansk religion ble undertrykt, slavene ble kristne. Etter frigjøringen (1863) og under raseskillet ble kirken et trygt sted.</dd>
+          <dt>Form</dt><dd><b>To typer:</b> 1) call and response, <q>Go Down, Moses</q>. 2) Lange melodilinjer fra europeiske salmer, <q>Deep River</q>, <q>Swing Low</q>.</dd>
+          <dt>Innhold</dt><dd>Bibelen. Slavene kjente seg igjen i det forfulgte jødefolket. <b>Jordanelva = frihet.</b></dd>
+          <dt>Instrumenter</dt><dd>Stemmene: forsanger, menighet og kor.</dd>
+        </dl>
+        <p class="lytt"><b>Lytt etter:</b> koret som svarer, eller synger hele melodien sammen.</p>
+      </section>
+
+      <section class="boks sjanger" style="--f:var(--blaa)">
+        <h2>Blues</h2>
+        <dl>
+          <dt>Tid og sted</dt><dd>1890-årene i Mississippideltaet → New Orleans → Chicago (1940-årene).</dd>
+          <dt>Samfunn</dt><dd>Frie, men fattige. Rasehat og raseskille. Mange arbeidet nå alene.</dd>
+          <dt>Form</dt><dd><b>12-takters blues</b>, <b>AAB-vers</b>: samme linje to ganger, så en ny som rimer. Mange vers, sjelden refreng.</dd>
+          <dt>Innhold</dt><dd>Sorg og ensomhet: <b>feeling blue</b> (fra «blue devils»).</dd>
+          <dt>Instrumenter</dt><dd>Sang og <b>gitar</b> (gitaren tok over svaret fra gjengen). Munnspill, piano.</dd>
+          <dt>Navn</dt><dd><b>Mamie Smith</b>: <q>Crazy Blues</q> 1920, første blues på plate. <b>Bessie Smith</b>. Blind Lemon Jefferson. Tent shows.</dd>
+        </dl>
+        <p class="lytt"><b>Lytt etter:</b> tell linjene, A – A – B.</p>
+      </section>
+
+      <section class="boks sjanger" style="--f:var(--rod)">
+        <h2>Jazz</h2>
+        <dl>
+          <dt>Tid og sted</dt><dd>1910–1920 i New Orleans (<b>dixieland</b>). 1920-årene i Chicago og New York.</dd>
+          <dt>Samfunn</dt><dd>Folk flyttet til byene og fikk mer penger og fritid. Behov for dansemusikk.</dd>
+          <dt>Form</dt><dd><b>Improvisasjon.</b> Dixieland: <b>kollektiv improvisasjon</b>, én blåser har melodien og de andre improviserer rundt. Senere solo. Jam-sessions om natta.</dd>
+          <dt>Innhold</dt><dd>Glede og dans: lidelse blir glede.</dd>
+          <dt>Instrumenter</dt><dd>Kornett/trompet, trombone, klarinett + rytmeseksjon (tuba eller bass, banjo, slagverk).</dd>
+          <dt>Navn</dt><dd><b>King Oliver</b> (Creole Jazz Band, første jazzinnspilling 1923). <b>Louis «Satchmo» Armstrong</b> (Hot Five 1925, scat).</dd>
+        </dl>
+        <p class="lytt"><b>Lytt etter:</b> tre blåsere som spiller i munnen på hverandre.</p>
+      </section>
+
+      <section class="boks sjanger" style="--f:var(--lilla)">
+        <h2>Rhythm and blues</h2>
+        <dl>
+          <dt>Tid og sted</dt><dd>Skapt i 1930- og 40-årene. Navnet kom i <b>1949</b> og erstattet «race records».</dd>
+          <dt>Samfunn</dt><dd>Rasefordommer: hvite artister laget glattere <b>coverversjoner</b>. <b>Croonere</b> som Pat Boone. Til slutt <b>crossover</b>.</dd>
+          <dt>Form</dt><dd>12-takters blues med livligere rytme og mer fengende melodier.</dd>
+          <dt>Innhold</dt><dd>Livlig musikk for et stort publikum.</dd>
+          <dt>Instrumenter</dt><dd>Sang, piano, saksofon, elgitar, bass og trommer.</dd>
+          <dt>Navn</dt><dd><b>Fats Domino</b>, første afroamerikanske crossover-artist. Pat Boone coveret <q>Ain’t That a Shame</q> (1955). T-Bone Walker, Little Richard.</dd>
+        </dl>
+        <p class="lytt"><b>Lytt etter:</b> forskjellen på originalen og den glatte coveren.</p>
+      </section>
+
+      <section class="boks sjanger" style="--f:var(--gronn)">
+        <h2>Rock and roll</h2>
+        <dl>
+          <dt>Tid og sted</dt><dd>Midten av 1950-tallet. Gnisten: filmen <q>Blackboard Jungle</q>, 1955.</dd>
+          <dt>Samfunn</dt><dd>Ungdommen ble en ny gruppe med egne penger og krevde frihet (James Dean, Marlon Brando). Svart rytme brøt den hvite «lydmuren».</dd>
+          <dt>Form</dt><dd><b>Backbeat</b> (trykk på 2 og 4), <b>boogiebass</b>/walking bass, synkoper, bluesskjema.</dd>
+          <dt>Innhold</dt><dd>Ungdom, fest og dans: swing, rock and roll, twist.</dd>
+          <dt>Instrumenter</dt><dd>Elgitar, bass, trommer, piano og saksofon.</dd>
+          <dt>Navn</dt><dd>Bill Haley and the Comets: <q>Rock Around the Clock</q>. <b>Elvis Presley</b>: <q>That’s All Right, Mama</q> (1954), <q>Hound Dog</q>. Filmet bare fra midjen og opp på TV.</dd>
+        </dl>
+        <p class="lytt"><b>Lytt etter:</b> klapp på 2 og 4.</p>
+      </section>
+    </div>
+  </section>
+
+  <section class="side">
+    <div class="topp2">
+      <section class="boks">
+        <p class="etikett">Slaveriet og trekanthandelen</p>
+        <ul class="punkt">
+          <li>Europeerne koloniserte Amerika fra <b>1500-tallet</b> og trengte arbeidskraft på plantasjene.</li>
+          <li><b>35–40 millioner</b> vestafrikanere ble tatt til fange. Bare rundt <b>15 millioner</b> overlevde sjøreisen.</li>
+        </ul>
+        <dl class="trekant">
+          <dt>Europa → Afrika</dt><dd>tøy og våpen (for å kjøpe slaver)</dd>
+          <dt>Afrika → Amerika</dt><dd>slaver</dd>
+          <dt>Amerika → Europa</dt><dd>bomull, sukker, tobakk og kaffe</dd>
+        </dl>
+        <ul class="punkt">
+          <li><b>Norge var med:</b> norske skip fraktet slaver fra de dansk-norske utpostene i Ghana.</li>
+          <li>Mennene gjorde tungt arbeid på plantasjene. Kvinnene laget mat og passet barn.</li>
+          <li>Slaveri ble forbudt i <b>1807</b>, men sørstatene fulgte ikke loven. <b>1863</b>: Lincoln erklærte slavene frie. Borgerkrigen <b>1861–65</b>.</li>
+          <li>Etterpå: lite arbeid, fattigdom, rasehat og <b>raseskille</b>. Svarte fant et trygt sted i egne menigheter.</li>
+        </ul>
+      </section>
+
+      <section class="boks">
+        <p class="etikett">Tidslinjen</p>
+        <dl class="tidslinje">
+          <dt>1500-tallet</dt><dd>Koloniseringen og slavehandelen starter</dd>
+          <dt>1807</dt><dd>Slaveri forbudt ved lov, men sørstatene fortsetter</dd>
+          <dt>1859</dt><dd>Hungerford beskriver en båtsang med call and response</dd>
+          <dt>1861–65</dt><dd>Borgerkrigen i USA</dd>
+          <dt>1863</dt><dd>Lincoln erklærer slavene frie</dd>
+          <dt>1890-årene</dt><dd>De første bluessangene i Mississippideltaet</dd>
+          <dt>1894</dt><dd>Billboard lager sin første liste (notesalg)</dd>
+          <dt>1910–20</dt><dd>Dixieland vokser fram i New Orleans</dd>
+          <dt>1920</dt><dd>Mamie Smith: <q>Crazy Blues</q>, første blues på plate</dd>
+          <dt>1923</dt><dd>Første jazzinnspilling: King Oliver’s Creole Jazz Band</dd>
+          <dt>1925</dt><dd>Louis Armstrong starter Hot Five</dd>
+          <dt>1940-årene</dt><dd>Bluesen kommer til Chicago</dd>
+          <dt>1949</dt><dd>Navnet «rhythm &amp; blues» tas i bruk</dd>
+          <dt>1954</dt><dd>Elvis debuterer med <q>That’s All Right, Mama</q></dd>
+          <dt>1955</dt><dd><q>Blackboard Jungle</q> og <q>Rock Around the Clock</q></dd>
+          <dt>1977</dt><dd>Elvis dør, 42 år gammel</dd>
+        </dl>
+      </section>
+    </div>
+
+    <section class="boks">
+      <p class="etikett">Begrepene</p>
+      <div class="begreper">
+        <div><b>Call and response</b>: én synger en linje, de andre svarer i kor («rop og svar»).</div>
+        <div><b>Field holler</b>: forsangeren på marken («to holler» = å rope).</div>
+        <div><b>Pentaton</b>: skala med bare fem toner.</div>
+        <div><b>Improvisere</b>: finne på musikken der og da.</div>
+        <div><b>Kollektiv improvisasjon</b>: flere blåsere improviserer samtidig (dixieland).</div>
+        <div><b>Ensemble / band</b>: en gruppe musikere som spiller sammen.</div>
+        <div><b>Feeling blue</b>: å føle seg trist, ensom og utenfor.</div>
+        <div><b>AAB-form</b>: en linje, samme linje igjen, så en ny som rimer.</div>
+        <div><b>12-takters blues</b>: tre linjer à fire takter.</div>
+        <div><b>Scat</b>: improvisere med stemmen på stavelser uten mening (Armstrong).</div>
+        <div><b>Jam-session</b>: musikere møtes og improviserer sammen.</div>
+        <div><b>Synkope</b>: trykk på et «svakt» sted i takten.</div>
+        <div><b>Backbeat</b>: trykk på slag 2 og 4.</div>
+        <div><b>Walking bass</b>: «gående» bass, også kalt boogiebass.</div>
+        <div><b>Race records</b>: nedsettende navn på plater med svarte artister (1920-årene).</div>
+        <div><b>Coverversjon</b>: ny innspilling av en sang en annen artist har gjort først.</div>
+        <div><b>Crooner</b>: hvit sanger som «nynnet» glatte coverversjoner (Pat Boone).</div>
+        <div><b>Crossover</b>: en låt fra en sjangerliste (R&amp;B) kommer inn på hovedlisten.</div>
+        <div><b>Diskriminering</b>: å behandle noen dårligere, for eksempel på grunn av hudfarge.</div>
+        <div><b>Rasisme</b>: å mene at noen er mer verdt enn andre på grunn av hudfarge eller opphav.</div>
+        <div><b>Raseskille</b>: lover som holdt svarte og hvite fra hverandre.</div>
+      </div>
+    </section>
+
+    <section class="boks fast">
+      <p class="etikett">Står du fast? Dette passer nesten alltid</p>
+      <ul>
+        <li><b>Call and response går gjennom alt:</b> gjengen svarer forsangeren (arbeidssang), menigheten svarer forsangeren (spirituals), gitaren svarer sangeren (blues), blåserne svarer hverandre (jazz).</li>
+        <li><b>Fra lidelse til glede:</b> arbeidssang, spirituals og blues handler om sorg og håp. Jazzen og rocken er glede og dans.</li>
+        <li><b>Svart musikk, hvitt publikum:</b> race records → hvite coverversjoner og croonere → crossover → rock and roll, da ungdommen ville ha den ekte varen.</li>
+        <li><b>Huskeregler:</b> AAB = si det to ganger, så kommer svaret. Backbeat = klapp på 2 og 4. Dixieland = tre blåsere som snakker i munnen på hverandre.</li>
+      </ul>
+    </section>
+  </section>
+
+</main>
+<script>
+const a4 = on => document.documentElement.classList.toggle('a4', on);
+window.addEventListener('beforeprint', () => a4(true));
+window.addEventListener('afterprint', () => a4(false));
+document.getElementById('skrivut').addEventListener('click', () => { a4(true); window.print(); });
+</script>
+</body>
+</html>

@@ -18,6 +18,8 @@ window.SPILL = [
   { fag: "Musikk", ikon: "💿", tittel: "Platereisen",   fil: "platereisen.html", trinn: [8],       lagt: "2026-11-15",
     prover: [{ dato: "2026-11-20", navn: "Musikkprøve: afroamerikansk musikkhistorie" }],
     beskrivelse: "Pek-og-klikk-eventyr gjennom musikkhistorien: arbeidssang, spirituals, blues, jazz, R&B og rock and roll. Lytt, løs gåter og samle platekort – humormodus låses opp" },
+  { fag: "Musikk", ikon: "📜", tittel: "Musikk-juksearket", fil: "musikk-jukseark.html", trinn: [8], lagt: "2026-11-19", gull: false,
+    beskrivelse: "Alle seks sjangrene, slaveriet, tidslinjen og begrepene – les det rett før prøven, eller skriv det ut" },
   { fag: "Matte",  ikon: "🍕", tittel: "Brøkmester",    fil: "brokmester.html", trinn: [8],         lagt: "2026-11-05",
     prover: [{ dato: "2026-11-27", navn: "Matteprøve: brøk" }],
     beskrivelse: "Øv på brøk" },
