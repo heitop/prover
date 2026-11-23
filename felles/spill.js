@@ -30,6 +30,8 @@ window.SPILL = [
     beskrivelse: "Pluss og minus med 2- og 3-sifrede tall: oppstilling med mente og lån, hoderegning, finn feilen og tekstoppgaver" },
   { fag: "Matte",  ikon: "🍪", tittel: "Delefabrikken", fil: "delefabrikken.html", trinn: [4], lagt: "2026-11-12",
     beskrivelse: "Deling opp til 200: små tall med gangetabellen baklengs, store tall som deles opp. Hoderegning, hva mangler, del opp og tekstoppgaver" },
+  { fag: "Matte",  ikon: "🔍", tittel: "Vinkelmysteriet", fil: "vinkelmysteriet.html", trinn: [4], lagt: "2026-11-23",
+    beskrivelse: "Detektivspill om spisse, rette og stumpe vinkler: løs fem saker, tegn på prikkark, knekk kodelåser og avslør tyven" },
   { fag: "Norsk",  ikon: "🏰", tittel: "Eventyrprøven", fil: "eventyrproven.html", trinn: [8],      lagt: "2026-11-05",
     beskrivelse: "Sjangeren eventyr" },
   { fag: "Norsk",  ikon: "📜", tittel: "Eventyr-juksearket", fil: "eventyr-jukseark.html", trinn: [8], lagt: "2026-11-08", gull: false,

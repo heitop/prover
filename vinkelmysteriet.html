@@ -1,0 +1,1053 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<title>Vinkelmysteriet</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Detektivspill om spisse, rette og stumpe vinkler for 4. trinn">
+<meta name="theme-color" content="#2f4b7c">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600;700&family=Patrick+Hand&family=Special+Elite&display=swap">
+<style>
+/* Vinkelmysteriet: detektivmappe på prikkark. Marineblått og lampegult.
+   Vinkeltypene har faste farger (som i lekseboka): spiss = lilla, rett = rosa, stump = blå.
+   Feil er varm korall, aldri rødt. */
+:root{
+  --bg:#f6f1e7; --dotc:#ddd2bd; --card:#fffdf8; --card2:#f3ecdd; --line:#e2d6bf;
+  --ink:#2a2418; --muted:#6f6450;
+  --pri:#2f4b7c; --pri-ink:#ffffff; --pri-soft:#e2e8f4;
+  --acc:#b87800; --acc-soft:#fff1cc;
+  --gold:#e3a200;
+  --coral:#c4573a; --coral-soft:#fbe3da;
+  --ok:#22804a; --ok-soft:#dcf2e4;
+  --spiss:#7b3fe4; --rett:#d6336c; --stump:#1c7ed6;
+  --figfill:#fff6dc; --figline:#2a2418; --dot:#9a8f7a;
+  --paper:#ffe58a; --paperline:#b98f00;
+  --note:#fffbe8; --noteline:#d9e4f2;
+  --fd:"Fredoka","Segoe UI",system-ui,sans-serif;
+  --fb:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --fh:"Patrick Hand","Comic Sans MS",cursive;
+  --ft:"Special Elite","Courier New",monospace;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#11151f; --dotc:#232b3d; --card:#1a2030; --card2:#222a3d; --line:#323c55;
+  --ink:#eef1f8; --muted:#a3acc2;
+  --pri:#8fb0ff; --pri-ink:#0d1630; --pri-soft:#26345a;
+  --acc:#ffc247; --acc-soft:#3a3014;
+  --gold:#ffcd38;
+  --coral:#f29d80; --coral-soft:#3f2620;
+  --ok:#63d697; --ok-soft:#153424;
+  --spiss:#b794ff; --rett:#ff6b9d; --stump:#5cb3ff;
+  --figfill:#2a2f3f; --figline:#eef1f8; --dot:#7f89a3;
+  --paper:#d8b62e; --paperline:#ffe27a;
+  --note:#1f2638; --noteline:#2d3852;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#11151f; --dotc:#232b3d; --card:#1a2030; --card2:#222a3d; --line:#323c55;
+    --ink:#eef1f8; --muted:#a3acc2;
+    --pri:#8fb0ff; --pri-ink:#0d1630; --pri-soft:#26345a;
+    --acc:#ffc247; --acc-soft:#3a3014;
+    --gold:#ffcd38;
+    --coral:#f29d80; --coral-soft:#3f2620;
+    --ok:#63d697; --ok-soft:#153424;
+    --spiss:#b794ff; --rett:#ff6b9d; --stump:#5cb3ff;
+    --figfill:#2a2f3f; --figline:#eef1f8; --dot:#7f89a3;
+    --paper:#d8b62e; --paperline:#ffe27a;
+    --note:#1f2638; --noteline:#2d3852;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg)}
+body{color:var(--ink);font-family:var(--fb);font-size:1.1rem;line-height:1.5;min-height:100vh;
+  background-image:radial-gradient(var(--dotc) 1.6px,transparent 1.8px);background-size:26px 26px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+h1,h2,h3{font-family:var(--fd);font-weight:600;margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:2rem} h2{font-size:1.4rem} h3{font-size:1.15rem}
+p{margin:0}
+.muted{color:var(--muted)} .small{font-size:.92rem} .center{justify-content:center;text-align:center}
+b.spiss,.c-spiss{color:var(--spiss)} b.rett,.c-rett{color:var(--rett)} b.stump,.c-stump{color:var(--stump)}
+
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topin{max-width:760px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{white-space:nowrap;background:none;border:0;padding:4px 0;font-family:var(--fd);font-weight:700;font-size:1.3rem;display:flex;align-items:center;gap:8px;color:var(--pri)}
+.tools{display:flex;gap:6px;align-items:center}
+.iconbtn{background:var(--card);border:1px solid var(--line);border-radius:999px;width:40px;height:40px;display:inline-grid;place-items:center;padding:0;font-size:1.1rem}
+
+.wrap{max-width:760px;margin:0 auto;padding:16px 16px 100px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px}
+.btn{border:1px solid var(--line);background:var(--card2);border-radius:14px;padding:12px 18px;font-weight:700;min-height:50px;transition:transform .08s;text-align:center}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.pri{background:var(--pri);color:var(--pri-ink);border-color:transparent}
+.btn.big{font-size:1.2rem;min-height:58px}
+.btn.ghost{background:var(--card)}
+.btn.small{min-height:44px;padding:8px 14px;font-size:1rem}
+.btn[disabled]{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>.btn{flex:1 1 150px}
+.back{background:none;border:0;color:var(--pri);font-weight:700;padding:6px 0;align-self:flex-start}
+.alle{align-self:center;color:var(--pri);font-weight:700;text-decoration:none;padding:8px}
+
+/* scener */
+.scene{display:block;width:100%;height:auto;border-radius:16px}
+.scenebox{border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:0 6px 18px rgb(0 0 0/.08)}
+
+/* forside */
+.hero{display:flex;flex-direction:column;gap:14px}
+.hero h1{font-size:2.3rem;color:var(--pri);display:flex;align-items:center;gap:10px}
+.stempel{font-family:var(--ft);color:var(--coral);border:3px solid var(--coral);border-radius:8px;padding:2px 10px;display:inline-block;transform:rotate(-4deg);font-size:1rem;letter-spacing:1px;text-transform:uppercase;opacity:.9}
+.duo{display:flex;align-items:flex-end;justify-content:center;gap:6px}
+.duo .av{width:110px;height:auto}
+.duo .sn{width:92px;height:auto}
+.meny{display:flex;flex-direction:column;gap:10px}
+.mknapp{display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px 16px;text-align:left;transition:border-color .1s,transform .1s}
+.mknapp:hover{border-color:var(--pri);transform:translateY(-1px)}
+.mknapp.hoved{background:var(--pri);color:var(--pri-ink);border-color:transparent}
+.mknapp .mi{font-size:2rem;flex:none;width:46px;text-align:center}
+.mknapp b{font-family:var(--fd);font-weight:600;font-size:1.2rem;display:block}
+.mknapp small{display:block;font-size:.92rem;opacity:.85}
+.tag{font-size:.78rem;font-weight:700;background:var(--acc-soft);color:var(--acc);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle;white-space:nowrap}
+.mknapp.hoved .tag{background:rgb(255 255 255/.2);color:inherit}
+.merkelinje{display:flex;align-items:center;gap:10px;font-size:.95rem;color:var(--muted)}
+.merkelinje .mi{font-size:1.5rem}
+
+/* saksmappen */
+.saker{display:flex;flex-direction:column;gap:26px;padding-top:12px}
+.sak{position:relative;display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);border-radius:6px 18px 18px 18px;padding:14px 16px;text-align:left;transition:border-color .1s,transform .1s}
+.sak::before{content:"";position:absolute;left:-2px;top:-14px;width:110px;height:14px;background:var(--card2);border:2px solid var(--line);border-bottom:0;border-radius:8px 8px 0 0}
+.sak:not([disabled]):hover{border-color:var(--pri);transform:translateY(-1px)}
+.sak[disabled]{opacity:.55;cursor:default}
+.sak .si{font-size:2.2rem;flex:none;width:52px;text-align:center}
+.sak .st{flex:1;min-width:0}
+.sak .nr{font-family:var(--ft);font-size:.9rem;color:var(--muted);letter-spacing:1px}
+.sak b{font-family:var(--fd);font-weight:600;font-size:1.2rem;display:block;line-height:1.2}
+.sak .ss{flex:none;text-align:right;font-size:.9rem;font-weight:700}
+.stars{color:var(--line);letter-spacing:2px;font-size:1.1rem;line-height:1}
+.stars .on{color:var(--gold)}
+.stars.big{font-size:2.6rem;letter-spacing:6px}
+.losst{font-family:var(--ft);color:var(--ok);border:2px solid var(--ok);border-radius:6px;padding:0 6px;font-size:.8rem;display:inline-block;transform:rotate(-5deg);margin-top:4px}
+
+/* dialog */
+.dlg{display:flex;flex-direction:column;gap:10px}
+.linje{display:flex;gap:10px;align-items:flex-start;animation:inn .35s both}
+.linje.h{flex-direction:row-reverse}
+.who{flex:none;width:54px;height:54px;border-radius:50%;background:var(--card2);border:2px solid var(--line);display:grid;place-items:center;font-size:1.9rem;overflow:hidden}
+.who svg{width:100%;height:100%}
+.boble{background:var(--card);border:1px solid var(--line);border-radius:4px 16px 16px 16px;padding:8px 12px;max-width:560px}
+.linje.h .boble{border-radius:16px 4px 16px 16px;background:var(--pri-soft)}
+.boble .nv{display:block;font-weight:700;font-size:.82rem;color:var(--muted)}
+.linje.krok .boble{border-color:#7b4fb5;background:color-mix(in srgb,#7b4fb5 12%,var(--card))}
+@keyframes inn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* oppgave */
+.phead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.phead h2{font-size:1.15rem;color:var(--muted);font-family:var(--fd)}
+.prog{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.prog i{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--card2);border:2px solid var(--line);font-style:normal;font-size:.8rem}
+.prog i.na{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-soft)}
+.prog i.ok{background:var(--ok-soft);border-color:var(--ok)}
+.prog i.feil{background:var(--coral-soft);border-color:var(--coral)}
+.spor{display:flex;gap:10px;align-items:flex-start;background:var(--note);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-family:var(--fh);font-size:1.25rem;line-height:1.35}
+.spor .who{width:44px;height:44px}
+.oppg{display:flex;flex-direction:column;gap:14px}
+.q{font-family:var(--fd);font-weight:600;font-size:1.35rem;line-height:1.25}
+.figbox{display:flex;justify-content:center;background:var(--card2);border-radius:16px;padding:6px;border:1px solid var(--line)}
+.figbox svg{width:100%;max-width:420px;height:auto;display:block}
+svg .hit{fill:transparent;cursor:pointer}
+svg .hit:hover{fill:var(--pri);fill-opacity:.12}
+svg .hit:focus-visible{outline:none;stroke:var(--pri);stroke-width:3}
+svg .hit.on{stroke:var(--pri);stroke-width:2;stroke-dasharray:4 3}
+.valg3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tbtn{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:10px 4px;font-family:var(--fd);font-weight:600;font-size:1.15rem;min-height:84px;transition:border-color .1s,transform .1s}
+.tbtn svg{width:46px;height:34px}
+.tbtn:not([disabled]):hover{transform:translateY(-1px)}
+.tbtn.t-spiss:not([disabled]):hover{border-color:var(--spiss)} .tbtn.t-rett:not([disabled]):hover{border-color:var(--rett)} .tbtn.t-stump:not([disabled]):hover{border-color:var(--stump)}
+.tbtn.riktig{border-color:var(--ok);background:var(--ok-soft);opacity:1}
+.tbtn.gal{border-color:var(--coral);background:var(--coral-soft);text-decoration:line-through}
+.valg{display:flex;flex-direction:column;gap:8px}
+.vbtn{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 16px;text-align:left;font-weight:700;min-height:52px}
+.vbtn:not([disabled]):hover{border-color:var(--pri)}
+.vbtn.riktig{border-color:var(--ok);background:var(--ok-soft)}
+.vbtn.gal{border-color:var(--coral);background:var(--coral-soft);text-decoration:line-through}
+.vbtn[disabled]{cursor:default}
+.klokker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.klbtn{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:6px;display:flex;flex-direction:column;align-items:center;font-weight:700}
+.klbtn svg{width:100%;max-width:150px;height:auto}
+.klbtn:not([disabled]):hover{border-color:var(--pri)}
+.klbtn.riktig{border-color:var(--ok);background:var(--ok-soft)}
+.klbtn.gal{border-color:var(--coral);background:var(--coral-soft)}
+.vitner{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.vitne{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:10px 8px;text-align:center}
+.vitne .ve{font-size:2.2rem;line-height:1}
+.vitne .vn{font-weight:700;font-size:.9rem;color:var(--muted)}
+.vitne .vs{font-family:var(--fh);font-size:1.15rem;line-height:1.25;flex:1}
+.vitne .btn{min-height:42px;padding:6px 10px;font-size:.95rem;width:100%}
+.vitne.riktig{border-color:var(--ok);background:var(--ok-soft)}
+.vitne.gal{border-color:var(--coral);background:var(--coral-soft)}
+.to{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:6px;display:flex;flex-direction:column;align-items:center;font-family:var(--fd);font-weight:600;font-size:1.3rem}
+.panel svg{width:100%;height:auto}
+.panel:not([disabled]):hover{border-color:var(--pri)}
+.panel.riktig{border-color:var(--ok);background:var(--ok-soft)}
+.panel.gal{border-color:var(--coral);background:var(--coral-soft)}
+.las{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hjul{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:8px 4px}
+.hjul .hl{font-family:var(--fd);font-weight:600;font-size:1rem;display:flex;align-items:center;gap:4px}
+.hjul .hl svg{width:30px;height:22px}
+.hjul .hv{display:flex;align-items:center;gap:6px}
+.hjul .hv b{font-family:var(--ft);font-size:2rem;min-width:36px;text-align:center;background:var(--card2);border-radius:8px;border:1px solid var(--line)}
+.hjul button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card2);font-weight:700;font-size:1.3rem;padding:0}
+.figrad{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.fb{border-radius:16px;padding:12px 14px;border:1px solid var(--line);background:var(--card2);animation:inn .3s both}
+.fb.ok{background:var(--ok-soft);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+.fb.no{background:var(--coral-soft);border-color:color-mix(in srgb,var(--coral) 40%,transparent)}
+.fb b.t{font-family:var(--fd);font-weight:600;font-size:1.15rem;display:block}
+.nyttspor{display:flex;gap:10px;align-items:flex-start;background:var(--note);border:2px dashed var(--acc);border-radius:14px;padding:10px 12px;animation:inn .4s .15s both}
+.nyttspor .ni{font-size:1.6rem}
+.nyttspor b{display:block;font-family:var(--fd);font-weight:600;color:var(--acc)}
+.nyttspor span{font-family:var(--fh);font-size:1.25rem;line-height:1.3}
+.verktoy{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+
+/* notatbok */
+.bok{background:var(--note);border:1px solid var(--line);border-radius:14px;padding:10px 14px;
+  background-image:linear-gradient(var(--noteline) 1px,transparent 1px);background-size:100% 32px;background-position:0 30px}
+.bok summary{cursor:pointer;font-family:var(--fd);font-weight:600;list-style:none;display:flex;align-items:center;gap:8px}
+.bok summary::-webkit-details-marker{display:none}
+.bok ul{margin:6px 0 0;padding-left:22px;font-family:var(--fh);font-size:1.3rem;line-height:32px}
+.bok .tom{font-family:var(--fh);font-size:1.2rem;color:var(--muted)}
+
+/* avsløring */
+.mist{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mbtn{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:6px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--fd);font-weight:600;font-size:1.1rem;transition:border-color .1s,transform .1s}
+.mbtn svg{width:100%;max-width:220px;height:auto}
+.mbtn:not([disabled]):hover{border-color:var(--pri);transform:translateY(-1px)}
+.mbtn.riktig{border-color:var(--ok);background:var(--ok-soft)}
+.mbtn.gal{border-color:var(--coral);background:var(--coral-soft);opacity:.75}
+.mbtn[disabled]{cursor:default}
+
+/* tegning */
+.tegn svg{touch-action:manipulation}
+
+/* skole */
+.sider{display:flex;gap:6px;justify-content:center}
+.sider i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.sider i.na{background:var(--pri)}
+.tre{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tre figure{margin:0;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:6px;text-align:center;font-size:.95rem}
+.tre figure svg{width:100%;height:auto}
+.huske{display:flex;flex-direction:column;gap:10px}
+.huske div{display:flex;gap:12px;align-items:center;background:var(--card2);border-radius:14px;padding:10px 14px;border-left:6px solid}
+.huske .hi{font-size:2rem}
+input[type=range]{width:100%;accent-color:var(--pri);height:36px}
+.vmlabel{font-family:var(--fd);font-weight:600;font-size:1.6rem;text-align:center}
+
+/* slutt */
+.diplom{text-align:center;border:4px double var(--gold);background:var(--note)}
+.diplom h2{font-family:var(--ft);letter-spacing:1px;color:var(--acc)}
+.trenvalg{display:flex;flex-direction:column;gap:8px}
+
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(140%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;transition:transform .25s;z-index:30;max-width:calc(100% - 32px);text-align:center}
+.toast.on{transform:translateX(-50%) translateY(0)}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:40}
+@media (max-width:520px){
+  h1{font-size:1.6rem}.hero h1{font-size:1.9rem}
+  .q{font-size:1.2rem}
+  .vitner{grid-template-columns:1fr}
+  .vitne{display:grid;grid-template-columns:44px 1fr;gap:2px 10px;text-align:left;align-items:center}
+  .vitne .ve{grid-row:span 2;font-size:2rem}
+  .vitne .vs{grid-column:2}
+  .vitne .btn{grid-column:1 / -1;margin-top:6px}
+  .tre{grid-template-columns:1fr}
+  .tbtn{font-size:1.05rem;min-height:76px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<script src="felles/gull.js"></script>
+</head>
+<body>
+<header class="top"><div class="topin">
+  <button class="logo" data-act="home" aria-label="Til forsiden av Vinkelmysteriet">🔍 Vinkelmysteriet</button>
+  <div class="tools">
+    <button class="iconbtn" id="bSound" data-act="sound" aria-label="Lyd av eller på">🔊</button>
+    <button class="iconbtn" id="bTheme" data-act="theme" aria-label="Bytt mellom lys og mørk modus">◐</button>
+  </div>
+</div></header>
+<main class="wrap" id="app"></main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+<script>
+'use strict';
+/* =====================================================================
+   VINKELMYSTERIET – detektivspill om spisse, rette og stumpe vinkler (4. trinn)
+   - Saksmappen: fem saker med historie. Hver sak har seks spor (oppgaver) og en avsløring.
+   - Detektivskolen: forklaring med vinkelmaskin og vinkelsjekker (et brettet ark).
+   - Treningsrommet: runder med én oppgavetype.
+   - Figurene ligger på et heltallsrutenett, så rette vinkler er eksakte (skalarprodukt = 0).
+   - Fremgang lagres kun lokalt (localStorage). Gull via felles/gull.js.
+   ===================================================================== */
+const $=s=>document.querySelector(s);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function stokk(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const f2=n=>Math.round(n*10)/10;
+const pt=p=>f2(p[0])+' '+f2(p[1]);
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+
+/* ---------- lagring ---------- */
+const KEY='vinkelmysteriet-v1';
+const fresh=()=>({v:1,theme:'auto',sound:true,kap:{},tren:{},skole:false});
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(x&&x.v===1)return Object.assign(fresh(),x)}catch(e){}return fresh()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let S=load();
+
+/* ---------- gull ---------- */
+const tjen=n=>{window.Gull&&Gull.tjen(n)};
+const loggFeil=(k,o)=>{if(k&&o&&window.Gull&&Gull.feil)Gull.feil(k,Object.assign({emne:'Vinkler'},o))};
+const riktigK=k=>{if(k&&window.Gull&&Gull.riktig)Gull.riktig(k)};
+function sjekkMerke(){if([1,2,3,4,5].every(n=>S.kap[n])||(S.tren.blanding||0)>=3)window.Gull&&Gull.merke&&Gull.merke('vinkel-mester')}
+
+/* ---------- lyd, toast, konfetti, tema ---------- */
+let AC;
+function beep(kind){if(!S.sound)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime;
+  const seq={ok:[[660,0],[880,.09]],up:[[523,0],[659,.1],[784,.2],[1047,.3]],soft:[[392,0]],tap:[[740,0]],spor:[[587,0],[740,.08],[988,.16]],klikk:[[880,0]]}[kind]||[[600,0]];
+  seq.forEach(([f,d])=>{const o=AC.createOscillator(),g=AC.createGain();o.type=kind==='klikk'?'square':'sine';o.frequency.value=f;
+    const v=kind==='soft'?.07:kind==='tap'||kind==='klikk'?.04:.12;
+    g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(v,t+d+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d+(kind==='klikk'?.06:.25));
+    o.connect(g).connect(AC.destination);o.start(t+d);o.stop(t+d+.28)})}catch(e){}}
+let toastT;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2800)}
+const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+function confetti(n=90){if(reduced())return;const c=$('#fx'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+  const cl=['#e3a200','#2f4b7c','#7b3fe4','#d6336c','#1c7ed6','#22804a'];
+  const ps=Array.from({length:n},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.3,vx:(Math.random()-.5)*3,vy:2+Math.random()*3,r:Math.random()*6.28,s:6+Math.random()*6,c:pick(cl)}));
+  let f=0;(function tick(){x.clearRect(0,0,c.width,c.height);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.05;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});
+    if(++f<170)requestAnimationFrame(tick);else x.clearRect(0,0,c.width,c.height)})()}
+function applyTheme(){const r=document.documentElement;if(S.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',S.theme);
+  $('#bTheme').textContent={auto:'◐',light:'☀️',dark:'🌙'}[S.theme];$('#bSound').textContent=S.sound?'🔊':'🔇'}
+
+/* =====================================================================
+   GEOMETRI
+   ===================================================================== */
+const TYP=['spiss','rett','stump'];
+const PL={spiss:'spisse',rett:'rette',stump:'stumpe'};
+const TALL=['ingen','én','to','tre','fire','fem','seks','sju','åtte','ni','ti'];
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],add=(a,b)=>[a[0]+b[0],a[1]+b[1]],mul=(a,k)=>[a[0]*k,a[1]*k];
+const lengde=a=>Math.hypot(a[0],a[1]);
+const nrm=a=>{const l=lengde(a)||1;return[a[0]/l,a[1]/l]};
+function hjorner(p){const n=p.length;return p.map((P,i)=>{const A=p[(i+n-1)%n],C=p[(i+1)%n];const u=sub(A,P),v=sub(C,P);
+  const d=u[0]*v[0]+u[1]*v[1],cr=u[0]*v[1]-u[1]*v[0];
+  const g=Math.acos(Math.max(-1,Math.min(1,d/lengde(u)/lengde(v))))*180/Math.PI;
+  return{d,cr,g,t:d===0?'rett':d>0?'spiss':'stump'}})}
+function profil(p){const c={spiss:0,rett:0,stump:0,n:p.length};hjorner(p).forEach(h=>c[h.t]++);return c}
+/* tilfeldig kvart-rotasjon og speiling – rette vinkler forblir eksakte */
+function snu(p){const k=rnd(0,3),m=Math.random()<.5;let q=p.map(([x,y])=>m?[-x,y]:[x,y]);
+  for(let i=0;i<k;i++)q=q.map(([x,y])=>[-y,x]);
+  const mx=Math.min(...q.map(a=>a[0])),my=Math.min(...q.map(a=>a[1]));return q.map(([x,y])=>[x-mx,y-my])}
+function boks(p,x0,y0,x1,y1,maks){const xs=p.map(a=>a[0]),ys=p.map(a=>a[1]);const a0=Math.min(...xs),a1=Math.max(...xs),b0=Math.min(...ys),b1=Math.max(...ys);
+  const s=Math.min((x1-x0)/Math.max(1,a1-a0),(y1-y0)/Math.max(1,b1-b0),maks||40);
+  const ox=x0+((x1-x0)-(a1-a0)*s)/2-a0*s,oy=y0+((y1-y0)-(b1-b0)*s)/2-b0*s;return p.map(([x,y])=>[ox+x*s,oy+y*s])}
+/* vinkelmerke: bue for spiss/stump, liten firkant for rett */
+function merkeSvg(P,A,C,t,o){o=o||{};const ua=nrm(sub(A,P)),uc=nrm(sub(C,P));
+  const r=o.r||Math.max(14,Math.min(26,.34*Math.min(lengde(sub(A,P)),lengde(sub(C,P)))));
+  const col=o.farge||`var(--${t})`,da=o.stiplet?' stroke-dasharray="4 3"':'',fo=o.stiplet?'.08':'.22';
+  if(t==='rett'){const s=Math.max(11,r*.62);const a=add(P,mul(ua,s)),c=add(P,mul(uc,s)),b=add(a,mul(uc,s));
+    return `<path d="M${pt(P)}L${pt(a)}L${pt(b)}L${pt(c)}Z" fill="${col}" fill-opacity="${fo}"/><path d="M${pt(a)}L${pt(b)}L${pt(c)}" fill="none" stroke="${col}" stroke-width="3"${da}/>`}
+  const a=add(P,mul(ua,r)),c=add(P,mul(uc,r)),sw=(ua[0]*uc[1]-ua[1]*uc[0])>0?1:0;
+  return `<path d="M${pt(P)}L${pt(a)}A${f2(r)} ${f2(r)} 0 0 ${sw} ${pt(c)}Z" fill="${col}" fill-opacity="${fo}"/><path d="M${pt(a)}A${f2(r)} ${f2(r)} 0 0 ${sw} ${pt(c)}" fill="none" stroke="${col}" stroke-width="3"${da}/>`}
+function merkAlle(q,merker){const n=q.length;let s='';(merker||[]).forEach((m,i)=>{if(m)s+=merkeSvg(q[i],q[(i+n-1)%n],q[(i+1)%n],m.t,m)});return s}
+const alleMerker=p=>hjorner(p).map(h=>({t:h.t}));
+const polyPts=q=>q.map(a=>f2(a[0])+','+f2(a[1])).join(' ');
+
+/* figur med valgfrie merker og klikkbare hjørner */
+function figurSvg(p,o){o=o||{};const W=o.W||300,H=o.H||220,pad=o.pad||32;const q=boks(p,pad,pad,W-pad,H-pad,o.maks||40);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label||'Figur med '+p.length+' hjørner')}">`;
+  s+=`<polygon points="${polyPts(q)}" fill="${o.fyll||'var(--figfill)'}" stroke="var(--figline)" stroke-width="3.5" stroke-linejoin="round"/>`;
+  s+=merkAlle(q,o.merker);
+  q.forEach(P=>s+=`<circle cx="${f2(P[0])}" cy="${f2(P[1])}" r="3.5" fill="var(--figline)"/>`);
+  if(o.klikk)q.forEach((P,i)=>s+=`<circle cx="${f2(P[0])}" cy="${f2(P[1])}" r="21" class="hit${o.valgt&&o.valgt.includes(i)?' on':''}" data-act="${o.klikk}" data-i="${i}" data-s="${o.s||0}" tabindex="0" role="button" aria-label="Hjørne ${i+1}"/>`);
+  return s+'</svg>'}
+
+/* én vinkel: to vinkelbein fra et toppunkt */
+function vinkelGeo(v,W,H,S0){const t1=v.theta*Math.PI/180,t2=(v.theta+v.sgn*v.deg)*Math.PI/180;
+  const d1=[Math.cos(t1),Math.sin(t1)],d2=[Math.cos(t2),Math.sin(t2)],rot=[-d1[1]*v.sgn,d1[0]*v.sgn];
+  const E1=mul(d1,v.l1),E2=mul(d2,v.l2),C1=mul(d1,S0),C3=mul(rot,S0),C2=add(C1,C3);
+  const alle=[[0,0],E1,E2,C1,C2,C3];const xs=alle.map(a=>a[0]),ys=alle.map(a=>a[1]);
+  const T=[W/2-(Math.min(...xs)+Math.max(...xs))/2,H/2-(Math.min(...ys)+Math.max(...ys))/2];
+  return{P:T,E1:add(E1,T),E2:add(E2,T),C1:add(C1,T),C2:add(C2,T),C3:add(C3,T)}}
+function vinkelSvg(v,o){o=o||{};const W=o.W||320,H=o.H||230,g=vinkelGeo(v,W,H,o.sjekkStr||64);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label||'En vinkel')}">`;
+  if(o.sjekk)s+=`<g class="sjekker"><polygon points="${polyPts([g.P,g.C1,g.C2,g.C3])}" fill="var(--paper)" fill-opacity=".75" stroke="var(--paperline)" stroke-width="2" stroke-dasharray="6 4"/><path d="M${pt(g.C1)}L${pt(g.C2)}L${pt(g.C3)}" fill="none" stroke="var(--paperline)" stroke-width="2"/></g>`;
+  if(o.merke)s+=merkeSvg(g.P,g.E1,g.E2,o.merke,{r:30});
+  s+=`<path d="M${pt(g.E1)}L${pt(g.P)}L${pt(g.E2)}" fill="none" stroke="var(--figline)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  s+=`<circle cx="${f2(g.P[0])}" cy="${f2(g.P[1])}" r="5.5" fill="var(--figline)"/>`;
+  if(o.etikett)s+=`<text x="${f2(o.etikett[0])}" y="${f2(o.etikett[1])}" font-family="Fredoka,sans-serif" font-size="26" font-weight="600" fill="var(--ink)">${o.etikett[2]}</text>`;
+  return s+'</svg>'}
+/* små ikoner på svarknappene */
+function ikonT(t){const d={spiss:'M6 30L42 30M6 30L36 8',rett:'M10 30L42 30M10 30L10 4',stump:'M14 30L44 30M14 30L2 6'}[t];
+  const m={spiss:'M18 30A12 12 0 0 0 16 23.2',rett:'M10 22H18V30',stump:'M24 30A10 10 0 0 0 9.5 21'}[t];
+  return `<svg viewBox="0 0 48 34" aria-hidden="true"><path d="${d}" fill="none" stroke="var(--figline)" stroke-width="3" stroke-linecap="round"/><path d="${m}" fill="none" stroke="var(--${t})" stroke-width="3"/></svg>`}
+
+/* klokke med hel time */
+function klokkeSvg(h,o){o=o||{};const c=[100,100];let s=`<svg viewBox="0 0 200 200" role="img" aria-label="Klokka er ${h}">`;
+  s+=`<circle cx="100" cy="100" r="90" fill="var(--card)" stroke="var(--figline)" stroke-width="6"/>`;
+  for(let i=0;i<12;i++){const a=i*Math.PI/6,r2=i%3?72:66;s+=`<line x1="${f2(100+Math.sin(a)*80)}" y1="${f2(100-Math.cos(a)*80)}" x2="${f2(100+Math.sin(a)*r2)}" y2="${f2(100-Math.cos(a)*r2)}" stroke="var(--figline)" stroke-width="${i%3?2:4}"/>`}
+  for(let i=1;i<=12;i++){const a=i*Math.PI/6;s+=`<text x="${f2(100+Math.sin(a)*55)}" y="${f2(100-Math.cos(a)*55+6)}" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="${i%3?14:18}" font-weight="600" fill="var(--muted)">${i}</text>`}
+  const a=h*Math.PI/6,H=[100+Math.sin(a)*48,100-Math.cos(a)*48],M=[100,28];
+  if(o.merke)s+=merkeSvg(c,H,M,o.merke,{r:26});
+  s+=`<line x1="100" y1="100" x2="${f2(H[0])}" y2="${f2(H[1])}" stroke="var(--figline)" stroke-width="9" stroke-linecap="round"/>`;
+  s+=`<line x1="100" y1="100" x2="${M[0]}" y2="${M[1]}" stroke="var(--pri)" stroke-width="5" stroke-linecap="round"/>`;
+  return s+`<circle cx="100" cy="100" r="7" fill="var(--figline)"/></svg>`}
+
+/* kake delt i n like stykker, ett stykke trukket ut */
+function kakeSvg(n,o){o=o||{};const C=[110,108],R=78,st=360/n,b=-45,s0=b-st/2;
+  const P=(deg,r,c)=>{const a=deg*Math.PI/180;return[(c||C)[0]+Math.cos(a)*r,(c||C)[1]+Math.sin(a)*r]};
+  let s=`<svg viewBox="0 0 220 216" role="img" aria-label="Kake delt i ${n} like store stykker">`;
+  s+=`<circle cx="110" cy="108" r="100" fill="var(--card)" stroke="var(--line)" stroke-width="3"/>`;
+  const a1=P(s0+st,R),a2=P(s0+360,R);
+  s+=`<path d="M${pt(C)}L${pt(a1)}A${R} ${R} 0 ${360-st>180?1:0} 1 ${pt(a2)}Z" fill="#f8bbd0" stroke="#c2185b" stroke-width="2.5"/>`;
+  for(let k=2;k<n;k++)s+=`<line x1="${C[0]}" y1="${C[1]}" x2="${f2(P(s0+k*st,R)[0])}" y2="${f2(P(s0+k*st,R)[1])}" stroke="#c2185b" stroke-width="2.5"/>`;
+  for(let k=1;k<n;k++){const m=P(s0+(k+.5)*st,R*.62);s+=`<circle cx="${f2(m[0])}" cy="${f2(m[1])}" r="6" fill="#e53935"/><path d="M${f2(m[0]-3)} ${f2(m[1]-6)}l3 2l3-2" stroke="#43a047" stroke-width="2" fill="none"/>`}
+  const O=P(b,15),b1=P(s0,R,O),b2=P(s0+st,R,O);
+  s+=`<path d="M${pt(O)}L${pt(b1)}A${R} ${R} 0 0 1 ${pt(b2)}Z" fill="#ffe0ec" stroke="#c2185b" stroke-width="3"/>`;
+  const m=P(b,R*.62,O);s+=`<circle cx="${f2(m[0])}" cy="${f2(m[1])}" r="7" fill="#e53935"/>`;
+  if(o.merke)s+=merkeSvg(O,b1,b2,o.merke,{r:30});
+  s+=`<circle cx="${f2(O[0])}" cy="${f2(O[1])}" r="4" fill="#880e4f"/>`;
+  return s+'</svg>'}
+
+/* prikkark for tegneoppgaver */
+const GX=7,GY=6,GS=42,G0=[30,28];
+const gpt=([x,y])=>[G0[0]+x*GS,G0[1]+y*GS];
+function tegnSvg(T){const W=G0[0]*2+(GX-1)*GS,H=G0[1]*2+(GY-1)*GS;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Prikkark. Trykk på prikker for å tegne">`;
+  const q=T.pts.map(gpt);
+  if(T.lukket)s+=`<polygon points="${polyPts(q)}" fill="var(--figfill)" stroke="var(--figline)" stroke-width="4" stroke-linejoin="round"/>`+merkAlle(q,T.vis);
+  else if(q.length>1)s+=`<polyline points="${polyPts(q)}" fill="none" stroke="var(--figline)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`;
+  for(let y=0;y<GY;y++)for(let x=0;x<GX;x++){const P=gpt([x,y]),v=T.pts.findIndex(a=>a[0]===x&&a[1]===y);
+    s+=`<circle cx="${P[0]}" cy="${P[1]}" r="${v>=0?7:4.5}" fill="${v>=0?'var(--pri)':'var(--dot)'}"/>`;
+    if(v===0&&!T.lukket&&T.pts.length>1)s+=`<circle cx="${P[0]}" cy="${P[1]}" r="12" fill="none" stroke="var(--pri)" stroke-width="2" stroke-dasharray="3 3"/>`}
+  if(!T.done&&!T.lukket)for(let y=0;y<GY;y++)for(let x=0;x<GX;x++){const P=gpt([x,y]);s+=`<circle cx="${P[0]}" cy="${P[1]}" r="19" class="hit" data-act="prikk" data-x="${x}" data-y="${y}" tabindex="0" role="button" aria-label="Prikk ${x+1}, ${y+1}"/>`}
+  return s+'</svg>'}
+function kryss(a,b,c,d){const o=(p,q,r)=>Math.sign((q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]));
+  return o(a,b,c)*o(a,b,d)<0&&o(c,d,a)*o(c,d,b)<0}
+
+/* =====================================================================
+   TEGNINGER
+   ===================================================================== */
+function snuteSvg(){return `<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="22" cy="54" rx="12" ry="24" fill="#7a4a26" transform="rotate(16 22 54)"/><ellipse cx="78" cy="54" rx="12" ry="24" fill="#7a4a26" transform="rotate(-16 78 54)"/>
+<circle cx="50" cy="54" r="29" fill="#c8925a"/><ellipse cx="50" cy="68" rx="17" ry="13" fill="#f1d3ad"/><ellipse cx="50" cy="60" rx="7.5" ry="5.5" fill="#2a1a10"/><ellipse cx="48" cy="58.5" rx="2.2" ry="1.4" fill="#fff" opacity=".6"/>
+<circle cx="39" cy="47" r="4.2" fill="#2a1a10"/><circle cx="61" cy="47" r="4.2" fill="#2a1a10"/><circle cx="40.4" cy="45.6" r="1.4" fill="#fff"/><circle cx="62.4" cy="45.6" r="1.4" fill="#fff"/>
+<path d="M44 74Q50 79 56 74" stroke="#2a1a10" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M48 77Q50 84 53 77" fill="#ff7a8a"/>
+<path d="M25 33Q50 6 75 33Z" fill="#6b7a4f"/><path d="M21 34Q50 25 79 34L77 39Q50 30 23 39Z" fill="#4f5c39"/><path d="M50 10V30M36 18L42 32M64 18L58 32" stroke="#4f5c39" stroke-width="1.5"/></svg>`}
+function krokSvg(){return `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M18 100Q22 76 50 74Q78 76 82 100Z" fill="#5b2d82"/><path d="M38 76L50 88L62 76Z" fill="#f2c230"/>
+<circle cx="50" cy="56" r="21" fill="#f0c9a2"/><path d="M28 41L74 35L72 42L30 47Z" fill="#241634"/><path d="M34 42L40 8L68 18L64 38Z" fill="#3b2654"/><path d="M35 36L64 32L65 37L35 41Z" fill="#c2185b"/>
+<path d="M40 53L46 51M54 50L61 52" stroke="#241634" stroke-width="2.5" stroke-linecap="round"/><circle cx="43" cy="56" r="2.4" fill="#241634"/><circle cx="58" cy="55" r="2.4" fill="#241634"/>
+<path d="M34 64L39 61L44 65L50 61L56 65L61 61L66 64" stroke="#241634" stroke-width="3" fill="none" stroke-linejoin="round"/><path d="M45 70Q51 73 56 69" stroke="#241634" stroke-width="2" fill="none"/></svg>`}
+function duSvg(){try{if(window.Gull)return Gull.tegn(Gull.tilstand(),{bakgrunn:false,venn:false,vb:'62 14 116 116'})}catch(e){}return '🕵️'}
+const FOLK={
+  snute:{navn:'Snute',svg:snuteSvg}, krok:{navn:'Mester Krok',svg:krokSvg}, du:{navn:'Du',svg:duSvg},
+  ordf:{navn:'Ordfører Rettnes',emo:'👩‍💼'}, baker:{navn:'Baker Bolle',emo:'🧑‍🍳'}, pia:{navn:'Parkvakt Pia',emo:'🧑‍🌾'},
+  hal:{navn:'Havnefogd Hal',emo:'🧔'}, fie:{navn:'Fyrvokter Fie',emo:'👵'},
+};
+const ansikt=id=>{const f=FOLK[id];return f.svg?f.svg():`<span aria-hidden="true">${f.emo}</span>`};
+
+/* ---------- scener (600 × 240) ---------- */
+const SC=(lab,inner)=>`<svg viewBox="0 0 600 240" class="scene" role="img" aria-label="${esc(lab)}">${inner}</svg>`;
+const stjerner=(n,f)=>{let s='';for(let i=0;i<n;i++){const x=(i*137+40)%590,y=(i*71+12)%(f||110);s+=`<circle cx="${x}" cy="${y}" r="${i%3?1.2:1.8}" fill="#fff" opacity=".8"/>`}return s};
+const SCENE={
+  hero:()=>SC('Hjørnevik om natta med skjeve hus, et fyrtårn og et forstørrelsesglass',
+    `<defs><linearGradient id="hS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141d36"/><stop offset="1" stop-color="#3b4f80"/></linearGradient></defs>
+    <rect width="600" height="240" fill="url(#hS)"/>${stjerner(30)}<circle cx="80" cy="50" r="24" fill="#fff3c4"/><circle cx="91" cy="43" r="21" fill="#1c2747"/>
+    <path d="M547 104L360 60L360 140Z" fill="#ffe680" opacity=".16"/><path d="M462 210Q530 168 600 186V240H462Z" fill="#1d2744"/>
+    <path d="M532 200L539 110H555L562 200Z" fill="#e9e4da"/><path d="M536 150H558L559 166H535Z" fill="#c0392b"/><path d="M534 182H560L561 198H533Z" fill="#c0392b"/><rect x="537" y="96" width="20" height="14" fill="#ffd75e"/><path d="M533 96L547 82L561 96Z" fill="#c0392b"/>
+    <g fill="#26325a"><path d="M30 212L36 140L74 110L112 138L108 212Z"/><path d="M124 212L134 122L174 100L206 128L198 212Z"/><path d="M216 212L220 150L262 124L300 152L302 212Z"/><path d="M314 212L322 132L356 106L392 132L384 212Z"/></g>
+    <g fill="#ffd75e"><rect x="56" y="152" width="14" height="16" transform="rotate(-6 63 160)"/><rect x="80" y="170" width="14" height="16" transform="rotate(5 87 178)"/><rect x="150" y="140" width="14" height="18" transform="rotate(-9 157 149)"/><rect x="246" y="164" width="16" height="16" transform="rotate(7 254 172)"/><rect x="340" y="150" width="14" height="18" transform="rotate(-5 347 159)"/></g>
+    <rect y="208" width="600" height="32" fill="#121a2e"/>
+    <circle cx="440" cy="150" r="40" fill="#9fd3ff" fill-opacity=".18" stroke="#e0a100" stroke-width="9"/><path d="M468 178L500 212" stroke="#6d4c41" stroke-width="13" stroke-linecap="round"/>
+    <path d="M422 132V170H460" fill="none" stroke="#ffd75e" stroke-width="5" stroke-linecap="round"/><path d="M422 158H434V170" fill="none" stroke="#ffd75e" stroke-width="3"/>`),
+  radhus:()=>SC('Rådhuset i Hjørnevik med en knust glassmonter',
+    `<rect width="600" height="240" fill="#cfe6f7"/><circle cx="540" cy="44" r="22" fill="#ffe082"/><rect y="200" width="600" height="40" fill="#a5cf7a"/>
+    <rect x="150" y="90" width="300" height="114" fill="#efe6d2" stroke="#b8a98a" stroke-width="3"/><path d="M138 92L300 30L462 92Z" fill="#e4d7bb" stroke="#b8a98a" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="300" cy="68" r="14" fill="#fff" stroke="#8c7a5b" stroke-width="3"/><path d="M300 68V59M300 68H307" stroke="#2a2418" stroke-width="2"/>
+    ${[172,214,368,410].map(x=>`<rect x="${x}" y="100" width="18" height="102" fill="#fffaf0" stroke="#c9bca0" stroke-width="2"/>`).join('')}
+    <rect x="272" y="128" width="56" height="76" fill="#7a4a26"/><circle cx="318" cy="168" r="3" fill="#f2c230"/>
+    <rect x="40" y="162" width="62" height="42" fill="#8c7a5b"/><rect x="44" y="118" width="54" height="44" fill="#bfe6ff" fill-opacity=".55" stroke="#7fb3d5" stroke-width="2"/>
+    <path d="M58 118L70 136L60 148M70 136L88 128M70 136L80 160" stroke="#4a7ea6" stroke-width="1.5" fill="none"/><text x="71" y="152" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="20" fill="#c4573a">?</text>
+    <path d="M108 214L116 206L120 216ZM128 222L138 216L136 228Z" fill="#bfe6ff" stroke="#7fb3d5"/>
+    ${[0,1,2,3,4,5].map(i=>`<ellipse cx="${150+i*24}" cy="${i%2?226:216}" rx="7" ry="4" fill="#5d4c36" opacity=".5"/>`).join('')}`),
+  bakeri:()=>SC('Bakeriet med en kake det mangler et stykke av og en klokke som har stoppet',
+    `<rect width="600" height="240" fill="#fbe3c4"/><path d="M0 0H600V24H0Z" fill="#f4c99b"/>
+    <rect x="40" y="70" width="200" height="8" fill="#a1662f"/>${[70,120,170,210].map((x,i)=>`<ellipse cx="${x}" cy="60" rx="${i%2?16:22}" ry="11" fill="#d9a066" stroke="#a1662f" stroke-width="2"/>`).join('')}
+    <circle cx="470" cy="70" r="36" fill="#fff" stroke="#6d4c41" stroke-width="6"/><text x="470" y="82" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="34" font-weight="700" fill="#c4573a">?</text>
+    <rect y="160" width="600" height="80" fill="#a1662f"/><rect y="154" width="600" height="10" fill="#7a4a26"/>
+    <rect x="290" y="134" width="20" height="22" fill="#ddd"/><ellipse cx="300" cy="134" rx="74" ry="10" fill="#eee" stroke="#ccc"/>
+    <rect x="240" y="98" width="120" height="32" fill="#f8bbd0"/><ellipse cx="300" cy="130" rx="60" ry="8" fill="#f8bbd0"/><ellipse cx="300" cy="98" rx="60" ry="18" fill="#ffe0ec" stroke="#c2185b" stroke-width="2"/>
+    <path d="M300 98L360 98L360 130L330 136L330 112Z" fill="#fbe3c4"/><path d="M300 98L330 112V136" stroke="#c2185b" stroke-width="2" fill="none"/><path d="M300 98H360" stroke="#c2185b" stroke-width="2"/>
+    <circle cx="272" cy="94" r="5" fill="#e53935"/><circle cx="292" cy="88" r="5" fill="#e53935"/><circle cx="282" cy="104" r="5" fill="#e53935"/>
+    ${[0,1,2,3,4].map(i=>`<circle cx="${380+i*30}" cy="${150-(i%2)*3}" r="3" fill="#7a4a26"/>`).join('')}`),
+  park:()=>SC('Parken med sandkasse, sklie, en drage i treet og en låst redskapsbod',
+    `<rect width="600" height="240" fill="#bfe3ff"/><circle cx="60" cy="44" r="24" fill="#ffd54f"/><rect y="168" width="600" height="72" fill="#8bc34a"/>
+    <rect x="458" y="108" width="22" height="80" fill="#6d4c41"/><circle cx="468" cy="88" r="50" fill="#4caf50"/><circle cx="428" cy="106" r="34" fill="#43a047"/><circle cx="510" cy="106" r="34" fill="#43a047"/>
+    <path d="M500 52L516 72L500 100L484 72Z" fill="#e53935" stroke="#8e1515" stroke-width="2"/><path d="M500 100Q492 120 506 136Q518 150 508 166" stroke="#555" fill="none"/>
+    <path d="M80 190V110M100 190V110M80 130H100M80 150H100M80 170H100" stroke="#795548" stroke-width="4"/><path d="M100 112Q120 120 140 160Q150 186 176 192" stroke="#ff7043" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <rect x="200" y="184" width="200" height="44" fill="#e9cf8f" stroke="#a1662f" stroke-width="7"/>
+    <path d="M220 218L236 194L258 218Z M276 196H312V218H276Z M330 218L340 196L372 196L382 218Z" stroke="#a1662f" stroke-width="2" fill="none"/>
+    <rect x="532" y="142" width="60" height="50" fill="#8d6e63"/><path d="M526 144L562 120L598 144Z" fill="#5d4037"/><rect x="556" y="160" width="12" height="12" rx="2" fill="#f2c230"/><path d="M558 160V155A4 4 0 0 1 566 155V160" stroke="#f2c230" stroke-width="2" fill="none"/>`),
+  havn:()=>SC('Havna med naust, brygge og seilbåter',
+    `<rect width="600" height="240" fill="#cde8f5"/><rect y="150" width="600" height="90" fill="#3f88c5"/>
+    ${[0,1,2,3,4,5].map(i=>`<path d="M${30+i*95} ${190+(i%2)*20}q12-6 24 0q12 6 24 0" stroke="#fff" stroke-width="2" fill="none" opacity=".5"/>`).join('')}
+    <rect y="138" width="260" height="14" fill="#8d6e63"/>${[20,90,160,230].map(x=>`<rect x="${x}" y="150" width="10" height="40" fill="#6d4c41"/>`).join('')}
+    <rect x="20" y="80" width="110" height="60" fill="#b23a2e"/><path d="M12 82L75 40L138 82Z" fill="#7a2a22"/><rect x="60" y="100" width="30" height="40" fill="#5c1f19"/><rect x="69" y="114" width="12" height="11" rx="2" fill="#f2c230"/>
+    <path d="M300 172H380L368 190H312Z" fill="#6d4c41"/><line x1="340" y1="172" x2="340" y2="100" stroke="#5d4037" stroke-width="3"/><path d="M342 102V168H380Z" fill="#fff" stroke="#999"/>
+    <path d="M440 176H530L516 196H452Z" fill="#455a64"/><line x1="470" y1="176" x2="470" y2="92" stroke="#37474f" stroke-width="3"/><path d="M472 94L472 170L526 170L504 112Z" fill="#ffe0b2" stroke="#999"/>
+    <path d="M200 50q8-8 16 0q8-8 16 0M260 30q6-6 12 0q6-6 12 0" stroke="#333" stroke-width="2" fill="none"/>`),
+  fyr:()=>SC('Fyrtårnet om natta med fire skikkelser i kapper',
+    `<defs><linearGradient id="fS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f1730"/><stop offset="1" stop-color="#34466f"/></linearGradient></defs>
+    <rect width="600" height="240" fill="url(#fS)"/>${stjerner(26,90)}<path d="M300 50L20 0L20 110Z M300 50L580 0L580 110Z" fill="#ffe680" opacity=".13"/>
+    <rect y="200" width="600" height="40" fill="#1d3557"/><path d="M180 212Q300 180 420 212Z" fill="#4a4e5a"/>
+    <path d="M272 206L282 62H318L328 206Z" fill="#f2eee6"/><path d="M277 118H323L325 142H275Z M273 172H327L328 196H272Z" fill="#c0392b"/><rect x="283" y="40" width="34" height="22" fill="#ffd75e"/><path d="M278 40L300 20L322 40Z" fill="#c0392b"/>
+    ${[[130,'M120 158L130 136L140 158Z'],[190,'M178 158H202V140H178Z'],[410,'M396 158L402 140H418L424 158Z'],[470,'M458 158L462 146L470 138L478 146L482 158Z']].map(([x,h])=>`<path d="M${x-22} 214Q${x-14} 170 ${x} 166Q${x+14} 170 ${x+22} 214Z" fill="#2b1f42"/><circle cx="${x}" cy="168" r="12" fill="#1a1230"/><circle cx="${x-4}" cy="168" r="1.8" fill="#ffd75e"/><circle cx="${x+4}" cy="168" r="1.8" fill="#ffd75e"/><path d="${h}" fill="#3b2654"/>`).join('')}`),
+  slutt:()=>SC('Hjørnevik i sola med rette hus og Gullvinkelen som skinner',
+    `<rect width="600" height="240" fill="#cfe6f7"/><circle cx="530" cy="46" r="26" fill="#ffe082"/><rect y="200" width="600" height="40" fill="#a5cf7a"/>
+    <g fill="#f3e6cf" stroke="#b8a98a" stroke-width="2"><rect x="30" y="130" width="70" height="72"/><rect x="110" y="110" width="80" height="92"/><rect x="420" y="120" width="70" height="82"/><rect x="500" y="136" width="74" height="66"/></g>
+    <g fill="#c0392b"><path d="M24 132L65 100L106 132Z"/><path d="M104 112L150 76L196 112Z"/><path d="M414 122L455 90L496 122Z"/><path d="M494 138L537 104L580 138Z"/></g>
+    <g fill="none" stroke="#d6336c" stroke-width="2.5"><path d="M30 190H42V202"/><path d="M110 190H122V202"/><path d="M478 202V190H490"/></g>
+    <path d="M250 50H278V172H390V200H250Z" fill="#f2c230" stroke="#b8860b" stroke-width="4" stroke-linejoin="round"/>
+    ${[70,90,110,130,150].map(y=>`<path d="M278 ${y}H270" stroke="#b8860b" stroke-width="2"/>`).join('')}${[300,320,340,360].map(x=>`<path d="M${x} 172V180" stroke="#b8860b" stroke-width="2"/>`).join('')}
+    <path d="M278 156H294V172" fill="none" stroke="#b8860b" stroke-width="3"/>
+    ${[[230,60,9],[410,150,7],[300,30,6],[220,170,6],[400,70,8]].map(([x,y,r])=>`<path d="M${x} ${y-r}L${x+r*.3} ${y-r*.3}L${x+r} ${y}L${x+r*.3} ${y+r*.3}L${x} ${y+r}L${x-r*.3} ${y+r*.3}L${x-r} ${y}L${x-r*.3} ${y-r*.3}Z" fill="#fff59d"/>`).join('')}`),
+};
+
+/* ---------- mistenkte objekter i avsløringen ---------- */
+const OBJ={
+  dor:{navn:'Dør',best:'Døra tyven brukte',filt:p=>p.length>=4&&p.length<=5,farger:['#8d5a3b','#5f7a34','#3b6d8d','#8d3b5a']},
+  eske:{navn:'Boks',best:'Kakeboksen tyven tok',filt:()=>true,farger:['#f6a5c0','#a5d8f6','#f6dca5','#b9e8a0']},
+  drage:{navn:'Drage',best:'Dragen med tyvens signal',filt:p=>p.length<=5,farger:['#e53935','#1e88e5','#fbc02d','#43a047']},
+  seil:{navn:'Båt',best:'Seilet på båten tyven lånte',filt:p=>p.length<=4,farger:['#ffffff','#ffe0b2','#e1f5fe','#fce4ec']},
+  hatt:{navn:'Skikkelse',best:'Hatten til tyven',filt:()=>true,farger:['#7e57c2','#00897b','#c62828','#ef6c00']},
+};
+let uid=0;
+function objSvg(kind,p,i,merker){const o=OBJ[kind],col=o.farger[i%4],W=180,H=190,id='o'+(++uid);let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${o.navn} ${'ABCD'[i]}, ${p.length} hjørner">`;
+  let q;const poly=(q,fill,sw)=>`<polygon points="${polyPts(q)}" fill="${fill}" stroke="#2a2418" stroke-width="${sw||3.5}" stroke-linejoin="round"/>`;
+  const midt=q=>[q.reduce((a,b)=>a+b[0],0)/q.length,q.reduce((a,b)=>a+b[1],0)/q.length];
+  if(kind==='dor'){s+=`<rect width="${W}" height="${H}" fill="#e8dccb"/>${[30,62,94,126,158].map((y,k)=>`<path d="M0 ${y}H${W}" stroke="#d6c6ae" stroke-width="2"/>`).join('')}<rect y="172" width="${W}" height="18" fill="#a1887f"/>`;
+    q=boks(p,26,14,154,170,24);const c=midt(q),xs=q.map(a=>a[0]);s+=poly(q,col)+`<circle cx="${f2(c[0]+(Math.max(...xs)-c[0])*.55)}" cy="${f2(c[1]+8)}" r="5" fill="#f2c230" stroke="#8a6410"/>`}
+  else if(kind==='eske'){q=boks(p,22,18,158,170,24);const c=midt(q);s+=`<defs><clipPath id="${id}"><polygon points="${polyPts(q)}"/></clipPath></defs>`+poly(q,col)+
+    `<g clip-path="url(#${id})"><rect x="${f2(c[0]-7)}" y="0" width="14" height="${H}" fill="#fff" opacity=".85"/><rect x="0" y="${f2(c[1]-7)}" width="${W}" height="14" fill="#fff" opacity=".85"/></g>`+poly(q,'none')+
+    `<path d="M${f2(c[0])} ${f2(c[1])}c-14-14-24-2-10 4zM${f2(c[0])} ${f2(c[1])}c14-14 24-2 10 4z" fill="#e91e63"/>`}
+  else if(kind==='drage'){q=boks(p,28,8,152,128,22);const lav=q.reduce((a,b)=>b[1]>a[1]?b:a);s+=poly(q,col)+
+    `<path d="M${pt(lav)}Q${f2(lav[0]-20)} ${f2(lav[1]+26)} ${f2(lav[0]+4)} ${f2(lav[1]+40)}T${f2(lav[0]-6)} 186" stroke="#555" stroke-width="2" fill="none"/>`+
+    [18,36].map(d=>`<path d="M${f2(lav[0]-6)} ${f2(lav[1]+d)}l6 4l6-4l-6 4z" fill="${col}" stroke="#555"/>`).join('')}
+  else if(kind==='seil'){s+=`<rect y="170" width="${W}" height="20" fill="#3f88c5"/><path d="M24 156H156L142 176H38Z" fill="#6d4c41"/>`;
+    q=boks(p,46,10,150,150,22);const xs=q.map(a=>a[0]),ys=q.map(a=>a[1]);const mx=Math.min(...xs)-4;
+    s+=`<line x1="${f2(mx)}" y1="${f2(Math.min(...ys)-4)}" x2="${f2(mx)}" y2="158" stroke="#4e342e" stroke-width="4"/>`+poly(q,col,3)}
+  else if(kind==='hatt'){s+=`<path d="M36 190Q46 120 90 116Q134 120 144 190Z" fill="#2b1f42"/><circle cx="90" cy="118" r="26" fill="#1a1230"/><circle cx="81" cy="120" r="3" fill="#ffd75e"/><circle cx="99" cy="120" r="3" fill="#ffd75e"/>`;
+    q=boks(p,40,8,140,94,18);const ys=q.map(a=>a[1]),dy=98-Math.max(...ys);q=q.map(a=>[a[0],a[1]+dy]);s+=poly(q,col)}
+  s+=merkAlle(q,merker);
+  return s+'</svg>'}
+
+/* =====================================================================
+   INNHOLD
+   ===================================================================== */
+/* figurbank på rutenett (sjekket: ingen vinkel som ikke er rett, ligger nærmere 90° enn 12°) */
+const FORMER=[
+  {id:'kvadrat',navn:'kvadrat',en:'et kvadrat',p:[[0,0],[4,0],[4,4],[0,4]]},
+  {id:'rektangel',navn:'rektangel',en:'et rektangel',p:[[0,0],[6,0],[6,3],[0,3]]},
+  {id:'rettTre',p:[[0,0],[0,4],[5,4]]},
+  {id:'spissTre',p:[[0,4],[6,4],[3,0]]},{id:'spissTre3',p:[[0,5],[6,5],[2,0]]},{id:'skjevTre',p:[[0,0],[6,2],[1,5]]},
+  {id:'stumpTre',p:[[0,3],[8,3],[2,1]]},{id:'stumpTre2',p:[[0,0],[7,2],[2,3]]},{id:'stumpTre3',p:[[0,4],[9,4],[6,1]]},
+  {id:'husR',p:[[0,2],[3,0],[6,2],[6,6],[0,6]]},{id:'husSpiss',p:[[0,4],[2,0],[4,4],[4,8],[0,8]]},{id:'husRett',p:[[0,0],[6,0],[6,3],[3,6],[0,3]]},
+  {id:'femA',p:[[0,2],[4,0],[8,2],[6,6],[2,6]]},
+  {id:'trapesR',p:[[0,0],[5,0],[5,4],[2,4]]},{id:'trapesR1',p:[[0,0],[6,0],[4,4],[0,4]]},{id:'trapesR2',p:[[0,0],[4,0],[7,4],[0,4]]},
+  {id:'trapesLik',p:[[2,0],[6,0],[8,4],[0,4]]},{id:'parall',p:[[2,0],[7,0],[5,3],[0,3]]},
+  {id:'drageR',p:[[3,0],[6,3],[3,9],[0,3]]},{id:'drage',p:[[3,0],[5,3],[3,8],[1,3]]},{id:'firR1c',p:[[0,0],[5,0],[7,4],[0,2]]},
+  {id:'seks',p:[[2,0],[6,0],[8,3],[6,6],[2,6],[0,3]]},{id:'seksB',p:[[1,0],[5,0],[7,3],[5,6],[1,6],[0,3]]},{id:'seksR',p:[[0,0],[4,0],[6,2],[6,6],[2,6],[0,4]]},
+  {id:'fem2',p:[[3,0],[6,3],[5,7],[1,7],[0,3]]},{id:'femStump',p:[[2,0],[6,1],[6,5],[2,6],[0,3]]},
+];
+const FORM={};FORMER.forEach(f=>{FORM[f.id]=f;f.pr=profil(f.p)});
+
+const MC={
+  toppunkt:{q:'Hva heter punktet der de to vinkelbeina møtes?',a:'Toppunktet',alt:['Midtpunktet','Sidepunktet'],forkl:'Vinkelbeina møtes i toppunktet. Det er der du legger hjørnet på vinkelsjekkeren.'},
+  vinkelbein:{q:'Hva heter de to strekene som lager en vinkel?',a:'Vinkelbein',alt:['Hjørnebein','Diagonaler'],forkl:'En vinkel har to vinkelbein som møtes i toppunktet.'},
+  spiss:{q:'Hva heter en vinkel som er mindre enn en rett vinkel?',a:'Spiss vinkel',alt:['Stump vinkel','Rett vinkel'],forkl:'Mindre enn en rett vinkel = spiss. Den får plass inni hjørnet på et ark.'},
+  stump:{q:'Hva heter en vinkel som er større enn en rett vinkel, men ikke helt flat?',a:'Stump vinkel',alt:['Spiss vinkel','Rett vinkel'],forkl:'Større enn en rett vinkel = stump. Den stikker utenfor hjørnet på et ark.'},
+  rett:{q:'Hva heter en vinkel som er akkurat like stor som hjørnet på et ark?',a:'Rett vinkel',alt:['Spiss vinkel','Stump vinkel'],forkl:'Hjørnet på et ark er en rett vinkel. Vi merker den med en liten firkant.'},
+  kvadrat:{q:'Hvor mange rette vinkler har et kvadrat?',a:'4',alt:['2','0'],forkl:'Et kvadrat har fire rette vinkler – én i hvert hjørne.'},
+  rektangel:{q:'Hvor mange rette vinkler har et rektangel?',a:'4',alt:['2','1'],forkl:'Et rektangel har fire rette vinkler, akkurat som et kvadrat.'},
+  trekant3:{q:'Hvor mange vinkler har en trekant?',a:'3',alt:['2','4'],forkl:'Tre hjørner – tre vinkler. Det står i navnet: tre-kant.'},
+  tremaxrett:{q:'Hvor mange rette vinkler kan en trekant høyst ha?',a:'1',alt:['2','3'],forkl:'Bare én. Prøv å tegne en trekant med to rette vinkler – da møtes sidene aldri!'},
+  tremaxstump:{q:'Hvor mange stumpe vinkler kan en trekant høyst ha?',a:'1',alt:['2','3'],forkl:'Bare én. De to andre vinklene i trekanten blir alltid spisse.'},
+  sjekker:{q:'Hva kan du bruke for å sjekke om en vinkel er rett?',a:'Hjørnet på et ark',alt:['Et viskelær','En rund tallerken'],forkl:'Hjørnet på et ark (eller et ark brettet to ganger) er en perfekt vinkelsjekker.'},
+  merke:{q:'Hvordan viser vi at en vinkel er rett på en tegning?',a:'Med en liten firkant i hjørnet',alt:['Med en liten sirkel','Med et kryss'],forkl:'En rett vinkel merkes med en liten firkant. Andre vinkler merkes med en bue.'},
+  lengde:{q:'Hva skjer med vinkelen hvis du gjør vinkelbeina lengre?',a:'Ingenting – den er like stor',alt:['Den blir større','Den blir mindre'],forkl:'Lengden på vinkelbeina betyr ingenting. Det er bare hvor åpen vinkelen er som teller.'},
+  femkant:{q:'Hvor mange vinkler har en femkant?',a:'5',alt:['4','6'],forkl:'Fem hjørner – fem vinkler.'},
+};
+const MC_STORY=['toppunkt','vinkelbein','spiss','stump','rett','kvadrat','rektangel','trekant3','tremaxrett','tremaxstump','sjekker','merke','lengde','femkant'];
+
+/* utsagn til vitneavhør: [id, tekst, sant, forklaring] */
+const UTSAGN=[
+  ['kv4','Et kvadrat har fire rette vinkler.',true],
+  ['spissMin','En spiss vinkel er mindre enn en rett vinkel.',true],
+  ['stumpStor','En stump vinkel er større enn en rett vinkel.',true],
+  ['bok','Hjørnet på en bok er en rett vinkel.',true],
+  ['tre1stump','En trekant kan ha én stump vinkel.',true],
+  ['kl3','Når klokka er 3, lager viserne en rett vinkel.',true],
+  ['tre2spiss','En trekant har alltid minst to spisse vinkler.',true],
+  ['rekt4','Et rektangel har fire rette vinkler.',true],
+  ['tre3','En trekant har tre vinkler.',true],
+  ['kl1','Når klokka er 1, lager viserne en spiss vinkel.',true],
+  ['pizza','Tuppen på et pizzastykke er en spiss vinkel.',true],
+  ['tre2rett','En trekant kan ha to rette vinkler.',false,'En trekant kan bare ha én rett vinkel. Med to rette vinkler ville sidene aldri møttes.'],
+  ['stumpMin','En stump vinkel er mindre enn en rett vinkel.',false,'Stump er større enn en rett vinkel. Det er spiss som er mindre.'],
+  ['spissStor','En spiss vinkel er større enn en rett vinkel.',false,'Spiss er mindre enn en rett vinkel – den får plass inni hjørnet på et ark.'],
+  ['kv2','Et kvadrat har bare to rette vinkler.',false,'Et kvadrat har fire rette vinkler – én i hvert hjørne.'],
+  ['tre2stump','En trekant kan ha to stumpe vinkler.',false,'En trekant kan høyst ha én stump vinkel.'],
+  ['kl3stump','Når klokka er 3, lager viserne en stump vinkel.',false,'Klokka 3 lager viserne en rett vinkel – som hjørnet på et ark.'],
+  ['lengde','Vinkelen blir større hvis du gjør vinkelbeina lengre.',false,'Lengden på vinkelbeina betyr ingenting. Bare åpningen teller.'],
+  ['rektSpiss','Et rektangel har spisse vinkler.',false,'Alle vinklene i et rektangel er rette.'],
+  ['kl5','Når klokka er 5, lager viserne en spiss vinkel.',false,'Klokka 5 står viserne langt fra hverandre. Det er en stump vinkel.'],
+  ['alleFir','Alle firkanter har fire rette vinkler.',false,'Nei! Mange firkanter har spisse og stumpe vinkler. Bare kvadrater og rektangler har fire rette.'],
+  ['arkStump','Hjørnet på et ark er en stump vinkel.',false,'Hjørnet på et ark er en rett vinkel.'],
+];
+const VITNER_STD=[['🧑‍🔧','Vaktmester Vidar'],['👮','Vakt Vera'],['🧑‍💼','Sekretær Sol']];
+
+const KRAV={
+  tre1rett:{n:3,k:{rett:1},tekst:'en trekant med én rett vinkel',eks:[[1,1],[1,4],[5,4]]},
+  tre3spiss:{n:3,k:{spiss:3},tekst:'en trekant med tre spisse vinkler',eks:[[1,4],[5,4],[3,1]]},
+  tre1stump:{n:3,k:{stump:1},tekst:'en trekant med én stump vinkel',eks:[[0,4],[6,4],[2,2]]},
+  fir2rett:{n:4,k:{rett:2},tekst:'en firkant med nøyaktig to rette vinkler',eks:[[1,1],[4,1],[6,4],[1,4]]},
+  fir4rett:{n:4,k:{rett:4},tekst:'en firkant med fire rette vinkler',eks:[[1,1],[5,1],[5,4],[1,4]]},
+  fir2s2s:{n:4,k:{rett:0,spiss:2,stump:2},tekst:'en firkant med to spisse og to stumpe vinkler',eks:[[2,1],[6,1],[4,4],[0,4]]},
+};
+
+/* ---------- sakene ---------- */
+const KAP=[
+  {nr:1,ikon:'🏛️',tittel:'Tyveriet på rådhuset',scene:'radhus',obj:'dor',
+    vitner:[['👮','Vakt Vera'],['🧹','Vaktmester Vidar'],['🧑‍💼','Sekretær Sol']],
+    intro:[['ordf','Detektiv, endelig! Det har skjedd noe forferdelig. Gullvinkelen er stjålet!'],
+      ['snute','Gullvinkelen? Den blanke tingen som ser ut som en stor L?'],
+      ['ordf','Ja! Snekkerne i Hjørnevik bruker den for å sjekke at alle hjørnene i husene er rette. Uten den blir husene skjeve!'],
+      ['du','Ikke vær redd. Vi skal finne den!'],
+      ['snute','Voff! Jeg har med vinkelsjekkeren – et ark brettet to ganger. Hjørnet er en rett vinkel. Den hjelper oss når vi er usikre.'],
+      ['snute','Jeg lukter et mysterium … og kanelboller. Men mest mysterium. Kom igjen!']],
+    oppg:[['vinkel',{want:'spiss',tekst:'Glassmonteren er knust. Snute fant en glassbit på gulvet.',q:'Hva slags vinkel er det i spissen av glassbiten?'}],
+      ['mc',{id:'toppunkt',tekst:'Ordføreren vil sjekke at du er en ekte vinkeldetektiv.'}],
+      ['marker',{want:'rett',former:['kvadrat','rektangel','husR','trapesR','husRett'],tekst:'Tyven klatret ut gjennom et vindu. Snute har tegnet av vinduet.'}],
+      ['vinkel',{tekst:'Det er to riper i gulvet. De møtes i ett punkt.',q:'Hva slags vinkel lager ripene?'}],
+      ['vitne',{tekst:'Tre vitner forteller hva de vet om vinkler. Men én av dem lyver for å hjelpe tyven!'}],
+      ['vinkel',{want:'stump',tekst:'På pulten ligger en bok som er slått opp. Sidene lager en vinkel.',q:'Hva slags vinkel lager sidene?'}]],
+    ded:'Tyven løp ut gjennom en av disse fire dørene. Les sporene i notatboka. Hvilken dør brukte tyven?',
+    utro:[['snute','Snuff, snuff … Riktig dør! Og se: det er mel på dørhåndtaket.'],['ordf','Mel? Da har tyven vært innom bakeriet!'],['du','Neste stopp: bakeriet!']]},
+  {nr:2,ikon:'🥐',tittel:'Spor i bakeriet',scene:'bakeri',obj:'eske',
+    vitner:[['👵','Bestemor Bolla'],['🧒','Lille Leo'],['👨‍🦳','Herr Hvetekake']],
+    intro:[['baker','Hjelp! Noen har spist av kakene mine og stoppet klokka på veggen!'],
+      ['snute','Mmm, kake. Jeg mener: så fælt! Vi må finne ut når tyven var her.'],
+      ['baker','Kakene mine er delt i like store stykker. Tuppen på hvert stykke er en vinkel, vet du.'],
+      ['du','Da kan vinklene fortelle oss noe. Vi undersøker!']],
+    oppg:[['klokke',{tekst:'Klokka på veggen stoppet akkurat da tyven kom inn.'}],
+      ['kake',{tekst:'Tyven har spist et stykke av bløtkaka!'}],
+      ['marker',{want:'spiss',former:['rettTre','spissTre','stumpTre','husSpiss','trapesLik','parall','drage','trapesR'],tekst:'Tyven la igjen et kakepapir med en rar form.'}],
+      ['klokkevelg',{want:'rett',tekst:'Bakeren husker at viserne lagde en rett vinkel da hun låste opp i morges.'}],
+      ['vitne',{tekst:'Tre kunder sto i kø. Én av dem lyver om vinkler for å forvirre deg!'}],
+      ['kake',{tekst:'Det mangler et stykke av en annen kake også. For en sulten tyv!'}]],
+    ded:'Tyven tok med seg en kakeboks. Les sporene i notatboka. Hvilken av boksene var det?',
+    utro:[['baker','Det var den boksen! Jeg hadde satt den til side.'],['snute','Boksen er tom … men i lokket ligger et kart over parken. Det er tegnet figurer på det!'],['du','Tyven har gjemt noe i parken. Vi går dit!']]},
+  {nr:3,ikon:'🌳',tittel:'Kartet i sandkassa',scene:'park',obj:'drage',
+    vitner:[['🧑‍🌾','Parkvakt Pia'],['🐿️','Ekornet'],['🦆','Anda']],
+    intro:[['pia','Godt dere kom! Noen har tegnet rare figurer i sandkassa i natt.'],
+      ['snute','Det er tyvens hemmelige kart! Men vinden har nesten visket det bort.'],
+      ['du','Da tegner vi figurene på nytt. På prikkark er det lett å lage rette vinkler!'],
+      ['pia','Og noen har låst redskapsboden min med en kodelås. Det er nok tyven også!']],
+    oppg:[['tegn',{krav:'tre1rett',tekst:'Den første figuren i sandkassa er nesten borte.'}],
+      ['vinkel',{tekst:'Tyven har lagt to pinner på bakken. De møtes i den ene enden.',q:'Hva slags vinkel lager pinnene?'}],
+      ['tegn',{krav:'fir2rett',tekst:'Den andre figuren i sandkassa er en firkant.'}],
+      ['tell',{tekst:'Redskapsboden er låst med kodelås! På døra er det tegnet en figur.'}],
+      ['tegn',{krav:'tre3spiss',tekst:'Den siste figuren i sandkassa var en spiss trekant.'}],
+      ['storst',{tekst:'Ekornet påstår at vinkelen med de lengste beina alltid er størst. Stemmer det?'}]],
+    ded:'Fire drager sitter fast i trærne. Tyven brukte én av dem til å sende signaler. Hvilken drage var det?',
+    utro:[['snute','Det står noe på dragen! «Møt meg i havna ved midnatt. – K.»'],['pia','K? Hvem i all verden er K?'],['du','Det finner vi ut. Til havna!']]},
+  {nr:4,ikon:'⚓',tittel:'Hemmeligheten i havna',scene:'havn',obj:'seil',
+    vitner:[['🧔','Fisker Fredrik'],['🦀','Krabben'],['🐟','Torsken Tor']],
+    intro:[['hal','Hei, detektiv! I natt var det noen som lånte en båt uten å spørre.'],
+      ['snute','Det må være K! Tyven skal over til fyrtårnet.'],
+      ['hal','Naustet er låst, og havneklokka har stoppet. Rare greier.'],
+      ['du','Vinklene viser oss veien. Vi starter!']],
+    oppg:[['vinkel',{tekst:'Tyven har risset et merke i bryggekanten.',q:'Hva slags vinkel er merket?'}],
+      ['vitne',{tekst:'Tre vitner på brygga forteller hva de vet. Én av dem lyver!'}],
+      ['tell',{to:true,tekst:'Naustet er låst med kodelås. Det er malt to figurer på døra.'}],
+      ['klokke',{tekst:'Havneklokka stoppet da båten la ut.'}],
+      ['tegn',{krav:'tre1stump',tekst:'Havnefogden så seilet på tyvens båt. Det var en trekant med én stump vinkel.'}],
+      ['marker',{want:'stump',former:['seks','seksB','seksR','husR','femStump','fem2','parall'],tekst:'Rattet i styrhuset har en rar form.'}]],
+    ded:'Fire båter ligger ved brygga. Les sporene i notatboka. Hvilken båt lånte tyven?',
+    utro:[['snute','Båten er tom. Men se: en skjev, krøllete hatt og noen gylne glitterflak!'],['hal','Glitter fra Gullvinkelen? Da er tyven i fyrtårnet!'],['du','Nå tar vi tyven!']]},
+  {nr:5,ikon:'🗼',tittel:'Skikkelsene i fyrtårnet',scene:'fyr',obj:'hatt',
+    vitner:[['👵','Fyrvokter Fie'],['🐦','Måka'],['🦭','Selen']],
+    intro:[['fie','Det har lyst rart fra toppen av fyrtårnet hele natta. Og trappa er full av skjeve tegninger!'],
+      ['snute','Fire skikkelser i kapper løp opp trappa. Én av dem er tyven.'],
+      ['du','Dette er det siste mysteriet. Er du klar, Snute?'],
+      ['snute','Jeg er født klar. Voff!']],
+    oppg:[['tegn',{krav:'fir2s2s',tekst:'På veggen i trappa har tyven tegnet en firkant – men den er visket ut.'}],
+      ['storst',{tekst:'Tyven har risset to vinkler i rekkverket. Hvilken er størst?'}],
+      ['marker',{want:'rett',former:['seksR','husRett','femA','trapesR2','fem2','drageR','husSpiss'],tekst:'Vinduet øverst i fyrtårnet har en spesiell form.'}],
+      ['vitne',{tekst:'Fyrvokteren, måka og selen har sett noe. Men én av dem lyver!'}],
+      ['tell',{to:true,tekst:'Døra til lyktehuset har den vanskeligste kodelåsen av alle!'}],
+      ['klokkevelg',{want:'stump',tekst:'Fyrvokteren hørte et smell da viserne på klokka lagde en stump vinkel.'}]],
+    ded:'Fire skikkelser i kapper står i lyktehuset. Bare én av dem er tyven. Se på hattene og les sporene!',
+    utro:[['krok','Grrr! Det var meg – Mester Krok! Jeg ville at alt i Hjørnevik skulle bli skjevt og krokete!'],
+      ['snute','Men hvorfor det?'],
+      ['krok','Rette vinkler er så kjedelige! Firkant, firkant, firkant. Jeg elsker spisse og stumpe vinkler!'],
+      ['du','Spisse og stumpe vinkler er fine. Men et hus trenger rette vinkler for å stå støtt.'],
+      ['fie','Mester Krok, du kan få lage en ny lekeplass i parken med så mange spisse og stumpe vinkler du vil. Hvis du gir tilbake Gullvinkelen.'],
+      ['krok','… Med sklier? Og klatrestativ? Og en snurrebass? Avtale!'],
+      ['snute','Saken er løst! Du er en ekte vinkeldetektiv. Voff voff!']]},
+];
+
+const TREN=[
+  {id:'blanding',ikon:'🎲',navn:'Blanding',sub:'Litt av alt – gir merket med tre stjerner',n:10,typer:['vinkel','vinkel','klokke','kake','mc','vitne','marker','tell','tegn','storst']},
+  {id:'vinkel',ikon:'📐',navn:'Spiss, rett eller stump?',sub:'Vinkler, klokker og kakestykker',n:10,typer:['vinkel','vinkel','vinkel','klokke','klokkevelg','kake','storst']},
+  {id:'figur',ikon:'🔷',navn:'Vinkler i figurer',sub:'Marker og tell – som i lekseboka',n:8,typer:['marker','marker','tell']},
+  {id:'tegn',ikon:'✏️',navn:'Tegn på prikkark',sub:'Trekanter og firkanter med riktige vinkler',n:6,typer:['tegn']},
+  {id:'vitne',ikon:'🗣️',navn:'Vitneavhør',sub:'Hvem lyver? Sant og usant om vinkler',n:10,typer:['vitne','mc']},
+];
+
+/* =====================================================================
+   OPPGAVEGENERATORER
+   ===================================================================== */
+const tOrd=(t,k)=>k===1?`${TALL[1]} ${t} vinkel`:`${TALL[k]||k} ${PL[t]} vinkler`;
+function beskriv(c){const d=TYP.filter(t=>c[t]).map(t=>tOrd(t,c[t]));return d.length>1?d.slice(0,-1).join(', ')+' og '+d[d.length-1]:d[0]||'ingen vinkler'}
+const KLOKKE_T=h=>[3,9].includes(h)?'rett':[1,2,10,11].includes(h)?'spiss':'stump';
+const KLOKKE_H={spiss:[1,2,10,11],rett:[3,9],stump:[4,5,7,8]};
+
+let brukt=new Set();
+const GEN={
+  vinkel(o){const want=o.want||pick(['spiss','spiss','rett','stump','stump']);
+    const deg=want==='rett'?90:want==='spiss'?pick([25,30,35,40,45,50,55,60,65,70,75]):pick([105,110,115,120,125,130,135,140,145,150,155,160]);
+    return{type:'vinkel',deg,ans:want,theta:rnd(0,359),sgn:pick([1,-1]),l1:rnd(100,135),l2:rnd(70,135),sjekk:false,q:o.q||'Hva slags vinkel er dette?',nk:'mc:'+want,fo:MC[want]}},
+  klokke(o){const h=o.h||pick([1,2,3,4,5,7,8,9,10,11,3,9]);const t=KLOKKE_T(h);
+    return{type:'klokke',h,ans:t,q:'Hva slags vinkel lager viserne?',nk:'klokke:'+h,
+      fo:{q:`Klokka er ${h}. Hva slags vinkel lager viserne?`,a:cap(t)+' vinkel',alt:TYP.filter(x=>x!==t).map(x=>cap(x)+' vinkel'),forkl:t==='rett'?'Viserne står som hjørnet på et ark.':t==='spiss'?'Viserne står tett sammen.':'Viserne står langt fra hverandre – mer åpent enn hjørnet på et ark.'}}},
+  klokkevelg(o){const want=o.want||pick(TYP);const h=pick(KLOKKE_H[want]);const andre=TYP.filter(t=>t!==want).map(t=>pick(KLOKKE_H[t]));
+    const hs=stokk([h,...andre]);
+    return{type:'klokkevelg',want,hs,ans:hs.indexOf(h),q:`Hvilken klokke viser en ${want} vinkel mellom viserne?`,nk:'klokkevelg:'+want,
+      fo:{q:`Når lager viserne på klokka en ${want} vinkel?`,a:'Klokka '+h,alt:andre.map(x=>'Klokka '+x),forkl:`Klokka ${h} er vinkelen ${want}.`}}},
+  kake(o){const n=o.n||pick([3,4,6,8,4,3]);const t=n===4?'rett':n===3?'stump':'spiss';
+    return{type:'kake',n,ans:t,q:'Hva slags vinkel har tuppen av kakestykket?',nk:'kake:'+n,
+      fo:{q:`En kake deles i ${n} like store stykker. Hva slags vinkel har tuppen av hvert stykke?`,a:cap(t)+' vinkel',alt:TYP.filter(x=>x!==t).map(x=>cap(x)+' vinkel'),
+        forkl:n===4?'Fire like stykker – akkurat som et ark brettet to ganger. Rett vinkel.':n===3?'Bare tre stykker – stykkene blir brede og tuppen stump.':'Mange smale stykker – tuppen blir spiss.'}}},
+  mc(o){let id=o.id;if(!id){const ledig=MC_STORY.filter(x=>!brukt.has('mc'+x));id=pick(ledig.length?ledig:MC_STORY)}brukt.add('mc'+id);const m=MC[id];
+    return{type:'mc',id,q:m.q,a:m.a,valg:stokk([m.a,...m.alt]),forkl:m.forkl,nk:'mc:'+id,fo:m}},
+  vitne(o,kap){const sanne=stokk(UTSAGN.filter(u=>u[2]&&!brukt.has(u[0]))),usanne=stokk(UTSAGN.filter(u=>!u[2]&&!brukt.has(u[0])));
+    const fs=(usanne[0]||pick(UTSAGN.filter(u=>!u[2])));const ss=[sanne[0]||UTSAGN[0],sanne[1]||UTSAGN[1]];
+    [fs,...ss].forEach(u=>brukt.add(u[0]));
+    const liar=rnd(0,2);const ut=ss.slice();ut.splice(liar,0,fs);const folk=stokk((kap&&kap.vitner)||VITNER_STD);
+    return{type:'vitne',ut,folk,liar,q:'Én av vitnene lyver. Hvem?',nk:'utsagn:'+fs[0],
+      fo:{q:`Sant eller usant: «${fs[1]}»`,a:'Usant',alt:['Sant'],forkl:fs[3]}}},
+  marker(o){const want=o.want||pick(TYP);let liste=(o.former||FORMER.map(f=>f.id)).map(id=>FORM[id]).filter(f=>f.pr[want]>0);
+    const f=pick(liste);const p=snu(f.p);const n=f.pr[want];
+    const T={type:'marker',want,p,sel:[],q:`Trykk på alle de ${PL[want]} vinklene. Trykk «Ferdig» når du har funnet alle.`};
+    if(f.navn){T.nk=`form:${f.id}:${want}`;T.fo={q:`Hvor mange ${PL[want]} vinkler har ${f.en}?`,a:String(n),alt:[0,1,2,3,4].filter(x=>x!==n).slice(0,3).map(String),forkl:`${cap(f.en)} har fire rette vinkler.`}}
+    return T},
+  tell(o){const k=o.to?2:1;let v=[];for(let t=0;t<40&&v.length<k;t++){const f=pick(FORMER);if(!v.includes(f)&&(k===1?f.p.length>=4:true))v.push(f)}
+    return{type:'tell',fs:v.map(f=>snu(f.p)),val:{spiss:0,rett:0,stump:0},kr:v.map(f=>f.p.map(()=>0)),
+      q:`Koden er antall <b class="spiss">spisse</b>, <b class="rett">rette</b> og <b class="stump">stumpe</b> vinkler ${k>1?'i begge figurene til sammen':'i figuren'}. Hva er koden?`}},
+  tegn(o){const id=o.krav||pick(Object.keys(KRAV));const K=KRAV[id];return{type:'tegn',krav:id,K,pts:[],lukket:false,q:`Tegn ${K.tekst}. Trykk på prikkene – figuren lukker seg selv når du har ${K.n===3?'tre':'fire'} hjørner.`}},
+  storst(o){const mode=pick(['felle','felle','like','vanlig']);let a=rnd(6,30)*5,b;
+    do{b=rnd(6,30)*5}while(Math.abs(a-b)<25);if(mode==='like')b=a;
+    const kort=()=>rnd(55,70),lang=()=>rnd(118,132);
+    let A={deg:a,theta:rnd(0,359),sgn:pick([1,-1])},B={deg:b,theta:rnd(0,359),sgn:pick([1,-1])};
+    const mindre=a<b?A:B,storre=a<b?B:A;
+    if(mode==='felle'||mode==='like'){mindre.l1=mindre.l2=lang();storre.l1=storre.l2=kort()}else{A.l1=A.l2=rnd(80,120);B.l1=B.l2=rnd(80,120)}
+    if(mode==='like'){A.l1=A.l2=lang();B.l1=B.l2=kort()}
+    return{type:'storst',A,B,ans:a===b?'like':a>b?'A':'B',q:'Hvilken vinkel er størst?',nk:'mc:lengde',fo:MC.lengde}},
+};
+function lagOppg(type,o,kap){const T=GEN[type](o||{},kap);T.forsok=0;T.done=false;T.galt=[];T.tekst=(o&&o.tekst)||'';if(o&&o.q)T.q=o.q;
+  T.gull=['marker','tell','tegn'].includes(type)?2:1;return T}
+
+/* ---------- avsløring: fire mistenkte med ulik vinkelprofil ---------- */
+function lagDed(kap){const o=OBJ[kap.obj];const pool=FORMER.filter(f=>o.filt(f.p));
+  for(let forsok=0;forsok<300;forsok++){const valgt=[],sett=new Set();
+    for(const f of stokk(pool)){const pr=f.pr,key=[pr.rett,pr.spiss,pr.stump,pr.n].join('-');if(sett.has(key))continue;sett.add(key);valgt.push({p:snu(f.p),pr});if(valgt.length===4)break}
+    if(valgt.length<4)continue;
+    const sk=rnd(0,3),facts=[];const passer=v=>facts.every(([k,val])=>v.pr[k]===val);
+    for(const k of stokk(TYP).concat(['n'])){facts.push([k,valgt[sk].pr[k]]);if(facts.length>=2&&valgt.filter(passer).length===1)break}
+    if(valgt.filter(passer).length!==1||facts.length>4)continue;
+    return{mist:valgt,sk,facts,galt:[],forsok:0,done:false}}}
+function faktaVerb(k,v){if(k==='n')return `har ${TALL[v]} hjørner`;if(v===0)return `har ingen ${PL[k]} vinkler`;return v===1?`har nøyaktig én ${k} vinkel`:`har nøyaktig ${TALL[v]} ${PL[k]} vinkler`}
+const faktaTekst=(kap,f)=>`${OBJ[kap.obj].best} ${faktaVerb(f[0],f[1])}.`;
+
+/* =====================================================================
+   SPILLTILSTAND OG VISNING
+   ===================================================================== */
+let V='home',G=null,skoleSide=0,vm={deg:50,lang:false};
+const cur=()=>G&&G.oppg[G.i];
+
+function startKap(nr){const kap=KAP[nr-1];brukt=new Set();
+  const oppg=kap.oppg.map(([t,o])=>lagOppg(t,o,kap));const ded=lagDed(kap);const m=ded.facts.length;
+  const reveal=[];for(let j=0;j<m;j++)reveal.push(Math.min(5,Math.round((j+1)*6/m)-1));
+  G={mode:'kap',kap,oppg,ded,reveal,facts:[],i:0,res:[],riktig:0};V='intro';render(true)}
+function startTren(id){const tr=TREN.find(t=>t.id===id);brukt=new Set();
+  let typer=[];while(typer.length<tr.n)typer=typer.concat(stokk(tr.typer));typer=typer.slice(0,tr.n);
+  const krav=stokk(Object.keys(KRAV));let ki=0;
+  G={mode:'tren',tr,oppg:typer.map(t=>lagOppg(t,t==='tegn'?{krav:krav[ki++%krav.length]}:{})),i:0,res:[],riktig:0};V='oppg';render(true)}
+
+function render(top){const app=$('#app');app.innerHTML=({home:vHome,saker:vSaker,intro:vIntro,oppg:vOppg,ded:vDed,slutt:vSlutt,skole:vSkole,tren:vTrenValg,trenslutt:vTrenSlutt}[V]||vHome)();
+  if(V==='skole'&&skoleSide===1)vmTegn();
+  if(top)scrollTo({top:0,behavior:reduced()?'auto':'smooth'})}
+
+const linjeHtml=([who,t],i)=>`<div class="linje${who==='du'?' h':''}${who==='krok'?' krok':''}" style="animation-delay:${i*.12}s"><div class="who">${ansikt(who)}</div><div class="boble"><span class="nv">${esc(FOLK[who].navn)}</span>${esc(t)}</div></div>`;
+const stjHtml=(n,big)=>`<span class="stars${big?' big':''}" aria-label="${n} av 3 stjerner">${[1,2,3].map(k=>`<span class="${k<=n?'on':''}">★</span>`).join('')}</span>`;
+const nesteKap=()=>{for(const k of KAP)if(!S.kap[k.nr])return k.nr;return 0};
+const opplast=nr=>nr===1||!!S.kap[nr-1];
+
+function vHome(){const nk=nesteKap(),harMerke=window.Gull&&Gull.tilstand&&Gull.tilstand().merker&&Gull.tilstand().merker['vinkel-mester'];
+  const ant=Object.keys(S.kap).length;
+  return `<section class="card hero"><div class="scenebox">${SCENE.hero()}</div>
+    <div><span class="stempel">Hemmelig sak</span></div>
+    <h1>Vinkelmysteriet</h1>
+    <p>Gullvinkelen er stjålet fra rådhuset i Hjørnevik! Uten den blir alle husene skjeve. Bli med detektivhunden Snute, finn sporene og løs mysteriet med <b class="spiss">spisse</b>, <b class="rett">rette</b> og <b class="stump">stumpe</b> vinkler.</p>
+    <div class="duo"><div class="av">${duSvg()}</div><div class="sn">${snuteSvg()}</div></div>
+    <div class="meny">
+      <button class="mknapp hoved" data-act="saker"><span class="mi">📁</span><span><b>Saksmappen</b><small>${ant===5?'Alle fem sakene er løst – spill dem igjen!':nk>1?`Fortsett med sak ${nk} av 5`:'Fem saker – start med tyveriet på rådhuset'}</small></span></button>
+      <button class="mknapp" data-act="skole"><span class="mi">🎓</span><span><b>Detektivskolen${!S.skole?'<span class="tag">Start her</span>':''}</b><small>Lær hva spisse, rette og stumpe vinkler er</small></span></button>
+      <button class="mknapp" data-act="tren"><span class="mi">🏋️</span><span><b>Treningsrommet</b><small>Øv på én ting om gangen – som i lekseboka</small></span></button>
+    </div>
+    <div class="merkelinje"><span class="mi">🔍</span><span>${harMerke?'Du har merket <b>Vinkeldetektiv</b> og låste opp detektivlupa! 🎉':'Merket <b>Vinkeldetektiv</b>: løs alle fem sakene, eller få tre stjerner på Blanding i Treningsrommet.'}</span></div>
+  </section><a class="alle" href="forside/">← Alle spillene</a>`}
+
+function vSaker(){return `<button class="back" data-act="home">← Tilbake</button><h1>📁 Saksmappen</h1>
+  <p class="muted">Løs sakene i rekkefølge. Hver sak har seks spor og en avsløring på slutten.</p>
+  <div class="saker" style="margin-top:14px">${KAP.map(k=>{const st=S.kap[k.nr],ok=opplast(k.nr);
+    return `<button class="sak" data-act="kap" data-n="${k.nr}" ${ok?'':'disabled'}><span class="si">${ok?k.ikon:'🔒'}</span><span class="st"><span class="nr">SAK NR. ${k.nr}</span><b>${esc(k.tittel)}</b>${st?'<span class="losst">LØST</span>':''}</span><span class="ss">${st?stjHtml(st):ok?'<span class="tag">Ny</span>':''}</span></button>`}).join('')}</div>`}
+
+function vIntro(){const k=G.kap;return `<button class="back" data-act="saker">← Saksmappen</button>
+  <div class="card" style="display:flex;flex-direction:column;gap:14px"><span class="stempel" style="align-self:flex-start">Sak nr. ${k.nr}</span><h1>${k.ikon} ${esc(k.tittel)}</h1>
+  <div class="scenebox">${SCENE[k.scene]()}</div><div class="dlg">${k.intro.map(linjeHtml).join('')}</div>
+  <button class="btn pri big" data-act="start">🔍 Start etterforskningen</button></div>`}
+
+function progHtml(){const n=G.oppg.length;let s=G.oppg.map((_,j)=>`<i class="${G.res[j]||''}${j===G.i&&V==='oppg'?' na':''}" aria-hidden="true">${G.res[j]==='ok'?'✓':j+1}</i>`).join('');
+  if(G.mode==='kap')s+=`<i class="${G.ded.done?(G.res[6]==='ok'?'ok':'feil'):''}${V==='ded'?' na':''}" aria-hidden="true">🎭</i>`;return `<div class="prog" aria-label="Spor ${G.i+1} av ${n}">${s}</div>`}
+function bokHtml(open){const f=G.facts;return `<details class="bok"${open?' open':''}><summary>📓 Notatboka <span class="tag">${f.length} spor</span></summary>${f.length?`<ul>${f.map(x=>`<li>${esc(faktaTekst(G.kap,x))}</li>`).join('')}</ul>`:'<p class="tom">Ingen spor ennå. Løs oppgavene for å finne spor!</p>'}</details>`}
+
+function vOppg(){const T=cur();const kapm=G.mode==='kap';
+  const tittel=kapm?`Sak ${G.kap.nr} · Spor ${G.i+1} av ${G.oppg.length}`:`${G.tr.ikon} ${esc(G.tr.navn)} · ${G.i+1} av ${G.oppg.length}`;
+  return `<div class="phead"><button class="back" data-act="${kapm?'saker':'tren'}">← ${kapm?'Saksmappen':'Treningsrommet'}</button><h2>${tittel}</h2></div>${progHtml()}
+  ${kapm?bokHtml(false):''}
+  <section class="card oppg">${T.tekst?`<div class="spor"><div class="who">${snuteSvg()}</div><p>${esc(T.tekst)}</p></div>`:''}
+  <p class="q">${T.q}</p>${oppgHtml(T)}${fbHtml(T)}</section>`}
+
+function fbHtml(T){let s='';if(T.msg)s+=`<div class="fb ${T.msgOk?'ok':'no'}" role="status"><b class="t">${T.msgOk?pick(['Bra jobba, detektiv!','Knallbra!','Helt riktig!','Skarpt observert!','Det stemmer!']):T.done?'Slik er det:':'Ikke helt …'}</b>${T.msg}</div>`;
+  if(T.fakta)s+=`<div class="nyttspor"><span class="ni">🔎</span><div><b>Nytt spor i notatboka!</b><span>${esc(T.fakta)}</span></div></div>`;
+  if(T.done)s+=`<button class="btn pri big" data-act="neste">${G.i<G.oppg.length-1?'Neste spor →':G.mode==='kap'?'Til avsløringen 🎭':'Se resultatet →'}</button>`;
+  return s}
+
+function oppgHtml(T){switch(T.type){
+  case 'vinkel':return `<div class="figbox">${vinkelSvg(T,{sjekk:T.sjekk,merke:T.done?T.ans:null})}</div>${typeKnapper(T)}
+    <div class="verktoy">${T.done?'':`<button class="btn ghost small" data-act="sjekk">📐 ${T.sjekk?'Ta bort vinkelsjekkeren':'Bruk vinkelsjekkeren'}</button>`}</div>`;
+  case 'klokke':return `<div class="figbox" style="max-width:320px;margin:0 auto;width:100%">${klokkeSvg(T.h,{merke:T.done?T.ans:null})}</div>${typeKnapper(T)}`;
+  case 'kake':return `<div class="figbox" style="max-width:340px;margin:0 auto;width:100%">${kakeSvg(T.n,{merke:T.done?T.ans:null})}</div>${typeKnapper(T)}`;
+  case 'klokkevelg':return `<div class="klokker">${T.hs.map((h,i)=>`<button class="klbtn${T.done&&i===T.ans?' riktig':''}${T.galt.includes(String(i))?' gal':''}" data-act="svar" data-v="${i}" ${T.done||T.galt.includes(String(i))?'disabled':''} aria-label="Klokka ${h}">${klokkeSvg(h,{merke:T.done||T.galt.includes(String(i))?KLOKKE_T(h):null})}<span>Klokka ${h}</span></button>`).join('')}</div>`;
+  case 'mc':return `<div class="valg">${T.valg.map(v=>`<button class="vbtn${T.done&&v===T.a?' riktig':''}${T.galt.includes(v)?' gal':''}" data-act="svar" data-v="${esc(v)}" ${T.done||T.galt.includes(v)?'disabled':''}>${esc(v)}</button>`).join('')}</div>`;
+  case 'vitne':return `<div class="vitner">${T.ut.map((u,i)=>{const f=T.folk[i],gal=T.galt.includes(String(i)),rik=T.done&&i===T.liar;
+    return `<div class="vitne${rik?' riktig':''}${gal?' gal':''}"><span class="ve" aria-hidden="true">${f[0]}</span><span class="vn">${esc(f[1])}</span><span class="vs">«${esc(u[1])}»</span>
+    <button class="btn small" data-act="svar" data-v="${i}" ${T.done||gal?'disabled':''}>${rik?'🤥 Lyver!':gal?'✓ Sant':'Lyver?'}</button></div>`}).join('')}</div>`;
+  case 'storst':{const pan=(k,v)=>{const gal=T.galt.includes(k),rik=T.done&&T.ans===k;return `<button class="panel${rik?' riktig':''}${gal?' gal':''}" data-act="svar" data-v="${k}" ${T.done||gal?'disabled':''} aria-label="Vinkel ${k}">${vinkelSvg(Object.assign({},v),{W:240,H:220,sjekkStr:40,merke:T.done?(v.deg===90?'rett':v.deg<90?'spiss':'stump'):null})}<span>Vinkel ${k}</span></button>`};
+    return `<div class="to">${pan('A',T.A)}${pan('B',T.B)}</div><button class="vbtn${T.done&&T.ans==='like'?' riktig':''}${T.galt.includes('like')?' gal':''}" style="text-align:center" data-act="svar" data-v="like" ${T.done||T.galt.includes('like')?'disabled':''}>⚖️ De er like store</button>`}
+  case 'marker':return `<div class="figbox">${figurSvg(T.p,{klikk:T.done?null:'hjorne',valgt:T.sel,merker:T.done?T.vis:T.sel.reduce((a,i)=>(a[i]={t:T.want},a),[])})}</div>
+    <div class="row">${T.done?'':`<button class="btn pri" data-act="ferdig">✔ Ferdig – jeg har funnet ${T.sel.length===0?'ingen':TALL[T.sel.length]}</button>`}</div>`;
+  case 'tell':return `<div class="figrad">${T.fs.map((p,s)=>`<div class="figbox">${figurSvg(p,{W:260,H:210,klikk:T.done?null:'kr',s,merker:T.done?alleMerker(p):T.kr[s].map(v=>v?{t:TYP[v-1]}:null)})}</div>`).join('')}</div>
+    ${T.done?'':'<p class="small muted center">Tips: Trykk på et hjørne for å merke det mens du teller. Trykk flere ganger for å bytte mellom spiss, rett og stump.</p>'}
+    <div class="las">${TYP.map(t=>`<div class="hjul"><span class="hl">${ikonT(t)}<span class="c-${t}">${cap(PL[t])}</span></span><span class="hv"><button data-act="minus" data-k="${t}" ${T.done?'disabled':''} aria-label="En mindre ${t}">−</button><b>${T.val[t]}</b><button data-act="pluss" data-k="${t}" ${T.done?'disabled':''} aria-label="En mer ${t}">+</button></span></div>`).join('')}</div>
+    ${T.done?'':'<button class="btn pri big" data-act="kode">🔓 Prøv koden</button>'}`;
+  case 'tegn':return `<div class="figbox tegn">${tegnSvg(T)}</div>
+    <div class="row">${T.done?'':T.lukket?'<button class="btn pri" data-act="visk">✏️ Prøv igjen</button>':`<button class="btn" data-act="angre" ${T.pts.length?'':'disabled'}>↩ Angre</button><button class="btn" data-act="visk" ${T.pts.length?'':'disabled'}>🧽 Visk ut</button>`}${!T.done&&T.forsok>=2?'<button class="btn ghost" data-act="eksempel">💡 Vis et eksempel</button>':''}</div>`;
+}}
+function typeKnapper(T){return `<div class="valg3">${TYP.map(t=>{const gal=T.galt.includes(t),rik=T.done&&T.ans===t;
+  return `<button class="tbtn t-${t}${rik?' riktig':''}${gal?' gal':''}" data-act="svar" data-v="${t}" ${T.done||gal?'disabled':''}>${ikonT(t)}<span class="c-${t}">${cap(t)}</span></button>`}).join('')}</div>`}
+
+/* ---------- svar ---------- */
+const RETT_V={spiss:'Hele vinkelen får plass inni hjørnet på vinkelsjekkeren. Den er <b class="spiss">spiss</b> – mindre enn en rett vinkel.',
+  rett:'Vinkelen passer akkurat med hjørnet på vinkelsjekkeren. Det er en <b class="rett">rett</b> vinkel – vi tegner en liten firkant i hjørnet.',
+  stump:'Vinkelen er større enn hjørnet på vinkelsjekkeren. Den er <b class="stump">stump</b>.'};
+function svar(v){const T=cur();if(!T||T.done)return;let ok;
+  switch(T.type){case 'vinkel':case 'klokke':case 'kake':case 'storst':ok=v===T.ans;break;case 'klokkevelg':ok=+v===T.ans;break;case 'vitne':ok=+v===T.liar;break;case 'mc':ok=v===T.a;break}
+  T.forsok++;
+  if(ok)return ferdig(T,true,rettTekst(T));
+  T.galt.push(String(v));if(T.forsok===1)loggFeil(T.nk,T.fo);T.msgOk=false;T.msg=feilTekst(T,v);
+  if(T.type==='vinkel')T.sjekk=true;beep('soft');render()}
+function rettTekst(T){switch(T.type){
+  case 'vinkel':return RETT_V[T.ans];
+  case 'klokke':return `Klokka ${T.h} lager viserne en <b class="${T.ans}">${T.ans}</b> vinkel. ${T.fo.forkl}`;
+  case 'klokkevelg':return `Klokka ${T.hs[T.ans]} lager viserne en <b class="${T.want}">${T.want}</b> vinkel.`;
+  case 'kake':return T.fo.forkl;
+  case 'mc':return esc(T.forkl);
+  case 'vitne':{const u=T.ut[T.liar],f=T.folk[T.liar];return `${esc(f[1])} lyver: «${esc(u[1])}» stemmer ikke. ${esc(u[3]||'')}`}
+  case 'storst':return T.ans==='like'?'De er <b>like store</b>! Den ene har bare lengre bein. Lengden på vinkelbeina betyr ingenting.':`Vinkel ${T.ans} er størst – den er mest åpen. ${(T.ans==='A'?T.A:T.B).l1<100?'Selv om beina er korte! ':''}Lengden på vinkelbeina betyr ingenting.`}}
+function feilTekst(T,v){switch(T.type){
+  case 'vinkel':return 'Nå ligger vinkelsjekkeren oppå. Får vinkelen plass inni hjørnet på arket (spiss), passer den akkurat (rett), eller stikker den utenfor (stump)?';
+  case 'klokke':return 'Se på viserne: står de som hjørnet på et ark (rett), tettere sammen (spiss) eller mer åpne (stump)?';
+  case 'klokkevelg':return `Klokka ${T.hs[+v]} lager en ${KLOKKE_T(T.hs[+v])} vinkel. Se på de andre klokkene!`;
+  case 'kake':return 'Tenk på et ark brettet to ganger: det har fire like hjørner rundt midten. Er kakestykket smalere (spiss), like bredt (rett) eller bredere (stump)?';
+  case 'mc':return 'Tips: '+esc(T.forkl);
+  case 'vitne':return `${esc(T.folk[+v][1])} snakker faktisk sant: «${esc(T.ut[+v][1])}» stemmer. Prøv en av de andre!`;
+  case 'storst':return 'Se bare på hvor åpen vinkelen er – ikke hvor lange beina er. Tenk deg at du legger den ene vinkelen oppå den andre.'}}
+function ferdig(T,ok,msg){T.done=true;T.msg=msg;T.msgOk=ok;const forst=ok&&T.forsok===1;G.res[G.i]=forst?'ok':'feil';
+  if(forst){G.riktig++;tjen(T.gull);riktigK(T.nk)}
+  if(G.mode==='kap'&&G.reveal.includes(G.i)&&!T.fakta){const f=G.ded.facts[G.facts.length];if(f){G.facts.push(f);T.fakta=faktaTekst(G.kap,f)}}
+  beep(ok?(T.fakta?'spor':'ok'):'soft');render()}
+
+function ferdigMarker(){const T=cur();if(T.done)return;T.forsok++;const h=hjorner(T.p),fasit=h.map((x,i)=>x.t===T.want?i:-1).filter(i=>i>=0);
+  const mangler=fasit.filter(i=>!T.sel.includes(i)),feil=T.sel.filter(i=>!fasit.includes(i));
+  T.vis=h.map((x,i)=>fasit.includes(i)?{t:T.want,stiplet:!T.sel.includes(i)}:T.sel.includes(i)?{t:x.t,farge:'var(--coral)'}:null);
+  const svarT=`Figuren har ${tOrd(T.want,fasit.length)}.`;
+  if(!mangler.length&&!feil.length)return ferdig(T,true,svarT);
+  if(T.nk)loggFeil(T.nk,T.fo);
+  let m=svarT;if(mangler.length)m+=` ${mangler.length===1?'Det stiplete hjørnet':'De stiplete hjørnene'} manglet.`;
+  if(feil.length)m+=` ${feil.length===1?'Hjørnet':'Hjørnene'} med korallfarge er ikke ${PL[T.want]} – ${feil.map(i=>h[i].t).every(t=>t===h[feil[0]].t)?(feil.length===1?'det er '+h[feil[0]].t:'de er '+PL[h[feil[0]].t]):'de er andre typer'}.`;
+  if(T.want==='rett')m+=' Bruk hjørnet på et ark når du er usikker!';
+  ferdig(T,false,m)}
+function provKode(){const T=cur();if(T.done)return;T.forsok++;const sum={spiss:0,rett:0,stump:0};T.fs.forEach(p=>{const c=profil(p);TYP.forEach(t=>sum[t]+=c[t])});
+  const galt=TYP.filter(t=>sum[t]!==T.val[t]);
+  if(!galt.length)return ferdig(T,true,`Klikk! Låsen går opp. Koden var <b class="spiss">${sum.spiss}</b> – <b class="rett">${sum.rett}</b> – <b class="stump">${sum.stump}</b>.`);
+  if(T.forsok===1){T.msgOk=false;T.msg=`Låsen piper. Sjekk antallet ${galt.map(t=>`<b class="${t}">${PL[t]}</b>`).join(' og ')} en gang til. Merk hjørnene mens du teller!`;beep('soft');return render()}
+  T.val=sum;ferdig(T,false,`Låsen åpnet seg ikke. Nå er alle vinklene merket – tell dem! Koden var <b class="spiss">${sum.spiss}</b> – <b class="rett">${sum.rett}</b> – <b class="stump">${sum.stump}</b>.`)}
+
+function prikk(x,y){const T=cur();if(T.done||T.lukket)return;if(T.pts.some(a=>a[0]===x&&a[1]===y)){toast('Den prikken har du brukt. Velg en ny!');return}
+  T.pts.push([x,y]);beep('tap');if(T.pts.length===T.K.n)return vurderTegning();render()}
+function vurderTegning(){const T=cur(),p=T.pts,h=hjorner(p);T.lukket=true;
+  const ugyldig=m=>{T.vis=null;T.msgOk=false;T.msg=m;beep('soft');render()};
+  if(h.some(x=>x.cr===0))return ugyldig('Tre av prikkene ligger på én rett linje – da blir det ikke et hjørne der. Prøv igjen!');
+  if(p.length===4&&(kryss(p[0],p[1],p[2],p[3])||kryss(p[1],p[2],p[3],p[0])))return ugyldig('Strekene krysser hverandre, så det ble ikke en firkant. Trykk på prikkene rundt i ring!');
+  if(!h.every(x=>Math.sign(x.cr)===Math.sign(h[0].cr)))return ugyldig('Ett av hjørnene peker innover. Lag en firkant der alle hjørnene peker utover!');
+  if(h.some(x=>x.t!=='rett'&&Math.abs(x.g-90)<6))return ugyldig('Én av vinklene er nesten rett, men ikke helt – det er vanskelig å se! Lag rette vinkler med prikker som går rett bortover og rett opp.');
+  T.forsok++;const c=profil(p),ok=Object.entries(T.K.k).every(([k,v])=>c[k]===v);T.vis=alleMerker(p);
+  if(ok)return ferdig(T,true,`Figuren din har ${beskriv(c)}. Akkurat det vi trengte!`);
+  T.msgOk=false;T.msg=`Figuren din har ${beskriv(c)}. Vi trenger ${T.K.tekst}.${T.forsok>=2?' Trykk «Vis et eksempel» hvis du står fast.':''}`;beep('soft');render()}
+
+/* ---------- avsløring ---------- */
+function vDed(){const D=G.ded,k=G.kap,o=OBJ[k.obj];
+  return `<div class="phead"><button class="back" data-act="saker">← Saksmappen</button><h2>Sak ${k.nr} · Avsløringen</h2></div>${progHtml()}
+  <section class="card oppg"><div class="spor"><div class="who">${snuteSvg()}</div><p>${esc(k.ded)}</p></div>${bokHtml(true)}
+  <div class="mist">${D.mist.map((m,i)=>{const gal=D.galt.includes(i),rik=D.done&&i===D.sk;
+    return `<button class="mbtn${rik?' riktig':''}${gal?' gal':''}" data-act="mistenkt" data-i="${i}" ${D.done||gal?'disabled':''}>${objSvg(k.obj,m.p,i,D.done||gal?alleMerker(m.p):null)}<span>${rik?'🎯 ':gal?'✗ ':''}${o.navn} ${'ABCD'[i]}</span></button>`}).join('')}</div>
+  ${D.msg?`<div class="fb ${D.done?'ok':'no'}" role="status"><b class="t">${D.done?'Saken er løst!':'Ikke den …'}</b>${D.msg}</div>`:''}
+  ${D.done?`<button class="btn pri big" data-act="avslutt">${k.nr===5?'Avslør tyven! 🎭':'Fortsett →'}</button>`:''}</section>`}
+function mistenkt(i){const D=G.ded;if(D.done||D.galt.includes(i))return;D.forsok++;const k=G.kap,o=OBJ[k.obj];
+  if(i===D.sk){D.done=true;const forst=D.forsok===1;G.res[6]=forst?'ok':'feil';if(forst){G.riktig++;tjen(2)}
+    const pr=D.mist[i].pr;D.msg=`${o.navn} ${'ABCD'[i]} har ${beskriv(pr)} – og det passer med alle sporene i notatboka.`;beep('up');confetti(50)}
+  else{D.galt.push(i);const m=D.mist[i],f=D.facts.find(([kk,v])=>m.pr[kk]!==v);
+    D.msg=`${o.navn} ${'ABCD'[i]} ${faktaVerb(f[0],m.pr[f[0]])}. Men sporet sier: ${OBJ[k.obj].best.charAt(0).toLowerCase()+OBJ[k.obj].best.slice(1)} ${faktaVerb(f[0],f[1])}.`;beep('soft')}
+  render()}
+function avslutt(){const st=G.riktig>=6?3:G.riktig>=4?2:1;const nr=G.kap.nr;const forrige=S.kap[nr]||0;S.kap[nr]=Math.max(forrige,st);save();
+  G.stj=st;window.Gull&&Gull.bonus(2+st*2,nr===5?'Mysteriet er løst!':'Saken er løst!');sjekkMerke();V='slutt';render(true);if(nr===5)setTimeout(()=>confetti(140),400)}
+function vSlutt(){const k=G.kap,siste=k.nr===5;
+  return `<section class="card" style="display:flex;flex-direction:column;gap:14px"><span class="stempel" style="align-self:flex-start">Sak nr. ${k.nr} – løst</span>
+  ${siste?`<h1>🎭 Tyven er avslørt!</h1><div class="dlg">${k.utro.slice(0,1).map(linjeHtml).join('')}</div><div class="dlg">${k.utro.slice(1).map((l,i)=>linjeHtml(l,i+1)).join('')}</div><div class="scenebox">${SCENE.slutt()}</div>`
+    :`<h1>${k.ikon} ${esc(k.tittel)}</h1><div class="dlg">${k.utro.map(linjeHtml).join('')}</div>`}
+  <div class="center" style="display:flex;flex-direction:column;align-items:center;gap:6px">${stjHtml(G.stj,true)}<p class="muted">Du løste ${G.riktig} av 7 på første forsøk.</p></div>
+  ${siste?`<div class="card diplom"><h2>DIPLOM</h2><p style="font-family:var(--fh);font-size:1.4rem">Gullvinkelen er tilbake i Hjørnevik, og alle husene står rett igjen.<br>Du er en ekte <b>vinkeldetektiv</b>!</p></div>`:''}
+  <div class="row">${!siste?`<button class="btn pri big" data-act="kap" data-n="${k.nr+1}">Neste sak →</button>`:''}<button class="btn big" data-act="saker">📁 Saksmappen</button>${siste?'<button class="btn big" data-act="tren">🏋️ Treningsrommet</button>':''}</div></section>`}
+
+/* ---------- trening ---------- */
+function vTrenValg(){return `<button class="back" data-act="home">← Tilbake</button><h1>🏋️ Treningsrommet</h1>
+  <p class="muted">Velg hva du vil øve på. Gull for riktig på første forsøk.</p>
+  <div class="trenvalg" style="margin-top:12px">${TREN.map(t=>`<button class="mknapp" data-act="trenstart" data-id="${t.id}"><span class="mi">${t.ikon}</span><span style="flex:1"><b>${esc(t.navn)}</b><small>${esc(t.sub)} · ${t.n} oppgaver</small></span>${S.tren[t.id]?stjHtml(S.tren[t.id]):''}</button>`).join('')}</div>`}
+function vTrenSlutt(){const n=G.oppg.length,r=G.riktig,st=r/n>=.9?3:r/n>=.7?2:1;
+  return `<section class="card center" style="display:flex;flex-direction:column;align-items:center;gap:12px"><h1>${G.tr.ikon} Runde ferdig!</h1>${stjHtml(st,true)}
+  <p>Du fikk <b>${r} av ${n}</b> riktige på første forsøk.</p>${st<3?'<p class="muted">Tips: Ta en tur innom Detektivskolen og prøv vinkelmaskinen!</p>':'<p class="muted">Skarpt! Du har et ekte detektivblikk for vinkler.</p>'}
+  <div class="row" style="width:100%"><button class="btn pri big" data-act="trenstart" data-id="${G.tr.id}">Én runde til</button><button class="btn big" data-act="tren">Treningsrommet</button></div></section>`}
+function trenFerdig(){const n=G.oppg.length,r=G.riktig,st=r/n>=.9?3:r/n>=.7?2:1;S.tren[G.tr.id]=Math.max(S.tren[G.tr.id]||0,st);save();
+  window.Gull&&Gull.bonus(st,'Runde ferdig!');sjekkMerke();if(st===3)confetti();V='trenslutt';render(true)}
+
+/* ---------- detektivskolen ---------- */
+const SKOLE=[
+  {t:'Hva er en vinkel?',h:()=>{const v={deg:50,theta:0,sgn:-1,l1:200,l2:170};const g=vinkelGeo(v,320,230,64);
+    return `<div class="figbox"><svg viewBox="0 0 320 230" role="img" aria-label="En vinkel med toppunkt og to vinkelbein">${merkeSvg(g.P,g.E1,g.E2,'spiss',{r:44})}
+    <path d="M${pt(g.E1)}L${pt(g.P)}L${pt(g.E2)}" fill="none" stroke="var(--figline)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${f2(g.P[0])}" cy="${f2(g.P[1])}" r="6" fill="var(--coral)"/>
+    <text x="${f2(g.P[0]-4)}" y="${f2(g.P[1]+26)}" font-family="Fredoka,sans-serif" font-size="17" fill="var(--coral)" font-weight="600">toppunkt</text>
+    <text x="${f2((g.P[0]+g.E1[0])/2)}" y="${f2(g.P[1]+26)}" font-family="Fredoka,sans-serif" font-size="17" fill="var(--ink)" font-weight="600">vinkelbein</text>
+    <text x="${f2((g.P[0]+g.E2[0])/2-92)}" y="${f2((g.P[1]+g.E2[1])/2-6)}" font-family="Fredoka,sans-serif" font-size="17" fill="var(--ink)" font-weight="600">vinkelbein</text>
+    <text x="${f2(g.P[0]+52)}" y="${f2(g.P[1]-12)}" font-family="Fredoka,sans-serif" font-size="17" fill="var(--spiss)" font-weight="600">vinkelen</text></svg></div>
+    <p>En vinkel lages av to streker som møtes i ett punkt. Strekene heter <b>vinkelbein</b>, og punktet der de møtes heter <b>toppunktet</b>.</p>
+    <p>Vinkelen er hvor <b>åpent</b> det er mellom vinkelbeina.</p>
+    <p class="muted">Du finner vinkler overalt: i hjørnet på et ark, i en åpen saks, mellom viserne på klokka og i tuppen på et pizzastykke.</p>`}},
+  {t:'Vinkelmaskinen',h:()=>`<p>Dra i glidebryteren og se hva som skjer. Klarer du å lage en <b class="rett">rett</b> vinkel?</p>
+    <div class="figbox" id="vm"></div><p class="vmlabel" id="vml" aria-live="polite"></p>
+    <input type="range" id="vmr" min="10" max="170" step="1" value="${vm.deg}" aria-label="Hvor åpen vinkelen er">
+    <button class="btn ghost" data-act="vmben">📏 ${vm.lang?'Gjør beina korte':'Gjør beina lange'}</button>
+    <p class="muted">Det gule papiret er vinkelsjekkeren. Legg merke til at vinkelen ikke blir større når beina blir lengre – det er bare åpningen som teller!</p>`},
+  {t:'Lag din egen vinkelsjekker',h:()=>`<div class="figbox"><svg viewBox="0 0 330 150" role="img" aria-label="Et ark brettes to ganger og får et rett hjørne">
+    <path d="M14 30Q30 12 60 18Q92 10 96 40Q104 80 84 110Q60 132 30 118Q8 100 14 70Z" fill="var(--paper)" stroke="var(--paperline)" stroke-width="2"/><text x="55" y="142" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="15" fill="var(--muted)">1. Et ark</text>
+    <path d="M128 70H210Q214 40 190 24Q160 14 140 30Q122 48 128 70Z" fill="var(--paper)" stroke="var(--paperline)" stroke-width="2"/><path d="M128 70H210" stroke="var(--figline)" stroke-width="3"/><text x="168" y="142" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="15" fill="var(--muted)">2. Brett én gang</text>
+    <path d="M250 110V40Q290 30 300 70Q306 100 290 110Z" fill="var(--paper)" stroke="var(--paperline)" stroke-width="2"/><path d="M250 40V110H290" fill="none" stroke="var(--figline)" stroke-width="3"/><path d="M250 96H264V110" fill="none" stroke="var(--rett)" stroke-width="3"/><text x="276" y="142" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="15" fill="var(--muted)">3. Brett igjen</text></svg></div>
+    <p>Ta et ark – det kan til og med være en rar papirlapp. Brett det på midten, så får du en rett kant. Brett den kanten oppå seg selv én gang til. Da har du et perfekt <b class="rett">rett hjørne</b>: en vinkelsjekker!</p>
+    <p>Slik bruker du den: Legg hjørnet i <b>toppunktet</b> og den ene kanten langs det ene vinkelbeinet. Se så hvor det andre vinkelbeinet havner.</p>`},
+  {t:'Spiss, rett eller stump?',h:()=>`<div class="tre">${[['spiss',50,'får plass <b>inni</b> hjørnet'],['rett',90,'passer <b>akkurat</b>'],['stump',130,'stikker <b>utenfor</b> hjørnet']].map(([t,d,tx])=>
+    `<figure>${vinkelSvg({deg:d,theta:0,sgn:-1,l1:120,l2:110},{W:240,H:190,sjekk:true,merke:t,sjekkStr:70})}<figcaption><b class="${t}">${cap(t)}</b>: vinkelen ${tx}.</figcaption></figure>`).join('')}</div>
+    <p><b class="spiss">Spiss</b> vinkel: mindre enn en rett vinkel.<br><b class="rett">Rett</b> vinkel: akkurat som hjørnet på et ark.<br><b class="stump">Stump</b> vinkel: større enn en rett vinkel.</p>
+    <p class="muted">Rette vinkler merker vi med en liten firkant. Spisse og stumpe vinkler merker vi med en bue.</p>`},
+  {t:'Vinkler i figurer',h:()=>`<div class="tre">${[['kvadrat','Kvadrat: fire rette'],['stumpTre','Trekant: én stump, to spisse'],['husSpiss','Hus: to rette, to stumpe, én spiss']].map(([id,tx])=>
+    `<figure>${figurSvg(FORM[id].p,{W:240,H:190,pad:28,merker:alleMerker(FORM[id].p)})}<figcaption>${tx}</figcaption></figure>`).join('')}</div>
+    <p>Et <b>kvadrat</b> og et <b>rektangel</b> har fire rette vinkler.</p>
+    <p>En <b>trekant</b> kan ha høyst én rett eller én stump vinkel. De to andre vinklene er alltid spisse.</p>
+    <p class="muted">Når du skal telle vinkler i en figur: gå rundt fra hjørne til hjørne og merk hver vinkel, så du ikke teller noen to ganger.</p>`},
+  {t:'Huskeregler',h:()=>`<div class="huske">
+    <div style="border-color:var(--spiss)"><span class="hi">🍕</span><span><b class="spiss">Spiss</b> – mindre enn en rett vinkel. Som tuppen på et pizzastykke.</span></div>
+    <div style="border-color:var(--rett)"><span class="hi">📄</span><span><b class="rett">Rett</b> – akkurat som hjørnet på et ark. Merkes med en liten firkant.</span></div>
+    <div style="border-color:var(--stump)"><span class="hi">🛋️</span><span><b class="stump">Stump</b> – større enn en rett vinkel. Som en lenestol du lener deg bakover i.</span></div></div>
+    <p>Nå er du klar for ditt første oppdrag, detektiv!</p>`},
+];
+function vSkole(){const sd=SKOLE[skoleSide],siste=skoleSide===SKOLE.length-1;if(siste&&!S.skole){S.skole=true;save()}
+  return `<button class="back" data-act="home">← Tilbake</button><section class="card" style="display:flex;flex-direction:column;gap:12px">
+  <span class="stempel" style="align-self:flex-start">Detektivskolen ${skoleSide+1}/${SKOLE.length}</span><h1>${sd.t}</h1>${sd.h()}
+  <div class="sider" aria-hidden="true">${SKOLE.map((_,i)=>`<i class="${i===skoleSide?'na':''}"></i>`).join('')}</div>
+  <div class="row">${skoleSide>0?'<button class="btn" data-act="skforrige">← Forrige</button>':''}${siste?'<button class="btn pri big" data-act="saker">📁 Til saksmappen</button>':'<button class="btn pri" data-act="skneste">Neste →</button>'}</div></section>`}
+function vmTegn(){const el=$('#vm');if(!el)return;let d=vm.deg;if(Math.abs(d-90)<=4)d=90;const t=d===90?'rett':d<90?'spiss':'stump';
+  const L=vm.lang?135:75;el.innerHTML=vinkelSvg({deg:d,theta:0,sgn:-1,l1:L,l2:L},{W:320,H:220,sjekk:true,merke:t,sjekkStr:58});
+  const lab=$('#vml');lab.innerHTML=`<span class="c-${t}">${cap(t)} vinkel</span>`}
+
+/* =====================================================================
+   HENDELSER
+   ===================================================================== */
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el||el.disabled)return;const a=el.dataset.act,T=cur();
+  switch(a){
+    case 'home':V='home';render(true);break;
+    case 'saker':V='saker';render(true);break;
+    case 'kap':{const n=+el.dataset.n;if(opplast(n))startKap(n);break}
+    case 'start':V='oppg';G.i=0;render(true);break;
+    case 'neste':if(G.i<G.oppg.length-1){G.i++;V='oppg';render(true)}else if(G.mode==='kap'){V='ded';render(true)}else trenFerdig();break;
+    case 'svar':svar(el.dataset.v);break;
+    case 'sjekk':if(T){T.sjekk=!T.sjekk;beep('tap');render()}break;
+    case 'hjorne':if(T&&!T.done){const i=+el.dataset.i;T.sel=T.sel.includes(i)?T.sel.filter(x=>x!==i):T.sel.concat([i]);beep('tap');render()}break;
+    case 'ferdig':ferdigMarker();break;
+    case 'kr':if(T&&!T.done){const s=+el.dataset.s,i=+el.dataset.i;T.kr[s][i]=(T.kr[s][i]+1)%4;beep('tap');render()}break;
+    case 'pluss':case 'minus':if(T&&!T.done){const k=el.dataset.k;T.val[k]=Math.max(0,Math.min(12,T.val[k]+(a==='pluss'?1:-1)));beep('klikk');render()}break;
+    case 'kode':provKode();break;
+    case 'prikk':prikk(+el.dataset.x,+el.dataset.y);break;
+    case 'angre':if(T&&!T.lukket){T.pts.pop();render()}break;
+    case 'visk':if(T&&!T.done){T.pts=[];T.lukket=false;T.vis=null;T.msg='';render()}break;
+    case 'eksempel':if(T&&!T.done){T.pts=T.K.eks.slice();T.lukket=true;T.vis=alleMerker(T.pts);ferdig(T,false,`Her er ett eksempel på ${T.K.tekst}. Det finnes mange andre måter også!`)}break;
+    case 'mistenkt':mistenkt(+el.dataset.i);break;
+    case 'avslutt':avslutt();break;
+    case 'tren':V='tren';render(true);break;
+    case 'trenstart':startTren(el.dataset.id);break;
+    case 'skole':skoleSide=0;V='skole';render(true);break;
+    case 'skneste':skoleSide=Math.min(SKOLE.length-1,skoleSide+1);render(true);break;
+    case 'skforrige':skoleSide=Math.max(0,skoleSide-1);render(true);break;
+    case 'vmben':vm.lang=!vm.lang;render();break;
+    case 'sound':S.sound=!S.sound;save();applyTheme();break;
+    case 'theme':S.theme={auto:'light',light:'dark',dark:'auto'}[S.theme];save();applyTheme();break;
+  }});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('[role=button][data-act]:not(button)')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
+document.addEventListener('input',e=>{if(e.target.id==='vmr'){vm.deg=+e.target.value;vmTegn()}});
+
+applyTheme();render();
+document.addEventListener('DOMContentLoaded',sjekkMerke);
+</script>
+</body>
+</html>

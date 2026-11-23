@@ -566,6 +566,7 @@
       }
       return s;
     },
+    lupe: () => `<line x1="158" y1="186" x2="173" y2="161" stroke="#5d4037" stroke-width="7" stroke-linecap="round"/><circle cx="184" cy="144" r="18" fill="#bfe6ff" fill-opacity=".45" stroke="#c9a227" stroke-width="5"/><path d="M173 138Q177 130 186 129" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".85"/>`,
     pokal: () => `<path d="M154 140H186Q186 164 170 168Q154 164 154 140Z" fill="#f2c230" stroke="#b8860b" stroke-width="1.5"/><path d="M154 146Q144 146 146 156Q148 162 156 160M186 146Q196 146 194 156Q192 162 184 160" stroke="#f2c230" stroke-width="3" fill="none"/>` +
       `<rect x="166" y="167" width="8" height="8" fill="#d4a017"/><rect x="158" y="175" width="24" height="7" rx="2" fill="#b8860b"/><path d="${stjerneD(170, 152, 6)}" fill="#fff8d0"/>`,
   };
@@ -834,6 +835,7 @@
     ["bg-tidsportal", "Tidsportalen", "bakgrunn", 0, "portal", { merke: "tidsreisen" }],
     ["stjernekappe", "Stjernekappe", "rygg", 0, "kappe", { f: "#1a237e", m: "stjerner", merke: "fortellingsreisen" }],
     ["gullplate", "Gullplate", "hand", 0, "gullplate", { merke: "platereisen" }],
+    ["lupe", "Detektivlupe", "hand", 0, "lupe", { merke: "vinkel-mester" }],
     ["regnbuecaps", "Regnbuecaps", "hode", 0, "regnbuecaps", { merke: "allsidig" }],
     ["comebackgenser", "Comeback-genser", "overdel", 0, "genser", { f: "#00897b", m: "comeback", merke: "comeback" }],
     ["rev", "Oppdragsreven", "venn", 0, "rev", { merke: "oppdrag" }],
@@ -855,6 +857,7 @@
     ["tidsreisen", "Tidsreisende", "🦉", ["tidsreisen"], "Fullfør alle kapitlene i Tidsreisen", "bg-tidsportal"],
     ["fortellingsreisen", "Fortellingsvokter", "📖", ["fortellingsreisen"], "Fullfør alle fem fortellingene og epilogen, eller samle alle symbolkortene", "stjernekappe"],
     ["platereisen", "Platesamler", "💿", ["platereisen"], "Fullfør alle seks platene og epilogen i Platereisen, eller samle alle platekortene", "gullplate"],
+    ["vinkel-mester", "Vinkeldetektiv", "🔍", ["vinkelmysteriet"], "Løs alle fem sakene i Vinkelmysteriet, eller få tre stjerner på Blanding i Treningsrommet", "lupe"],
     ["allsidig", "Allsidig", "🌈", null, "Tjen gull i fem ulike spill", "regnbuecaps"],
     ["comeback", "Comeback-helt", "🔁", null, "Få 10 feil til å sitte i Feilsamleren", "comebackgenser"],
     ["oppdrag", "Oppdragsjeger", "🎯", null, "Fullfør alle dagens oppdrag på fem forskjellige dager", "rev"],
