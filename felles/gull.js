@@ -68,7 +68,7 @@
   function prover(s) {
     s = s || S; const ut = [];
     spillListe().forEach(sp => (sp.prover || []).forEach(p => ut.push({ spill: filKey(sp.fil), fil: sp.fil, tittel: sp.tittel, ikon: sp.ikon,
-      fag: sp.fag, trinn: sp.trinn, dato: p.dato, navn: p.navn || sp.tittel })));
+      fag: sp.fag, trinn: p.trinn || sp.trinn, dato: p.dato, navn: p.navn || sp.tittel })));
     (s.prover || []).forEach((p, i) => {
       const sp = spillListe().find(x => filKey(x.fil) === p.spill) || {};
       ut.push({ spill: p.spill, fil: sp.fil || p.spill + ".html", tittel: sp.tittel || p.spill, ikon: sp.ikon || "📝", fag: sp.fag,

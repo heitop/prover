@@ -18,6 +18,7 @@
    id         kort navn uten æøå/mellomrom (fremgangen lagres per id)
    tittel     tema
    dato       prøvedato, ÅÅÅÅ-MM-DD (kan stå tom "" hvis den ikke er kjent)
+   trinn      4 eller 8 – spillet velger prøven for trinnet avataren går på
    gloser     en    = engelsk, slik det står på glosearket (små bokstaver)
               no    = norsk; bruk « / » mellom flere betydninger
               alt   = andre norske svar som også godtas (valgfritt)
@@ -30,7 +31,38 @@
    ====================================================================== */
 const PROVER = [
   {
-    id: "flerkulturelt", tittel: "Et flerkulturelt samfunn", dato: "2026-11-12",
+    id: "uke48-4trinn", tittel: "4. trinn – ukas gloser", dato: "2026-11-27", trinn: 4,
+    gloser: [
+      { en: "pro",        no: "profesjonell / proff", alt: ["profesjonelle", "proffe", "profesjonal"], enAlt: ["professional"],
+        def: "short for professional – someone who is very good at something and does it as a job" },
+      { en: "wheelchair", no: "rullestol",            alt: ["rullestolen"],
+        def: "a chair with wheels for people who cannot walk" },
+      { en: "instead",    no: "i staden for",         alt: ["i stedet for", "istedenfor", "isteden for", "istedet for", "i staden", "i stedet", "istedet", "isteden"],
+        def: "in the place of something else" },
+      { en: "through",    no: "gjennom",              alt: ["igjennom"],
+        def: "in at one side and out at the other side" },
+      { en: "above",      no: "over",                 alt: ["ovenfor", "oppå", "ovanfor"],
+        def: "higher than something" },
+      { en: "sea level",  no: "havoverflata",         alt: ["havoverflaten", "havoverflate", "havnivå", "havnivået", "havflata", "havflaten"],
+        def: "the height of the sea – we measure how high mountains are from here" },
+    ],
+    setninger: [
+      { en: "The dog is a pro on a skateboard.",            no: "Hunden er proff på skateboard.",          ord: "pro" },
+      { en: "She wants to be a pro when she grows up.",     no: "Ho vil bli proff når ho blir stor.",      ord: "pro" },
+      { en: "He uses a wheelchair.",                        no: "Han brukar rullestol.",                   ord: "wheelchair" },
+      { en: "She plays basketball in a wheelchair.",        no: "Ho spelar basketball i rullestol.",       ord: "wheelchair" },
+      { en: "Can I have juice instead of milk?",            no: "Kan eg få jus i staden for mjølk?",       ord: "instead" },
+      { en: "We walked instead of taking the bus.",         no: "Vi gjekk i staden for å ta bussen.",      ord: "instead" },
+      { en: "The dog rode through the tunnel.",             no: "Hunden køyrde gjennom tunnelen.",         ord: "through" },
+      { en: "The cat ran through the garden.",              no: "Katten sprang gjennom hagen.",            ord: "through" },
+      { en: "The bird flies above the house.",              no: "Fuglen flyg over huset.",                 ord: "above" },
+      { en: "The lamp is above the table.",                 no: "Lampa er over bordet.",                   ord: "above" },
+      { en: "The mountain is 2469 metres above sea level.", no: "Fjellet er 2469 meter over havoverflata.", ord: "sea level" },
+      { en: "The beach is at sea level.",                   no: "Stranda ligg ved havoverflata.",          ord: "sea level" },
+    ],
+  },
+  {
+    id: "flerkulturelt", tittel: "Et flerkulturelt samfunn", dato: "2026-11-12", trinn: 8,
     gloser: [
       { en: "multicultural", no: "flerkulturell",       alt: ["multikulturell", "flerkulturelt"],
         def: "with people from many different cultures" },
@@ -332,7 +364,12 @@ let S = load();
 const idag = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const dk = p => p.dato || "9999-12-31";
 const sortert = () => PROVER.slice().sort((a, b) => dk(a).localeCompare(dk(b)));
-function standardProve() { const s = sortert(); return (s.find(p => dk(p) >= idag()) || s[s.length - 1]).id; }
+/* Standard: neste prøve for trinnet avataren går på (felles/gull.js). Uten trinn: neste prøve uansett trinn. */
+function mittTrinn() { try { return (window.Gull && Gull.tilstand().trinn) || null; } catch (e) { return null; } }
+function standardProve() {
+  const t = mittTrinn(), alle = sortert(), mine = alle.filter(p => !t || !p.trinn || p.trinn === t), s = mine.length ? mine : alle;
+  return (s.find(p => dk(p) >= idag()) || s[s.length - 1]).id;
+}
 function P() { return PROVER.find(p => p.id === S.valgt) || PROVER.find(p => p.id === standardProve()); }
 function PS() { const id = P().id; if (!S.prover[id]) S.prover[id] = { lv: {}, best: {} }; return S.prover[id]; }
 const lv = g => PS().lv[g.en] || 0;

@@ -8,6 +8,7 @@
    prover: kommende prøver, f.eks. [{ dato: "2026-11-19", navn: "Gloseprøve: skolen" }].
            Gir nedtelling på forsiden, dagens oppdrag og dobbelt gull de tre siste dagene før prøven.
            Barna kan også legge inn prøver selv på forsiden (lagres bare på enheten).
+           Spill for flere trinn: gi prøven egen trinn, f.eks. { dato, navn, trinn: [4] }.
    ========================================================== */
 window.SPILL = [
   { fag: "Musikk", ikon: "🎷", tittel: "Blå toner",     fil: "blaa-tonar.html", trinn: [8],         lagt: "2026-11-05",
@@ -49,6 +50,7 @@ window.SPILL = [
     beskrivelse: "Pek-og-klikk-eventyr: reis til 1789 og redd idékortene. Humormodus låses opp for hvert kapittel" },
   { fag: "KRLE", ikon: "📖", tittel: "Fortellingsreisen", fil: "fortellingsreisen.html", trinn: [4], lagt: "2026-11-12",
     beskrivelse: "Pek-og-klikk-eventyr gjennom de store fortellingene: Moses, Jesus, profeten Muhammad, Rama og Sita og Buddha. Samle symbolkort – humormodus låses opp" },
-  { fag: "Engelsk", ikon: "🌍", tittel: "Engelske gloser", fil: "engelsk-gloser.html", trinn: [8], lagt: "2026-11-10",
-    beskrivelse: "Gloseprøvene – nå: et flerkulturelt samfunn. Koble, velg, skriv, lytt, setninger og ordformer" },
+  { fag: "Engelsk", ikon: "🌍", tittel: "Engelske gloser", fil: "engelsk-gloser.html", trinn: [4, 8], lagt: "2026-11-23",
+    prover: [{ dato: "2026-11-27", navn: "Engelsk gloseprøve", trinn: [4] }],
+    beskrivelse: "Gloseprøvene – 4. trinn: pro, wheelchair, through, above … (27.11). 8. trinn: et flerkulturelt samfunn. Koble, velg, skriv, lytt og setninger" },
 ];
