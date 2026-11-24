@@ -226,6 +226,18 @@ p{margin:0}
 .ti .y small{font-family:var(--fb);font-weight:400;color:var(--muted);font-size:.85rem;display:block}
 
 /* årsaker */
+.mal{display:flex;gap:14px;align-items:center;background:var(--gold-soft);color:var(--gold-ink);border:2px solid color-mix(in srgb,var(--gold) 40%,transparent);border-radius:20px;padding:14px 18px;text-align:left;width:100%}
+.mal .ic{font-size:2rem}
+.mal b{font-family:var(--fd);font-size:1.15rem;display:block}
+.mtema{display:flex;flex-direction:column;gap:8px}
+.mtema .mhead{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+.mtema h3{font-size:1.1rem}
+.mtema .sider{font-size:.85rem;color:var(--muted);white-space:nowrap}
+.mtema.kan{border-color:var(--ok);background:color-mix(in srgb,var(--ok-soft) 55%,var(--card))}
+.mov{display:flex;flex-wrap:wrap;gap:6px}
+.mov .chip{font-size:.95rem}
+.kanbtn{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:4px 12px;font-weight:700;white-space:nowrap}
+.kanbtn[aria-pressed="true"]{border-color:var(--ok);background:var(--ok);color:#fff}
 .ars{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
 .ar{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px}
 .ar .ic{font-size:1.8rem}
@@ -333,6 +345,8 @@ function home() {
     <p class="motto">Frihet, likhet, brorskap</p>
   </section>
 
+  <button class="mal" data-act="maalark"><span class="ic">📋</span><span><b>Målarket – dette må du kunne</b><span class="small">${esc(R.MAALARK.tittel)} · ${malKan()} av ${R.MAALARK.tema.length} temaer krysset av</span></span></button>
+
   <a class="adv" href="tidsreisen.html"><span class="ic">🦉</span><span><b>Tidsreisen – eventyret</b><span class="small">Reis tilbake til 1789 og redd idékortene fra Grev Glemsel</span></span></a>
 
   <section class="card prog">
@@ -351,7 +365,9 @@ function home() {
       ${mode("pyramide", "🔺", "Standssamfunnet", "Kongen, de tre stendene og hvem som betalte")}
       ${mode("filosofer", "🧑‍🏫", "Filosofkortene", "Seks filosofer – fakta, idé og betydning i dag")}
       ${mode("tidslinje", "📅", "Tidslinja", "Fra Kopernikus til Waterloo")}
+      ${mode("religion", "🕊️", "Nye tanker om religion", "Fornuft, deisme, kritikk av kirken og toleranse")}
       ${mode("aarsaker", "🔥", "Hvorfor revolusjon?", "Sju grunner til at det smalt i 1789")}
+      ${mode("etter", "🏛️", "Etter revolusjonen", "Hvordan ble samfunnet etterpå?")}
     </div>
   </section>
 
@@ -371,6 +387,7 @@ function home() {
       ${mode("hvemMente", "💬", "Hvem mente hva?", "Koble utsagnet til riktig filosof", pst("mente"))}
       ${mode("makt", "⚖️", "Maktfordeling", "Lovgivende, utøvende eller dømmende?", pst("makt"))}
       ${mode("rekke", "📅", "Sett i rekkefølge", "Hva skjedde først?", b["rekke-" + S.del] != null ? `Rekord: ${b["rekke-" + S.del]} feil` : "")}
+      ${mode("forEtter", "⏳", "Før eller etter?", "Før 1789 eller etter revolusjonen?", pst("foretter"))}
       ${mode("daNaa", "🔗", "Da og nå", "Fra 1700-tallets ideer til Norge i dag")}
     </div>
   </section>
@@ -486,6 +503,45 @@ function aarsaker() {
   <div class="ars">${R.AARSAKER.map(a => `<div class="ar"><span class="ic">${a.ikon}</span><b>${esc(a.t)}</b><span class="small">${esc(a.d)}</span></div>`).join("")}</div>`);
 }
 
+/* ---------- nye tanker om religion ---------- */
+function religion() {
+  show(`${backBtn}
+  <h2>Nye tanker om religion</h2>
+  <p class="muted">Opplysningstiden forandret ikke bare politikken – folk begynte også å tenke nytt om Gud, kirken og tro.</p>
+  <div class="ars">${R.RELIGION.map(a => `<div class="ar"><span class="ic">${a.ikon}</span><b>${esc(a.t)}</b><span class="small">${esc(a.d)}</span></div>`).join("")}</div>
+  <div class="row"><button class="btn pri big" data-act="religionQ">Øv: Quiz om religion →</button></div>`);
+}
+
+/* ---------- samfunnet etter revolusjonen ---------- */
+function etter() {
+  show(`${backBtn}
+  <h2>Hvordan ble samfunnet etter revolusjonen?</h2>
+  <p class="muted">Mye ble helt nytt – men ikke alt, og ikke for alle.</p>
+  <div class="ars">${R.ETTER.map(a => `<div class="ar"><span class="ic">${a.ikon}</span><b>${esc(a.t)}</b><span class="small">${esc(a.d)}</span></div>`).join("")}</div>
+  <div class="row"><button class="btn pri big" data-act="forEtter">Øv: Før eller etter? →</button><button class="btn big" data-act="etterQ">Quiz →</button></div>`);
+}
+
+/* ---------- målarket ---------- */
+const malKan = () => R.MAALARK.tema.filter(t => (S.mal || {})[t.id]).length;
+function maalark() {
+  const M = R.MAALARK, mal = S.mal || {};
+  show(`${backBtn}
+  <h2>Målarket · ${esc(M.tittel)}</h2>
+  <p class="muted">Dette må du kunne noe om. Sidetallene er i læreboka. Øv på temaene, og kryss av når du kan dem.</p>
+  <div class="bar" style="flex:none;height:12px"><i style="width:${malKan() / M.tema.length * 100}%"></i></div>
+  <p class="small muted">${malKan()} av ${M.tema.length} temaer krysset av</p>
+  ${M.tema.map((t, i) => `<section class="card mtema${mal[t.id] ? " kan" : ""}">
+    <div class="mhead"><div><h3>${i + 1}. ${esc(t.t)}</h3><span class="sider">Side ${esc(t.sider)}</span></div>
+      <button class="kanbtn" data-act="malkan:${t.id}" aria-pressed="${!!mal[t.id]}">${mal[t.id] ? "✓ Kan det" : "Jeg kan det"}</button></div>
+    ${t.stikk.length ? `<div class="tchips">${t.stikk.map(x => `<span>${esc(x)}</span>`).join("")}</div>` : ""}
+    <div class="mov">${t.ovelser.map(([act, txt, del]) => `<button class="chip" data-act="${del ? `maldel:${del}|${act}` : act}">${esc(txt)} →</button>`).join("")}</div>
+  </section>`).join("")}
+  <section class="card mtema">
+    <h3>Omgrepene på omgrepsarket</h3>
+    <div class="mov"><button class="chip" data-act="kort">📖 Omgrepskort →</button><button class="chip" data-act="skrivOmg">✍️ Skriv omgrepet →</button><button class="chip" data-act="prove">🏁 Prøveprøve →</button></div>
+  </section>`);
+}
+
 /* ---------- sjekk av skrevne svar ---------- */
 function checkOmg(v, g) {
   const a = norm(v), hoved = norm(g.o), alle = [g.o, ...(g.alt || [])].map(norm);
@@ -540,6 +596,13 @@ function itAar(e) {
   return { kind: "choice", label: "Når skjedde dette?", big: `${e.ikon || ""} ${e.t}`, sent: true, options, answer: String(e.aar), line: `${tidTxt(e)}: ${e.t}`,
     fk: fk("aar:" + e.t, `Hvilket år skjedde dette? ${e.t}`, String(e.aar), options.slice(1), { forkl: `${tidTxt(e)}: ${e.t}`, emne: "Tidslinja" }) };
 }
+const FE = { for: "⏳ Før 1789", etter: "🏛️ Etter revolusjonen" };
+function itFE(t, n) {
+  return { kind: "choice", label: "Før 1789 eller etter revolusjonen?", big: t, fixed: true, options: [FE.for, FE.etter], answer: FE[n], line: `${t} → ${n === "for" ? "før 1789" : "etter revolusjonen"}`,
+    info: n === "for" ? "Slik var det i standssamfunnet før revolusjonen." : "Dette kom med revolusjonen og årene etter.",
+    fk: fk("foretter:" + t, `Var dette slik før 1789 eller etter revolusjonen? «${t}»`, n === "for" ? "Før 1789" : "Etter revolusjonen", [n === "for" ? "Etter revolusjonen" : "Før 1789"], { emne: "Etter revolusjonen" }) };
+}
+const temaFakta = tema => R.FAKTA.filter(f => f.tema === tema);
 const allStand = () => R.STENDER.flatMap(st => st.ting.map(t => [t, st]));
 const allMente = () => R.FILOSOFER.flatMap(f => f.mente.map(t => [t, f]));
 const allMakt = () => R.MAKT.flatMap(m => m.ting.map(t => [t, m]));
@@ -658,6 +721,12 @@ const MODES = {
   faktaQ() { startQuiz({ title: `Faktaquiz · ${delNavn()}`, again: "faktaQ", bestKey: "fakta-" + S.del, items: shuffle(fakta().map(itFakta)).slice(0, 15) }); },
   sortStand() { startQuiz({ title: "Sorter i stendene", again: "sortStand", bestKey: "stand", items: spre(allStand(), 12).map(([t, st]) => itStand(t, st)) }); },
   hvemMente() { startQuiz({ title: "Hvem mente hva?", again: "hvemMente", bestKey: "mente", items: spre(allMente(), 12).map(([t, f]) => itMente(t, f)) }); },
+  forEtter() { startQuiz({ title: "Før eller etter?", again: "forEtter", bestKey: "foretter", items: spre(R.FOR_ETTER.slice(), 12).map(([t, n]) => itFE(t, n)) }); },
+  religionQ() {
+    const og = R.OMGREP.filter(g => ["Deisme", "Toleranse", "Fornuft", "Opplysningstiden"].includes(g.o));
+    startQuiz({ title: "Nye tanker om religion", again: "religionQ", bestKey: "religion", items: shuffle([...temaFakta("religion").map(itFakta), ...og.map(g => Math.random() < .5 ? itDef(g) : itOmg(g))]) });
+  },
+  etterQ() { startQuiz({ title: "Etter revolusjonen", again: "etterQ", bestKey: "etter", items: shuffle([...temaFakta("etter").map(itFakta), ...spre(R.FOR_ETTER.slice(), 4).map(([t, n]) => itFE(t, n))]) }); },
   makt() { startQuiz({ title: "Maktfordeling", again: "makt", bestKey: "makt", items: spre(allMakt(), 10).map(([t, m]) => itMakt(t, m)) }); },
   prove() {
     const og = shuffle(omgrep()), fk = shuffle(fakta()), hd = shuffle(hendelser());
@@ -803,14 +872,17 @@ function oNext() {
 
 /* ---------- handlinger ---------- */
 const ACT = {
-  home, kort, pyramide, filosofer, tidslinje, aarsaker, rekke,
+  home, kort, pyramide, filosofer, tidslinje, aarsaker, rekke, religion, etter, maalark,
+  forEtter: () => MODES.forEtter(), religionQ: () => MODES.religionQ(), etterQ: () => MODES.etterQ(),
+  maldel(arg) { const [d, a] = arg.split("|"), [act, x] = a.split(/:(.*)/s); S.del = d; save(); ACT[act](x); },
+  malkan(id) { S.mal = S.mal || {}; S.mal[id] = !S.mal[id]; save(); const y = window.scrollY; maalark(); window.scrollTo(0, y); },
   koble: () => koble(omgrep().map(g => ({ k: g.o, l: g.o, r: g.d })), `Koble sammen · ${delNavn()}`, "koble", "koble-" + S.del, "Trykk på et omgrep og så på forklaringen som hører til."),
   daNaa: () => koble(R.DAOGNAA.map(x => ({ k: x.ide, l: x.ide, r: x.naa })), "Da og nå", "daNaa", null, "Koble ideen fra 1700-tallet til det vi har i Norge i dag."),
   velgOmg: () => MODES.velgOmg(), skrivOmg: () => MODES.skrivOmg(), faktaQ: () => MODES.faktaQ(),
   sortStand: () => MODES.sortStand(), hvemMente: () => MODES.hvemMente(), makt: () => MODES.makt(), prove: () => MODES.prove(),
   del(id) { S.del = id; save(); const y = window.scrollY; home(); window.scrollTo(0, y); },
   stand(id) { S.stand = id; save(); const y = window.scrollY; pyramide(); window.scrollTo(0, y); },
-  fil(id) { S.fil = id; save(); const y = window.scrollY; filosofer(); window.scrollTo(0, y); },
+  fil(id) { S.fil = id; save(); const y = $(".fcard") ? window.scrollY : 0; filosofer(); window.scrollTo(0, y); },
   theme() { S.theme = erMork() ? "light" : "dark"; save(); applyTheme(); },
   reset() { if (confirm("Nullstille fremgangen i Kampen for rettigheter?")) { S = Object.assign(fresh(), { theme: S.theme }); save(); home(); } },
   flip() { F.on = !F.on; $("#flip").classList.toggle("on", F.on); },

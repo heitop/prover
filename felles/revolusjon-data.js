@@ -87,6 +87,12 @@ OMGREP: [
   { del: "opplysning", o: "Enevelde", alt: ["eneveldet", "einevelde", "eineveldet"],
     d: "At kongen har all makt alene",
     ex: "Kongene mente de hadde fått makten fra Gud. Louis 14.: «Staten, det er meg.»" },
+  { del: "opplysning", o: "Deisme", alt: ["deismen", "deist", "deistene"],
+    d: "Troen på at Gud skapte verden og naturlovene, men ikke blander seg inn etterpå",
+    ex: "Gud er som en urmaker: Han lager uret og setter det i gang – så går det av seg selv. Voltaire var deist." },
+  { del: "opplysning", o: "Toleranse", alt: ["toleransen", "religiøs toleranse", "toleranse for andre"],
+    d: "Å godta at andre tror og mener noe annet enn deg, og la dem leve i fred",
+    ex: "John Locke skrev «Brev om toleranse» i 1689. Voltaire kjempet mot at folk ble forfulgt for troen sin." },
   { del: "opplysning", o: "Fornuft", alt: ["fornuften"],
     d: "Evnen til å tenke klart og logisk",
     ex: "Opplysningsfilosofene mente fornuften var viktigere enn gamle tradisjoner." },
@@ -306,6 +312,67 @@ DAOGNAA: [
 ],
 
 /* --------------------------------------------------------------------------
+   NYE TANKER OM RELIGION (målarket: opplysningstid) – lærekort
+   ------------------------------------------------------------------------ */
+RELIGION: [
+  { ikon: "🧠", t: "Fornuft før tradisjon", d: "Filosofene mente at folk skulle bruke fornuften. Det holdt ikke lenger å si «sånn står det i de gamle bøkene» eller «sånn sier kirken»." },
+  { ikon: "⌚", t: "Gud som urmaker (deisme)", d: "Mange trodde at Gud skapte verden og naturlovene – og så lot alt gå av seg selv, som et urverk. Gud gjør ikke mirakler i hverdagen. Voltaire var deist." },
+  { ikon: "⛪", t: "Kritikk av kirkens makt", d: "Kirken var rik, eide mye jord, krevde tiende og slapp skatt. Filosofene mente kirken hadde altfor mye makt og rikdom." },
+  { ikon: "🔭", t: "Vitenskap i stedet for overtro", d: "Naturen kunne forklares med naturlover, forsøk og målinger – ikke med mirakler, hekser og varsler fra himmelen." },
+  { ikon: "🕊️", t: "Toleranse", d: "Folk skal få tro på det de vil uten å bli forfulgt. Locke skrev «Brev om toleranse» (1689), og Voltaire kjempet for protestanten Jean Calas, som ble dømt urettferdig i 1762." },
+  { ikon: "🙋", t: "Tro er en privatsak", d: "Staten skal ikke bestemme hva folk tror. Det ble til religionsfrihet – i Norge står den i Grunnloven § 16." },
+],
+
+/* --------------------------------------------------------------------------
+   SAMFUNNET ETTER REVOLUSJONEN (målarket: «Korleis vart samfunnet etter revolusjonen?»)
+   ------------------------------------------------------------------------ */
+ETTER: [
+  { ikon: "⚖️", t: "Like for loven", d: "Standssamfunnet forsvant. Privilegiene ble avskaffet natten 4. august 1789, og alle menn skulle være like for loven og betale skatt etter evne." },
+  { ikon: "📃", t: "Rettigheter på papiret", d: "Menneskerettighetserklæringen (1789) og grunnloven (1791) slo fast frihet, likhet, ytringsfrihet og religionsfrihet." },
+  { ikon: "⛪", t: "Kirken mistet makt", d: "Kirkens jord ble solgt for å betale statsgjelda, tienden ble avskaffet, og prestene måtte sverge troskap til staten." },
+  { ikon: "💼", t: "Borgerskapet vant", d: "Kjøpmenn, advokater og fabrikkeiere fikk mest ny makt. Mange av dem kjøpte jorda til kirken og adelen." },
+  { ikon: "🗳️", t: "Republikk – og så keiser", d: "Kongen ble avsatt i 1792, og Frankrike ble republikk. Etter uro og terror tok Napoleon makten i 1799 og ble keiser i 1804." },
+  { ikon: "📏", t: "Nye mål for alle", d: "Før hadde nesten hver by sine egne mål og vekter. Revolusjonen innførte metersystemet – meter og kilo – som nesten hele verden bruker i dag." },
+  { ikon: "📕", t: "Like lover i hele landet", d: "Napoleons lovbok (1804) ga de samme lovene i hele Frankrike: likhet for loven og rett til eiendom. Den spredte seg til store deler av Europa." },
+  { ikon: "🎖️", t: "Borgere, ikke undersåtter", d: "Folk så på seg selv som franske borgere med rettigheter og plikter. I 1793 kom verneplikt: Alle unge menn kunne kalles inn til hæren." },
+  { ikon: "🚫", t: "Ikke for alle", d: "Kvinner fikk verken stemmerett eller like rettigheter. Slaveriet i koloniene ble avskaffet i 1794 – men Napoleon innførte det igjen i 1802." },
+  { ikon: "🌍", t: "Ideene spredte seg", d: "Frihet, likhet og grunnlov spredte seg over hele Europa – og til Eidsvoll i 1814." },
+],
+
+/* Før 1789 eller etter revolusjonen? (sorteringsøvelse) */
+FOR_ETTER: [
+  ["Kongen har all makt alene", "for"], ["Folk er delt inn i tre stender", "for"], ["Adelen og presteskapet slipper skatt", "for"],
+  ["Bøndene betaler tiende til kirken", "for"], ["Kongen kan fengsle folk uten dom", "for"], ["Sensuren kan forby bøker", "for"],
+  ["De fineste stillingene er bare for adelen", "for"], ["Mål og vekt er forskjellige fra by til by", "for"], ["Kirken eier store mengder jord", "for"],
+  ["Alle menn er like for loven", "etter"], ["Privilegiene er avskaffet", "etter"], ["Alle skal betale skatt etter evne", "etter"],
+  ["Kirkens jord blir solgt", "etter"], ["Frankrike blir en republikk", "etter"], ["Metersystemet blir innført", "etter"],
+  ["De samme lovene gjelder i hele landet", "etter"], ["Jobber gis etter evner, ikke etter stand", "etter"], ["Borgerskapet får mer makt", "etter"],
+],
+
+/* --------------------------------------------------------------------------
+   MÅLARKET – Kap. 3 «Kamp for rettar». ovelser: [handling, knappetekst, del (valgfri – velger delen først)].
+   ------------------------------------------------------------------------ */
+MAALARK: {
+  tittel: "Kap. 3 – Kamp for rettar",
+  tema: [
+    { id: "stand", t: "Standsamfunnet i Frankrike", sider: "70–71", stikk: [],
+      ovelser: [["pyramide", "🔺 Standssamfunnet"], ["sortStand", "Sorter i stendene"]] },
+    { id: "opplysning", t: "Opplysningstiden", sider: "72–77", stikk: ["nye tanker om religion", "naturlover", "vitenskapsrevolusjonen"],
+      ovelser: [["religion", "🕊️ Nye tanker om religion"], ["religionQ", "Quiz: religion"], ["fil:newton", "Newton og naturlovene"], ["filosofer", "Filosofkortene"]] },
+    { id: "folk", t: "Folkesuverenitetsprinsippet", sider: "74", stikk: [],
+      ovelser: [["fil:rousseau", "Rousseau"], ["hvemMente", "Hvem mente hva?"]] },
+    { id: "makt", t: "Maktfordeling", sider: "75", stikk: [],
+      ovelser: [["fil:montesquieu", "Montesquieu"], ["makt", "Sorter maktene"]] },
+    { id: "ytring", t: "Ytringsfrihet og sensur", sider: "74–77", stikk: [],
+      ovelser: [["fil:voltaire", "Voltaire"], ["daNaa", "Da og nå"]] },
+    { id: "revolusjon", t: "Revolusjonen", sider: "82–88", stikk: ["årsaker til revolusjonen", "hva som skjedde under revolusjonen"],
+      ovelser: [["aarsaker", "🔥 Hvorfor revolusjon?"], ["tidslinje", "Tidslinja", "revolusjon"], ["rekke", "Sett i rekkefølge", "revolusjon"]] },
+    { id: "etter", t: "Hvordan ble samfunnet etter revolusjonen?", sider: "89–92", stikk: [],
+      ovelser: [["etter", "🏛️ Etter revolusjonen"], ["forEtter", "Før eller etter?"], ["etterQ", "Quiz: etter revolusjonen"]] },
+  ],
+},
+
+/* --------------------------------------------------------------------------
    FAKTASPØRSMÅL. q = spørsmål, a = riktig svar, feil = gale svar,
    f = forklaring som vises etter svaret.
    ------------------------------------------------------------------------ */
@@ -434,5 +501,35 @@ FAKTA: [
     f: "Han tok med seg noen ideer fra revolusjonen – men ikke folkesuvereniteten." },
   { del: "napoleon", q: "Hva er den norske Grunnloven fra 1814 inspirert av?", a: "Opplysningsideene, USAs grunnlov og den franske revolusjonen", feil: ["Bare kongens ønsker", "Kirkens lover fra middelalderen", "Ingenting – den var helt ny"],
     f: "Maktfordeling, folkesuverenitet og rettigheter – alt fra opplysningstiden." },
+
+  /* Nye tanker om religion (tema: "religion") */
+  { del: "opplysning", tema: "religion", q: "Hva er deisme?", a: "At Gud skapte verden og naturlovene, men ikke blander seg inn etterpå", feil: ["At det finnes mange guder", "At kongen er en gud", "At kirken skal styre landet"],
+    f: "Deistene sammenlignet Gud med en urmaker som setter i gang et ur." },
+  { del: "opplysning", tema: "religion", q: "Hva mente mange opplysningsfilosofer om kirken?", a: "At kirken hadde for mye makt og rikdom", feil: ["At kirken burde få enda mer makt", "At prestene burde styre landet", "At kirken burde betale mer tiende"],
+    f: "Kirken eide mye jord, krevde tiende og slapp skatt." },
+  { del: "opplysning", tema: "religion", q: "Hva betyr religiøs toleranse?", a: "At folk med en annen tro får leve i fred", feil: ["At alle må ha samme tro", "At kongen bestemmer hva folk skal tro", "At det er forbudt å tro på noe"],
+    f: "Toleranse ble etter hvert til religionsfrihet." },
+  { del: "opplysning", tema: "religion", q: "Hvilken filosof skrev «Brev om toleranse» i 1689?", a: "John Locke", feil: ["Napoleon", "Montesquieu", "Louis 16."],
+    f: "Locke mente at staten ikke skulle tvinge noen til en bestemt tro." },
+  { del: "opplysning", tema: "religion", q: "Hvorfor kjempet Voltaire for Jean Calas?", a: "Calas var protestant og ble dømt urettferdig", feil: ["Calas var kongens sønn", "Calas hadde skrevet en bok om Voltaire", "Calas ville bli biskop"],
+    f: "Voltaire skrev og skrev til saken ble tatt opp igjen. Calas ble frikjent etter sin død." },
+  { del: "opplysning", tema: "religion", q: "Hvordan ville opplysningsfolk forklare naturen?", a: "Med fornuft, forsøk og naturlover", feil: ["Med mirakler og varsler", "Med det kongen sa", "Med gamle eventyr"],
+    f: "Det var vitenskapsrevolusjonen som viste vei." },
+
+  /* Samfunnet etter revolusjonen (tema: "etter") */
+  { del: "revolusjon", tema: "etter", q: "Hva skjedde med kirkens jord under revolusjonen?", a: "Den ble solgt for å betale statsgjelda", feil: ["Den ble gitt til kongen", "Den ble gitt til adelen", "Ingenting – kirken beholdt den"],
+    f: "Mange i borgerskapet og noen bønder kjøpte jorda." },
+  { del: "revolusjon", tema: "etter", q: "Hvilket målesystem kommer fra den franske revolusjonen?", a: "Metersystemet – meter og kilo", feil: ["Tommer og fot", "Alen og pund", "Mil og unser"],
+    f: "Før hadde nesten hver by sine egne mål. Nå bruker nesten hele verden meter og kilo." },
+  { del: "revolusjon", tema: "etter", q: "Hvilken gruppe fikk mest ny makt etter revolusjonen?", a: "Borgerskapet", feil: ["Adelen", "Presteskapet", "Kongens familie"],
+    f: "Kjøpmenn, advokater og fabrikkeiere ble de nye lederne." },
+  { del: "revolusjon", tema: "etter", q: "Ble kvinner like for loven etter revolusjonen?", a: "Nei – de fikk verken stemmerett eller like rettigheter", feil: ["Ja, med en gang i 1789", "Ja, Napoleon ga dem stemmerett", "Ja, men bare i Paris"],
+    f: "Franske kvinner fikk stemmerett først i 1944." },
+  { del: "revolusjon", tema: "etter", q: "Hva skjedde med standssamfunnet etter revolusjonen?", a: "Det ble avskaffet – alle menn skulle være like for loven", feil: ["Det fikk en fjerde stand", "Adelen fikk enda flere privilegier", "Det ble akkurat som før"],
+    f: "Privilegiene ble avskaffet natten 4. august 1789." },
+  { del: "revolusjon", tema: "etter", q: "Hva var den nye verneplikten fra 1793?", a: "At alle unge menn kunne kalles inn til hæren", feil: ["At alle måtte betale skatt til kirken", "At alle måtte jobbe gratis for adelen", "At bare adelen kunne bli soldater"],
+    f: "Nå kjempet borgere for landet sitt – ikke bare betalte soldater for kongen." },
+  { del: "revolusjon", tema: "etter", q: "Hva skjedde med slaveriet i de franske koloniene?", a: "Det ble avskaffet i 1794, men Napoleon innførte det igjen", feil: ["Det fortsatte uten endring", "Det ble avskaffet for godt i 1789", "Napoleon avskaffet det"],
+    f: "Slaveriet ble endelig avskaffet i de franske koloniene i 1848." },
 ],
 };
