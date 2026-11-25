@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Brøk-juksearket</title>
+<meta name="description" content="Forkorte, gange og dele med brøk på ett ark, og et øveark med nye oppgaver og fasit">
+<meta name="theme-color" content="#b4471a">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f2a33a'/><text x='50' y='46' font-size='38' text-anchor='middle' font-family='Arial' font-weight='700' fill='%23fff'>3</text><rect x='26' y='52' width='48' height='6' fill='%23fff'/><text x='50' y='90' font-size='38' text-anchor='middle' font-family='Arial' font-weight='700' fill='%23fff'>4</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="felles/brok-ark.css">
+</head>
+<body>
+<main class="ark">
+  <div id="jukse" data-del="jukse" style="display:flex;flex-direction:column;gap:inherit"></div>
+  <div id="ove" data-del="ove" class="ny-side" style="display:flex;flex-direction:column;gap:14px"></div>
+  <div id="ovefasit" data-del="ovefasit" class="fasit ny-side" style="flex-direction:column;gap:10px"></div>
+</main>
+<script src="felles/brok-ark.js"></script>
+<script>
+const { fr, mx, vis, pai, bar, sporsmal, fasit, lagOvelser } = BrokArk;
+const ex = (...p) => `<div class="ex">${p.join(' ')}</div>`;
+const kr = (gammel, ny) => `<s>${gammel}</s><i>${ny}</i>`;   // kryssforkorting: overstrek og nytt tall
+
+// ---------------- juksearket ----------------
+document.getElementById('jukse').innerHTML = `
+  <header class="hode">
+    <div><h1>Brøk-juksearket</h1><p>Forkorte, gange og dele med brøk</p></div>
+    <div class="verktoy">
+      <a href="brokmester.html">Til Brøkmester</a>
+      <a href="brok-prover.html">Til prøvene</a>
+      <a href="#ove">Til øvearket</a>
+      <button type="button" class="pri" data-ut="jukse">Skriv ut juksearket (ett A4-ark)</button>
+    </div>
+  </header>
+
+  <div class="rad r3">
+    <section class="boks fk">
+      <h2><span class="nr">1</span>Forkorte</h2>
+      <p class="regel">Del teller og nevner på det samme tallet.</p>
+      ${ex(fr(18, 24), '=', fr('18 : 6', '24 : 6'), '=', fr(3, 4))}
+      ${ex(fr(18, 24), '=', fr(9, 12), '=', fr(3, 4), '<span class="t">Det går også i flere steg: først : 2, så : 3.</span>')}
+      <p><b>Så enkel som mulig:</b> ingen tall (unntatt 1) går opp i både teller og nevner.</p>
+      <p class="etikett">Hvilke tall går opp?</p>
+      <table class="dtab">
+        <tr><td>2</td><td>Partall: ender på 0, 2, 4, 6, 8</td></tr>
+        <tr><td>3</td><td>Tverrsummen går opp i 3: 2 + 7 = 9, så 3 går opp i 27</td></tr>
+        <tr><td>5</td><td>Ender på 0 eller 5</td></tr>
+        <tr><td>10</td><td>Ender på 0</td></tr>
+        <tr><td>7, 11 …</td><td>Prøv hvis ingen av de andre går</td></tr>
+      </table>
+      <p class="merk">Brøken blir like stor. Du bare skriver den med mindre tall.</p>
+    </section>
+
+    <section class="boks ga">
+      <h2><span class="nr">2</span>Gange</h2>
+      <p class="regel">Teller · teller og nevner · nevner.</p>
+      ${ex(fr(2, 5), '·', fr(3, 4), '=', fr('2 · 3', '5 · 4'), '=', fr(6, 20), '=', fr(3, 10))}
+      <p><b>Helt tall · brøk:</b> gang bare telleren.</p>
+      ${ex('3 ·', fr(2, 7), '=', fr('3 · 2', 7), '=', fr(6, 7))}
+      <p><b>«av» betyr gange:</b></p>
+      ${ex(fr(1, 2), 'av', fr(1, 4), '=', fr(1, 2), '·', fr(1, 4), '=', fr(1, 8))}
+      <p><b>Smart: forkort på kryss før du ganger.</b></p>
+      ${ex(fr(kr(4, 1), kr(9, 3)), '·', fr(kr(3, 1), kr(8, 2)), '=', fr(1, 6), '<span class="t">4 og 8 deles på 4. 3 og 9 deles på 3.</span>')}
+    </section>
+
+    <section class="boks de">
+      <h2><span class="nr">3</span>Dele</h2>
+      <p class="regel">Snu den andre brøken, og gang.</p>
+      ${ex(fr(3, 4), ':', fr(1, 2), '=', fr(3, 4), '·', fr(2, 1), '=', fr(6, 4), '=', mx(1, 1, 2))}
+      <p><b>Hva betyr det?</b> Hvor mange ganger får ${fr(1, 4)} plass i ${fr(1, 2)}?</p>
+      <div>${bar(2, 4, { w: 200, h: 26 })}</div>
+      ${ex(fr(1, 2), ':', fr(1, 4), '=', fr(1, 2), '·', fr(4, 1), '=', fr(4, 2), '= 2', '<span class="t">To biter på en kvart får plass i en halv.</span>')}
+      <p><b>Med hele tall:</b> skriv tallet som brøk: 3 = ${fr(3, 1)}.</p>
+      ${ex('2 :', fr(1, 3), '=', fr(2, 1), '·', fr(3, 1), '= 6')}
+      ${ex(fr(3, 4), ': 3 =', fr(3, 4), '·', fr(1, 3), '=', fr(3, 12), '=', fr(1, 4))}
+      <p class="merk">Deler du på en brøk som er mindre enn 1, blir svaret <b>større</b>.</p>
+    </section>
+  </div>
+
+  <div class="rad r2">
+    <section class="boks">
+      <h2>Blandet tall: gjør om først</h2>
+      <p>Før du ganger eller deler: gjør blandet tall om til uekte brøk. Gang de hele med nevneren, og legg til telleren.</p>
+      ${ex(mx(2, 3, 4), '=', fr('2 · 4 + 3', 4), '=', fr(11, 4))}
+      ${ex(mx(1, 1, 2), '·', fr(2, 3), '=', fr(3, 2), '·', fr(2, 3), '=', fr(6, 6), '= 1')}
+      ${ex(mx(2, 3, 4), ':', fr(1, 8), '=', fr(11, 4), '·', fr(8, 1), '=', fr(88, 4), '= 22')}
+    </section>
+    <section class="boks">
+      <h2>Slik skriver du svaret</h2>
+      <ul>
+        <li>Forkort svaret så langt det går.</li>
+        <li>Mer enn 1 hel? Skriv som blandet tall: ${fr(7, 4)} = 7 : 4 = 1 rest 3 = ${mx(1, 3, 4)}.</li>
+        <li>Går nevneren opp i telleren, er svaret et helt tall: ${fr(12, 4)} = 3.</li>
+        <li>Tekstoppgave? Svar med benevning: 22 barn, ${fr(1, 8)} liter, 3 km.</li>
+        <li>Sjekk om svaret er rimelig: ${fr(1, 2)} · ${fr(1, 4)} må bli mindre enn ${fr(1, 4)}.</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="boks feller">
+    <h2><span class="nr">!</span>Fellene</h2>
+    <ul>
+      <li>Forkort ved å <b>dele</b>, ikke trekke fra: ${fr(6, 8)} = ${fr(3, 4)}, <s>${fr(5, 7)}</s></li>
+      <li>Gjør det samme med <b>både</b> teller og nevner.</li>
+      <li>Ganging og deling trenger <b>ikke</b> fellesnevner. Det er bare pluss og minus.</li>
+      <li>Helt tall · brøk: gang bare telleren: 3 · ${fr(2, 7)} = ${fr(6, 7)}, <s>${fr(6, 21)}</s></li>
+      <li>Ved deling snus <b>bare den andre</b> brøken. Den første står som den er.</li>
+      <li>Blandet tall: gjør om til uekte brøk <b>før</b> du ganger eller deler.</li>
+    </ul>
+  </section>`;
+
+// ---------------- øvearket ----------------
+const BOK = 'abcdefghijklmnopqrstuvwxyz';
+const stjerner = n => `<span class="niv" title="Nivå ${n}">${'★'.repeat(n)}</span>`;
+function losnHtml(it) { const f = fasit(it); return `${f.losn}${f.merk ? `<span class="m">${f.merk}</span>` : ''}`; }
+function deloppg(it, i, h) {
+  return `<div class="deloppg"><div class="q"><span class="bok">${BOK[i]})</span>${it.type === 'tekst' ? `<span class="tekst">${sporsmal(it)}</span>` : sporsmal(it)}${it.niv ? stjerner(it.niv) : ''}</div>
+    <div class="plass" style="--h:${h}mm"></div>
+    <details class="fs"><summary>Fasit</summary><div class="losn">${losnHtml(it)}</div></details></div>`;
+}
+const SEKSJONER = [
+  { k: 'forkort', kl: 'fk', t: 'Forkort så enkelt som mulig', inst: 'Del teller og nevner på det samme tallet til det ikke går lenger.', h: 12 },
+  { k: 'gange', kl: 'ga', t: 'Gange', inst: 'Skriv svaret så enkelt som mulig, og som blandet tall hvis det er mer enn 1 hel.', h: 18 },
+  { k: 'dele', kl: 'de', t: 'Dele', inst: 'Snu den andre brøken og gang. Skriv svaret så enkelt som mulig.', h: 18 },
+  { k: 'tekst', kl: '', t: 'Tekstoppgaver', inst: 'Skriv regnestykket, regn ut og svar med benevning.', h: 30, brei: true }
+];
+function lagOve(seed) {
+  const O = lagOvelser(seed);
+  document.getElementById('ove').innerHTML = `
+    <header class="del-hode" id="ove-hode">
+      <div><h1>Øvearket</h1><p>Ark nr. ${seed} · ★ lett, ★★ middels, ★★★ vanskelig. Fasiten ligger under hver oppgave.</p></div>
+      <div class="verktoy">
+        <button type="button" id="nye">Nye oppgaver</button>
+        <button type="button" class="pri" data-ut="ove">Skriv ut øvearket</button>
+        <button type="button" data-ut="ovefasit">Skriv ut fasiten</button>
+      </div>
+    </header>
+    <p class="skjerm demp">Tips: Regn på et ark først, og åpne fasiten etterpå. Trykk «Nye oppgaver» for et nytt ark.</p>
+    ${SEKSJONER.map((s, si) => `<section class="opg ${s.kl}"><h2><span class="nr">${si + 1}</span>${s.t}</h2><p class="inst">${s.inst}</p>
+      <div class="deler${s.brei ? ' brei' : ' tre'}">${O[s.k].map((it, i) => deloppg(it, i, s.h)).join('')}</div></section>`).join('')}`;
+  document.getElementById('ovefasit').innerHTML = `
+    <header class="del-hode"><div><h1>Fasit til øvearket</h1><p>Ark nr. ${seed}</p></div></header>
+    ${SEKSJONER.map((s, si) => `<section class="opg ${s.kl}"><h2><span class="nr">${si + 1}</span>${s.t}</h2>
+      <div class="liste">${O[s.k].map((it, i) => `<div class="linje"><span class="bok">${BOK[i]})</span>${losnHtml(it)}</div>`).join('')}</div></section>`).join('')}`;
+  document.getElementById('nye').onclick = () => { const s = 1000 + Math.floor(Math.random() * 9000); history.replaceState(null, '', '#ark=' + s); lagOve(s); document.getElementById('ove-hode').scrollIntoView(); };
+  bindUt();
+}
+const fraLenke = +(location.hash.match(/ark=(\d+)/) || [])[1];
+lagOve(fraLenke || 1000 + Math.floor(Math.random() * 9000));
+
+// ---------------- utskrift ----------------
+const rot = document.documentElement;
+function rydd() { rot.classList.remove('a4'); document.querySelectorAll('[data-del]').forEach(e => e.classList.remove('ikke-ut', 'ut')); }
+function skrivUt(del) {
+  rydd();
+  document.querySelectorAll('[data-del]').forEach(e => { e.classList.toggle('ikke-ut', e.dataset.del !== del); e.classList.toggle('ut', e.dataset.del === del); });
+  if (del === 'jukse') rot.classList.add('a4');
+  window.print();
+}
+function bindUt() { document.querySelectorAll('[data-ut]').forEach(b => b.onclick = () => skrivUt(b.dataset.ut)); }
+bindUt();
+// Ctrl+P uten knapp: juksearket på ett ark, så øvearket
+window.addEventListener('beforeprint', () => { if (!document.querySelector('.ut')) { rot.classList.add('a4'); document.getElementById('ovefasit').classList.add('ikke-ut'); } });
+window.addEventListener('afterprint', rydd);
+</script>
+</body>
+</html>

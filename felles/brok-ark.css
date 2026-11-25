@@ -1,0 +1,160 @@
+/* Felles utseende for brøk-juksearket og brøk-prøvene: lyst papir, pizza-oransje,
+   og én farge per regneart (forkorte blå, gange grønn, dele lilla). */
+:root{
+  --bg:#f7f3ea; --flate:#ffffff; --flate2:#f3eddf; --blekk:#1f2633; --demp:#5d6673; --linje:#ddd3c0;
+  --pri:#b4471a; --pri-bg:#fbe5d9; --sol:#f2b705; --sol-bg:#fff1c4; --sol-blekk:#4a3700;
+  --fk:#1f63a8; --fk-bg:#e1ecf8; --ga:#22804e; --ga-bg:#dff1e6; --de:#7a3fa0; --de-bg:#eee3f6;
+  --fyll:#f2a33a; --tom:#ffffff;
+  --fd:"Fredoka","Segoe UI",system-ui,sans-serif;
+  --fb:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#13171d; --flate:#1d232b; --flate2:#262e38; --blekk:#eef1f5; --demp:#a3acb8; --linje:#333d49;
+  --pri:#ff9d6e; --pri-bg:#3d2519; --sol:#ffcc3d; --sol-bg:#3a3115; --sol-blekk:#ffe7a3;
+  --fk:#8cbcf0; --fk-bg:#1a2b40; --ga:#6fd49b; --ga-bg:#173326; --de:#cfa2ee; --de-bg:#2e2140;
+  --fyll:#f2a33a; --tom:#2a323d; color-scheme:dark}}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--blekk);font-family:var(--fb);font-size:1rem;line-height:1.45;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ul,ol{margin:0}
+h1,h2,h3{font-family:var(--fd);font-weight:600;line-height:1.15;text-wrap:balance}
+.ark{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:14px;
+  padding-block:max(16px,env(safe-area-inset-top,0px)) max(32px,env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+
+.hode{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px;border-bottom:3px solid var(--pri);padding-bottom:8px}
+.hode h1{font-size:clamp(1.7rem,6vw,2.3rem);color:var(--pri)}
+.hode p{color:var(--demp);font-weight:700}
+.verktoy{display:flex;gap:8px;flex-wrap:wrap}
+.verktoy a,.verktoy button,.knapp{font:inherit;font-weight:700;font-size:.9rem;color:var(--blekk);background:var(--flate);border:1.5px solid var(--linje);border-radius:10px;padding:7px 12px;cursor:pointer;text-decoration:none}
+.verktoy a:hover,.verktoy button:hover,.knapp:hover{border-color:var(--pri)}
+.verktoy .pri{background:var(--pri);border-color:var(--pri);color:var(--flate)}
+.verktoy button[aria-pressed="true"]{background:var(--pri-bg);border-color:var(--pri)}
+
+/* brøker */
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.1;margin:0 .12em;font-variant-numeric:tabular-nums}
+.fr>span{padding:0 .18em}
+.fr>span:first-child{border-bottom:1.6px solid currentColor}
+.mx{display:inline-flex;align-items:center;white-space:nowrap}
+.mx>.fr{margin-left:.06em}
+.fr s{opacity:.55;text-decoration-thickness:1.5px}
+.fr i{font-style:normal;font-size:.72em;color:var(--ga);font-weight:700;vertical-align:super;margin-left:1px}
+.fig .fyll{fill:var(--fyll);stroke:var(--blekk);stroke-width:1.4}
+.fig .fyll2{fill:var(--de-bg);stroke:var(--blekk);stroke-width:1.4}
+.fig .tom{fill:var(--tom);stroke:var(--blekk);stroke-width:1.4}
+.fig{display:block;max-width:100%;height:auto}
+
+/* juksearket */
+.rad{display:grid;gap:12px;align-items:start}
+.r3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.r2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.boks{background:var(--flate);border:1.5px solid var(--linje);border-radius:12px;padding:11px 13px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.boks h2{font-size:1.2rem;display:flex;align-items:baseline;gap:8px}
+.boks h2 .nr{flex:none;width:1.45em;height:1.45em;border-radius:50%;color:var(--flate);display:inline-grid;place-items:center;font-size:.78em}
+.boks.fk{border-top:5px solid var(--fk)} .boks.fk h2{color:var(--fk)} .boks.fk .nr{background:var(--fk)}
+.boks.ga{border-top:5px solid var(--ga)} .boks.ga h2{color:var(--ga)} .boks.ga .nr{background:var(--ga)}
+.boks.de{border-top:5px solid var(--de)} .boks.de h2{color:var(--de)} .boks.de .nr{background:var(--de)}
+.regel{font-weight:700;font-size:1.04em}
+.fk .regel{background:var(--fk-bg)} .ga .regel{background:var(--ga-bg)} .de .regel{background:var(--de-bg)}
+.regel{border-radius:9px;padding:7px 10px}
+.etikett{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--demp)}
+.ex{display:flex;flex-wrap:wrap;align-items:center;gap:4px;background:var(--flate2);border-radius:9px;padding:6px 9px;font-weight:700}
+.ex .t{font-weight:400;color:var(--demp);font-size:.9em;flex-basis:100%}
+.liten{font-size:.92em}
+.demp{color:var(--demp)}
+.merk{background:var(--sol-bg);color:var(--sol-blekk);border-radius:9px;padding:6px 9px;font-size:.93em}
+.boks ul{padding-left:1.15em;display:flex;flex-direction:column;gap:3px}
+.dtab{border-collapse:collapse;font-size:.93em}
+.dtab td{padding:2px 8px 2px 0;border-top:1px solid var(--linje);vertical-align:top}
+.dtab td:first-child{font-weight:700;color:var(--fk);white-space:nowrap}
+.feller{background:var(--blekk);color:var(--bg);border-color:var(--blekk)}
+.feller h2{color:var(--bg)}
+.feller h2 .nr{background:var(--sol);color:#1f2633}
+.feller ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px;padding-left:1.1em}
+.feller s{opacity:.7}
+.feller b{color:var(--sol)}
+.feller .fr i{color:var(--sol)}
+
+/* øvearket og prøvene */
+.del-hode{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px;border-bottom:3px solid var(--pri);padding-bottom:8px;margin-top:18px}
+.del-hode h1{font-size:clamp(1.5rem,5vw,2rem);color:var(--pri)}
+.del-hode p{color:var(--demp)}
+.opg{background:var(--flate);border:1.5px solid var(--linje);border-radius:12px;padding:11px 13px;display:flex;flex-direction:column;gap:8px}
+.opg h2{font-size:1.12rem;display:flex;align-items:baseline;gap:8px}
+.opg h2 .nr{flex:none;min-width:1.45em;height:1.45em;border-radius:50%;background:var(--pri);color:var(--flate);display:inline-grid;place-items:center;font-size:.8em;padding:0 .2em}
+.opg h2 .p{margin-left:auto;font-family:var(--fb);font-size:.8rem;color:var(--demp);font-weight:700;white-space:nowrap}
+.opg.fk h2 .nr{background:var(--fk)} .opg.ga h2 .nr{background:var(--ga)} .opg.de h2 .nr{background:var(--de)}
+.opg .inst{color:var(--demp)}
+.deler{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px 14px}
+.deler.brei{grid-template-columns:minmax(0,1fr)}
+.deler.tre{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:560px){.deler.tre{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.deloppg{display:flex;flex-direction:column;gap:4px;min-width:0}
+.deloppg .q{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:1.08em}
+.deloppg .q .bok{font-weight:700;color:var(--demp);min-width:1.4em}
+.deloppg .q .tekst{font-size:.95em}
+.niv{font-size:.7rem;color:var(--sol);letter-spacing:1px}
+.plass{display:none}
+details.fs{font-size:.92em}
+details.fs summary{cursor:pointer;color:var(--demp);font-weight:700;width:max-content}
+details.fs[open] summary{color:var(--pri)}
+.losn{display:flex;flex-wrap:wrap;align-items:center;gap:3px;padding:6px 8px;background:var(--flate2);border-radius:8px;margin-top:4px}
+.losn .m{flex-basis:100%;color:var(--demp);font-size:.9em}
+.tab{border-collapse:collapse}
+.tab th,.tab td{border:1.5px solid var(--linje);padding:4px 12px;text-align:center;min-width:6.5em;height:2.6em}
+.tab th{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--demp)}
+.fasit{display:none}
+.vis-fasit .fasit{display:flex}
+.fasit .liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px 18px}
+.fasit .linje{display:flex;flex-wrap:wrap;align-items:center;gap:3px;padding:3px 0;border-top:1px solid var(--linje)}
+.fasit .linje .bok{font-weight:700;color:var(--demp);min-width:2.6em}
+.fasit .linje .m{flex-basis:100%;color:var(--demp);font-size:.88em;padding-left:2.6em}
+.navnelinje{display:flex;gap:18px;flex-wrap:wrap;font-weight:700}
+.navnelinje span{border-bottom:1.5px solid var(--blekk);min-width:12em;display:inline-block}
+.faner{display:flex;gap:6px;flex-wrap:wrap}
+
+@media (max-width:820px){
+  .r3,.r2{grid-template-columns:minmax(0,1fr)}
+  .feller ul{grid-template-columns:minmax(0,1fr)}
+}
+
+/* ---------- utskrift ---------- */
+@page{size:A4;margin:10mm}
+@media print{
+  :root{--bg:#fff;--flate:#fff;--flate2:#f1ece1;--blekk:#000;--demp:#444;--linje:#bbb;--pri:#b4471a;--pri-bg:#fbe5d9;
+    --sol:#f2b705;--sol-bg:#fff1c4;--sol-blekk:#4a3700;--fk:#1f63a8;--fk-bg:#e1ecf8;--ga:#22804e;--ga-bg:#dff1e6;--de:#7a3fa0;--de-bg:#eee3f6;--fyll:#f2a33a;--tom:#fff;color-scheme:light}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .verktoy,.verktoy-hode,.ikke-ut,details.fs,.skjerm{display:none!important}
+  .fasit.ut{display:flex!important}
+  .ark{max-width:none;padding:0}
+  .del-hode{margin-top:0}
+  .opg{break-inside:avoid;border-radius:6px}
+  .plass{display:block;height:var(--h,16mm)}
+  .ny-side{break-before:page}
+  body{font-size:10pt}
+  .ark{gap:2.6mm}
+  .opg{padding:2.2mm 3mm;gap:1.4mm;border-width:1px}
+  .opg h2{font-size:11.5pt}
+  .deler{gap:1.5mm 4mm}
+  .deler.k{grid-template-columns:repeat(var(--k),minmax(0,1fr))}
+  .deler.brei.to{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fasit{font-size:9pt}
+  .fasit .liste{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 6mm}
+  .fasit .linje{padding:1mm 0}
+  .del-hode{padding-bottom:1.5mm}
+  .del-hode h1{font-size:17pt}
+}
+/* juksearket på ett A4-ark: klassen settes av skriptet før utskrift */
+.a4 body{font-size:9.6pt;line-height:1.32}
+.a4 .ark{gap:2.4mm}
+.a4 .hode{padding-bottom:1.2mm;border-bottom-width:2px}
+.a4 .hode h1{font-size:20pt}
+.a4 .rad{gap:2.4mm}
+.a4 .r3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.a4 .boks{padding:2mm 2.6mm;gap:1.5mm;border-radius:2.5mm;break-inside:avoid}
+.a4 .boks h2{font-size:12.5pt}
+.a4 .regel,.a4 .ex,.a4 .merk{padding:1.1mm 1.8mm;border-radius:1.8mm}
+.a4 .feller ul{grid-template-columns:repeat(2,minmax(0,1fr));gap:.6mm 5mm}
+.a4 .fig{max-height:9mm;width:auto}

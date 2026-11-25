@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Brøk-prøvene</title>
+<meta name="description" content="To brøkprøver for 8. trinn som kan skrives ut, med fasit og utregning">
+<meta name="theme-color" content="#b4471a">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23b4471a'/><text x='50' y='46' font-size='38' text-anchor='middle' font-family='Arial' font-weight='700' fill='%23fff'>1</text><rect x='26' y='52' width='48' height='6' fill='%23fff'/><text x='50' y='90' font-size='38' text-anchor='middle' font-family='Arial' font-weight='700' fill='%23fff'>2</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="felles/brok-ark.css">
+</head>
+<body>
+<main class="ark">
+  <header class="hode verktoy-hode">
+    <div><h1>Brøk-prøvene</h1><p>To prøver til å skrive ut. Fasiten skrives ut for seg.</p></div>
+    <div class="verktoy">
+      <a href="brok-jukseark.html">Til juksearket</a>
+      <a href="brokmester.html">Til Brøkmester</a>
+    </div>
+  </header>
+  <div class="verktoy" role="group" aria-label="Velg prøve og skriv ut">
+    <button type="button" data-velg="1" aria-pressed="true">Prøve 1</button>
+    <button type="button" data-velg="2" aria-pressed="false">Prøve 2</button>
+    <span style="flex:1"></span>
+    <button type="button" class="pri" id="ut-prove">Skriv ut prøven</button>
+    <button type="button" id="ut-fasit">Skriv ut fasiten</button>
+    <button type="button" id="vis-fasit" aria-pressed="false">Vis fasit</button>
+  </div>
+  <div id="prove" data-del="prove" style="display:flex;flex-direction:column;gap:12px"></div>
+  <div id="fasit" data-del="fasit" class="fasit ny-side" style="flex-direction:column;gap:10px"></div>
+</main>
+<script src="felles/brok-ark.js"></script>
+<script>
+const { fr, mx, vis, svar, losOp, sporsmal, fasit } = BrokArk;
+const regn = (a, o, b) => `${vis(a)} ${o} ${vis(b)} = ${losOp({ a, o, b }).losn}`;
+
+/* Hver seksjon: t (tittel), inst, kl (farge), p (poeng per deloppgave), h (skriveplass i mm), items. */
+const PROVER = {
+  1: [
+    { t: 'Hva er en brøk?', inst: 'Skriv brøken som viser den fargede delen.', p: 1, h: 6, items: [
+      { type: 'figur', n: 3, d: 8, form: 'pai' }, { type: 'figur', n: 2, d: 5, form: 'bar' }] },
+    { t: 'Utvide', inst: 'Utvid brøken med tallet.', p: 1, h: 8, items: [
+      { type: 'utvid', n: 2, d: 3, k: 4 }, { type: 'utvid', n: 3, d: 5, k: 3 }] },
+    { t: 'Forkorte', kl: 'fk', inst: 'Forkort så enkelt som mulig.', p: 1, h: 12, items: [
+      { type: 'forkort', n: 6, d: 9 }, { type: 'forkort', n: 12, d: 16 }, { type: 'forkort', n: 20, d: 35 }, { type: 'forkort', n: 36, d: 48 }] },
+    { t: 'Hvilken brøk er størst?', inst: 'Vis hvordan du fant det ut.', p: 1, h: 16, items: [
+      { type: 'storst', a: [3, 4], b: [5, 8] }, { type: 'storst', a: [2, 3], b: [3, 5] }] },
+    { t: 'Uekte brøk og blandet tall', inst: '', p: 1, h: 10, items: [
+      { type: 'blandet', n: 11, d: 4 }, { type: 'uekte', w: 2, n: 3, d: 5 }] },
+    { t: 'Pluss og minus', inst: 'Regn ut. Skriv svaret så enkelt som mulig.', p: 1, h: 16, items: [
+      { type: 'op', a: [2, 7], o: '+', b: [3, 7] }, { type: 'op', a: [5, 6], o: '−', b: [1, 6] },
+      { type: 'op', a: [1, 2], o: '+', b: [1, 3] }, { type: 'op', a: [3, 4], o: '−', b: [1, 6] }] },
+    { t: 'Gange', kl: 'ga', inst: 'Regn ut. Skriv svaret så enkelt som mulig, og som blandet tall hvis det er mer enn 1 hel.', p: 1, h: 18, items: [
+      { type: 'op', a: 3, o: '·', b: [2, 7] }, { type: 'op', a: [2, 5], o: '·', b: [3, 4] }, { type: 'op', a: [4, 9], o: '·', b: [3, 8] },
+      { type: 'op', a: [5, 6], o: '·', b: [3, 10] }, { type: 'op', a: [1, 1, 2], o: '·', b: [2, 3] }] },
+    { t: 'Dele', kl: 'de', inst: 'Regn ut. Skriv svaret så enkelt som mulig.', p: 1, h: 18, items: [
+      { type: 'op', a: [1, 2], o: ':', b: [1, 4] }, { type: 'op', a: [3, 4], o: ':', b: [1, 2] }, { type: 'op', a: [2, 3], o: ':', b: 4 },
+      { type: 'op', a: 3, o: ':', b: [3, 5] }, { type: 'op', a: [2, 1, 2], o: ':', b: [1, 4] }] },
+    { t: 'Brøkdel av et tall', inst: 'Regn ut.', p: 1, h: 14, items: [
+      { type: 'av', a: [3, 4], tall: 400, enhet: 'kr' }, { type: 'av', a: [2, 5], tall: 60, enhet: 'elever' }] },
+    { t: 'Brøk, desimaltall og prosent', inst: 'Fyll ut de tomme rutene.', p: 3, h: 0, brei: true, items: [
+      { type: 'tabell', rader: [{ n: 1, d: 2, gitt: 'b' }, { n: 1, d: 4, gitt: 'd' }, { n: 1, d: 5, gitt: 'p' }] }] },
+    { t: 'Tekstoppgaver', inst: 'Skriv regnestykket, regn ut og svar med benevning.', p: 2, h: 30, brei: true, items: [
+      { type: 'tekst', q: `Ali løper ${fr(1, 8)}, Mia løper ${fr(1, 4)} og Jonas løper ${fr(1, 3)} av en stafettløype. Du løper resten. Hvor stor del av løypa løper du?`,
+        svar: fr(7, 24), losn: () => `De andre: ${fr(1, 8)} + ${fr(1, 4)} + ${fr(1, 3)} = ${fr(3, 24)} + ${fr(6, 24)} + ${fr(8, 24)} = ${fr(17, 24)}. Resten: 1 − ${fr(17, 24)} = ${fr(24, 24)} − ${fr(17, 24)} = <b>${fr(7, 24)}</b>` },
+      { type: 'tekst', q: `Løypa i oppgave a er 12 km lang. Hvor mange km løper du?`,
+        svar: `${svar(7, 2)} km`, losn: () => `${regn([7, 24], '·', 12)} km` },
+      { type: 'tekst', q: `Du har ${mx(2, 3, 4)} poser godteri. Hvert barn på bursdagen skal få ${fr(1, 8)} pose. Hvor mange barn har du godteri til?`,
+        svar: '22 barn', losn: () => `${regn([2, 3, 4], ':', [1, 8])} barn` },
+      { type: 'tekst', q: `Til ett brett boller trenger du ${fr(3, 4)} kg mel. Du har ${mx(2, 1, 2)} kg mel. Hvor mange hele brett kan du bake?`,
+        svar: '3 brett', losn: () => `${regn([2, 1, 2], ':', [3, 4])}. Det holder til <b>3 hele brett</b> (og litt til).` }] }
+  ],
+  2: [
+    { t: 'Hva er en brøk?', inst: 'Skriv brøken som viser den fargede delen.', p: 1, h: 6, items: [
+      { type: 'figur', n: 5, d: 6, form: 'pai' }, { type: 'figur', n: 3, d: 4, form: 'bar' }] },
+    { t: 'Utvide', inst: 'Utvid brøken med tallet.', p: 1, h: 8, items: [
+      { type: 'utvid', n: 3, d: 4, k: 5 }, { type: 'utvid', n: 1, d: 6, k: 4 }] },
+    { t: 'Forkorte', kl: 'fk', inst: 'Forkort så enkelt som mulig.', p: 1, h: 12, items: [
+      { type: 'forkort', n: 8, d: 12 }, { type: 'forkort', n: 10, d: 15 }, { type: 'forkort', n: 21, d: 28 }, { type: 'forkort', n: 45, d: 60 }] },
+    { t: 'Hvilken brøk er størst?', inst: 'Vis hvordan du fant det ut.', p: 1, h: 16, items: [
+      { type: 'storst', a: [5, 6], b: [7, 9] }, { type: 'storst', a: [3, 8], b: [1, 3] }] },
+    { t: 'Uekte brøk og blandet tall', inst: '', p: 1, h: 10, items: [
+      { type: 'blandet', n: 17, d: 5 }, { type: 'uekte', w: 3, n: 1, d: 4 }] },
+    { t: 'Pluss og minus', inst: 'Regn ut. Skriv svaret så enkelt som mulig.', p: 1, h: 16, items: [
+      { type: 'op', a: [4, 9], o: '+', b: [2, 9] }, { type: 'op', a: [7, 8], o: '−', b: [3, 8] },
+      { type: 'op', a: [2, 5], o: '+', b: [1, 4] }, { type: 'op', a: [5, 6], o: '−', b: [3, 4] }] },
+    { t: 'Gange', kl: 'ga', inst: 'Regn ut. Skriv svaret så enkelt som mulig, og som blandet tall hvis det er mer enn 1 hel.', p: 1, h: 18, items: [
+      { type: 'op', a: 4, o: '·', b: [3, 10] }, { type: 'op', a: [3, 7], o: '·', b: [2, 5] }, { type: 'op', a: [6, 7], o: '·', b: [14, 15] },
+      { type: 'op', a: [9, 10], o: '·', b: [5, 12] }, { type: 'op', a: [2, 1, 4], o: '·', b: [2, 3] }] },
+    { t: 'Dele', kl: 'de', inst: 'Regn ut. Skriv svaret så enkelt som mulig.', p: 1, h: 18, items: [
+      { type: 'op', a: [1, 3], o: ':', b: [1, 6] }, { type: 'op', a: [5, 6], o: ':', b: [2, 3] }, { type: 'op', a: [4, 5], o: ':', b: 2 },
+      { type: 'op', a: 2, o: ':', b: [4, 7] }, { type: 'op', a: [3, 1, 2], o: ':', b: [1, 4] }] },
+    { t: 'Brøkdel av et tall', inst: 'Regn ut.', p: 1, h: 14, items: [
+      { type: 'av', a: [2, 3], tall: 90, enhet: 'kr' }, { type: 'av', a: [5, 8], tall: 240, enhet: 'meter' }] },
+    { t: 'Brøk, desimaltall og prosent', inst: 'Fyll ut de tomme rutene.', p: 3, h: 0, brei: true, items: [
+      { type: 'tabell', rader: [{ n: 3, d: 4, gitt: 'b' }, { n: 1, d: 10, gitt: 'd' }, { n: 2, d: 5, gitt: 'p' }] }] },
+    { t: 'Tekstoppgaver', inst: 'Skriv regnestykket, regn ut og svar med benevning.', p: 2, h: 30, brei: true, items: [
+      { type: 'tekst', q: `Det var ${fr(3, 4)} igjen av en kake. Du spiste ${fr(1, 3)} av hele kaka. Hvor stor del av kaka er igjen nå?`,
+        svar: fr(5, 12), losn: () => `${regn([3, 4], '−', [1, 3])} av kaka` },
+      { type: 'tekst', q: `En mugge har ${fr(3, 4)} liter saft. 6 venner deler saften likt. Hvor mye saft får hver?`,
+        svar: `${fr(1, 8)} liter`, losn: () => `${regn([3, 4], ':', 6)} liter` },
+      { type: 'tekst', q: `Et album varer ${mx(31, 1, 2)} minutter. Hver sang varer ${mx(3, 1, 2)} minutter. Hvor mange sanger er det på albumet?`,
+        svar: '9 sanger', losn: () => `${regn([31, 1, 2], ':', [3, 1, 2])} sanger` },
+      { type: 'tekst', q: `Et tau er 100 m langt. Du kutter bort ${fr(3, 4)} av tauet. Hvor mange meter er igjen? Hvor mange prosent kuttet du bort?`,
+        svar: '25 m, 75 %', losn: () => `Igjen: 1 − ${fr(3, 4)} = ${fr(1, 4)}. ${fr(1, 4)} av 100 m = 100 : 4 = <b>25 m</b>. Kuttet bort: ${fr(3, 4)} = <b>75 %</b>` }] }
+  ]
+};
+
+const BOK = 'abcdefghij';
+const poengSum = pr => pr.reduce((s, x) => s + x.p * x.items.length, 0);
+let valgt = 1;
+function tegn() {
+  const pr = PROVER[valgt], sum = poengSum(pr);
+  document.getElementById('prove').innerHTML = `
+    <header class="del-hode" style="margin-top:4px">
+      <div><h1>Brøkprøve ${valgt}</h1><p>8. trinn · Uten kalkulator · Vis utregningen · Skriv svarene så enkelt som mulig</p></div>
+      <p style="font-weight:700">Poeng: ______ av ${sum}</p>
+    </header>
+    <div class="navnelinje"><label>Navn: <span></span></label><label>Dato: <span style="min-width:7em"></span></label></div>
+    ${pr.map((s, si) => `<section class="opg ${s.kl || ''}"><h2><span class="nr">${si + 1}</span>${s.t}<span class="p">${s.p * s.items.length} p</span></h2>
+      ${s.inst ? `<p class="inst">${s.inst}</p>` : ''}
+      <div class="deler${s.brei ? (s.items.length > 1 ? ' brei to' : ' brei') : ' k'}" style="--k:${s.items.length}">${s.items.map((it, i) => `<div class="deloppg"><div class="q">${s.items.length > 1 ? `<span class="bok">${BOK[i]})</span>` : ''}${it.type === 'tekst' ? `<span class="tekst">${sporsmal(it)}</span>` : sporsmal(it)}</div>${s.h ? `<div class="plass" style="--h:${s.h}mm"></div>` : ''}</div>`).join('')}</div></section>`).join('')}`;
+  document.getElementById('fasit').innerHTML = `
+    <header class="del-hode"><div><h1>Fasit til brøkprøve ${valgt}</h1><p>${sum} poeng. Gi poeng for riktig utregning selv om svaret ikke er helt forkortet, men trekk litt hvis oppgaven ber om «så enkelt som mulig».</p></div></header>
+    ${pr.map((s, si) => `<section class="opg ${s.kl || ''}"><h2><span class="nr">${si + 1}</span>${s.t}<span class="p">${s.p * s.items.length} p</span></h2>
+      <div class="liste">${s.items.map((it, i) => { const f = fasit(it); return `<div class="linje"><span class="bok">${s.items.length > 1 ? BOK[i] + ')' : ''}</span>${f.losn}${f.merk ? `<span class="m">${f.merk}</span>` : ''}</div>`; }).join('')}</div></section>`).join('')}
+    <section class="opg"><h2>Poeng og vurdering</h2><p>${Math.round(sum * 0.9)}–${sum} poeng: Svært godt. ${Math.round(sum * 0.7)}–${Math.round(sum * 0.9) - 1}: Godt. ${Math.round(sum * 0.5)}–${Math.round(sum * 0.7) - 1}: På vei. Under ${Math.round(sum * 0.5)}: Øv mer på de temaene der det ble feil, for eksempel i Brøkmester.</p></section>`;
+  document.querySelectorAll('[data-velg]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.velg === valgt)));
+}
+document.querySelectorAll('[data-velg]').forEach(b => b.onclick = () => { valgt = +b.dataset.velg; tegn(); });
+document.getElementById('vis-fasit').onclick = e => { const på = document.documentElement.classList.toggle('vis-fasit'); e.currentTarget.setAttribute('aria-pressed', String(på)); if (på) document.getElementById('fasit').scrollIntoView({ behavior: 'smooth' }); };
+
+function rydd() { document.querySelectorAll('[data-del]').forEach(e => e.classList.remove('ikke-ut', 'ut')); }
+function skrivUt(del) { rydd(); document.querySelectorAll('[data-del]').forEach(e => { e.classList.toggle('ikke-ut', e.dataset.del !== del); e.classList.toggle('ut', e.dataset.del === del); }); window.print(); }
+document.getElementById('ut-prove').onclick = () => skrivUt('prove');
+document.getElementById('ut-fasit').onclick = () => skrivUt('fasit');
+// Ctrl+P uten knapp: bare prøven, aldri fasiten
+window.addEventListener('beforeprint', () => { if (!document.querySelector('.ut')) document.getElementById('fasit').classList.add('ikke-ut'); });
+window.addEventListener('afterprint', rydd);
+tegn();
+</script>
+</body>
+</html>
